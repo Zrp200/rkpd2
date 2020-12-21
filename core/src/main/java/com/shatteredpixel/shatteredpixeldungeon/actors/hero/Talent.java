@@ -323,32 +323,32 @@ public enum Talent {
 
 	//note that IDing can happen in alchemy scene, so be careful with VFX here
 	public static void onItemIdentified( Hero hero, Item item ){
-		if (hero.hasTalent(TEST_SUBJECT)){
+		if (hero.hasTalent(TEST_SUBJECT,NOBLE_COMBAT)){
 			//heal for 2/3 HP
-			hero.HP = Math.min(hero.HP + 1 + hero.pointsInTalent(TEST_SUBJECT), hero.HT);
+			hero.HP = Math.min(hero.HP + 1 + hero.pointsInTalents(TEST_SUBJECT,NOBLE_COMBAT), hero.HT);
 			Emitter e = hero.sprite.emitter();
-			if (e != null) e.burst(Speck.factory(Speck.HEALING), hero.pointsInTalent(TEST_SUBJECT));
+			if (e != null) e.burst(Speck.factory(Speck.HEALING), hero.pointsInTalents(TEST_SUBJECT,NOBLE_COMBAT));
 		}
-		if (hero.hasTalent(TESTED_HYPOTHESIS)){
+		if (hero.hasTalent(TESTED_HYPOTHESIS,NOBLE_COMBAT)){
 			//2/3 turns of wand recharging
-			Buff.affect(hero, Recharging.class, 1f + hero.pointsInTalent(TESTED_HYPOTHESIS));
+			Buff.affect(hero, Recharging.class, 1f + hero.pointsInTalents(TESTED_HYPOTHESIS,NOBLE_COMBAT));
 			ScrollOfRecharging.charge(hero);
 		}
 	}
 
 	public static int onAttackProc( Hero hero, Char enemy, int dmg ){
-		if (hero.hasTalent(Talent.SUCKER_PUNCH)
+		if (hero.hasTalent(Talent.SUCKER_PUNCH,NOBLE_COMBAT)
 				&& enemy instanceof Mob && ((Mob) enemy).surprisedBy(hero)
 				&& enemy.buff(SuckerPunchTracker.class) == null){
-			dmg += Random.IntRange(hero.pointsInTalent(Talent.SUCKER_PUNCH) , 2);
+			dmg += Random.IntRange(hero.pointsInTalents(Talent.SUCKER_PUNCH,NOBLE_COMBAT) , 2);
 			Buff.affect(enemy, SuckerPunchTracker.class);
 		}
 
-		if (hero.hasTalent(Talent.FOLLOWUP_STRIKE)) {
+		if (hero.hasTalent(Talent.FOLLOWUP_STRIKE,NOBLE_COMBAT)) {
 			if (hero.belongings.weapon instanceof MissileWeapon) {
 				Buff.affect(enemy, FollowupStrikeTracker.class);
 			} else if (enemy.buff(FollowupStrikeTracker.class) != null){
-				dmg += 1 + hero.pointsInTalent(FOLLOWUP_STRIKE);
+				dmg += 1 + hero.pointsInTalents(FOLLOWUP_STRIKE,NOBLE_COMBAT);
 				if (!(enemy instanceof Mob) || !((Mob) enemy).surprisedBy(hero)){
 					Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG, 0.75f, 1.2f);
 				}
