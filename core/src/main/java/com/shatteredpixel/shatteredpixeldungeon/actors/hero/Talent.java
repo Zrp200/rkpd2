@@ -104,7 +104,17 @@ public enum Talent {
 	RESTORED_NATURE(53),
 	REJUVENATING_STEPS(54),
 	HEIGHTENED_SENSES(55),
-	DURABLE_PROJECTILES(56);
+	DURABLE_PROJECTILES(56),
+
+	ROYAL_PRIVILEGE(57), // food related talents
+	ROYAL_INTUITION(58), // intuition-related talents
+	NOBLE_COMBAT(59), // on-id + combat talents
+	NOBLE_QUEST(60), // other ones.
+	ROYAL_MEAL(61), // all on-eat talents for tier 2
+	RESTORATION(62), // all upgrade/potion of healing talents
+	POWER_WITHIN(63), // runic (3), wand preservation (3), rogue's foresight (5), rejuvenating steps (3)
+	KINGS_VISION(64), // Lethal momentum (4), arcane vision(4), wide search(3), heightened senses(4)
+	PURSUIT(65); // durable projectiles (4),silent steps,improvised projectiles(4),shield battery(4)
 
 	public static class ImprovisedProjectileCooldown extends FlavourBuff{};
 	public static class LethalMomentumTracker extends FlavourBuff{};
@@ -165,18 +175,18 @@ public enum Talent {
 	public static class NatureBerriesAvailable extends CounterBuff{};
 
 	public static void onFoodEaten( Hero hero, float foodVal, Item foodSource ){
-		if (hero.hasTalent(HEARTY_MEAL)){
+		if (hero.hasTalent(HEARTY_MEAL,ROYAL_MEAL)){
 			//3/5 HP healed, when hero is below 25% health
 			if (hero.HP <= hero.HT/4) {
-				hero.HP = Math.min(hero.HP + 1 + 2 * hero.pointsInTalent(HEARTY_MEAL), hero.HT);
-				hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), hero.pointsInTalent(HEARTY_MEAL));
+				hero.HP = Math.min(hero.HP + 1 + 2 * (hero.pointsInTalent(HEARTY_MEAL)+hero.pointsInTalent(ROYAL_PRIVILEGE)), hero.HT);
+				hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), hero.pointsInTalent(HEARTY_MEAL)+hero.pointsInTalent(ROYAL_PRIVILEGE));
 			//2/3 HP healed, when hero is below 50% health
 			} else if (hero.HP <= hero.HT/2){
-				hero.HP = Math.min(hero.HP + 1 + hero.pointsInTalent(HEARTY_MEAL), hero.HT);
-				hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), 1+hero.pointsInTalent(HEARTY_MEAL));
+				hero.HP = Math.min(hero.HP + 1 + hero.pointsInTalent(HEARTY_MEAL) + hero.pointsInTalent(ROYAL_PRIVILEGE), hero.HT);
+				hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), 1+hero.pointsInTalent(HEARTY_MEAL)+hero.pointsInTalent(ROYAL_PRIVILEGE));
 			}
 		}
-		if (hero.hasTalent(IRON_STOMACH)){
+		if (hero.hasTalent(IRON_STOMACH,ROYAL_MEAL)){
 			if (hero.cooldown() > 0) {
 				Buff.affect(hero, WarriorFoodImmunity.class, hero.cooldown());
 			}
@@ -186,19 +196,19 @@ public enum Talent {
 			Buff.affect( hero, WandEmpower.class).set(1 + hero.pointsInTalent(EMPOWERING_MEAL), 3);
 			ScrollOfRecharging.charge( hero );
 		}
-		if (hero.hasTalent(ENERGIZING_MEAL)){
+		if (hero.hasTalent(ENERGIZING_MEAL,ROYAL_MEAL)){
 			//5/8 turns of recharging
-			Buff.affect( hero, Recharging.class, 2 + 3*(hero.pointsInTalent(ENERGIZING_MEAL)) );
+			Buff.affect( hero, Recharging.class, 2 + 3*(hero.pointsInTalent(ENERGIZING_MEAL)+hero.pointsInTalent(ROYAL_MEAL)) );
 			ScrollOfRecharging.charge( hero );
 		}
-		if (hero.hasTalent(MYSTICAL_MEAL)){
+		if (hero.hasTalent(MYSTICAL_MEAL,ROYAL_MEAL)){
 			//3/5 turns of recharging
-			Buff.affect( hero, ArtifactRecharge.class).set(1 + 2*(hero.pointsInTalent(MYSTICAL_MEAL))).ignoreHornOfPlenty = foodSource instanceof HornOfPlenty;
+			Buff.affect( hero, ArtifactRecharge.class).set(1 + 2*(hero.pointsInTalent(MYSTICAL_MEAL)+hero.pointsInTalent(ROYAL_MEAL))).ignoreHornOfPlenty = foodSource instanceof HornOfPlenty;
 			ScrollOfRecharging.charge( hero );
 		}
-		if (hero.hasTalent(INVIGORATING_MEAL)){
+		if (hero.hasTalent(INVIGORATING_MEAL,ROYAL_MEAL)) {
 			//effectively 1/2 turns of haste
-			Buff.affect( hero, Haste.class, 0.67f+hero.pointsInTalent(INVIGORATING_MEAL));
+			Buff.affect( hero, Haste.class, 0.67f+hero.pointsInTalent(INVIGORATING_MEAL)+hero.pointsInTalent(ROYAL_MEAL));
 		}
 	}
 
@@ -374,6 +384,9 @@ public enum Talent {
 			case HUNTRESS:
 				Collections.addAll(tierTalents, NATURES_BOUNTY, SURVIVALISTS_INTUITION, FOLLOWUP_STRIKE, NATURES_AID);
 				break;
+			case RAT_KING:
+				Collections.addAll(tierTalents, ROYAL_PRIVILEGE, ROYAL_INTUITION, NOBLE_COMBAT, POWER_WITHIN, NOBLE_QUEST);
+				break;
 		}
 		for (Talent talent : tierTalents){
 			talents.get(0).put(talent, 0);
@@ -394,6 +407,8 @@ public enum Talent {
 			case HUNTRESS:
 				Collections.addAll(tierTalents, INVIGORATING_MEAL, RESTORED_NATURE, REJUVENATING_STEPS, HEIGHTENED_SENSES, DURABLE_PROJECTILES);
 				break;
+			case RAT_KING:
+				Collections.addAll(tierTalents, ROYAL_MEAL, RESTORATION, KINGS_VISION, POWER_WITHIN, PURSUIT);
 		}
 		for (Talent talent : tierTalents){
 			talents.get(1).put(talent, 0);

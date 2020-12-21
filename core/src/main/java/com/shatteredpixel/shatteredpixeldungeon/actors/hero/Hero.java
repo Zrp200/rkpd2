@@ -1155,8 +1155,9 @@ public class Hero extends Char {
 		}
 
 		if (buff(Talent.WarriorFoodImmunity.class) != null){
-			if (pointsInTalent(Talent.IRON_STOMACH) == 1)       dmg = Math.round(dmg*0.25f);
-			else if (pointsInTalent(Talent.IRON_STOMACH) == 2)  dmg = Math.round(dmg*0.00f);
+			int points = pointsInTalents(Talent.IRON_STOMACH,Talent.ROYAL_MEAL);
+			if (points == 1)    dmg = Math.round(dmg*0.25f);
+			if (points == 2)  	dmg = Math.round(dmg*0.00f);
 		}
 
 		int preHP = HP + shielding();
