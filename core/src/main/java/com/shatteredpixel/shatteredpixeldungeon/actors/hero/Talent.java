@@ -239,14 +239,14 @@ public enum Talent {
 	}
 
 	public static void onHealingPotionUsed( Hero hero ){
-		if (hero.hasTalent(RESTORED_WILLPOWER)){
+		if (hero.hasTalent(RESTORED_WILLPOWER,RESTORATION)){
 			BrokenSeal.WarriorShield shield = hero.buff(BrokenSeal.WarriorShield.class);
 			if (shield != null){
-				int shieldToGive = Math.round(shield.maxShield() * 0.33f*(1+hero.pointsInTalent(RESTORED_WILLPOWER)));
+				int shieldToGive = Math.round(shield.maxShield() * 0.33f*(1+hero.pointsInTalents(RESTORED_WILLPOWER,RESTORATION)));
 				shield.supercharge(shieldToGive);
 			}
 		}
-		if (hero.hasTalent(RESTORED_NATURE)){
+		if (hero.hasTalent(RESTORED_NATURE,RESTORATION)){
 			ArrayList<Integer> grassCells = new ArrayList<>();
 			for (int i : PathFinder.NEIGHBOURS8){
 				grassCells.add(hero.pos+i);
@@ -255,7 +255,7 @@ public enum Talent {
 			for (int cell : grassCells){
 				Char ch = Actor.findChar(cell);
 				if (ch != null){
-					Buff.affect(ch, Roots.class, 1f + hero.pointsInTalent(RESTORED_NATURE));
+					Buff.affect(ch, Roots.class, 1f + hero.pointsInTalents(RESTORED_NATURE,RESTORATION));
 				}
 				if (Dungeon.level.map[cell] == Terrain.EMPTY ||
 						Dungeon.level.map[cell] == Terrain.EMBERS ||
@@ -284,18 +284,18 @@ public enum Talent {
 	}
 
 	public static void onUpgradeScrollUsed( Hero hero ){
-		if (hero.hasTalent(ENERGIZING_UPGRADE)){
+		if (hero.hasTalent(ENERGIZING_UPGRADE,RESTORATION)){
 			MagesStaff staff = hero.belongings.getItem(MagesStaff.class);
 			if (staff != null){
-				staff.gainCharge( hero.pointsInTalent(ENERGIZING_UPGRADE), true);
+				staff.gainCharge( hero.pointsInTalents(ENERGIZING_UPGRADE,RESTORATION), true);
 				ScrollOfRecharging.charge( Dungeon.hero );
 				SpellSprite.show( hero, SpellSprite.CHARGE );
 			}
 		}
-		if (hero.hasTalent(MYSTICAL_UPGRADE)){
+		if (hero.hasTalent(MYSTICAL_UPGRADE,RESTORATION)){
 			CloakOfShadows cloak = hero.belongings.getItem(CloakOfShadows.class);
 			if (cloak != null){
-				cloak.overCharge(hero.pointsInTalent(MYSTICAL_UPGRADE));
+				cloak.overCharge(hero.pointsInTalents(MYSTICAL_UPGRADE,RESTORATION));
 				ScrollOfRecharging.charge( Dungeon.hero );
 				SpellSprite.show( hero, SpellSprite.CHARGE );
 			}
