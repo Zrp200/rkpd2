@@ -672,8 +672,8 @@ public abstract class Mob extends Char {
 			rollToDropLoot();
 
 			if (cause == Dungeon.hero
-					&& Dungeon.hero.hasTalent(Talent.LETHAL_MOMENTUM)
-					&& Random.Float() < 0.34f + 0.33f* Dungeon.hero.pointsInTalent(Talent.LETHAL_MOMENTUM)){
+					&& Dungeon.hero.hasTalent(Talent.LETHAL_MOMENTUM,Talent.KINGS_VISION)
+					&& Random.Float() < 0.34f + 0.33f* Dungeon.hero.pointsInTalents(Talent.LETHAL_MOMENTUM,Talent.KINGS_VISION)){
 				Buff.affect(Dungeon.hero, Talent.LethalMomentumTracker.class, 1f);
 			}
 		}

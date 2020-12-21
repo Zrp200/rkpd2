@@ -1802,9 +1802,10 @@ public class Hero extends Char {
 		
 		boolean smthFound = false;
 
-		boolean circular = pointsInTalent(Talent.WIDE_SEARCH) == 1;
-		int distance = heroClass == HeroClass.ROGUE ? 2 : 1;
-		if (hasTalent(Talent.WIDE_SEARCH)) distance++;
+		int points = pointsInTalents(Talent.KINGS_VISION,Talent.WIDE_SEARCH);
+		boolean circular = points == 1;
+		int distance = (heroClass == HeroClass.ROGUE || heroClass == HeroClass.RAT_KING) ? 2 : 1;
+		if (points > 0) distance++;
 		
 		boolean foresight = buff(Foresight.class) != null;
 		

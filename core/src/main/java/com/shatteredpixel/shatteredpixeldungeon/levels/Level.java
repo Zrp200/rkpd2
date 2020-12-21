@@ -1131,11 +1131,11 @@ public abstract class Level implements Bundlable {
 					}
 
 				}
-			} else if (((Hero) c).hasTalent(Talent.HEIGHTENED_SENSES)) {
+			} else if (((Hero) c).hasTalent(Talent.HEIGHTENED_SENSES,Talent.KINGS_VISION)) {
 				for (Mob mob : mobs) {
 					int p = mob.pos;
 					if (!fieldOfView[p]
-							&& distance(c.pos, p) <= 1+((Hero) c).pointsInTalent(Talent.HEIGHTENED_SENSES)) {
+							&& distance(c.pos, p) <= 1+((Hero) c).pointsInTalents(Talent.HEIGHTENED_SENSES,Talent.KINGS_VISION)) {
 						Dungeon.hero.mindVisionEnemies.add(mob);
 					}
 				}
