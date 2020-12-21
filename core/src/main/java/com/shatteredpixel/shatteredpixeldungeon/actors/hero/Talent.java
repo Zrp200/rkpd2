@@ -147,27 +147,32 @@ public enum Talent {
 	}
 
 	public static void onTalentUpgraded( Hero hero, Talent talent){
-		if (talent == NATURES_BOUNTY){
-			if ( hero.pointsInTalent(NATURES_BOUNTY) == 1) Buff.count(hero, NatureBerriesAvailable.class, 4);
-			else                                           Buff.count(hero, NatureBerriesAvailable.class, 2);
-		}
-
-		if (talent == ARMSMASTERS_INTUITION && hero.pointsInTalent(ARMSMASTERS_INTUITION) == 2){
-			if (hero.belongings.weapon != null) hero.belongings.weapon.identify();
-			if (hero.belongings.armor != null)  hero.belongings.armor.identify();
-		}
-		if (talent == THIEFS_INTUITION && hero.pointsInTalent(THIEFS_INTUITION) == 2){
-			if (hero.belongings.ring instanceof Ring) hero.belongings.ring.identify();
-			if (hero.belongings.misc instanceof Ring) hero.belongings.misc.identify();
-			for (Item item : Dungeon.hero.belongings){
-				if (item instanceof Ring){
-					((Ring) item).setKnown();
-				}
-			}
-		}
-		if (talent == THIEFS_INTUITION && hero.pointsInTalent(THIEFS_INTUITION) == 1){
-			if (hero.belongings.ring instanceof Ring) hero.belongings.ring.setKnown();
-			if (hero.belongings.misc instanceof Ring) ((Ring) hero.belongings.misc).setKnown();
+		int points = hero.pointsInTalent(talent);
+		switch(talent) {
+			case ROYAL_PRIVILEGE: case NATURES_BOUNTY:
+				Buff.count(hero, NatureBerriesAvailable.class, 2*points);
+				break;
+			case ROYAL_INTUITION:
+				case ARMSMASTERS_INTUITION:
+					if(points == 2) {
+						if (hero.belongings.weapon != null) hero.belongings.weapon.identify();
+						if (hero.belongings.armor != null)  hero.belongings.armor.identify();
+					}
+					if(talent == ARMSMASTERS_INTUITION) break;
+				case THIEFS_INTUITION:
+					if(points == 2) {
+						if (hero.belongings.ring instanceof Ring) hero.belongings.ring.identify();
+						if (hero.belongings.misc instanceof Ring) hero.belongings.misc.identify();
+						for (Item item : Dungeon.hero.belongings){
+							if (item instanceof Ring){
+								((Ring) item).setKnown();
+							}
+						}
+					} else if(points == 1) {
+						if (hero.belongings.ring instanceof Ring) hero.belongings.ring.setKnown();
+						if (hero.belongings.misc instanceof Ring) ((Ring) hero.belongings.misc).setKnown();
+					}
+					break;
 		}
 	}
 
@@ -191,9 +196,9 @@ public enum Talent {
 				Buff.affect(hero, WarriorFoodImmunity.class, hero.cooldown());
 			}
 		}
-		if (hero.hasTalent(EMPOWERING_MEAL)){
+		if (hero.hasTalent(EMPOWERING_MEAL,ROYAL_PRIVILEGE)){
 			//2/3 bonus wand damage for next 3 zaps
-			Buff.affect( hero, WandEmpower.class).set(1 + hero.pointsInTalent(EMPOWERING_MEAL), 3);
+			Buff.affect( hero, WandEmpower.class).set(1 + hero.pointsInTalent(EMPOWERING_MEAL) + hero.pointsInTalent(ROYAL_PRIVILEGE), 3);
 			ScrollOfRecharging.charge( hero );
 		}
 		if (hero.hasTalent(ENERGIZING_MEAL,ROYAL_MEAL)){
@@ -216,19 +221,19 @@ public enum Talent {
 
 	public static float itemIDSpeedFactor( Hero hero, Item item ){
 		// 1.75x/2.5x speed with huntress talent
-		float factor = 1f + hero.pointsInTalent(SURVIVALISTS_INTUITION)*0.75f;
+		float factor = 1f + (hero.pointsInTalent(ROYAL_INTUITION) + hero.pointsInTalent(ROYAL_INTUITION))*0.75f;
 
 		// 2x/instant for Warrior (see onItemEquipped)
 		if (item instanceof MeleeWeapon || item instanceof Armor){
-			factor *= 1f + hero.pointsInTalent(ARMSMASTERS_INTUITION);
+			factor *= 1f + hero.pointsInTalent(ROYAL_INTUITION) + hero.pointsInTalent(ARMSMASTERS_INTUITION);
 		}
 		// 3x/instant for mage (see Wand.wandUsed())
 		if (item instanceof Wand){
-			factor *= 1f + 2*hero.pointsInTalent(SCHOLARS_INTUITION);
+			factor *= 1f + 2*(hero.pointsInTalent(SCHOLARS_INTUITION) + hero.pointsInTalent(ROYAL_INTUITION));
 		}
 		// 2x/instant for rogue (see onItemEqupped), also id's type on equip/on pickup
 		if (item instanceof Ring){
-			factor *= 1f + hero.pointsInTalent(THIEFS_INTUITION);
+			factor *= 1f + hero.pointsInTalent(THIEFS_INTUITION) + hero.pointsInTalent(ROYAL_INTUITION);
 		}
 		return factor;
 	}
@@ -298,11 +303,11 @@ public enum Talent {
 	}
 
 	public static void onItemEquipped( Hero hero, Item item ){
-		if (hero.pointsInTalent(ARMSMASTERS_INTUITION) == 2 && (item instanceof Weapon || item instanceof Armor)){
+		if (hero.pointsInTalents(ARMSMASTERS_INTUITION,ROYAL_INTUITION) == 2 && (item instanceof Weapon || item instanceof Armor)){
 			item.identify();
 		}
-		if (hero.hasTalent(THIEFS_INTUITION) && item instanceof Ring){
-			if (hero.pointsInTalent(THIEFS_INTUITION) == 2){
+		if (hero.hasTalent(THIEFS_INTUITION,ROYAL_INTUITION) && item instanceof Ring){
+			if (hero.pointsInTalents(THIEFS_INTUITION,ROYAL_INTUITION) == 2){
 				item.identify();
 			} else {
 				((Ring) item).setKnown();
@@ -311,7 +316,7 @@ public enum Talent {
 	}
 
 	public static void onItemCollected( Hero hero, Item item ){
-		if (hero.pointsInTalent(THIEFS_INTUITION) == 2){
+		if (hero.pointsInTalents(THIEFS_INTUITION,ROYAL_INTUITION) == 2){
 			if (item instanceof Ring) ((Ring) item).setKnown();
 		}
 	}
