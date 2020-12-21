@@ -254,10 +254,11 @@ public class CloakOfShadows extends Artifact {
 			turnsToCost--;
 
 			//barrier every 2/1 turns, to a max of 3/5
-			if (((Hero)target).hasTalent(Talent.PROTECTIVE_SHADOWS)){
+			if (((Hero)target).hasTalent(Talent.PROTECTIVE_SHADOWS,Talent.NOBLE_QUEST)){
 				Barrier barrier = Buff.affect(target, Barrier.class);
-				if (barrier.shielding() < 1 + 2*((Hero)target).pointsInTalent(Talent.PROTECTIVE_SHADOWS)) {
-					barrierInc += 0.5f * ((Hero) target).pointsInTalent(Talent.PROTECTIVE_SHADOWS);
+				int points = ((Hero)target).pointsInTalents(Talent.PROTECTIVE_SHADOWS,Talent.NOBLE_QUEST);
+				if (barrier.shielding() < 1 + 2*points) {
+					barrierInc += 0.5f*points;
 				}
 				if (barrierInc >= 1 ){
 					barrierInc = 0;
