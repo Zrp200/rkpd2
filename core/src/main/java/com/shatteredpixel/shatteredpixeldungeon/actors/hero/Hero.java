@@ -292,6 +292,12 @@ public class Hero extends Char {
 	public boolean hasTalent( Talent talent ){
 		return pointsInTalent(talent) > 0;
 	}
+	public boolean hasTalent( Talent... talents) {
+		for(Talent talent : talents ) {
+			if(hasTalent(talent)) return true;
+		}
+		return false;
+	}
 
 	public int pointsInTalent( Talent talent ){
 		for (LinkedHashMap<Talent, Integer> tier : talents){
@@ -300,6 +306,11 @@ public class Hero extends Char {
 			}
 		}
 		return 0;
+	}
+	public int pointsInTalents( Talent... talents) {
+		int sum = 0;
+		for(Talent talent : talents) sum += pointsInTalent(talent);
+		return sum;
 	}
 
 	public void upgradeTalent( Talent talent ){
