@@ -19,16 +19,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
+package com.zrp200.rkpd2.actors.mobs;
 
-import com.shatteredpixel.shatteredpixeldungeon.Badges;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.Statistics;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.PiranhaSprite;
+import com.zrp200.rkpd2.Badges;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.Statistics;
+import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.Burning;
+import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.items.food.MysteryMeat;
+import com.zrp200.rkpd2.sprites.PiranhaSprite;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 

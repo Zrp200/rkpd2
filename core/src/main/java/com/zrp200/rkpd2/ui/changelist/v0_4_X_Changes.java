@@ -19,19 +19,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.ui.changelist;
+package com.zrp200.rkpd2.ui.changelist;
 
-import com.shatteredpixel.shatteredpixeldungeon.items.Stylus;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.PlateArmor;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Glaive;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Longsword;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.RunicBlade;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.ChangesScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.zrp200.rkpd2.items.Stylus;
+import com.zrp200.rkpd2.items.armor.PlateArmor;
+import com.zrp200.rkpd2.items.weapon.melee.Glaive;
+import com.zrp200.rkpd2.items.weapon.melee.Longsword;
+import com.zrp200.rkpd2.items.weapon.melee.RunicBlade;
+import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.scenes.ChangesScene;
+import com.zrp200.rkpd2.sprites.ItemSprite;
+import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
+import com.zrp200.rkpd2.ui.Icons;
+import com.zrp200.rkpd2.ui.Window;
 
 import java.util.ArrayList;
 

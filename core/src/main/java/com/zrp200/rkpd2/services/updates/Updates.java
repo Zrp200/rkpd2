@@ -19,9 +19,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.services.updates;
+package com.zrp200.rkpd2.services.updates;
 
-import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+import com.zrp200.rkpd2.SPDSettings;
 import com.watabou.utils.Callback;
 
 import java.util.Date;

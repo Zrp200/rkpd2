@@ -19,15 +19,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret;
+package com.zrp200.rkpd2.levels.rooms.secret;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Foliage;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfRegrowth;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Patch;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Starflower;
+import com.zrp200.rkpd2.actors.blobs.Foliage;
+import com.zrp200.rkpd2.items.wands.WandOfRegrowth;
+import com.zrp200.rkpd2.levels.Level;
+import com.zrp200.rkpd2.levels.Patch;
+import com.zrp200.rkpd2.levels.Terrain;
+import com.zrp200.rkpd2.levels.painters.Painter;
+import com.zrp200.rkpd2.plants.Starflower;
 import com.watabou.utils.Random;
 
 public class SecretGardenRoom extends SecretRoom {

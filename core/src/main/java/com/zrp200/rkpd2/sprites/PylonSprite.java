@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.sprites;
+package com.zrp200.rkpd2.sprites;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Pylon;
-import com.shatteredpixel.shatteredpixeldungeon.effects.particles.BlastParticle;
+import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.mobs.Pylon;
+import com.zrp200.rkpd2.effects.particles.BlastParticle;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.audio.Sample;
 

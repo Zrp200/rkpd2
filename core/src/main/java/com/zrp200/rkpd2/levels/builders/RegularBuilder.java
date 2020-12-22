@@ -19,16 +19,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.levels.builders;
+package com.zrp200.rkpd2.levels.builders;
 
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.connection.ConnectionRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.connection.MazeConnectionRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.ShopRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.EntranceRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.ExitRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.StandardRoom;
+import com.zrp200.rkpd2.levels.rooms.Room;
+import com.zrp200.rkpd2.levels.rooms.connection.ConnectionRoom;
+import com.zrp200.rkpd2.levels.rooms.connection.MazeConnectionRoom;
+import com.zrp200.rkpd2.levels.rooms.secret.SecretRoom;
+import com.zrp200.rkpd2.levels.rooms.special.ShopRoom;
+import com.zrp200.rkpd2.levels.rooms.standard.EntranceRoom;
+import com.zrp200.rkpd2.levels.rooms.standard.ExitRoom;
+import com.zrp200.rkpd2.levels.rooms.standard.StandardRoom;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;

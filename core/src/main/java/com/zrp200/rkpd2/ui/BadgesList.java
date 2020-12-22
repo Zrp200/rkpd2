@@ -19,13 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.ui;
+package com.zrp200.rkpd2.ui;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Badges;
-import com.shatteredpixel.shatteredpixeldungeon.effects.BadgeBanner;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndBadge;
+import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Badges;
+import com.zrp200.rkpd2.effects.BadgeBanner;
+import com.zrp200.rkpd2.scenes.PixelScene;
+import com.zrp200.rkpd2.windows.WndBadge;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;

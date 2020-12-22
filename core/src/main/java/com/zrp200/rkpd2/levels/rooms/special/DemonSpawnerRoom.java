@@ -19,18 +19,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special;
+package com.zrp200.rkpd2.levels.rooms.special;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.Statistics;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DemonSpawner;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.EntranceRoom;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
+import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.Statistics;
+import com.zrp200.rkpd2.actors.mobs.DemonSpawner;
+import com.zrp200.rkpd2.levels.Level;
+import com.zrp200.rkpd2.levels.Terrain;
+import com.zrp200.rkpd2.levels.painters.Painter;
+import com.zrp200.rkpd2.levels.rooms.Room;
+import com.zrp200.rkpd2.levels.rooms.standard.EntranceRoom;
+import com.zrp200.rkpd2.tiles.CustomTilemap;
 import com.watabou.noosa.Tilemap;
 import com.watabou.utils.Point;
 

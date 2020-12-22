@@ -19,20 +19,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.items.spells;
+package com.zrp200.rkpd2.items.spells;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.ArtifactRecharge;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Recharging;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
-import com.shatteredpixel.shatteredpixeldungeon.items.quest.MetalShard;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfMysticalEnergy;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.CursedWand;
-import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.actors.buffs.ArtifactRecharge;
+import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.Recharging;
+import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.items.artifacts.Artifact;
+import com.zrp200.rkpd2.items.quest.MetalShard;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfRecharging;
+import com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfMysticalEnergy;
+import com.zrp200.rkpd2.items.wands.CursedWand;
+import com.zrp200.rkpd2.mechanics.Ballistica;
+import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 
@@ -79,7 +79,7 @@ public class WildEnergy extends TargetedSpell {
 		return Math.round(quantity * ((50 + 100) / 5f));
 	}
 	
-	public static class Recipe extends com.shatteredpixel.shatteredpixeldungeon.items.Recipe.SimpleRecipe {
+	public static class Recipe extends com.zrp200.rkpd2.items.Recipe.SimpleRecipe {
 		
 		{
 			inputs =  new Class[]{ScrollOfMysticalEnergy.class, MetalShard.class};

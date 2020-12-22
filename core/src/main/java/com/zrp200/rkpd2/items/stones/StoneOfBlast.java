@@ -19,10 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.items.stones;
+package com.zrp200.rkpd2.items.stones;
 
-import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.zrp200.rkpd2.items.bombs.Bomb;
+import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
 public class StoneOfBlast extends Runestone {
 	

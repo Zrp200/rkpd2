@@ -19,9 +19,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.levels.rooms;
+package com.zrp200.rkpd2.levels.rooms;
 
-import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
+import com.zrp200.rkpd2.levels.Level;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Graph;

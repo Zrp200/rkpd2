@@ -19,10 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.levels.traps;
+package com.zrp200.rkpd2.levels.traps;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.NewTengu;
+import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.mobs.NewTengu;
 
 public class TenguDartTrap extends PoisonDartTrap {
 	

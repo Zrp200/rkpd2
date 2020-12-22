@@ -19,10 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee;
+package com.zrp200.rkpd2.items.weapon.melee;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
 public class Glaive extends MeleeWeapon {
 

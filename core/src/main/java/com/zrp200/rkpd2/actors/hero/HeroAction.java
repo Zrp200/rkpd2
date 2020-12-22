@@ -19,9 +19,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.actors.hero;
+package com.zrp200.rkpd2.actors.hero;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
+import com.zrp200.rkpd2.actors.Char;
 
 public class HeroAction {
 	

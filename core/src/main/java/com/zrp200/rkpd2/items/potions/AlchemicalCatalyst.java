@@ -19,16 +19,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.items.potions;
+package com.zrp200.rkpd2.items.potions;
 
-import com.shatteredpixel.shatteredpixeldungeon.Challenges;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
-import com.shatteredpixel.shatteredpixeldungeon.items.stones.Runestone;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.zrp200.rkpd2.Challenges;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.potions.exotic.ExoticPotion;
+import com.zrp200.rkpd2.items.stones.Runestone;
+import com.zrp200.rkpd2.plants.Plant;
+import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
@@ -85,7 +85,7 @@ public class AlchemicalCatalyst extends Potion {
 		return 40 * quantity;
 	}
 	
-	public static class Recipe extends com.shatteredpixel.shatteredpixeldungeon.items.Recipe {
+	public static class Recipe extends com.zrp200.rkpd2.items.Recipe {
 		
 		@Override
 		public boolean testIngredients(ArrayList<Item> ingredients) {

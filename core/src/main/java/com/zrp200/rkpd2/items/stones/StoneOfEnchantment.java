@@ -19,17 +19,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.items.stones;
+package com.zrp200.rkpd2.items.stones;
 
-import com.shatteredpixel.shatteredpixeldungeon.effects.Enchanting;
-import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
+import com.zrp200.rkpd2.effects.Enchanting;
+import com.zrp200.rkpd2.effects.Speck;
+import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.armor.Armor;
+import com.zrp200.rkpd2.items.weapon.Weapon;
+import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
+import com.zrp200.rkpd2.utils.GLog;
+import com.zrp200.rkpd2.windows.WndBag;
 
 public class StoneOfEnchantment extends InventoryStone {
 	

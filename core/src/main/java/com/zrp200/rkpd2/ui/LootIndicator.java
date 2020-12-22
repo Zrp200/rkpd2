@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.ui;
+package com.zrp200.rkpd2.ui;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
-import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.SPDAction;
+import com.zrp200.rkpd2.items.Heap;
+import com.zrp200.rkpd2.items.Item;
 import com.watabou.input.GameAction;
 
 public class LootIndicator extends Tag {

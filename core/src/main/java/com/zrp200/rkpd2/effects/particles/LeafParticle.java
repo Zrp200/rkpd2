@@ -19,9 +19,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.effects.particles;
+package com.zrp200.rkpd2.effects.particles;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.zrp200.rkpd2.Dungeon;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.particles.Emitter.Factory;
 import com.watabou.noosa.particles.PixelParticle;

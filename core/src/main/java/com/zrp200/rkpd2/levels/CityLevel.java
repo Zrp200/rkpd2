@@ -19,30 +19,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.levels;
+package com.zrp200.rkpd2.levels;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
-import com.shatteredpixel.shatteredpixeldungeon.levels.painters.CityPainter;
-import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.BlazingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.CorrosionTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.CursingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.DisarmingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.DisintegrationTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.DistortionTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.FlashingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.FrostTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GuardianTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.PitfallTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.RockfallTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.StormTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.SummoningTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.WarpingTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.WeakeningTrap;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
+import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.mobs.npcs.Imp;
+import com.zrp200.rkpd2.levels.painters.CityPainter;
+import com.zrp200.rkpd2.levels.painters.Painter;
+import com.zrp200.rkpd2.levels.traps.BlazingTrap;
+import com.zrp200.rkpd2.levels.traps.CorrosionTrap;
+import com.zrp200.rkpd2.levels.traps.CursingTrap;
+import com.zrp200.rkpd2.levels.traps.DisarmingTrap;
+import com.zrp200.rkpd2.levels.traps.DisintegrationTrap;
+import com.zrp200.rkpd2.levels.traps.DistortionTrap;
+import com.zrp200.rkpd2.levels.traps.FlashingTrap;
+import com.zrp200.rkpd2.levels.traps.FrostTrap;
+import com.zrp200.rkpd2.levels.traps.GuardianTrap;
+import com.zrp200.rkpd2.levels.traps.PitfallTrap;
+import com.zrp200.rkpd2.levels.traps.RockfallTrap;
+import com.zrp200.rkpd2.levels.traps.StormTrap;
+import com.zrp200.rkpd2.levels.traps.SummoningTrap;
+import com.zrp200.rkpd2.levels.traps.WarpingTrap;
+import com.zrp200.rkpd2.levels.traps.WeakeningTrap;
+import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.tiles.DungeonTilemap;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.particles.PixelParticle;

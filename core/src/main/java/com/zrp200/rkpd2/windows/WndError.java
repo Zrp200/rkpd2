@@ -19,10 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.windows;
+package com.zrp200.rkpd2.windows;
 
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.ui.Icons;
 
 public class WndError extends WndTitledMessage {
 

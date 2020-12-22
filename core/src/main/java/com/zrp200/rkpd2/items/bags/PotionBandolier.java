@@ -19,11 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.items.bags;
+package com.zrp200.rkpd2.items.bags;
 
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.potions.Potion;
+import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
 public class PotionBandolier extends Bag {
 

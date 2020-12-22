@@ -19,24 +19,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.scenes;
+package com.zrp200.rkpd2.scenes;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Badges;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroClass;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.DriedRose;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLivingEarth;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MagesStaff;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.EarthGuardianSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.GhostSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.RatSprite;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.WardSprite;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Archs;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
+import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Badges;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
+import com.zrp200.rkpd2.items.artifacts.DriedRose;
+import com.zrp200.rkpd2.items.wands.WandOfLivingEarth;
+import com.zrp200.rkpd2.items.wands.WandOfWarding;
+import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
+import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.sprites.CharSprite;
+import com.zrp200.rkpd2.sprites.EarthGuardianSprite;
+import com.zrp200.rkpd2.sprites.GhostSprite;
+import com.zrp200.rkpd2.sprites.RatSprite;
+import com.zrp200.rkpd2.sprites.WardSprite;
+import com.zrp200.rkpd2.ui.Archs;
+import com.zrp200.rkpd2.ui.RedButton;
 import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.glwrap.Matrix;

@@ -19,17 +19,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret;
+package com.zrp200.rkpd2.levels.rooms.secret;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hunger;
-import com.shatteredpixel.shatteredpixeldungeon.items.food.ChargrilledMeat;
-import com.shatteredpixel.shatteredpixeldungeon.items.food.Food;
-import com.shatteredpixel.shatteredpixeldungeon.items.food.Pasty;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
-import com.shatteredpixel.shatteredpixeldungeon.plants.BlandfruitBush;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.buffs.Hunger;
+import com.zrp200.rkpd2.items.food.ChargrilledMeat;
+import com.zrp200.rkpd2.items.food.Food;
+import com.zrp200.rkpd2.items.food.Pasty;
+import com.zrp200.rkpd2.levels.Level;
+import com.zrp200.rkpd2.levels.Terrain;
+import com.zrp200.rkpd2.levels.painters.Painter;
+import com.zrp200.rkpd2.plants.BlandfruitBush;
 import com.watabou.utils.Point;
 
 public class SecretLarderRoom extends SecretRoom {

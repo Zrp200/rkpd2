@@ -19,28 +19,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.scenes;
+package com.zrp200.rkpd2.scenes;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Chrome;
-import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Archs;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ExitButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
-import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.ui.changelist.ChangeInfo;
-import com.shatteredpixel.shatteredpixeldungeon.ui.changelist.v0_1_X_Changes;
-import com.shatteredpixel.shatteredpixeldungeon.ui.changelist.v0_2_X_Changes;
-import com.shatteredpixel.shatteredpixeldungeon.ui.changelist.v0_3_X_Changes;
-import com.shatteredpixel.shatteredpixeldungeon.ui.changelist.v0_4_X_Changes;
-import com.shatteredpixel.shatteredpixeldungeon.ui.changelist.v0_5_X_Changes;
-import com.shatteredpixel.shatteredpixeldungeon.ui.changelist.v0_6_X_Changes;
-import com.shatteredpixel.shatteredpixeldungeon.ui.changelist.v0_7_X_Changes;
-import com.shatteredpixel.shatteredpixeldungeon.ui.changelist.v0_8_X_Changes;
-import com.shatteredpixel.shatteredpixeldungeon.ui.changelist.v0_9_X_Changes;
+import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Chrome;
+import com.zrp200.rkpd2.ShatteredPixelDungeon;
+import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.ui.Archs;
+import com.zrp200.rkpd2.ui.ExitButton;
+import com.zrp200.rkpd2.ui.RenderedTextBlock;
+import com.zrp200.rkpd2.ui.ScrollPane;
+import com.zrp200.rkpd2.ui.StyledButton;
+import com.zrp200.rkpd2.ui.Window;
+import com.zrp200.rkpd2.ui.changelist.ChangeInfo;
+import com.zrp200.rkpd2.ui.changelist.v0_1_X_Changes;
+import com.zrp200.rkpd2.ui.changelist.v0_2_X_Changes;
+import com.zrp200.rkpd2.ui.changelist.v0_3_X_Changes;
+import com.zrp200.rkpd2.ui.changelist.v0_4_X_Changes;
+import com.zrp200.rkpd2.ui.changelist.v0_5_X_Changes;
+import com.zrp200.rkpd2.ui.changelist.v0_6_X_Changes;
+import com.zrp200.rkpd2.ui.changelist.v0_7_X_Changes;
+import com.zrp200.rkpd2.ui.changelist.v0_8_X_Changes;
+import com.zrp200.rkpd2.ui.changelist.v0_9_X_Changes;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.audio.Music;

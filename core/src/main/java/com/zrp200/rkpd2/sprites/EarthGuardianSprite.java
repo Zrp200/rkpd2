@@ -1,6 +1,6 @@
-package com.shatteredpixel.shatteredpixeldungeon.sprites;
+package com.zrp200.rkpd2.sprites;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.zrp200.rkpd2.Assets;
 import com.watabou.noosa.TextureFilm;
 
 public class EarthGuardianSprite extends MobSprite {

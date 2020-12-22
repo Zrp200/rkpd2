@@ -19,11 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard;
+package com.zrp200.rkpd2.levels.rooms.standard;
 
-import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Patch;
-import com.shatteredpixel.shatteredpixeldungeon.utils.BArray;
+import com.zrp200.rkpd2.levels.Level;
+import com.zrp200.rkpd2.levels.Patch;
+import com.zrp200.rkpd2.utils.BArray;
 import com.watabou.utils.PathFinder;
 
 //This room type uses the patch system to fill itself in in some manner

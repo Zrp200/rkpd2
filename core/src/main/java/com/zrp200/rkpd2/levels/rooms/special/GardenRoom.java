@@ -19,14 +19,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special;
+package com.zrp200.rkpd2.levels.rooms.special;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Foliage;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
-import com.shatteredpixel.shatteredpixeldungeon.plants.BlandfruitBush;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Sungrass;
+import com.zrp200.rkpd2.actors.blobs.Foliage;
+import com.zrp200.rkpd2.levels.Level;
+import com.zrp200.rkpd2.levels.Terrain;
+import com.zrp200.rkpd2.levels.painters.Painter;
+import com.zrp200.rkpd2.plants.BlandfruitBush;
+import com.zrp200.rkpd2.plants.Sungrass;
 import com.watabou.utils.Random;
 
 public class GardenRoom extends SpecialRoom {

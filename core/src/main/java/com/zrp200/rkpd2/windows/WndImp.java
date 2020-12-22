@@ -19,19 +19,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.windows;
+package com.zrp200.rkpd2.windows;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Imp;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.quest.DwarfToken;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.mobs.npcs.Imp;
+import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.quest.DwarfToken;
+import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.scenes.PixelScene;
+import com.zrp200.rkpd2.sprites.ItemSprite;
+import com.zrp200.rkpd2.ui.RedButton;
+import com.zrp200.rkpd2.ui.RenderedTextBlock;
+import com.zrp200.rkpd2.ui.Window;
+import com.zrp200.rkpd2.utils.GLog;
 
 public class WndImp extends Window {
 	

@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.android;
+package com.zrp200.rkpd2.android;
 
 import android.annotation.TargetApi;
 import android.app.backup.BackupAgent;
@@ -28,9 +28,9 @@ import android.app.backup.BackupDataOutput;
 import android.app.backup.FullBackupDataOutput;
 import android.os.ParcelFileDescriptor;
 
-import com.shatteredpixel.shatteredpixeldungeon.Badges;
-import com.shatteredpixel.shatteredpixeldungeon.Rankings;
-import com.shatteredpixel.shatteredpixeldungeon.journal.Journal;
+import com.zrp200.rkpd2.Badges;
+import com.zrp200.rkpd2.Rankings;
+import com.zrp200.rkpd2.journal.Journal;
 
 import java.io.File;
 

@@ -19,10 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs;
+package com.zrp200.rkpd2.items.potions.elixirs;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
+import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.items.potions.Potion;
 
 public abstract class Elixir extends Potion {
 	

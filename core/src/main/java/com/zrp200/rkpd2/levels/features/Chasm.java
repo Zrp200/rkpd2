@@ -19,28 +19,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.levels.features;
+package com.zrp200.rkpd2.levels.features;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Badges;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bleeding;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
-import com.shatteredpixel.shatteredpixeldungeon.items.spells.FeatherFall;
-import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.WeakFloorRoom;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Swiftthistle;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.MobSprite;
-import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
+import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Badges;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.buffs.Bleeding;
+import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.Cripple;
+import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.mobs.Mob;
+import com.zrp200.rkpd2.items.artifacts.TimekeepersHourglass;
+import com.zrp200.rkpd2.items.spells.FeatherFall;
+import com.zrp200.rkpd2.levels.RegularLevel;
+import com.zrp200.rkpd2.levels.rooms.Room;
+import com.zrp200.rkpd2.levels.rooms.special.WeakFloorRoom;
+import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.plants.Swiftthistle;
+import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.scenes.InterlevelScene;
+import com.zrp200.rkpd2.sprites.MobSprite;
+import com.zrp200.rkpd2.utils.GLog;
+import com.zrp200.rkpd2.windows.WndOptions;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;

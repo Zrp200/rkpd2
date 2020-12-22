@@ -19,15 +19,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.items.weapon.enchantments;
+package com.zrp200.rkpd2.items.weapon.enchantments;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
-import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.items.wands.WandOfBlastWave;
+import com.zrp200.rkpd2.items.weapon.SpiritBow;
+import com.zrp200.rkpd2.items.weapon.Weapon;
+import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
+import com.zrp200.rkpd2.mechanics.Ballistica;
+import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.watabou.utils.Random;
 
 public class Elastic extends Weapon.Enchantment {

@@ -19,10 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
+package com.zrp200.rkpd2.actors.mobs;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.RatSprite;
+import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.sprites.RatSprite;
 import com.watabou.utils.Random;
 
 public class Rat extends Mob {

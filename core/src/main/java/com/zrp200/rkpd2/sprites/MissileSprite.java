@@ -19,23 +19,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.sprites;
+package com.zrp200.rkpd2.sprites;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.SpiritBow;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Crossbow;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Bolas;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.FishingSpear;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.HeavyBoomerang;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Javelin;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Kunai;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Shuriken;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingKnife;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.ThrowingSpear;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.Trident;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.darts.Dart;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.weapon.SpiritBow;
+import com.zrp200.rkpd2.items.weapon.melee.Crossbow;
+import com.zrp200.rkpd2.items.weapon.missiles.Bolas;
+import com.zrp200.rkpd2.items.weapon.missiles.FishingSpear;
+import com.zrp200.rkpd2.items.weapon.missiles.HeavyBoomerang;
+import com.zrp200.rkpd2.items.weapon.missiles.Javelin;
+import com.zrp200.rkpd2.items.weapon.missiles.Kunai;
+import com.zrp200.rkpd2.items.weapon.missiles.Shuriken;
+import com.zrp200.rkpd2.items.weapon.missiles.ThrowingKnife;
+import com.zrp200.rkpd2.items.weapon.missiles.ThrowingSpear;
+import com.zrp200.rkpd2.items.weapon.missiles.Trident;
+import com.zrp200.rkpd2.items.weapon.missiles.darts.Dart;
+import com.zrp200.rkpd2.tiles.DungeonTilemap;
 import com.watabou.noosa.Visual;
 import com.watabou.noosa.tweeners.PosTweener;
 import com.watabou.noosa.tweeners.Tweener;

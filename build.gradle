@@ -12,7 +12,7 @@ allprojects {
 
     ext {
         appName = 'Rat King Pixel Dungeon 2'
-        appPackageName = 'com.shatteredpixel.shatteredpixeldungeon'
+        appPackageName = 'com.zrp200.rkpd2'
 
         appVersionCode = 500
         appVersionName = 'ALPHA'

@@ -19,17 +19,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.windows;
+package com.zrp200.rkpd2.windows;
 
-import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.SupporterScene;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.zrp200.rkpd2.SPDSettings;
+import com.zrp200.rkpd2.messages.Languages;
+import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.scenes.PixelScene;
+import com.zrp200.rkpd2.scenes.SupporterScene;
+import com.zrp200.rkpd2.ui.Icons;
+import com.zrp200.rkpd2.ui.RedButton;
+import com.zrp200.rkpd2.ui.RenderedTextBlock;
+import com.zrp200.rkpd2.ui.Window;
 import com.watabou.utils.DeviceCompat;
 
 public class WndSupportPrompt extends Window {

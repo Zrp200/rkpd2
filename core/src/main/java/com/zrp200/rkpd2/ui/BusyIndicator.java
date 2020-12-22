@@ -19,9 +19,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.ui;
+package com.zrp200.rkpd2.ui;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.zrp200.rkpd2.Dungeon;
 import com.watabou.noosa.Image;
 
 public class BusyIndicator extends Image {

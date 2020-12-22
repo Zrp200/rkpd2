@@ -19,18 +19,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.windows;
+package com.zrp200.rkpd2.windows;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTerrainTilemap;
-import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.blobs.Blob;
+import com.zrp200.rkpd2.levels.Terrain;
+import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.scenes.PixelScene;
+import com.zrp200.rkpd2.tiles.CustomTilemap;
+import com.zrp200.rkpd2.tiles.DungeonTerrainTilemap;
+import com.zrp200.rkpd2.tiles.DungeonTilemap;
+import com.zrp200.rkpd2.ui.RenderedTextBlock;
+import com.zrp200.rkpd2.ui.Window;
 import com.watabou.noosa.Image;
 
 public class WndInfoCell extends Window {

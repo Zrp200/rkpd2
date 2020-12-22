@@ -19,13 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs;
+package com.zrp200.rkpd2.items.armor.glyphs;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Bleeding;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.Bleeding;
+import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.items.armor.Armor;
+import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.watabou.utils.Random;
 
 public class Thorns extends Armor.Glyph {

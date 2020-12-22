@@ -19,28 +19,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.items.rings;
+package com.zrp200.rkpd2.items.rings;
 
-import com.shatteredpixel.shatteredpixeldungeon.Challenges;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.effects.Flare;
-import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
-import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
-import com.shatteredpixel.shatteredpixeldungeon.items.Honeypot;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
-import com.shatteredpixel.shatteredpixeldungeon.items.bombs.Bomb;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.AlchemicalCatalyst;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
-import com.shatteredpixel.shatteredpixeldungeon.items.spells.ArcaneCatalyst;
-import com.shatteredpixel.shatteredpixeldungeon.items.stones.StoneOfEnchantment;
-import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.zrp200.rkpd2.Challenges;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.effects.Flare;
+import com.zrp200.rkpd2.items.Generator;
+import com.zrp200.rkpd2.items.Gold;
+import com.zrp200.rkpd2.items.Honeypot;
+import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.armor.Armor;
+import com.zrp200.rkpd2.items.bombs.Bomb;
+import com.zrp200.rkpd2.items.potions.AlchemicalCatalyst;
+import com.zrp200.rkpd2.items.potions.PotionOfExperience;
+import com.zrp200.rkpd2.items.potions.exotic.ExoticPotion;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfTransmutation;
+import com.zrp200.rkpd2.items.scrolls.exotic.ExoticScroll;
+import com.zrp200.rkpd2.items.spells.ArcaneCatalyst;
+import com.zrp200.rkpd2.items.stones.StoneOfEnchantment;
+import com.zrp200.rkpd2.items.weapon.Weapon;
+import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.watabou.noosa.Visual;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;

@@ -19,14 +19,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.actors.blobs;
+package com.zrp200.rkpd2.actors.blobs;
 
 
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.GooSprite;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.effects.BlobEmitter;
+import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.sprites.GooSprite;
 
 public class GooWarn extends Blob {
 

@@ -19,21 +19,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.windows;
+package com.zrp200.rkpd2.windows;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
-import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.HeroSelectScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.InterlevelScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.RankingsScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.TitleScene;
-import com.shatteredpixel.shatteredpixeldungeon.services.updates.Updates;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.GamesInProgress;
+import com.zrp200.rkpd2.ShatteredPixelDungeon;
+import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.scenes.HeroSelectScene;
+import com.zrp200.rkpd2.scenes.InterlevelScene;
+import com.zrp200.rkpd2.scenes.RankingsScene;
+import com.zrp200.rkpd2.scenes.TitleScene;
+import com.zrp200.rkpd2.services.updates.Updates;
+import com.zrp200.rkpd2.ui.Icons;
+import com.zrp200.rkpd2.ui.RedButton;
+import com.zrp200.rkpd2.ui.Window;
 import com.watabou.noosa.Game;
 
 import java.io.IOException;

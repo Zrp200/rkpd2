@@ -19,25 +19,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic;
+package com.zrp200.rkpd2.items.potions.exotic;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.Recipe;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfExperience;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfFrost;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHaste;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfInvisibility;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLevitation;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfLiquidFlame;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfMindVision;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfParalyticGas;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfPurity;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfStrength;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfToxicGas;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.Recipe;
+import com.zrp200.rkpd2.items.potions.Potion;
+import com.zrp200.rkpd2.items.potions.PotionOfExperience;
+import com.zrp200.rkpd2.items.potions.PotionOfFrost;
+import com.zrp200.rkpd2.items.potions.PotionOfHaste;
+import com.zrp200.rkpd2.items.potions.PotionOfHealing;
+import com.zrp200.rkpd2.items.potions.PotionOfInvisibility;
+import com.zrp200.rkpd2.items.potions.PotionOfLevitation;
+import com.zrp200.rkpd2.items.potions.PotionOfLiquidFlame;
+import com.zrp200.rkpd2.items.potions.PotionOfMindVision;
+import com.zrp200.rkpd2.items.potions.PotionOfParalyticGas;
+import com.zrp200.rkpd2.items.potions.PotionOfPurity;
+import com.zrp200.rkpd2.items.potions.PotionOfStrength;
+import com.zrp200.rkpd2.items.potions.PotionOfToxicGas;
+import com.zrp200.rkpd2.plants.Plant;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;

@@ -19,13 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.messages;
+package com.zrp200.rkpd2.messages;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.I18NBundle;
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
-import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
+import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.SPDSettings;
+import com.zrp200.rkpd2.ShatteredPixelDungeon;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -101,7 +101,7 @@ public class Messages {
 	public static String get(Class c, String k, Object...args){
 		String key;
 		if (c != null){
-			key = c.getName().replace("com.shatteredpixel.shatteredpixeldungeon.", "");
+			key = c.getName().replace("com.zrp200.rkpd2.", "");
 			key += "." + k;
 		} else
 			key = k;

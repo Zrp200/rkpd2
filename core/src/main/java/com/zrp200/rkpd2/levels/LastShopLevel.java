@@ -19,24 +19,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.levels;
+package com.zrp200.rkpd2.levels;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Bones;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
-import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.levels.builders.Builder;
-import com.shatteredpixel.shatteredpixeldungeon.levels.builders.LineBuilder;
-import com.shatteredpixel.shatteredpixeldungeon.levels.painters.CityPainter;
-import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.Room;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.EntranceRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.ExitRoom;
-import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard.ImpShopRoom;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Bones;
+import com.zrp200.rkpd2.actors.Actor;
+import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.mobs.Mob;
+import com.zrp200.rkpd2.items.Heap;
+import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.levels.builders.Builder;
+import com.zrp200.rkpd2.levels.builders.LineBuilder;
+import com.zrp200.rkpd2.levels.painters.CityPainter;
+import com.zrp200.rkpd2.levels.painters.Painter;
+import com.zrp200.rkpd2.levels.rooms.Room;
+import com.zrp200.rkpd2.levels.rooms.standard.EntranceRoom;
+import com.zrp200.rkpd2.levels.rooms.standard.ExitRoom;
+import com.zrp200.rkpd2.levels.rooms.standard.ImpShopRoom;
+import com.zrp200.rkpd2.messages.Messages;
 import com.watabou.noosa.Group;
 
 import java.util.ArrayList;

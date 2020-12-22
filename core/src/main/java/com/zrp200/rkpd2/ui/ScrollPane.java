@@ -19,9 +19,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.ui;
+package com.zrp200.rkpd2.ui;
 
-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.zrp200.rkpd2.scenes.PixelScene;
 import com.watabou.input.PointerEvent;
 import com.watabou.input.ScrollEvent;
 import com.watabou.noosa.Camera;

@@ -19,18 +19,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.items.spells;
+package com.zrp200.rkpd2.items.spells;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.effects.MagicMissile;
-import com.shatteredpixel.shatteredpixeldungeon.mechanics.Ballistica;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
-import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
+import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.actors.Actor;
+import com.zrp200.rkpd2.actors.buffs.Invisibility;
+import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.effects.MagicMissile;
+import com.zrp200.rkpd2.mechanics.Ballistica;
+import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.scenes.CellSelector;
+import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.ui.QuickSlotButton;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 

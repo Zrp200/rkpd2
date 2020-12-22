@@ -19,14 +19,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.services.news;
+package com.zrp200.rkpd2.services.news;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
-import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
-import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
+import com.zrp200.rkpd2.SPDSettings;
+import com.zrp200.rkpd2.ShatteredPixelDungeon;
+import com.zrp200.rkpd2.sprites.ItemSprite;
+import com.zrp200.rkpd2.ui.Icons;
 import com.watabou.noosa.Image;
 
 import java.util.ArrayList;

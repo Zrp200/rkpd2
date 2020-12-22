@@ -19,18 +19,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon;
+package com.zrp200.rkpd2;
 
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.MagicalHolster;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.PotionBandolier;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.ScrollHolder;
-import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
-import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.artifacts.Artifact;
+import com.zrp200.rkpd2.items.bags.MagicalHolster;
+import com.zrp200.rkpd2.items.bags.PotionBandolier;
+import com.zrp200.rkpd2.items.bags.ScrollHolder;
+import com.zrp200.rkpd2.items.bags.VelvetPouch;
+import com.zrp200.rkpd2.journal.Catalog;
+import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.scenes.PixelScene;
+import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.FileUtils;
 

@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.ui;
+package com.zrp200.rkpd2.ui;
 
-import com.shatteredpixel.shatteredpixeldungeon.Chrome;
-import com.shatteredpixel.shatteredpixeldungeon.SPDAction;
-import com.shatteredpixel.shatteredpixeldungeon.effects.ShadowBox;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.zrp200.rkpd2.Chrome;
+import com.zrp200.rkpd2.SPDAction;
+import com.zrp200.rkpd2.effects.ShadowBox;
+import com.zrp200.rkpd2.scenes.PixelScene;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
 import com.watabou.input.PointerEvent;

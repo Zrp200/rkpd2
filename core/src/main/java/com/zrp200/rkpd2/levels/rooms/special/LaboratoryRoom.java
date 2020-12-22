@@ -19,21 +19,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special;
+package com.zrp200.rkpd2.levels.rooms.special;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Alchemy;
-import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Blob;
-import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.journal.AlchemyPage;
-import com.shatteredpixel.shatteredpixeldungeon.items.keys.IronKey;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
-import com.shatteredpixel.shatteredpixeldungeon.journal.Document;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
-import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
-import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
-import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.blobs.Alchemy;
+import com.zrp200.rkpd2.actors.blobs.Blob;
+import com.zrp200.rkpd2.items.Generator;
+import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.journal.AlchemyPage;
+import com.zrp200.rkpd2.items.keys.IronKey;
+import com.zrp200.rkpd2.items.potions.Potion;
+import com.zrp200.rkpd2.journal.Document;
+import com.zrp200.rkpd2.levels.Level;
+import com.zrp200.rkpd2.levels.RegularLevel;
+import com.zrp200.rkpd2.levels.Terrain;
+import com.zrp200.rkpd2.levels.painters.Painter;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 

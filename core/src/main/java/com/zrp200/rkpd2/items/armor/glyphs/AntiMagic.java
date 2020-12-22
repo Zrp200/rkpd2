@@ -19,35 +19,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs;
+package com.zrp200.rkpd2.items.armor.glyphs;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Charm;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Degrade;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Hex;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicalSleep;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Vulnerable;
-import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Weakness;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM100;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Eye;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Shaman;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Warlock;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Yog;
-import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.YogFist;
-import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfBlastWave;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfDisintegration;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFireblast;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfFrost;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLightning;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfLivingEarth;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfMagicMissile;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfPrismaticLight;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfTransfusion;
-import com.shatteredpixel.shatteredpixeldungeon.items.wands.WandOfWarding;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.DisintegrationTrap;
-import com.shatteredpixel.shatteredpixeldungeon.levels.traps.GrimTrap;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
+import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.Charm;
+import com.zrp200.rkpd2.actors.buffs.Degrade;
+import com.zrp200.rkpd2.actors.buffs.Hex;
+import com.zrp200.rkpd2.actors.buffs.MagicalSleep;
+import com.zrp200.rkpd2.actors.buffs.Vulnerable;
+import com.zrp200.rkpd2.actors.buffs.Weakness;
+import com.zrp200.rkpd2.actors.mobs.DM100;
+import com.zrp200.rkpd2.actors.mobs.Eye;
+import com.zrp200.rkpd2.actors.mobs.Shaman;
+import com.zrp200.rkpd2.actors.mobs.Warlock;
+import com.zrp200.rkpd2.actors.mobs.Yog;
+import com.zrp200.rkpd2.actors.mobs.YogFist;
+import com.zrp200.rkpd2.items.armor.Armor;
+import com.zrp200.rkpd2.items.wands.WandOfBlastWave;
+import com.zrp200.rkpd2.items.wands.WandOfDisintegration;
+import com.zrp200.rkpd2.items.wands.WandOfFireblast;
+import com.zrp200.rkpd2.items.wands.WandOfFrost;
+import com.zrp200.rkpd2.items.wands.WandOfLightning;
+import com.zrp200.rkpd2.items.wands.WandOfLivingEarth;
+import com.zrp200.rkpd2.items.wands.WandOfMagicMissile;
+import com.zrp200.rkpd2.items.wands.WandOfPrismaticLight;
+import com.zrp200.rkpd2.items.wands.WandOfTransfusion;
+import com.zrp200.rkpd2.items.wands.WandOfWarding;
+import com.zrp200.rkpd2.levels.traps.DisintegrationTrap;
+import com.zrp200.rkpd2.levels.traps.GrimTrap;
+import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.watabou.utils.Random;
 
 import java.util.HashSet;

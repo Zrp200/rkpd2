@@ -19,10 +19,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.items.potions;
+package com.zrp200.rkpd2.items.potions;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
+import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
 public class PotionOfExperience extends Potion {
 

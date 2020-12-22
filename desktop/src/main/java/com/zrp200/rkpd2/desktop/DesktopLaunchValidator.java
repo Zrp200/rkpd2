@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.desktop;
+package com.zrp200.rkpd2.desktop;
 
 import com.badlogic.gdx.utils.SharedLibraryLoader;
 

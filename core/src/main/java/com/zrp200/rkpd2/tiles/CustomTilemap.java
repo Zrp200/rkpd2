@@ -19,9 +19,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.tiles;
+package com.zrp200.rkpd2.tiles;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.zrp200.rkpd2.Dungeon;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.NoosaScript;
 import com.watabou.noosa.TextureFilm;

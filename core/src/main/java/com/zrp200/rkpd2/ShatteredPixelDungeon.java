@@ -19,11 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon;
+package com.zrp200.rkpd2;
 
-import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
-import com.shatteredpixel.shatteredpixeldungeon.scenes.WelcomeScene;
+import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.scenes.PixelScene;
+import com.zrp200.rkpd2.scenes.WelcomeScene;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.audio.Sample;
@@ -47,29 +47,29 @@ public class ShatteredPixelDungeon extends Game {
 
 		//v0.8.0
 		com.watabou.utils.Bundle.addAlias(
-				com.shatteredpixel.shatteredpixeldungeon.actors.mobs.ArmoredBrute.class,
-				"com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Shielded");
+				com.zrp200.rkpd2.actors.mobs.ArmoredBrute.class,
+				"com.zrp200.rkpd2.actors.mobs.Shielded");
 		com.watabou.utils.Bundle.addAlias(
-				com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM100.class,
-				"com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Shaman");
+				com.zrp200.rkpd2.actors.mobs.DM100.class,
+				"com.zrp200.rkpd2.actors.mobs.Shaman");
 		com.watabou.utils.Bundle.addAlias(
-				com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental.FireElemental.class,
-				"com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental");
+				com.zrp200.rkpd2.actors.mobs.Elemental.FireElemental.class,
+				"com.zrp200.rkpd2.actors.mobs.Elemental");
 		com.watabou.utils.Bundle.addAlias(
-				com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Elemental.NewbornFireElemental.class,
-				"com.shatteredpixel.shatteredpixeldungeon.actors.mobs.NewbornElemental");
+				com.zrp200.rkpd2.actors.mobs.Elemental.NewbornFireElemental.class,
+				"com.zrp200.rkpd2.actors.mobs.NewbornElemental");
 		com.watabou.utils.Bundle.addAlias(
-				com.shatteredpixel.shatteredpixeldungeon.actors.mobs.OldDM300.class,
-				"com.shatteredpixel.shatteredpixeldungeon.actors.mobs.DM300");
+				com.zrp200.rkpd2.actors.mobs.OldDM300.class,
+				"com.zrp200.rkpd2.actors.mobs.DM300");
 		com.watabou.utils.Bundle.addAlias(
-				com.shatteredpixel.shatteredpixeldungeon.levels.OldCavesBossLevel.class,
-				"com.shatteredpixel.shatteredpixeldungeon.levels.CavesBossLevel" );
+				com.zrp200.rkpd2.levels.OldCavesBossLevel.class,
+				"com.zrp200.rkpd2.levels.CavesBossLevel" );
 		com.watabou.utils.Bundle.addAlias(
-				com.shatteredpixel.shatteredpixeldungeon.levels.OldCityBossLevel.class,
-				"com.shatteredpixel.shatteredpixeldungeon.levels.CityBossLevel" );
+				com.zrp200.rkpd2.levels.OldCityBossLevel.class,
+				"com.zrp200.rkpd2.levels.CityBossLevel" );
 		com.watabou.utils.Bundle.addAlias(
-				com.shatteredpixel.shatteredpixeldungeon.levels.OldHallsBossLevel.class,
-				"com.shatteredpixel.shatteredpixeldungeon.levels.HallsBossLevel" );
+				com.zrp200.rkpd2.levels.OldHallsBossLevel.class,
+				"com.zrp200.rkpd2.levels.HallsBossLevel" );
 		
 	}
 	

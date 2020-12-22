@@ -19,12 +19,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.desktop;
+package com.zrp200.rkpd2.desktop;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Window;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3WindowListener;
-import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
+import com.zrp200.rkpd2.SPDSettings;
 
 public class DesktopWindowListener implements Lwjgl3WindowListener {
 	

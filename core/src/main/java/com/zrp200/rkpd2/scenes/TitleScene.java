@@ -19,27 +19,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.scenes;
+package com.zrp200.rkpd2.scenes;
 
-import com.shatteredpixel.shatteredpixeldungeon.Assets;
-import com.shatteredpixel.shatteredpixeldungeon.Chrome;
-import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
-import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
-import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
-import com.shatteredpixel.shatteredpixeldungeon.effects.BannerSprites;
-import com.shatteredpixel.shatteredpixeldungeon.effects.Fireball;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Languages;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.services.news.News;
-import com.shatteredpixel.shatteredpixeldungeon.services.updates.AvailableUpdateData;
-import com.shatteredpixel.shatteredpixeldungeon.services.updates.Updates;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Archs;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
-import com.shatteredpixel.shatteredpixeldungeon.ui.StyledButton;
-import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndSettings;
+import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Chrome;
+import com.zrp200.rkpd2.GamesInProgress;
+import com.zrp200.rkpd2.SPDSettings;
+import com.zrp200.rkpd2.ShatteredPixelDungeon;
+import com.zrp200.rkpd2.effects.BannerSprites;
+import com.zrp200.rkpd2.effects.Fireball;
+import com.zrp200.rkpd2.messages.Languages;
+import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.services.news.News;
+import com.zrp200.rkpd2.services.updates.AvailableUpdateData;
+import com.zrp200.rkpd2.services.updates.Updates;
+import com.zrp200.rkpd2.sprites.CharSprite;
+import com.zrp200.rkpd2.ui.Archs;
+import com.zrp200.rkpd2.ui.Icons;
+import com.zrp200.rkpd2.ui.StyledButton;
+import com.zrp200.rkpd2.ui.Window;
+import com.zrp200.rkpd2.windows.WndOptions;
+import com.zrp200.rkpd2.windows.WndSettings;
 import com.watabou.glwrap.Blending;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Camera;

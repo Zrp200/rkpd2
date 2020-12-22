@@ -19,11 +19,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
+package com.zrp200.rkpd2.actors.mobs;
 
-import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
-import com.shatteredpixel.shatteredpixeldungeon.items.food.MysteryMeat;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.CrabSprite;
+import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.items.food.MysteryMeat;
+import com.zrp200.rkpd2.sprites.CrabSprite;
 import com.watabou.utils.Random;
 
 public class Crab extends Mob {

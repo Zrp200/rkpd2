@@ -19,24 +19,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic;
+package com.zrp200.rkpd2.items.scrolls.exotic;
 
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.Recipe;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfIdentify;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfLullaby;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMagicMapping;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfMirrorImage;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRage;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRecharging;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRetribution;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTerror;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
-import com.shatteredpixel.shatteredpixeldungeon.items.stones.Runestone;
+import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.Recipe;
+import com.zrp200.rkpd2.items.scrolls.Scroll;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfIdentify;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfLullaby;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfMagicMapping;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfMirrorImage;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfRage;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfRecharging;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfRemoveCurse;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfRetribution;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfTerror;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfTransmutation;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfUpgrade;
+import com.zrp200.rkpd2.items.stones.Runestone;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;

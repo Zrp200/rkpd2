@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.utils;
+package com.zrp200.rkpd2.utils;
 
 import com.watabou.utils.Random;
 

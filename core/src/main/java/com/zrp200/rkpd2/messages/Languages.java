@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.messages;
+package com.zrp200.rkpd2.messages;
 
 import java.util.Locale;
 

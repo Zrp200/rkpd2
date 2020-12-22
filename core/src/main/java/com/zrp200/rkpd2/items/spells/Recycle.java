@@ -19,25 +19,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.items.spells;
+package com.zrp200.rkpd2.items.spells;
 
-import com.shatteredpixel.shatteredpixeldungeon.Challenges;
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
-import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
-import com.shatteredpixel.shatteredpixeldungeon.items.Item;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.Potion;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.brews.Brew;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.Elixir;
-import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTransmutation;
-import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
-import com.shatteredpixel.shatteredpixeldungeon.items.stones.Runestone;
-import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
-import com.shatteredpixel.shatteredpixeldungeon.plants.Plant;
-import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
-import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
-import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
+import com.zrp200.rkpd2.Challenges;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.items.Generator;
+import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.potions.Potion;
+import com.zrp200.rkpd2.items.potions.brews.Brew;
+import com.zrp200.rkpd2.items.potions.elixirs.Elixir;
+import com.zrp200.rkpd2.items.potions.exotic.ExoticPotion;
+import com.zrp200.rkpd2.items.scrolls.Scroll;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfTransmutation;
+import com.zrp200.rkpd2.items.scrolls.exotic.ExoticScroll;
+import com.zrp200.rkpd2.items.stones.Runestone;
+import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.plants.Plant;
+import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
+import com.zrp200.rkpd2.utils.GLog;
+import com.zrp200.rkpd2.windows.WndBag;
 import com.watabou.utils.Reflection;
 
 public class Recycle extends InventorySpell {
@@ -89,7 +89,7 @@ public class Recycle extends InventorySpell {
 		return Math.round(quantity * ((50 + 40) / 8f));
 	}
 	
-	public static class Recipe extends com.shatteredpixel.shatteredpixeldungeon.items.Recipe.SimpleRecipe {
+	public static class Recipe extends com.zrp200.rkpd2.items.Recipe.SimpleRecipe {
 		
 		{
 			inputs =  new Class[]{ScrollOfTransmutation.class, ArcaneCatalyst.class};

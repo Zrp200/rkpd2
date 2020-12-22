@@ -19,9 +19,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.mechanics;
+package com.zrp200.rkpd2.mechanics;
 
-import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.zrp200.rkpd2.Dungeon;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.Point;
 import com.watabou.utils.PointF;
