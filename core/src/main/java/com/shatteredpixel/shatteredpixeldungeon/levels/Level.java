@@ -1061,7 +1061,7 @@ public abstract class Level implements Bundlable {
 		if (sighted) {
 			boolean[] blocking;
 			
-			if ((c instanceof Hero && ((Hero) c).subClass == HeroSubClass.WARDEN || ((Hero)c).subClass == HeroSubClass.KING)
+			if ((c instanceof Hero && (((Hero) c).subClass == HeroSubClass.WARDEN || ((Hero)c).subClass == HeroSubClass.KING))
 				|| c instanceof YogFist.SoiledFist) {
 				blocking = Dungeon.level.losBlocking.clone();
 				for (int i = 0; i < blocking.length; i++){
@@ -1074,8 +1074,8 @@ public abstract class Level implements Bundlable {
 			}
 			
 			int viewDist = c.viewDistance;
-			if (c instanceof Hero && ((Hero) c).subClass == HeroSubClass.SNIPER
-					|| ((Hero)c).subClass == HeroSubClass.KING) viewDist *= 1.5f;
+			if (c instanceof Hero && (((Hero) c).subClass == HeroSubClass.SNIPER
+					|| ((Hero)c).subClass == HeroSubClass.KING)) viewDist *= 1.5f;
 			
 			ShadowCaster.castShadow( cx, cy, fieldOfView, blocking, viewDist );
 		} else {

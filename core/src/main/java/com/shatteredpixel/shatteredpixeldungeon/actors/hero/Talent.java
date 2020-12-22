@@ -107,14 +107,14 @@ public enum Talent {
 	DURABLE_PROJECTILES(56),
 
 	ROYAL_PRIVILEGE(57), // food related talents
-	ROYAL_INTUITION(58), // intuition-related talents
-	NOBLE_COMBAT(59), // on-id + combat talents
-	NOBLE_QUEST(60), // other ones.
-	ROYAL_MEAL(61), // all on-eat talents for tier 2
-	RESTORATION(62), // all upgrade/potion of healing talents
-	POWER_WITHIN(63), // runic (3), wand preservation (3), rogue's foresight (5), rejuvenating steps (3)
-	KINGS_VISION(64), // Lethal momentum (4), arcane vision(4), wide search(3), heightened senses(4)
-	PURSUIT(65); // durable projectiles (4),silent steps,improvised projectiles(4),shield battery(4)
+	ROYAL_INTUITION(57), // intuition-related talents
+	NOBLE_COMBAT(57), // on-id + combat talents
+	NOBLE_QUEST(57), // other ones.
+	ROYAL_MEAL(57), // all on-eat talents for tier 2
+	RESTORATION(57), // all upgrade/potion of healing talents
+	POWER_WITHIN(57), // runic (3), wand preservation (3), rogue's foresight (5), rejuvenating steps (3)
+	KINGS_VISION(57), // Lethal momentum (4), arcane vision(4), wide search(3), heightened senses(4)
+	PURSUIT(57); // durable projectiles (4),silent steps,improvised projectiles(4),shield battery(4)
 
 	public static class ImprovisedProjectileCooldown extends FlavourBuff{};
 	public static class LethalMomentumTracker extends FlavourBuff{};
@@ -390,7 +390,7 @@ public enum Talent {
 				Collections.addAll(tierTalents, NATURES_BOUNTY, SURVIVALISTS_INTUITION, FOLLOWUP_STRIKE, NATURES_AID);
 				break;
 			case RAT_KING:
-				Collections.addAll(tierTalents, ROYAL_PRIVILEGE, ROYAL_INTUITION, NOBLE_COMBAT, POWER_WITHIN, NOBLE_QUEST);
+				Collections.addAll(tierTalents, ROYAL_PRIVILEGE, ROYAL_INTUITION, NOBLE_COMBAT, NOBLE_QUEST);
 				break;
 		}
 		for (Talent talent : tierTalents){

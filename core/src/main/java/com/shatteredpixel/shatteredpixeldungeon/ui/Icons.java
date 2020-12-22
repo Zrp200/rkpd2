@@ -248,7 +248,7 @@ public enum Icons {
 	
 	public static Image get( HeroClass cl ) {
 		switch (cl) {
-		case WARRIOR:
+		case WARRIOR: default:
 			return get( WARRIOR );
 		case MAGE:
 			return get( MAGE );
@@ -256,8 +256,6 @@ public enum Icons {
 			return get( ROGUE );
 		case HUNTRESS:
 			return get( HUNTRESS );
-		default:
-			return null;
 		}
 	}
 }

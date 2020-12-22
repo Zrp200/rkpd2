@@ -201,14 +201,13 @@ public enum HeroClass {
 		}
 		// mage
 		MagesStaff staff = new MagesStaff(new WandOfMagicMissile());
-		(hero.belongings.weapon = staff).identify();
+		(hero.belongings.weapon = staff).identify().collect();
 		hero.belongings.weapon.activate(hero);
 		// rogue
 		CloakOfShadows cloak = new CloakOfShadows();
 		(hero.belongings.artifact = cloak).identify();
 		hero.belongings.artifact.activate( hero );
 		// huntress
-		(hero.belongings.weapon = new Gloves()).identify();
 		SpiritBow bow = new SpiritBow();
 		bow.identify().collect();
 		// allocating slots

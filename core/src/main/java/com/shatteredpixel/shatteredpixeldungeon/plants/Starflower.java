@@ -41,7 +41,7 @@ public class Starflower extends Plant {
 
 		if (ch != null) {
 			Buff.prolong(ch, Bless.class, Bless.DURATION);
-			if (ch instanceof Hero && ((Hero)ch).subClass == HeroSubClass.WARDEN || ((Hero)ch).subClass == HeroSubClass.KING){
+			if (ch instanceof Hero && (((Hero)ch).subClass == HeroSubClass.WARDEN || ((Hero)ch).subClass == HeroSubClass.KING)){
 				Buff.prolong(ch, Recharging.class, Recharging.DURATION);
 			}
 		}
