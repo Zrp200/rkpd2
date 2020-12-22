@@ -50,10 +50,12 @@ public class Overgrowth extends Armor.Glyph {
 			Plant p = s.couch(defender.pos, null);
 			
 			//momentarily revoke warden benefits, otherwise this curse would be incredibly powerful
-			if (defender instanceof Hero && ((Hero) defender).subClass == HeroSubClass.WARDEN){
+			if (defender instanceof Hero && ((Hero) defender).subClass == HeroSubClass.WARDEN
+					|| ((Hero)defender).subClass == HeroSubClass.KING){
+				HeroSubClass subclass = ((Hero)defender).subClass;
 				((Hero) defender).subClass = HeroSubClass.NONE;
 				p.activate( defender );
-				((Hero) defender).subClass = HeroSubClass.WARDEN;
+				((Hero) defender).subClass = subclass;
 			} else {
 				p.activate( defender );
 			}

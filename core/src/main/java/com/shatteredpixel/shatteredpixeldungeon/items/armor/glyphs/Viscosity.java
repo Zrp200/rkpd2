@@ -51,7 +51,7 @@ public class Viscosity extends Glyph {
 
 		if (attacker instanceof Hero
 				&& ((Hero) attacker).belongings.weapon instanceof MissileWeapon
-				&& ((Hero) attacker).subClass == HeroSubClass.SNIPER
+				&& (((Hero) attacker).subClass == HeroSubClass.SNIPER || ((Hero)attacker).subClass == HeroSubClass.KING)
 				&& !Dungeon.level.adjacent(attacker.pos, defender.pos)){
 			realDamage = damage;
 		}

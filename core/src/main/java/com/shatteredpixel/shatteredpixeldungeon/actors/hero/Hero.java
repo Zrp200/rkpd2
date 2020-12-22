@@ -391,7 +391,7 @@ public class Hero extends Char {
 		belongings.weapon = belongings.stashedWeapon;
 		belongings.stashedWeapon = null;
 		
-		if (subClass == HeroSubClass.GLADIATOR){
+		if (subClass == HeroSubClass.GLADIATOR || subClass == HeroSubClass.KING){
 			if (hit) {
 				Buff.affect( this, Combo.class ).hit( enemy );
 			} else {
@@ -659,7 +659,7 @@ public class Hero extends Char {
 			}
 		}
 		
-		if( subClass == HeroSubClass.WARDEN && Dungeon.level.map[pos] == Terrain.FURROWED_GRASS){
+		if( (subClass == HeroSubClass.WARDEN || subClass == HeroSubClass.KING) && Dungeon.level.map[pos] == Terrain.FURROWED_GRASS){
 			Buff.affect(this, Barkskin.class).set( lvl + 5, 1 );
 		}
 		
@@ -1076,7 +1076,7 @@ public class Hero extends Char {
 		damage = Talent.onAttackProc( this, enemy, damage );
 		
 		switch (subClass) {
-		case SNIPER:
+			case SNIPER: case KING:
 			if (wep instanceof MissileWeapon && !(wep instanceof SpiritBow.SpiritArrow) && enemy != this) {
 				Actor.add(new Actor() {
 					
@@ -1104,7 +1104,7 @@ public class Hero extends Char {
 	@Override
 	public int defenseProc( Char enemy, int damage ) {
 		
-		if (damage > 0 && subClass == HeroSubClass.BERSERKER){
+		if (damage > 0 && (subClass == HeroSubClass.BERSERKER || subClass == HeroSubClass.KING)){
 			Berserk berserk = Buff.affect(this, Berserk.class);
 			berserk.damage(damage);
 		}
@@ -1325,7 +1325,7 @@ public class Hero extends Char {
 			
 			search(false);
 			
-			if (subClass == HeroSubClass.FREERUNNER){
+			if (subClass == HeroSubClass.FREERUNNER || subClass == HeroSubClass.KING){
 				Buff.affect(this, Momentum.class).gainStack();
 			}
 
@@ -1711,7 +1711,7 @@ public class Hero extends Char {
 		
 		boolean hit = attack( enemy );
 
-		if (subClass == HeroSubClass.GLADIATOR){
+		if (subClass == HeroSubClass.GLADIATOR || subClass == HeroSubClass.KING){
 			if (hit) {
 				Buff.affect( this, Combo.class ).hit( enemy );
 			} else {
