@@ -476,9 +476,9 @@ public abstract class Wand extends Item {
 				int cell = shot.collisionPos;
 				
 				if (target == curUser.pos || cell == curUser.pos) {
-					if (target == curUser.pos && curUser.hasTalent(Talent.SHIELD_BATTERY)){
+					if (target == curUser.pos && curUser.hasTalent(Talent.SHIELD_BATTERY,Talent.PURSUIT)){
 						float shield = curUser.HT * (0.05f*curWand.curCharges);
-						if (curUser.pointsInTalent(Talent.SHIELD_BATTERY) == 2) shield *= 1.5f;
+						if (curUser.pointsInTalents(Talent.SHIELD_BATTERY,Talent.PURSUIT) == 2) shield *= 1.5f;
 						Buff.affect(curUser, Barrier.class).setShield(Math.round(shield));
 						curWand.curCharges = 0;
 						curUser.sprite.operate(curUser.pos);
