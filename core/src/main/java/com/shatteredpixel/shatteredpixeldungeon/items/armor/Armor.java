@@ -174,11 +174,11 @@ public class Armor extends EquipableItem {
 				degrade();
 			}
 			if (seal.getGlyph() != null){
-				if (hero.hasTalent(Talent.RUNIC_TRANSFERENCE)
+				if (hero.hasTalent(Talent.RUNIC_TRANSFERENCE,Talent.POWER_WITHIN)
 						&& (Arrays.asList(Glyph.common).contains(seal.getGlyph().getClass())
 							|| Arrays.asList(Glyph.uncommon).contains(seal.getGlyph().getClass()))){
 					inscribe(null);
-				} else if (hero.pointsInTalent(Talent.RUNIC_TRANSFERENCE) == 2){
+				} else if (hero.pointsInTalents(Talent.RUNIC_TRANSFERENCE,Talent.POWER_WITHIN) == 2){
 					inscribe(null);
 				} else {
 					seal.setGlyph(null);

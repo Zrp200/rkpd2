@@ -468,15 +468,15 @@ public class GameScene extends PixelScene {
 						}
 					}
 				}
-
-				if (Dungeon.hero.hasTalent(Talent.ROGUES_FORESIGHT)
+				int points = Dungeon.hero.pointsInTalents(Talent.ROGUES_FORESIGHT,Talent.POWER_WITHIN);
+				if (points > 0
 						&& Dungeon.level instanceof RegularLevel){
 					int reqSecrets = Dungeon.level.feeling == Level.Feeling.SECRETS ? 2 : 1;
 					for (Room r : ((RegularLevel) Dungeon.level).rooms()){
 						if (r instanceof SecretRoom) reqSecrets--;
 					}
 					//50%/75% chance
-					if (reqSecrets <= 0 && Random.Int(4) <= Dungeon.hero.pointsInTalent(Talent.ROGUES_FORESIGHT)){
+					if (reqSecrets <= 0 && Random.Int(4) <= points){
 						GLog.p(Messages.get(this, "secret_hint"));
 					}
 				}
