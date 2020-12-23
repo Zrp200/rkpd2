@@ -108,9 +108,9 @@ public enum Talent {
 
 	ROYAL_PRIVILEGE(57), // food related talents
 	ROYAL_INTUITION(57), // intuition-related talents
-	NOBLE_COMBAT(57), // on-id + combat talents
-	NOBLE_QUEST(57), // other ones.
-	ROYAL_MEAL(57), // all on-eat talents for tier 2
+	KINGS_WISDOM(57), // on-id + combat talents
+	NOBLE_CAUSE(57), // other ones.
+	ROYAL_MEAL(57), //// all on-eat talents for tier 2
 	RESTORATION(57), // all upgrade/potion of healing talents
 	POWER_WITHIN(57), // runic (3), wand preservation (3), rogue's foresight (5), rejuvenating steps (3)
 	KINGS_VISION(57), // Lethal momentum (4), arcane vision(4), wide search(3), heightened senses(4)
@@ -323,32 +323,32 @@ public enum Talent {
 
 	//note that IDing can happen in alchemy scene, so be careful with VFX here
 	public static void onItemIdentified( Hero hero, Item item ){
-		if (hero.hasTalent(TEST_SUBJECT,NOBLE_COMBAT)){
+		if (hero.hasTalent(TEST_SUBJECT,KINGS_WISDOM)){
 			//heal for 2/3 HP
-			hero.HP = Math.min(hero.HP + 1 + hero.pointsInTalents(TEST_SUBJECT,NOBLE_COMBAT), hero.HT);
+			hero.HP = Math.min(hero.HP + 1 + hero.pointsInTalents(TEST_SUBJECT,KINGS_WISDOM), hero.HT);
 			Emitter e = hero.sprite.emitter();
-			if (e != null) e.burst(Speck.factory(Speck.HEALING), hero.pointsInTalents(TEST_SUBJECT,NOBLE_COMBAT));
+			if (e != null) e.burst(Speck.factory(Speck.HEALING), hero.pointsInTalents(TEST_SUBJECT,KINGS_WISDOM));
 		}
-		if (hero.hasTalent(TESTED_HYPOTHESIS,NOBLE_COMBAT)){
+		if (hero.hasTalent(TESTED_HYPOTHESIS,KINGS_WISDOM)){
 			//2/3 turns of wand recharging
-			Buff.affect(hero, Recharging.class, 1f + hero.pointsInTalents(TESTED_HYPOTHESIS,NOBLE_COMBAT));
+			Buff.affect(hero, Recharging.class, 1f + hero.pointsInTalents(TESTED_HYPOTHESIS,KINGS_WISDOM));
 			ScrollOfRecharging.charge(hero);
 		}
 	}
 
 	public static int onAttackProc( Hero hero, Char enemy, int dmg ){
-		if (hero.hasTalent(Talent.SUCKER_PUNCH,NOBLE_COMBAT)
+		if (hero.hasTalent(Talent.SUCKER_PUNCH,KINGS_WISDOM)
 				&& enemy instanceof Mob && ((Mob) enemy).surprisedBy(hero)
 				&& enemy.buff(SuckerPunchTracker.class) == null){
-			dmg += Random.IntRange(hero.pointsInTalents(Talent.SUCKER_PUNCH,NOBLE_COMBAT) , 2);
+			dmg += Random.IntRange(hero.pointsInTalents(Talent.SUCKER_PUNCH,KINGS_WISDOM) , 2);
 			Buff.affect(enemy, SuckerPunchTracker.class);
 		}
 
-		if (hero.hasTalent(Talent.FOLLOWUP_STRIKE,NOBLE_COMBAT)) {
+		if (hero.hasTalent(Talent.FOLLOWUP_STRIKE,KINGS_WISDOM)) {
 			if (hero.belongings.weapon instanceof MissileWeapon) {
 				Buff.affect(enemy, FollowupStrikeTracker.class);
 			} else if (enemy.buff(FollowupStrikeTracker.class) != null){
-				dmg += 1 + hero.pointsInTalents(FOLLOWUP_STRIKE,NOBLE_COMBAT);
+				dmg += 1 + hero.pointsInTalents(FOLLOWUP_STRIKE,KINGS_WISDOM);
 				if (!(enemy instanceof Mob) || !((Mob) enemy).surprisedBy(hero)){
 					Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG, 0.75f, 1.2f);
 				}
@@ -390,7 +390,7 @@ public enum Talent {
 				Collections.addAll(tierTalents, NATURES_BOUNTY, SURVIVALISTS_INTUITION, FOLLOWUP_STRIKE, NATURES_AID);
 				break;
 			case RAT_KING:
-				Collections.addAll(tierTalents, ROYAL_PRIVILEGE, ROYAL_INTUITION, NOBLE_COMBAT, NOBLE_QUEST);
+				Collections.addAll(tierTalents, ROYAL_PRIVILEGE, ROYAL_INTUITION, KINGS_WISDOM, NOBLE_CAUSE);
 				break;
 		}
 		for (Talent talent : tierTalents){

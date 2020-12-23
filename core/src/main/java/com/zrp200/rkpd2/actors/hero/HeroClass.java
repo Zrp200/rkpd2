@@ -29,6 +29,7 @@ import com.zrp200.rkpd2.items.BrokenSeal;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.ClothArmor;
 import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
+import com.zrp200.rkpd2.items.bags.MagicalHolster;
 import com.zrp200.rkpd2.items.bags.PotionBandolier;
 import com.zrp200.rkpd2.items.bags.ScrollHolder;
 import com.zrp200.rkpd2.items.bags.VelvetPouch;
@@ -60,7 +61,7 @@ public enum HeroClass {
 	MAGE( "mage", HeroSubClass.BATTLEMAGE, HeroSubClass.WARLOCK ),
 	ROGUE( "rogue", HeroSubClass.ASSASSIN, HeroSubClass.FREERUNNER ),
 	HUNTRESS( "huntress", HeroSubClass.SNIPER, HeroSubClass.WARDEN ),
-	RAT_KING ("rat king",HeroSubClass.KING);
+	RAT_KING ("rat_king",HeroSubClass.KING);
 
 	private String title;
 	private HeroSubClass[] subClasses;
@@ -195,6 +196,15 @@ public enum HeroClass {
 	}
 
 	private static void initRatKing( Hero hero ) {
+		// give all bags.
+		new VelvetPouch().collect();
+		new PotionBandolier().collect();
+		new ScrollHolder().collect();
+		new MagicalHolster().collect();
+		Dungeon.LimitedDrops.VELVET_POUCH.drop();
+		Dungeon.LimitedDrops.POTION_BANDOLIER.drop();
+		Dungeon.LimitedDrops.SCROLL_HOLDER.drop();
+		Dungeon.LimitedDrops.MAGICAL_HOLSTER.drop();
 		// warrior
 		if (hero.belongings.armor != null){
 			hero.belongings.armor.affixSeal(new BrokenSeal());
@@ -251,40 +261,9 @@ public enum HeroClass {
 	}
 	
 	public String[] perks() {
-		switch (this) {
-			case WARRIOR: default:
-				return new String[]{
-						Messages.get(HeroClass.class, "warrior_perk1"),
-						Messages.get(HeroClass.class, "warrior_perk2"),
-						Messages.get(HeroClass.class, "warrior_perk3"),
-						Messages.get(HeroClass.class, "warrior_perk4"),
-						Messages.get(HeroClass.class, "warrior_perk5"),
-				};
-			case MAGE:
-				return new String[]{
-						Messages.get(HeroClass.class, "mage_perk1"),
-						Messages.get(HeroClass.class, "mage_perk2"),
-						Messages.get(HeroClass.class, "mage_perk3"),
-						Messages.get(HeroClass.class, "mage_perk4"),
-						Messages.get(HeroClass.class, "mage_perk5"),
-				};
-			case ROGUE:
-				return new String[]{
-						Messages.get(HeroClass.class, "rogue_perk1"),
-						Messages.get(HeroClass.class, "rogue_perk2"),
-						Messages.get(HeroClass.class, "rogue_perk3"),
-						Messages.get(HeroClass.class, "rogue_perk4"),
-						Messages.get(HeroClass.class, "rogue_perk5"),
-				};
-			case HUNTRESS:
-				return new String[]{
-						Messages.get(HeroClass.class, "huntress_perk1"),
-						Messages.get(HeroClass.class, "huntress_perk2"),
-						Messages.get(HeroClass.class, "huntress_perk3"),
-						Messages.get(HeroClass.class, "huntress_perk4"),
-						Messages.get(HeroClass.class, "huntress_perk5"),
-				};
-		}
+		String[] perks = new String[5];
+		for(int i=0; i < perks.length; i++) perks[i] = Messages.get(HeroClass.class, title + "_perk" + (i+1));
+		return perks;
 	}
 	
 	public boolean isUnlocked(){
