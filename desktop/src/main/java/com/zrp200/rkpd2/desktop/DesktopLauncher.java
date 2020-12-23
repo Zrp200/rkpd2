@@ -119,9 +119,9 @@ public class DesktopLauncher {
 		String basePath = "";
 		if (SharedLibraryLoader.isWindows) {
 			if (System.getProperties().getProperty("os.name").equals("Windows XP")) {
-				basePath = "Application Data/.shatteredpixel/Shattered Pixel Dungeon/";
+				basePath = "Application Data/.zrp200/Shattered Pixel Dungeon/";
 			} else {
-				basePath = "AppData/Roaming/.shatteredpixel/Shattered Pixel Dungeon/";
+				basePath = "AppData/Roaming/.zrp200/Shattered Pixel Dungeon/";
 			}
 		} else if (SharedLibraryLoader.isMac) {
 			basePath = "Library/Application Support/Shattered Pixel Dungeon/";

@@ -50,7 +50,7 @@ public class AndroidBackupHandler extends BackupAgent {
 		//does not backup runs in progress, to prevent cheating.
 		
 		//store shared preferences
-		fullBackupFile(new File(getFilesDir().getParent() + "/shared_prefs/ShatteredPixelDungeon.xml"), data);
+		fullBackupFile(new File(getFilesDir().getParent() + "/shared_prefs/RKPD2.xml"), data);
 		
 		//store game data
 		File file = getFile( getFilesDir(), Rankings.RANKINGS_FILE );
