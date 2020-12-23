@@ -413,7 +413,7 @@ public enum Talent {
 				Collections.addAll(tierTalents, INVIGORATING_MEAL, RESTORED_NATURE, REJUVENATING_STEPS, HEIGHTENED_SENSES, DURABLE_PROJECTILES);
 				break;
 			case RAT_KING:
-				Collections.addAll(tierTalents, ROYAL_MEAL, RESTORATION, KINGS_VISION, POWER_WITHIN, PURSUIT);
+				Collections.addAll(tierTalents, ROYAL_MEAL, RESTORATION, POWER_WITHIN, KINGS_VISION, PURSUIT);
 		}
 		for (Talent talent : tierTalents){
 			talents.get(1).put(talent, 0);

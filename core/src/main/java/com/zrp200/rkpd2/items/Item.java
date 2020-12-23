@@ -548,13 +548,13 @@ public class Item implements Bundlable {
 						public void call() {
 							curUser = user;
 							Item.this.detach(user.belongings.backpack).onThrow(cell);
-							if (curUser.hasTalent(Talent.IMPROVISED_PROJECTILES,Talent.PURSUIT)
+							if (curUser.hasTalent(Talent.IMPROVISED_PROJECTILES,Talent.KINGS_VISION)
 									&& !(Item.this instanceof MissileWeapon)
 									&& curUser.buff(Talent.ImprovisedProjectileCooldown.class) == null){
 								Char ch = Actor.findChar(cell);
 								if (ch != null && ch.alignment != curUser.alignment){
 									Sample.INSTANCE.play(Assets.Sounds.HIT);
-									Buff.affect(ch, Blindness.class, 1f + curUser.pointsInTalents(Talent.IMPROVISED_PROJECTILES,Talent.PURSUIT));
+									Buff.affect(ch, Blindness.class, 1f + curUser.pointsInTalents(Talent.IMPROVISED_PROJECTILES,Talent.KINGS_VISION));
 									Buff.affect(curUser, Talent.ImprovisedProjectileCooldown.class, 30f);
 								}
 							}
@@ -571,13 +571,13 @@ public class Item implements Bundlable {
 						public void call() {
 							curUser = user;
 							Item.this.detach(user.belongings.backpack).onThrow(cell);
-							if (curUser.hasTalent(Talent.IMPROVISED_PROJECTILES,Talent.PURSUIT)
+							if (curUser.hasTalent(Talent.IMPROVISED_PROJECTILES,Talent.KINGS_VISION)
 									&& !(Item.this instanceof MissileWeapon)
 									&& curUser.buff(Talent.ImprovisedProjectileCooldown.class) == null){
 								Char ch = Actor.findChar(cell);
 								if (ch != null && ch.alignment != curUser.alignment){
 									Sample.INSTANCE.play(Assets.Sounds.HIT);
-									Buff.affect(ch, Blindness.class, 1f + curUser.pointsInTalents(Talent.IMPROVISED_PROJECTILES,Talent.PURSUIT));
+									Buff.affect(ch, Blindness.class, 1f + curUser.pointsInTalents(Talent.IMPROVISED_PROJECTILES,Talent.KINGS_VISION));
 									Buff.affect(curUser, Talent.ImprovisedProjectileCooldown.class, 30f);
 								}
 							}
