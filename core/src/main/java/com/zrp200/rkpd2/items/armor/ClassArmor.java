@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.items.BrokenSeal;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfRecharging;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.utils.Bundle;
@@ -58,10 +59,6 @@ abstract public class ClassArmor extends Armor {
 		switch (owner.heroClass) {
 		case WARRIOR:
 			classArmor = new WarriorArmor();
-			BrokenSeal seal = armor.checkSeal();
-			if (seal != null) {
-				classArmor.affixSeal(seal);
-			}
 			break;
 		case ROGUE:
 			classArmor = new RogueArmor();
@@ -72,8 +69,15 @@ abstract public class ClassArmor extends Armor {
 		case HUNTRESS:
 			classArmor = new HuntressArmor();
 			break;
+		case RAT_KING:
+			classArmor = new RatKingArmor();
 		}
-		
+
+		BrokenSeal seal = armor.checkSeal();
+		if (seal != null) {
+			classArmor.affixSeal(seal);
+		}
+
 		classArmor.level(armor.level() - (armor.curseInfusionBonus ? 1 : 0));
 		classArmor.armorTier = armor.tier;
 		classArmor.augment = armor.augment;
@@ -131,9 +135,13 @@ abstract public class ClassArmor extends Armor {
 			
 			if (!isEquipped( hero )) {
 				GLog.w( Messages.get(this, "not_equipped") );
-			} else if (charge < 35) {
-				GLog.w( Messages.get(this, "low_charge") );
-			} else  {
+			} else {
+				if(charge < 35) {
+					GLog.n("WHO DESIGNED THIS?! CLASS ARMOR OVERCHARGE!!!");
+					charge = 999;
+					updateQuickslot();
+					ScrollOfRecharging.charge(Dungeon.hero);
+				}
 				curUser = hero;
 				doSpecial();
 			}
