@@ -27,6 +27,8 @@ import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.items.BrokenSeal;
 import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.TomeOfMastery;
+import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.items.armor.ClothArmor;
 import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
 import com.zrp200.rkpd2.items.bags.MagicalHolster;
@@ -211,7 +213,7 @@ public enum HeroClass {
 		}
 		// mage
 		MagesStaff staff = new MagesStaff(new WandOfMagicMissile());
-		(hero.belongings.weapon = staff).identify().collect();
+		(hero.belongings.weapon = staff).identify();
 		hero.belongings.weapon.activate(hero);
 		// rogue
 		CloakOfShadows cloak = new CloakOfShadows();
