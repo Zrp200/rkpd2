@@ -180,7 +180,7 @@ public enum Talent {
 	public static class NatureBerriesAvailable extends CounterBuff{};
 
 	public static void onFoodEaten( Hero hero, float foodVal, Item foodSource ){
-		if (hero.hasTalent(HEARTY_MEAL,ROYAL_MEAL)){
+		if (hero.hasTalent(HEARTY_MEAL,ROYAL_PRIVILEGE)){
 			//3/5 HP healed, when hero is below 25% health
 			if (hero.HP <= hero.HT/4) {
 				hero.HP = Math.min(hero.HP + 1 + 2 * (hero.pointsInTalent(HEARTY_MEAL)+hero.pointsInTalent(ROYAL_PRIVILEGE)), hero.HT);
