@@ -246,6 +246,8 @@ public enum HeroClass {
 				return Assets.Sprites.ROGUE;
 			case HUNTRESS:
 				return Assets.Sprites.HUNTRESS;
+			case RAT_KING:
+				return Assets.Sprites.RAT_KING_HERO;
 		}
 	}
 

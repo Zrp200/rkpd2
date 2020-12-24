@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.sprites;
 
+import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.mobs.npcs.MirrorImage;
@@ -46,7 +47,7 @@ public class MirrorSprite extends MobSprite {
 	}
 	
 	public void updateArmor( int tier ) {
-		TextureFilm film = new TextureFilm( HeroSprite.tiers(), tier, FRAME_WIDTH, FRAME_HEIGHT );
+		TextureFilm film = new TextureFilm( HeroSprite.tiers(Assets.Sprites.ROGUE, FRAME_HEIGHT), tier, FRAME_WIDTH, FRAME_HEIGHT );
 		
 		idle = new Animation( 1, true );
 		idle.frames( film, 0, 0, 0, 1, 0, 0, 1, 1 );

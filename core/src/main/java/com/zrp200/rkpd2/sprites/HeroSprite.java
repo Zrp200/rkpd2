@@ -39,12 +39,12 @@ public class HeroSprite extends CharSprite {
 	private static final int FRAME_WIDTH	= 12;
 	private static final int FRAME_HEIGHT	= 15;
 	
-	private static final int RUN_FRAMERATE	= 20;
+	protected int runFramerate	= 20;
 	
-	private static TextureFilm tiers;
+	protected TextureFilm tiers;
 	
-	private Animation fly;
-	private Animation read;
+	protected Animation fly;
+	protected Animation read;
 
 	public HeroSprite() {
 		super();
@@ -67,7 +67,7 @@ public class HeroSprite extends CharSprite {
 		idle = new Animation( 1, true );
 		idle.frames( film, 0, 0, 0, 1, 0, 0, 1, 1 );
 		
-		run = new Animation( RUN_FRAMERATE, true );
+		run = new Animation( runFramerate, true );
 		run.frames( film, 2, 3, 4, 5, 6, 7 );
 		
 		die = new Animation( 20, false );
@@ -145,23 +145,33 @@ public class HeroSprite extends CharSprite {
 	}
 	
 	public void sprint( float speed ) {
-		run.delay = 1f / speed / RUN_FRAMERATE;
+		run.delay = 1f / speed / runFramerate;
 	}
 	
-	public static TextureFilm tiers() {
+	public TextureFilm tiers() {
 		if (tiers == null) {
-			SmartTexture texture = TextureCache.get( Assets.Sprites.ROGUE );
-			tiers = new TextureFilm( texture, texture.width, FRAME_HEIGHT );
+			tiers = tiers(Assets.Sprites.ROGUE, FRAME_HEIGHT);
 		}
 		
 		return tiers;
 	}
+	public static TextureFilm tiers(String spritesheet, int frameHeight) {
+		SmartTexture texture = TextureCache.get( spritesheet );
+		return new TextureFilm( texture, texture.width, frameHeight );
+	}
+
 	
 	public static Image avatar( HeroClass cl, int armorTier ) {
-		
-		RectF patch = tiers().get( armorTier );
+		int frameHeight = FRAME_HEIGHT;
+		int frameWidth = FRAME_WIDTH;
+		if(cl == HeroClass.RAT_KING) {
+			frameHeight = 17;
+			frameWidth = 16;
+			armorTier = 0;
+		};
+		RectF patch = tiers(cl.spritesheet(), frameHeight).get( armorTier );
 		Image avatar = new Image( cl.spritesheet() );
-		RectF frame = avatar.texture.uvRect( 1, 0, FRAME_WIDTH, FRAME_HEIGHT );
+		RectF frame = avatar.texture.uvRect( 1, 0, frameWidth, frameHeight );
 		frame.shift( patch.left, patch.top );
 		avatar.frame( frame );
 		
