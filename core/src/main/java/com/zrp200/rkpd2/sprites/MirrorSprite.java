@@ -21,9 +21,12 @@
 
 package com.zrp200.rkpd2.sprites;
 
+import com.watabou.utils.RectF;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.mobs.npcs.AbstractMirrorImage;
 import com.zrp200.rkpd2.actors.mobs.npcs.MirrorImage;
 import com.watabou.noosa.TextureFilm;
 
@@ -43,23 +46,23 @@ public class MirrorSprite extends MobSprite {
 	@Override
 	public void link( Char ch ) {
 		super.link( ch );
-		updateArmor( ((MirrorImage)ch).armTier );
+		updateArmor( ((AbstractMirrorImage)ch).armTier );
 	}
 	
 	public void updateArmor( int tier ) {
-		TextureFilm film = new TextureFilm( HeroSprite.tiers(Assets.Sprites.ROGUE, FRAME_HEIGHT), tier, FRAME_WIDTH, FRAME_HEIGHT );
-		
-		idle = new Animation( 1, true );
-		idle.frames( film, 0, 0, 0, 1, 0, 0, 1, 1 );
-		
-		run = new Animation( 20, true );
-		run.frames( film, 2, 3, 4, 5, 6, 7 );
-		
-		die = new Animation( 20, false );
-		die.frames( film, 0 );
-		
-		attack = new Animation( 15, false );
-		attack.frames( film, 13, 14, 15, 0 );
+		CharSprite ref = Dungeon.hero.sprite;
+
+		idle = ref.idle.clone();
+
+		run = ref.run.clone();
+
+		attack = ref.attack.clone();
+
+		// a hack to get the first frame, which should be the first idle frame.
+		die = ref.idle.clone();
+		die.frames(ref.idle.frames[0]);
+		die.delay = ref.die.delay;
+		die.looped = ref.die.looped;
 		
 		idle();
 	}

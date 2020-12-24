@@ -13,7 +13,8 @@ public class RatKingHeroSprite extends HeroSprite {
     }
 
     public void updateArmor() {
-        // there's only two armors.
+        // there's only two armors. really one atm.
+        // TODO decide if I want a "crownless" rat king towards the beginning of the game.
         TextureFilm film = new TextureFilm( tiers(), 0, FRAME_WIDTH, FRAME_HEIGHT );
         idle = new Animation( 2, true );
         idle.frames( film, 0, 0, 0, 1 );
@@ -25,7 +26,7 @@ public class RatKingHeroSprite extends HeroSprite {
         attack.frames( film, 2, 3, 4, 5, 0 );
 
         die = new Animation( 10, false );
-        die.frames( film, 0 );
+        die.frames( film, 11,12,13,14 );
 
         zap = attack.clone();
 
