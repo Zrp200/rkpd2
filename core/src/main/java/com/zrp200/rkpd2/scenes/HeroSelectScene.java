@@ -33,6 +33,7 @@ import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.journal.Journal;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.sprites.HeroSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.ActionIndicator;
@@ -295,7 +296,7 @@ public class HeroSelectScene extends PixelScene {
 
 			this.cl = cl;
 
-			icon(new Image(cl.spritesheet(), 0, 90, 12, 15));
+			icon(HeroSprite.avatar(cl,6));
 
 		}
 

@@ -25,9 +25,11 @@ import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Chrome;
 import com.zrp200.rkpd2.GamesInProgress;
 import com.zrp200.rkpd2.ShatteredPixelDungeon;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.journal.Journal;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.sprites.HeroSprite;
 import com.zrp200.rkpd2.ui.Archs;
 import com.zrp200.rkpd2.ui.ExitButton;
 import com.zrp200.rkpd2.ui.Icons;
@@ -169,7 +171,7 @@ public class StartScene extends PixelScene {
 				}
 				
 				if (hero == null){
-					hero = new Image(info.heroClass.spritesheet(), 0, 15*info.armorTier, 12, 15);
+					hero = HeroSprite.avatar(info.heroClass,info.armorTier);
 					add(hero);
 					
 					steps = new Image(Icons.get(Icons.DEPTH));
@@ -182,8 +184,8 @@ public class StartScene extends PixelScene {
 					level = new BitmapText(PixelScene.pixelFont);
 					add(level);
 				} else {
-					hero.copy(new Image(info.heroClass.spritesheet(), 0, 15*info.armorTier, 12, 15));
-					
+					hero.copy(HeroSprite.avatar(info.heroClass,info.armorTier));
+
 					classIcon.copy(Icons.get(info.heroClass));
 				}
 				

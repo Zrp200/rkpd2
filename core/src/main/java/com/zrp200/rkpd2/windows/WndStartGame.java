@@ -34,6 +34,7 @@ import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.InterlevelScene;
 import com.zrp200.rkpd2.scenes.IntroScene;
 import com.zrp200.rkpd2.scenes.PixelScene;
+import com.zrp200.rkpd2.sprites.HeroSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.ActionIndicator;
@@ -168,7 +169,7 @@ public class WndStartGame extends Window {
 			
 			this.cl = cl;
 
-			add(hero = new Image(cl.spritesheet(), 0, 90, 12, 15));
+			add(hero = HeroSprite.avatar(cl,6));
 			
 		}
 		
