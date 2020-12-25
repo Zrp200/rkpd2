@@ -105,16 +105,16 @@ public enum Talent {
 	REJUVENATING_STEPS(54),
 	HEIGHTENED_SENSES(55),
 	DURABLE_PROJECTILES(56),
-
-	ROYAL_PRIVILEGE(57), // food related talents
-	ROYAL_INTUITION(57), // intuition-related talents
-	KINGS_WISDOM(57), // on-id + combat talents
-	NOBLE_CAUSE(57), // other ones.
-	ROYAL_MEAL(57), //// all on-eat talents for tier 2
-	RESTORATION(57), // all upgrade/potion of healing talents
-	POWER_WITHIN(57), // runic (3), wand preservation (3), rogue's foresight (5), rejuvenating steps (3)
-	KINGS_VISION(57), // Lethal momentum (4), arcane vision(4), wide search(3), heightened senses(4)
-	PURSUIT(57); // durable projectiles (4),silent steps,improvised projectiles(4),shield battery(4)
+	// TODO add unique icons
+	ROYAL_PRIVILEGE(16), // food related talents, uses empowering icon
+	ROYAL_INTUITION(49), // intuition-related talents, uses survivalist's icon
+	KINGS_WISDOM(18), // on-id + combat talents, uses tested hypothesis
+	NOBLE_CAUSE(3), // other ones. uses iron will
+	ROYAL_MEAL(20), //// all on-eat talents for tier 2. uses energizing meal
+	RESTORATION(5), // all upgrade/potion of healing talents, uses restored willpower icon
+	POWER_WITHIN(40), // runic (3), wand preservation (3), rogue's foresight (5), rejuvenating steps (3), uses foresight.
+	KINGS_VISION(55), // Lethal momentum (4), arcane vision(4), wide search(3), heightened senses(4), uses heightened senses
+	PURSUIT(50); // durable projectiles (4),silent steps,improvised projectiles(4),shield battery(4), uses FUS
 
 	public static class ImprovisedProjectileCooldown extends FlavourBuff{};
 	public static class LethalMomentumTracker extends FlavourBuff{};
