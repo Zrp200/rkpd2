@@ -152,6 +152,7 @@ abstract public class ClassArmor extends Armor {
 	@Override
 	public void onHeroGainExp(float levelPercent, Hero hero) {
 		super.onHeroGainExp(levelPercent, hero);
+		if(charge > 100) return;
 		charge += 50 * levelPercent;
 		if (charge > 100) charge = 100;
 		updateQuickslot();

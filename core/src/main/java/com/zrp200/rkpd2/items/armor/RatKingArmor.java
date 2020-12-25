@@ -22,9 +22,11 @@ import com.zrp200.rkpd2.effects.particles.ElmoParticle;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
 import com.zrp200.rkpd2.items.weapon.missiles.Shuriken;
+import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.sprites.MissileSprite;
 import com.zrp200.rkpd2.utils.BArray;
 import com.zrp200.rkpd2.utils.GLog;
@@ -32,6 +34,10 @@ import com.zrp200.rkpd2.utils.GLog;
 import java.util.HashMap;
 
 public class RatKingArmor extends ClassArmor{
+    {
+        // TODO add proper asset
+        image = ItemSpriteSheet.ARMOR_HOLDER;
+    }
     // rogue, then mage, then huntress, then warrior.
     private HashMap<Callback, Mob> targets = new HashMap<>();
 
@@ -44,46 +50,42 @@ public class RatKingArmor extends ClassArmor{
 
         @Override
         public void onSelect( Integer target ) {
-            if (target != null) {
+            if(target == null) return;
 
-                PathFinder.buildDistanceMap(curUser.pos, BArray.not(Dungeon.level.solid, null), 8);
+            PathFinder.buildDistanceMap(curUser.pos, BArray.not(Dungeon.level.solid, null), 8);
 
-                if (PathFinder.distance[target] == Integer.MAX_VALUE ||
-                        !Dungeon.level.heroFOV[target] ||
-                        Actor.findChar(target) != null) {
-
-                    GLog.w(Messages.get(RogueArmor.class, "fov"));
-                    return;
-                }
-
-                charge -= 35;
-                updateQuickslot();
-
-                for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
-                    if (Dungeon.level.adjacent(mob.pos, curUser.pos) && mob.alignment != Char.Alignment.ALLY) {
-                        Buff.prolong(mob, Blindness.class, Blindness.DURATION / 2f);
-                        if (mob.state == mob.HUNTING) mob.state = mob.WANDERING;
-                        mob.sprite.emitter().burst(Speck.factory(Speck.LIGHT), 4);
-                    }
-                }
-                Buff.affect(curUser, Invisibility.class, Invisibility.DURATION/2f);
-
-                CellEmitter.get(curUser.pos).burst(Speck.factory(Speck.WOOL), 10);
-                ScrollOfTeleportation.appear(curUser, target);
-                Sample.INSTANCE.play(Assets.Sounds.PUFF);
-                Dungeon.level.occupyCell(curUser);
-                Dungeon.observe();
-                GameScene.updateFog();
-                // warrior
-                for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
-                    Char mob = Actor.findChar(curUser.pos + PathFinder.NEIGHBOURS8[i]);
-                    if (mob != null && mob != curUser && mob.alignment != Char.Alignment.ALLY) {
-                        Buff.prolong(mob, Paralysis.class, 5);
-                    }
-                }
-                CellEmitter.center(curUser.pos).burst(Speck.factory(Speck.DUST), 10);
-                Camera.main.shake(2, 0.5f);
+            if (PathFinder.distance[target] == Integer.MAX_VALUE ||
+                    !Dungeon.level.heroFOV[target]) {
+                GLog.w(Messages.get(RogueArmor.class, "fov"));
+                return;
             }
+            if(Actor.findChar(target) != null) { // use heroic leap mechanics instead.
+                Ballistica route = new Ballistica(curUser.pos, target, Ballistica.STOP_TARGET);
+                //can't occupy the same cell as another char, so move back one until it is valid.
+                int i = 0;
+                while (Actor.findChar( target ) != null && target != curUser.pos)
+                    target = route.path.get(route.dist-++i);
+            }
+
+            charge -= 35;
+            updateQuickslot();
+            for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
+                if (Dungeon.level.adjacent(mob.pos, curUser.pos) && mob.alignment != Char.Alignment.ALLY) {
+                    Buff.prolong(mob, Blindness.class, Blindness.DURATION / 2f);
+                    if (mob.state == mob.HUNTING) mob.state = mob.WANDERING;
+                    mob.sprite.emitter().burst(Speck.factory(Speck.LIGHT), 4);
+                }
+            }
+            Buff.prolong(curUser, Invisibility.class, Invisibility.DURATION/2f);
+            CellEmitter.get(curUser.pos).burst(Speck.factory(Speck.WOOL), 10);
+            ScrollOfTeleportation.appear(curUser, target);
+            Sample.INSTANCE.play(Assets.Sounds.PUFF);
+            Dungeon.level.occupyCell(curUser);
+            // at least do warrior vfx now.
+            CellEmitter.center(curUser.pos).burst(Speck.factory(Speck.DUST), 10);
+            Camera.main.shake(2, 0.5f);
+            Dungeon.observe();
+            GameScene.updateFog();
             // now do mage
             for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
                 if (Dungeon.level.heroFOV[mob.pos]
@@ -94,7 +96,6 @@ public class RatKingArmor extends ClassArmor{
                 }
             }
 
-            curUser.spend( Actor.TICK );
             curUser.sprite.operate( curUser.pos );
             //Invisibility.dispel();
             curUser.busy();
@@ -103,7 +104,15 @@ public class RatKingArmor extends ClassArmor{
             Sample.INSTANCE.play( Assets.Sounds.BURNING );
             Sample.INSTANCE.play( Assets.Sounds.BURNING );
             Sample.INSTANCE.play( Assets.Sounds.BURNING );
-
+            // warrior
+            for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
+                Char mob = Actor.findChar(curUser.pos + PathFinder.NEIGHBOURS8[i]);
+                if (mob != null && mob != curUser && mob.alignment != Char.Alignment.ALLY) {
+                    Buff.prolong(mob, Paralysis.class, 5);
+                }
+            }
+            Buff.prolong(curUser, Invisibility.class, Invisibility.DURATION/2f);
+            curUser.spend( Actor.TICK );
             // huntress
             Item proto = new Shuriken();
             for (Mob mob : Dungeon.level.mobs) {
@@ -117,25 +126,23 @@ public class RatKingArmor extends ClassArmor{
                             curUser.attack( targets.get( this ) );
                             targets.remove( this );
                             if (targets.isEmpty()) {
-                                Buff.affect(curUser, Invisibility.class, Invisibility.DURATION/4f);
+                                //Buff.prolong(curUser, Invisibility.class, Invisibility.DURATION/2f);
                                 curUser.spendAndNext( curUser.attackDelay() );
                             }
                         }
                     };
-
-                    ((MissileSprite)curUser.sprite.parent.recycle( MissileSprite.class )).
-                            reset( curUser.sprite, mob.pos, proto, callback );
+                    ((MissileSprite)curUser.sprite.parent
+                            .recycle( MissileSprite.class ))
+                            .reset( curUser.sprite, mob.pos, proto, callback );
 
                     targets.put( callback, mob );
                 }
             }
-
             if (targets.size() > 0) {
                 curUser.sprite.zap(curUser.pos);
                 curUser.busy();
             }
-            curUser.spendAndNext(Actor.TICK*3);
-
+            curUser.spendAndNext(Actor.TICK*3 ); // punishment
         }
         @Override
         public String prompt() {
