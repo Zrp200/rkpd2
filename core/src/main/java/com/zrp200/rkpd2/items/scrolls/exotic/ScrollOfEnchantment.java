@@ -27,6 +27,7 @@ import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.Enchanting;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.Armor;
+import com.zrp200.rkpd2.items.scrolls.Scroll;
 import com.zrp200.rkpd2.items.stones.StoneOfEnchantment;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.messages.Messages;
@@ -51,47 +52,53 @@ public class ScrollOfEnchantment extends ExoticScroll {
 		
 		GameScene.selectItem( itemSelector, WndBag.Mode.ENCHANTABLE, Messages.get(this, "inv_title"));
 	}
+
+	public static void enchantWeapon(Weapon weapon) {
+		final Weapon.Enchantment enchants[] = new Weapon.Enchantment[3];
+
+		Class<? extends Weapon.Enchantment> existing = weapon.enchantment != null ? weapon.enchantment.getClass() : null;
+		enchants[0] = Weapon.Enchantment.randomCommon( existing );
+		enchants[1] = Weapon.Enchantment.randomUncommon( existing );
+		enchants[2] = Weapon.Enchantment.random( existing, enchants[0].getClass(), enchants[1].getClass());
+
+		// TODO add special bow enchant logic here. will need to catch duplicate enchants too.
+
+		GameScene.show(new WndOptions(Messages.titleCase(new ScrollOfEnchantment().name()),
+				Messages.get(ScrollOfEnchantment.class, "weapon") +
+						"\n\n" +
+						Messages.get(ScrollOfEnchantment.class, "cancel_warn"),
+				enchants[0].name(),
+				enchants[1].name(),
+				enchants[2].name(),
+				Messages.get(ScrollOfEnchantment.class, "cancel")){
+
+			@Override
+			protected void onSelect(int index) {
+				if (index < 3) {
+					weapon.enchant(enchants[index]);
+					GLog.p(Messages.get(StoneOfEnchantment.class, "weapon"));
+					((Scroll)curItem).readAnimation();
+
+					Sample.INSTANCE.play( Assets.Sounds.READ );
+					Enchanting.show(curUser, weapon);
+					Talent.onUpgradeScrollUsed( Dungeon.hero );
+				}
+			}
+
+			@Override
+			public void onBackPressed() {
+				//do nothing, reader has to cancel
+			}
+		});
+	}
 	
 	protected WndBag.Listener itemSelector = new WndBag.Listener() {
 		@Override
 		public void onSelect(final Item item) {
 			
 			if (item instanceof Weapon){
-				
-				final Weapon.Enchantment enchants[] = new Weapon.Enchantment[3];
-				
-				Class<? extends Weapon.Enchantment> existing = ((Weapon) item).enchantment != null ? ((Weapon) item).enchantment.getClass() : null;
-				enchants[0] = Weapon.Enchantment.randomCommon( existing );
-				enchants[1] = Weapon.Enchantment.randomUncommon( existing );
-				enchants[2] = Weapon.Enchantment.random( existing, enchants[0].getClass(), enchants[1].getClass());
-				
-				GameScene.show(new WndOptions(Messages.titleCase(ScrollOfEnchantment.this.name()),
-						Messages.get(ScrollOfEnchantment.class, "weapon") +
-						"\n\n" +
-						Messages.get(ScrollOfEnchantment.class, "cancel_warn"),
-						enchants[0].name(),
-						enchants[1].name(),
-						enchants[2].name(),
-						Messages.get(ScrollOfEnchantment.class, "cancel")){
-					
-					@Override
-					protected void onSelect(int index) {
-						if (index < 3) {
-							((Weapon) item).enchant(enchants[index]);
-							GLog.p(Messages.get(StoneOfEnchantment.class, "weapon"));
-							((ScrollOfEnchantment)curItem).readAnimation();
-							
-							Sample.INSTANCE.play( Assets.Sounds.READ );
-							Enchanting.show(curUser, item);
-							Talent.onUpgradeScrollUsed( Dungeon.hero );
-						}
-					}
-					
-					@Override
-					public void onBackPressed() {
-						//do nothing, reader has to cancel
-					}
-				});
+
+				enchantWeapon((Weapon)item);
 			
 			} else if (item instanceof Armor) {
 				

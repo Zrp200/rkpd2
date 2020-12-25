@@ -26,9 +26,12 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.effects.Splash;
+import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.rings.RingOfFuror;
 import com.zrp200.rkpd2.items.rings.RingOfSharpshooting;
+import com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfEnchantment;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
@@ -57,11 +60,12 @@ public class SpiritBow extends Weapon {
 	}
 	
 	public boolean sniperSpecial = false;
+	protected boolean rangedAttack = false;
 	
 	@Override
 	public ArrayList<String> actions(Hero hero) {
 		ArrayList<String> actions = super.actions(hero);
-		actions.remove(AC_EQUIP);
+		if(hero == null || hero.heroClass != HeroClass.HUNTRESS) actions.remove(AC_EQUIP);
 		actions.add(AC_SHOOT);
 		return actions;
 	}
@@ -132,16 +136,12 @@ public class SpiritBow extends Weapon {
 	
 	@Override
 	public int min(int lvl) {
-		return 1 + Dungeon.hero.lvl/5
-				+ RingOfSharpshooting.levelDamageBonus(Dungeon.hero)
-				+ (curseInfusionBonus ? 1 : 0);
+		return 1 + level() + RingOfSharpshooting.levelDamageBonus(Dungeon.hero);
 	}
 	
 	@Override
 	public int max(int lvl) {
-		return 6 + (int)(Dungeon.hero.lvl/2.5f)
-				+ 2*RingOfSharpshooting.levelDamageBonus(Dungeon.hero)
-				+ (curseInfusionBonus ? 2 : 0);
+		return 6 + (int)(2*(internalLevel() + RingOfSharpshooting.levelDamageBonus(Dungeon.hero)));
 	}
 
 	@Override
@@ -162,7 +162,7 @@ public class SpiritBow extends Weapon {
 			}
 		}
 		
-		if (sniperSpecial){
+		if (sniperSpecial && rangedAttack){
 			switch (augment){
 				case NONE:
 					damage = Math.round(damage * 0.667f);
@@ -185,7 +185,7 @@ public class SpiritBow extends Weapon {
 	
 	@Override
 	public float speedFactor(Char owner) {
-		if (sniperSpecial){
+		if (sniperSpecial && rangedAttack){
 			switch (augment){
 				case NONE: default:
 					return 0f;
@@ -201,7 +201,15 @@ public class SpiritBow extends Weapon {
 	
 	@Override
 	public int level() {
-		return (Dungeon.hero == null ? 0 : Dungeon.hero.lvl/5) + (curseInfusionBonus ? 1 : 0);
+		return (int)internalLevel();
+	}
+	// this allows me to more dynamically adjust it by class.
+	private double internalLevel() {
+		double level = curseInfusionBonus ? 1 : 0;
+		if(Dungeon.hero == null) return level;
+		double rate = 5f;
+		if(Dungeon.hero.heroClass == HeroClass.HUNTRESS) rate /= 2; // goes up to +12 with huntress.
+		return level + Dungeon.hero.lvl / rate;
 	}
 
 	@Override
@@ -209,12 +217,18 @@ public class SpiritBow extends Weapon {
 		//level isn't affected by buffs/debuffs
 		return level();
 	}
-	
+
+	// huntress can enchant with scrolls of upgrade
 	@Override
 	public boolean isUpgradable() {
-		return false;
+		return Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.HUNTRESS;
 	}
-	
+	@Override
+	public Item upgrade(boolean enchant) {
+		ScrollOfEnchantment.enchantWeapon(this);
+		return this;
+	}
+
 	public SpiritArrow knockArrow(){
 		return new SpiritArrow();
 	}
@@ -263,6 +277,7 @@ public class SpiritBow extends Weapon {
 
 		@Override
 		protected void onThrow( int cell ) {
+			rangedAttack = true;
 			Char enemy = Actor.findChar( cell );
 			if (enemy == null || enemy == curUser) {
 				parent = null;
@@ -273,6 +288,7 @@ public class SpiritBow extends Weapon {
 				}
 				if (sniperSpecial && SpiritBow.this.augment != Augment.SPEED) sniperSpecial = false;
 			}
+			rangedAttack = false;
 		}
 
 		@Override
