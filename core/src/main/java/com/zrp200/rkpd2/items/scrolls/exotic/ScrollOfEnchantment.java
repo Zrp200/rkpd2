@@ -29,7 +29,12 @@ import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.scrolls.Scroll;
 import com.zrp200.rkpd2.items.stones.StoneOfEnchantment;
+import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.Weapon;
+import com.zrp200.rkpd2.items.weapon.enchantments.Blocking;
+import com.zrp200.rkpd2.items.weapon.enchantments.Explosive;
+import com.zrp200.rkpd2.items.weapon.enchantments.Lucky;
+import com.zrp200.rkpd2.items.weapon.enchantments.Shocking;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
@@ -60,8 +65,14 @@ public class ScrollOfEnchantment extends ExoticScroll {
 		enchants[0] = Weapon.Enchantment.randomCommon( existing );
 		enchants[1] = Weapon.Enchantment.randomUncommon( existing );
 		enchants[2] = Weapon.Enchantment.random( existing, enchants[0].getClass(), enchants[1].getClass());
-
-		// TODO add special bow enchant logic here. will need to catch duplicate enchants too.
+		if(weapon instanceof SpiritBow) {
+			// essentially a find and replace with priorities.
+			// this means that they're all technically obtainable (aside from blocking)
+			if(enchants[2] instanceof Blocking) enchants[2] = new Explosive();
+			else if(enchants[1] instanceof Blocking) enchants[1] = new Explosive();
+			else if(enchants[0] instanceof Shocking) enchants[0] = new Explosive();
+			else if(enchants[1] instanceof Lucky) enchants[1] = new Explosive();
+		}
 
 		GameScene.show(new WndOptions(Messages.titleCase(new ScrollOfEnchantment().name()),
 				Messages.get(ScrollOfEnchantment.class, "weapon") +

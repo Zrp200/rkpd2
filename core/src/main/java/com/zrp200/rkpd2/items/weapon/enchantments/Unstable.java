@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.items.weapon.enchantments;
 
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.watabou.utils.Random;
@@ -43,7 +44,8 @@ public class Unstable extends Weapon.Enchantment {
 			Lucky.class,
 			//projecting not included, no on-hit effect
 			Shocking.class,
-			Vampiric.class
+			Vampiric.class,
+			Explosive.class
 	};
 
 	@Override
@@ -54,8 +56,12 @@ public class Unstable extends Weapon.Enchantment {
 			conservedDamage = attacker.buff(Kinetic.ConservedDamage.class).damageBonus();
 			attacker.buff(Kinetic.ConservedDamage.class).detach();
 		}
-		
-		damage = Reflection.newInstance(Random.oneOf(randomEnchants)).proc( weapon, attacker, defender, damage );
+
+		Class<?extends Weapon.Enchantment> enchantmentClass;
+		do {
+			enchantmentClass = Random.oneOf(randomEnchants);
+		} while(enchantmentClass == Explosive.class && !(weapon instanceof SpiritBow));
+		damage = Reflection.newInstance(enchantmentClass).proc( weapon, attacker, defender, damage );
 		
 		return damage + conservedDamage;
 	}
