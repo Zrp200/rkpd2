@@ -18,7 +18,7 @@ public class Explosive extends Weapon.Enchantment {
     @Override
     public int proc(Weapon weapon, Char attacker, Char defender, int damage) {
         int level = weapon.buffedLvl();
-        if(Random.Int(4+level) >= 3) new Bomb().explode(defender.pos);
+        if(Random.Int(6+level) >= 5) new Bomb().explode(defender.pos);
         return damage;
     }
 }
