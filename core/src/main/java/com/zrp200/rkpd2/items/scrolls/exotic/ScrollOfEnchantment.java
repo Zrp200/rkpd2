@@ -33,6 +33,7 @@ import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.enchantments.Blocking;
 import com.zrp200.rkpd2.items.weapon.enchantments.Explosive;
+import com.zrp200.rkpd2.items.weapon.enchantments.Grim;
 import com.zrp200.rkpd2.items.weapon.enchantments.Lucky;
 import com.zrp200.rkpd2.items.weapon.enchantments.Shocking;
 import com.zrp200.rkpd2.messages.Messages;
@@ -68,10 +69,14 @@ public class ScrollOfEnchantment extends ExoticScroll {
 		if(weapon instanceof SpiritBow) {
 			// essentially a find and replace with priorities.
 			// this means that they're all technically obtainable (aside from blocking)
-			if(enchants[2] instanceof Blocking) enchants[2] = new Explosive();
-			else if(enchants[1] instanceof Blocking) enchants[1] = new Explosive();
+			// overall effect here is that blocking is removed from the pool and shocking and lucky are much less common.
+			if(enchants[1] instanceof Blocking) enchants[1] = new Explosive();
 			else if(enchants[0] instanceof Shocking) enchants[0] = new Explosive();
 			else if(enchants[1] instanceof Lucky) enchants[1] = new Explosive();
+			else if(enchants[2] instanceof Lucky || enchants[2] instanceof Shocking) enchants[2] = new Explosive();
+
+			if(enchants[2] instanceof Blocking
+					|| enchants[2] instanceof Lucky) enchants[2] = new Grim();
 		}
 
 		GameScene.show(new WndOptions(Messages.titleCase(new ScrollOfEnchantment().name()),
