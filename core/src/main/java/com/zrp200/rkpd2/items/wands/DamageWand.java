@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.items.wands;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.buffs.WandEmpower;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.messages.Messages;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Random;
@@ -66,7 +67,9 @@ public abstract class DamageWand extends Wand{
 	public String statsDesc() {
 		if (levelKnown)
 			return Messages.get(this, "stats_desc", min(), max());
-		else
-			return Messages.get(this, "stats_desc", min(0), max(0));
+		else {
+			int baseLevel = Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.MAGE ? HeroClass.MAGE_WAND_BOOST : 0;
+			return Messages.get(this, "stats_desc", min(baseLevel), max(baseLevel));
+		}
 	}
 }
