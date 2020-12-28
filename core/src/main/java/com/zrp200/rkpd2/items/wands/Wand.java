@@ -34,6 +34,7 @@ import com.zrp200.rkpd2.actors.buffs.MagicImmune;
 import com.zrp200.rkpd2.actors.buffs.Recharging;
 import com.zrp200.rkpd2.actors.buffs.SoulMark;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.MagicMissile;
@@ -299,6 +300,7 @@ public abstract class Wand extends Item {
 	@Override
 	public int buffedLvl() {
 		int lvl = super.buffedLvl();
+		if(Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.MAGE) lvl += HeroClass.MAGE_WAND_BOOST; // shadow buff
 		if (curUser != null) {
 			WandOfMagicMissile.MagicCharge buff = curUser.buff(WandOfMagicMissile.MagicCharge.class);
 			if (buff != null && buff.level() > lvl){
@@ -306,6 +308,13 @@ public abstract class Wand extends Item {
 			}
 		}
 		return lvl;
+	}
+
+	@Override
+	public int buffedVisiblyUpgraded() {
+		int bvu = super.buffedVisiblyUpgraded();
+		if(Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.MAGE) bvu -= HeroClass.MAGE_WAND_BOOST;
+		return bvu;
 	}
 
 	public void updateLevel() {
@@ -578,6 +587,7 @@ public abstract class Wand extends Item {
 		private void recharge(){
 			int missingCharges = maxCharges - curCharges;
 			missingCharges = Math.max(0, missingCharges);
+			if(Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.MAGE) missingCharges += HeroClass.MAGE_WAND_BOOST;
 
 			float turnsToCharge = (float) (BASE_CHARGE_DELAY
 					+ (SCALING_CHARGE_ADDITION * Math.pow(scalingFactor, missingCharges)));

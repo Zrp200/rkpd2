@@ -66,6 +66,8 @@ public enum HeroClass {
 	private String title;
 	private HeroSubClass[] subClasses;
 
+	public static final int MAGE_WAND_BOOST = 3;
+
 	HeroClass( String title, HeroSubClass...subClasses ) {
 		this.title = title;
 		this.subClasses = subClasses;
