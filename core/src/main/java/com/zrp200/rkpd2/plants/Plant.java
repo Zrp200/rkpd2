@@ -29,6 +29,7 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Barkskin;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.CellEmitter;
@@ -70,8 +71,11 @@ public abstract class Plant implements Bundlable {
 		activate( ch );
 
 		if (Dungeon.level.heroFOV[pos] && Dungeon.hero.hasTalent(Talent.NATURES_AID,Talent.NOBLE_CAUSE)){
-			// 4/6 turns based on talent points spent
-			Buff.affect(Dungeon.hero, Barkskin.class).set(2, 2*(1+Dungeon.hero.pointsInTalents(Talent.NATURES_AID,Talent.NOBLE_CAUSE)));
+			// 4/6 turns based on talent points spent (rk), 6/9 (huntress)
+			int modifier = Dungeon.hero.heroClass == HeroClass.HUNTRESS ? 3 : 2;
+			Buff.affect(Dungeon.hero, Barkskin.class).set(
+					modifier,
+					modifier*(1+Dungeon.hero.pointsInTalents(Talent.NATURES_AID,Talent.NOBLE_CAUSE)));
 		}
 	}
 	

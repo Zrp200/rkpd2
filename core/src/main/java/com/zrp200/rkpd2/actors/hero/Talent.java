@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.Adrenaline;
 import com.zrp200.rkpd2.actors.buffs.ArtifactRecharge;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.CounterBuff;
@@ -150,6 +151,7 @@ public enum Talent {
 		int points = hero.pointsInTalent(talent);
 		switch(talent) {
 			case ROYAL_PRIVILEGE: case NATURES_BOUNTY:
+				if(hero.pointsInTalent(NATURES_BOUNTY) > 0) points++;
 				Buff.count(hero, NatureBerriesAvailable.class, 2*points);
 				break;
 			case ROYAL_INTUITION:
@@ -211,9 +213,13 @@ public enum Talent {
 			Buff.affect( hero, ArtifactRecharge.class).set(1 + 2*(hero.pointsInTalent(MYSTICAL_MEAL)+hero.pointsInTalent(ROYAL_MEAL))).ignoreHornOfPlenty = foodSource instanceof HornOfPlenty;
 			ScrollOfRecharging.charge( hero );
 		}
-		if (hero.hasTalent(INVIGORATING_MEAL,ROYAL_MEAL)) {
+		if (hero.hasTalent(INVIGORATING_MEAL)) {
+			// 4.5/6 tiles -> 3/5 turns
+			Buff.affect(hero, Adrenaline.class, 2+2*hero.pointsInTalent(INVIGORATING_MEAL));
+		}
+		if (hero.hasTalent(ROYAL_MEAL)) {
 			//effectively 1/2 turns of haste
-			Buff.affect( hero, Haste.class, 0.67f+hero.pointsInTalent(INVIGORATING_MEAL)+hero.pointsInTalent(ROYAL_MEAL));
+			Buff.affect( hero, Haste.class, 0.67f+hero.pointsInTalent(ROYAL_MEAL));
 		}
 	}
 
@@ -222,6 +228,7 @@ public enum Talent {
 	public static float itemIDSpeedFactor( Hero hero, Item item ){
 		// 1.75x/2.5x speed with huntress talent
 		float factor = 1f + (hero.pointsInTalent(ROYAL_INTUITION) + hero.pointsInTalent(ROYAL_INTUITION))*0.75f;
+		if(hero.pointsInTalent(SURVIVALISTS_INTUITION) > 0) factor *= 2.5;
 
 		// 2x/instant for Warrior (see onItemEquipped)
 		if (item instanceof MeleeWeapon || item instanceof Armor){
@@ -255,7 +262,9 @@ public enum Talent {
 			for (int cell : grassCells){
 				Char ch = Actor.findChar(cell);
 				if (ch != null){
-					Buff.affect(ch, Roots.class, 1f + hero.pointsInTalents(RESTORED_NATURE,RESTORATION));
+					int duration = 1+hero.pointsInTalents(RESTORED_NATURE,RESTORATION);
+					if(hero.heroClass == HeroClass.HUNTRESS) duration *= 1.5;
+					Buff.affect(ch, Roots.class, duration);
 				}
 				if (Dungeon.level.map[cell] == Terrain.EMPTY ||
 						Dungeon.level.map[cell] == Terrain.EMBERS ||
@@ -265,7 +274,7 @@ public enum Talent {
 				}
 				CellEmitter.get(cell).burst(LeafParticle.LEVEL_SPECIFIC, 4);
 			}
-			if (hero.pointsInTalent(RESTORED_NATURE) == 1){
+			if (hero.pointsInTalents(RESTORED_NATURE,RESTORATION) == 1){
 				grassCells.remove(0);
 				grassCells.remove(0);
 				grassCells.remove(0);
@@ -319,6 +328,9 @@ public enum Talent {
 		if (hero.pointsInTalents(THIEFS_INTUITION,ROYAL_INTUITION) == 2){
 			if (item instanceof Ring) ((Ring) item).setKnown();
 		}
+		if( hero.pointsInTalent(SURVIVALISTS_INTUITION) == 2 && Random.Int(3) == 0){
+			item.cursedKnown = true;
+		}
 	}
 
 	//note that IDing can happen in alchemy scene, so be careful with VFX here
@@ -348,7 +360,12 @@ public enum Talent {
 			if (hero.belongings.weapon instanceof MissileWeapon) {
 				Buff.affect(enemy, FollowupStrikeTracker.class);
 			} else if (enemy.buff(FollowupStrikeTracker.class) != null){
-				dmg += 1 + hero.pointsInTalents(FOLLOWUP_STRIKE,KINGS_WISDOM);
+				int bonus = 1 + hero.pointsInTalents(FOLLOWUP_STRIKE,KINGS_WISDOM); // 2/3
+				if(hero.heroClass == HeroClass.HUNTRESS) {
+					double trueBonus = bonus*1.5f;
+					bonus = (int)trueBonus + (Math.random() < trueBonus%1 ? 1 : 0); // 3/4-5
+				};
+				dmg += bonus;
 				if (!(enemy instanceof Mob) || !((Mob) enemy).surprisedBy(hero)){
 					Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG, 0.75f, 1.2f);
 				}

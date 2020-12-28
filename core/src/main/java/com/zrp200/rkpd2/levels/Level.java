@@ -41,6 +41,7 @@ import com.zrp200.rkpd2.actors.buffs.MagicalSight;
 import com.zrp200.rkpd2.actors.buffs.MindVision;
 import com.zrp200.rkpd2.actors.buffs.Shadows;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.mobs.Bestiary;
@@ -945,7 +946,9 @@ public abstract class Level implements Bundlable {
 				set(ch.pos, Terrain.HIGH_GRASS);
 			}
 			GameScene.updateMap(ch.pos);
-			Buff.affect(ch, Talent.RejuvenatingStepsCooldown.class, 15f - 5f*Dungeon.hero.pointsInTalents(Talent.REJUVENATING_STEPS,Talent.POWER_WITHIN));
+			int points = Dungeon.hero.pointsInTalents(Talent.REJUVENATING_STEPS,Talent.POWER_WITHIN);
+			if(Dungeon.hero.pointsInTalent(Talent.REJUVENATING_STEPS) > 0) points++;
+			Buff.affect(ch, Talent.RejuvenatingStepsCooldown.class, 10*(float)Math.pow(2,1-points));
 		}
 
 		if (!ch.flying){
@@ -1133,10 +1136,12 @@ public abstract class Level implements Bundlable {
 
 				}
 			} else if (((Hero) c).hasTalent(Talent.HEIGHTENED_SENSES,Talent.KINGS_VISION)) {
+				int points = ((Hero)c).pointsInTalents(Talent.HEIGHTENED_SENSES,Talent.KINGS_VISION);
+				if(((Hero)c).heroClass == HeroClass.HUNTRESS) points++; // yup.
 				for (Mob mob : mobs) {
 					int p = mob.pos;
 					if (!fieldOfView[p]
-							&& distance(c.pos, p) <= 1+((Hero) c).pointsInTalents(Talent.HEIGHTENED_SENSES,Talent.KINGS_VISION)) {
+							&& distance(c.pos, p) <= 1+points) {
 						Dungeon.hero.mindVisionEnemies.add(mob);
 					}
 				}

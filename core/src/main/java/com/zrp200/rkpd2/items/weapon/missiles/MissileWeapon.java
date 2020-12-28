@@ -28,6 +28,7 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Corruption;
 import com.zrp200.rkpd2.actors.buffs.PinCushion;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.bags.Bag;
@@ -222,6 +223,7 @@ abstract public class MissileWeapon extends Weapon {
 
 		//+50%/75% durability
 		int points = Dungeon.hero.pointsInTalents(Talent.DURABLE_PROJECTILES,Talent.PURSUIT);
+		if(Dungeon.hero.heroClass == HeroClass.HUNTRESS) usages *= 1.5; // look how simple this is!
 		if (points > 0){
 			usages *= 1.25f + (0.25f*points);
 		}
