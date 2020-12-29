@@ -73,10 +73,9 @@ public class ScrollOfEnchantment extends ExoticScroll {
 			if(enchants[1] instanceof Blocking) enchants[1] = new Explosive();
 			else if(enchants[0] instanceof Shocking) enchants[0] = new Explosive();
 			else if(enchants[1] instanceof Lucky) enchants[1] = new Explosive();
-			else if(enchants[2] instanceof Lucky || enchants[2] instanceof Shocking) enchants[2] = new Explosive();
-
+			// if they show up in the third slot they are replaced with grim
 			if(enchants[2] instanceof Blocking
-					|| enchants[2] instanceof Lucky) enchants[2] = new Grim();
+					|| enchants[2] instanceof Lucky || enchants[2] instanceof Shocking) enchants[2] = new Grim();
 		}
 
 		GameScene.show(new WndOptions(Messages.titleCase(new ScrollOfEnchantment().name()),
