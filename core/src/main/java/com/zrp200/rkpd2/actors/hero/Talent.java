@@ -114,9 +114,9 @@ public enum Talent {
 	ROYAL_MEAL(20), //// all on-eat talents for tier 2. uses energizing meal
 	RESTORATION(5), // all upgrade/potion of healing talents, uses restored willpower icon
 	POWER_WITHIN(40), // runic (3), wand preservation (3), rogue's foresight (5), rejuvenating steps (3), uses foresight.
-	KINGS_VISION(55), // Lethal momentum (4), arcane vision(4), wide search(3), heightened senses(4), uses heightened senses
-	PURSUIT(50); // durable projectiles (4),silent steps,improvised projectiles(4),shield battery(4), uses FUS
-
+	KINGS_VISION(55), // improvised projectiles (4), arcane vision(4), wide search(3), heightened senses(4), uses heightened senses
+	PURSUIT(50); // durable projectiles (5),silent steps(4),lethal momentum (3),shield battery(5), uses FUS
+	// TODO is splitting up t2s arbitrarily really a good idea?
 	public static class ImprovisedProjectileCooldown extends FlavourBuff{};
 	public static class LethalMomentumTracker extends FlavourBuff{};
 	public static class WandPreservationCounter extends CounterBuff{};
