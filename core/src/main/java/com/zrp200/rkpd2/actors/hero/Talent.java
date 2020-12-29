@@ -353,7 +353,7 @@ public enum Talent {
 			if(hero.pointsInTalent(TEST_SUBJECT) > 0) heal *= 1.5;
 			hero.HP = Math.min(hero.HP+heal, hero.HT);
 			Emitter e = hero.sprite.emitter();
-			if (e != null) e.burst(Speck.factory(Speck.HEALING), heal/2); // 2->1,3->2,5->3
+			if (e != null) e.burst(Speck.factory(Speck.HEALING), (int)Math.ceil(heal/2f)); // 2->1,3->2,5->3
 		}
 		if (hero.hasTalent(TESTED_HYPOTHESIS,KINGS_WISDOM)){
 			//2/3 turns of wand recharging
