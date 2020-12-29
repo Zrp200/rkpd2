@@ -261,7 +261,9 @@ public enum Talent {
 		}
 		if (hero.hasTalent(MYSTICAL_MEAL,ROYAL_MEAL)){
 			//3/5 turns of recharging
-			Buff.affect( hero, ArtifactRecharge.class).set(1 + 2*(hero.pointsInTalent(MYSTICAL_MEAL)+hero.pointsInTalent(ROYAL_MEAL))).ignoreHornOfPlenty = foodSource instanceof HornOfPlenty;
+			int duration = 1 + 2*(hero.pointsInTalent(MYSTICAL_MEAL)+hero.pointsInTalent(ROYAL_MEAL));
+			if(hero.hasTalent(MYSTICAL_MEAL)) duration *= 2;
+			Buff.affect( hero, ArtifactRecharge.class).set(duration).ignoreHornOfPlenty = foodSource instanceof HornOfPlenty && !hero.hasTalent(MENDING_SHADOWS);
 			ScrollOfRecharging.charge( hero );
 		}
 		if (hero.hasTalent(INVIGORATING_MEAL)) {
