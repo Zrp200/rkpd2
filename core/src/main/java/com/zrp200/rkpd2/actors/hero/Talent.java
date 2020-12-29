@@ -156,9 +156,16 @@ public enum Talent {
 				break;
 			case ROYAL_INTUITION:
 				case ARMSMASTERS_INTUITION:
-					if(points == 2) {
+					if(talent == ARMSMASTERS_INTUITION && points > 0) points++;
+					if(points > 1) {
 						if (hero.belongings.weapon != null) hero.belongings.weapon.identify();
 						if (hero.belongings.armor != null)  hero.belongings.armor.identify();
+					}
+					// armsmaster identifies all weapons and armors
+					if(points == 3) {
+						for(Item item : hero.belongings.backpack.items) {
+							if(item instanceof Armor || item instanceof Weapon) item.identify();
+						}
 					}
 					if(talent == ARMSMASTERS_INTUITION) break;
 				case THIEFS_INTUITION:
@@ -232,7 +239,10 @@ public enum Talent {
 
 		// 2x/instant for Warrior (see onItemEquipped)
 		if (item instanceof MeleeWeapon || item instanceof Armor){
-			factor *= 1f + hero.pointsInTalent(ROYAL_INTUITION) + hero.pointsInTalent(ARMSMASTERS_INTUITION);
+			int points = hero.pointsInTalents(ROYAL_INTUITION,ARMSMASTERS_INTUITION);
+			// basically an innate +1 for armsmaster
+			if(hero.hasTalent(ARMSMASTERS_INTUITION)) points++;
+			factor *= 1f + points;
 		}
 		// 3x/instant for mage (see Wand.wandUsed())
 		if (item instanceof Wand){
@@ -312,7 +322,7 @@ public enum Talent {
 	}
 
 	public static void onItemEquipped( Hero hero, Item item ){
-		if (hero.pointsInTalents(ARMSMASTERS_INTUITION,ROYAL_INTUITION) == 2 && (item instanceof Weapon || item instanceof Armor)){
+		if (hero.pointsInTalents(ARMSMASTERS_INTUITION,ROYAL_INTUITION) >= (hero.hasTalent(ARMSMASTERS_INTUITION) ? 1 : 2) && (item instanceof Weapon || item instanceof Armor)){
 			item.identify();
 		}
 		if (hero.hasTalent(THIEFS_INTUITION,ROYAL_INTUITION) && item instanceof Ring){
@@ -328,6 +338,8 @@ public enum Talent {
 		if (hero.pointsInTalents(THIEFS_INTUITION,ROYAL_INTUITION) == 2){
 			if (item instanceof Ring) ((Ring) item).setKnown();
 		}
+		if (hero.pointsInTalent(ARMSMASTERS_INTUITION) == 2 &&
+				(item instanceof Weapon || item instanceof Armor)) item.identify();
 		if( hero.pointsInTalent(SURVIVALISTS_INTUITION) == 2 && Random.Int(3) == 0){
 			item.cursedKnown = true;
 		}
