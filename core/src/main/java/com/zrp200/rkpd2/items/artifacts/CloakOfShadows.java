@@ -250,7 +250,7 @@ public class CloakOfShadows extends Artifact {
 			}
 		}
 
-		float inc = 0.5f;
+		float inc = 1;
 
 		@Override
 		public boolean act(){
