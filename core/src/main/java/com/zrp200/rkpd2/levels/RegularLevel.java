@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.mobs.GoldenMimic;
 import com.zrp200.rkpd2.actors.mobs.Mimic;
@@ -35,6 +36,7 @@ import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.artifacts.Artifact;
 import com.zrp200.rkpd2.items.artifacts.DriedRose;
+import com.zrp200.rkpd2.items.food.Food;
 import com.zrp200.rkpd2.items.food.SmallRation;
 import com.zrp200.rkpd2.items.journal.GuidePage;
 import com.zrp200.rkpd2.items.keys.GoldenKey;
@@ -427,7 +429,8 @@ public abstract class RegularLevel extends Level {
 					map[cell] = Terrain.GRASS;
 					losBlocking[cell] = false;
 				}
-				drop( new SmallRation(), cell).type = Heap.Type.CHEST;
+				// rogue gets regular food.
+				drop( Dungeon.hero.hasTalent(Talent.CACHED_RATIONS) ? new Food() : new SmallRation(), cell).type = Heap.Type.CHEST;
 				dropped.countUp(1);
 			}
 		}
