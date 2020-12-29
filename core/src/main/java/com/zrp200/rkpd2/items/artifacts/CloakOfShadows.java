@@ -31,6 +31,7 @@ import com.zrp200.rkpd2.actors.buffs.Preparation;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.rings.RingOfEnergy;
 import com.zrp200.rkpd2.messages.Messages;
@@ -249,21 +250,29 @@ public class CloakOfShadows extends Artifact {
 			}
 		}
 
-		float barrierInc = 0.5f;
+		float inc = 0.5f;
 
 		@Override
 		public boolean act(){
 			turnsToCost--;
-
-			//barrier every 2/1 turns, to a max of 3/5
-			if (((Hero)target).hasTalent(Talent.PROTECTIVE_SHADOWS,Talent.NOBLE_CAUSE)){
-				Barrier barrier = Buff.affect(target, Barrier.class);
-				int points = ((Hero)target).pointsInTalents(Talent.PROTECTIVE_SHADOWS,Talent.NOBLE_CAUSE);
-				if (barrier.shielding() < 1 + 2*points) {
-					barrierInc += 0.5f*points;
+			Hero target = (Hero)this.target;
+			if(target.hasTalent(Talent.MENDING_SHADOWS)) {
+				// heal every 2/1 turns
+				if (++inc >= 3-target.pointsInTalent(Talent.MENDING_SHADOWS)){
+					inc = 0;
+					target.HP = Math.min(target.HT, target.HP+1);
+					target.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
 				}
-				if (barrierInc >= 1 ){
-					barrierInc = 0;
+			}
+			//barrier every 2/1 turns, to a max of 3/5
+			if (target.hasTalent(Talent.NOBLE_CAUSE)){
+				Barrier barrier = Buff.affect(target, Barrier.class);
+				int points = target.pointsInTalents(Talent.NOBLE_CAUSE);
+				if (barrier.shielding() < 1 + 2*points) {
+					inc += 0.5f*points;
+				}
+				if (inc >= 1 ){
+					inc = 0;
 					barrier.incShield(1);
 				}
 			}
@@ -274,10 +283,10 @@ public class CloakOfShadows extends Artifact {
 					charge = 0;
 					detach();
 					GLog.w(Messages.get(this, "no_charge"));
-					((Hero) target).interrupt();
+					target.interrupt();
 				} else {
 					//target hero level is 1 + 2*cloak level
-					int lvlDiffFromTarget = ((Hero) target).lvl - (1+level()*2);
+					int lvlDiffFromTarget = target.lvl - (1+level()*2);
 					//plus an extra one for each level after 6
 					if (level() >= 7){
 						lvlDiffFromTarget -= level()-6;
@@ -343,7 +352,7 @@ public class CloakOfShadows extends Artifact {
 			super.storeInBundle(bundle);
 			
 			bundle.put( TURNSTOCOST , turnsToCost);
-			bundle.put( BARRIER_INC, barrierInc);
+			bundle.put( BARRIER_INC, inc);
 		}
 		
 		@Override
@@ -351,7 +360,7 @@ public class CloakOfShadows extends Artifact {
 			super.restoreFromBundle(bundle);
 			
 			turnsToCost = bundle.getInt( TURNSTOCOST );
-			barrierInc = bundle.getFloat( BARRIER_INC );
+			inc = bundle.getFloat( BARRIER_INC );
 		}
 	}
 }
