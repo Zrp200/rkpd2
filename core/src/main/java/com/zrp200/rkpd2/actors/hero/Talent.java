@@ -362,7 +362,9 @@ public enum Talent {
 		if (hero.hasTalent(MYSTICAL_UPGRADE,RESTORATION)){
 			CloakOfShadows cloak = hero.belongings.getItem(CloakOfShadows.class);
 			if (cloak != null){
-				cloak.overCharge(hero.pointsInTalents(MYSTICAL_UPGRADE,RESTORATION));
+				int recharge = hero.pointsInTalents(MYSTICAL_UPGRADE,RESTORATION);
+				if(hero.hasTalent(MYSTICAL_UPGRADE)) recharge++;
+				cloak.overCharge(recharge);
 				ScrollOfRecharging.charge( Dungeon.hero );
 				SpellSprite.show( hero, SpellSprite.CHARGE );
 			}
