@@ -190,14 +190,14 @@ public enum Talent {
 
 	public static void onFoodEaten( Hero hero, float foodVal, Item foodSource ){
 		if (hero.hasTalent(HEARTY_MEAL,ROYAL_PRIVILEGE)){
-			//3/5 HP healed, when hero is below 25% health
-			if (hero.HP <= hero.HT/4) {
-				hero.HP = Math.min(hero.HP + 1 + 2 * (hero.pointsInTalent(HEARTY_MEAL)+hero.pointsInTalent(ROYAL_PRIVILEGE)), hero.HT);
-				hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), hero.pointsInTalent(HEARTY_MEAL)+hero.pointsInTalent(ROYAL_PRIVILEGE));
-			//2/3 HP healed, when hero is below 50% health
-			} else if (hero.HP <= hero.HT/2){
-				hero.HP = Math.min(hero.HP + 1 + hero.pointsInTalent(HEARTY_MEAL) + hero.pointsInTalent(ROYAL_PRIVILEGE), hero.HT);
-				hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), 1+hero.pointsInTalent(HEARTY_MEAL)+hero.pointsInTalent(ROYAL_PRIVILEGE));
+			int points = hero.pointsInTalents(HEARTY_MEAL, ROYAL_PRIVILEGE);
+			int multiplier = hero.HP <= hero.HT/4 ? 2 : hero.HP <= hero.HT / 2 ? 1 : 0;
+			int heal = 1 + multiplier*points;
+			// (2/3)/(3/5) healed for priv, (3/5)/(5/8) for hearty
+			if(hero.hasTalent(HEARTY_MEAL)) heal = (int)Math.ceil(heal*1.5f);
+			if(multiplier > 0) {
+				hero.HP = Math.min(hero.HP+heal,hero.HT);
+				hero.sprite.emitter().burst(Speck.factory(Speck.HEALING),(int)Math.ceil(heal/2f)); // 2 -> 1, 3 -> 2, 5 -> 3, 8 -> 4
 			}
 		}
 		if (hero.hasTalent(IRON_STOMACH,ROYAL_MEAL)){
