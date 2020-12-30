@@ -186,7 +186,9 @@ public class BrokenSeal extends Item {
 
 		public synchronized int maxShield() {
 			if (armor != null && armor.isEquipped((Hero)target)) {
-				return armor.tier + armor.level() + ((Hero) target).pointsInTalents(Talent.IRON_WILL,Talent.NOBLE_CAUSE);
+				int bonus = ((Hero)target).pointsInTalents(Talent.IRON_WILL,Talent.NOBLE_CAUSE); // 2/3
+				if(((Hero)target).hasTalent(Talent.IRON_WILL)) bonus = (int)Math.ceil(bonus*1.5f);
+				return armor.tier + armor.level() + bonus;
 			} else {
 				return 0;
 			}
