@@ -198,7 +198,7 @@ public class MagesStaff extends MeleeWeapon {
 				&& Random.Float() < 0.34f + 0.33f*Dungeon.hero.pointsInTalents(Talent.WAND_PRESERVATION,Talent.POWER_WITHIN)){
 
 			Talent.WandPreservationCounter counter = Buff.affect(Dungeon.hero, Talent.WandPreservationCounter.class);
-			if (counter.count() < 3) {
+			if (Dungeon.hero.hasTalent(Talent.WAND_PRESERVATION) || counter.count() < 3) {
 				counter.countUp(1);
 				this.wand.level(0);
 				if (!this.wand.collect()) {
