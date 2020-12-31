@@ -55,6 +55,7 @@ import com.zrp200.rkpd2.actors.buffs.Preparation;
 import com.zrp200.rkpd2.actors.buffs.ShieldBuff;
 import com.zrp200.rkpd2.actors.buffs.Slow;
 import com.zrp200.rkpd2.actors.buffs.SnipersMark;
+import com.zrp200.rkpd2.actors.buffs.SoulMark;
 import com.zrp200.rkpd2.actors.buffs.Speed;
 import com.zrp200.rkpd2.actors.buffs.Stamina;
 import com.zrp200.rkpd2.actors.buffs.Terror;
@@ -71,6 +72,7 @@ import com.zrp200.rkpd2.items.rings.RingOfElements;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRetribution;
 import com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfPsionicBlast;
 import com.zrp200.rkpd2.items.stones.StoneOfAggression;
+import com.zrp200.rkpd2.items.wands.Wand;
 import com.zrp200.rkpd2.items.wands.WandOfFireblast;
 import com.zrp200.rkpd2.items.wands.WandOfFrost;
 import com.zrp200.rkpd2.items.wands.WandOfLightning;
@@ -460,6 +462,13 @@ public abstract class Char extends Actor {
 		if (!isAlive() || dmg < 0) {
 			return;
 		}
+
+		if(Dungeon.hero.subClass == HeroSubClass.WARLOCK && !(src instanceof Char)) {
+			SoulMark soulMark = buff(SoulMark.class);
+			if(soulMark != null) soulMark.proc(src instanceof Wand ? Dungeon.hero : src,this,dmg);
+		}
+		SoulMark.DelayedMark mark = buff(SoulMark.DelayedMark.class);
+		if(mark != null) mark.detach(); // this prevents the above from happening the same turn.
 
 		if(isInvulnerable(src.getClass())){
 			sprite.showStatus(CharSprite.POSITIVE, Messages.get(this, "invulnerable"));

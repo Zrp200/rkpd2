@@ -28,6 +28,7 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.effects.SpellSprite;
+import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
@@ -78,14 +79,13 @@ public class WandOfMagicMissile extends DamageWand {
 	}
 
 	@Override
-	public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
+	public void onHit(Weapon staff, Char attacker, Char defender, int damage) {
 		SpellSprite.show(attacker, SpellSprite.CHARGE);
 		for (Wand.Charger c : attacker.buffs(Wand.Charger.class)){
 			if (c.wand() != this){
 				c.gainCharge(0.5f);
 			}
 		}
-
 	}
 	
 	protected int initialCharges() {
@@ -105,6 +105,10 @@ public class WandOfMagicMissile extends DamageWand {
 
 		public void setLevel(int level){
 			this.level = Math.max(level, this.level);
+		}
+
+		public boolean appliesTo(Wand wand) {
+			return level > wand.buffedLvl(false);
 		}
 
 		@Override

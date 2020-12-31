@@ -40,6 +40,7 @@ import com.zrp200.rkpd2.actors.buffs.Sleep;
 import com.zrp200.rkpd2.actors.buffs.SoulMark;
 import com.zrp200.rkpd2.actors.buffs.Terror;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.effects.Surprise;
@@ -589,17 +590,12 @@ public abstract class Mob extends Char {
 			target = enemy.pos;
 		}
 
-		if (buff(SoulMark.class) != null) {
-			int restoration = Math.min(damage, HP);
-			
-			//physical damage that doesn't come from the hero is less effective
-			if (enemy != Dungeon.hero){
-				restoration = Math.round(restoration * 0.4f);
-			}
-			
-			Buff.affect(Dungeon.hero, Hunger.class).satisfy(restoration);
-			Dungeon.hero.HP = (int)Math.ceil(Math.min(Dungeon.hero.HT, Dungeon.hero.HP+(restoration*0.4f)));
-			Dungeon.hero.sprite.emitter().burst( Speck.factory(Speck.HEALING), 1 );
+		SoulMark soulMark = buff(SoulMark.class);
+		if(soulMark != null) soulMark.proc(enemy,this,damage);
+
+		if(enemy == Dungeon.hero && Dungeon.hero.subClass == HeroSubClass.WARLOCK) {
+			// warlock can soul mark by simply attacking.
+			SoulMark.process(this,Dungeon.hero.belongings.weapon.buffedLvl(),1);
 		}
 
 		return damage;

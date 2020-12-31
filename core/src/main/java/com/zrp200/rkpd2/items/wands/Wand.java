@@ -44,6 +44,7 @@ import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.bags.MagicalHolster;
 import com.zrp200.rkpd2.items.rings.RingOfEnergy;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRecharging;
+import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
@@ -118,7 +119,7 @@ public abstract class Wand extends Item {
 
 	protected abstract void onZap(Ballistica attack );
 
-	public abstract void onHit( MagesStaff staff, Char attacker, Char defender, int damage);
+	public abstract void onHit(Weapon staff, Char attacker, Char defender, int damage);
 
 	public boolean tryToZap( Hero owner, int target ){
 
@@ -185,12 +186,7 @@ public abstract class Wand extends Item {
 			Buff.append(Dungeon.hero, TalismanOfForesight.CharAwareness.class, dur).charID = target.id();
 		}
 
-		if (target != Dungeon.hero &&
-				(Dungeon.hero.subClass == HeroSubClass.WARLOCK || Dungeon.hero.subClass == HeroSubClass.KING) &&
-				//standard 1 - 0.92^x chance, plus 7%. Starts at 15%
-				Random.Float() > (Math.pow(0.92f, (wandLevel*chargesUsed)+1) - 0.07f)){
-			SoulMark.prolong(target, SoulMark.class, SoulMark.DURATION + wandLevel);
-		}
+		SoulMark.process(target,wandLevel,chargesUsed);
 	}
 
 	@Override
@@ -297,23 +293,26 @@ public abstract class Wand extends Item {
 		return this;
 	}
 
-	@Override
-	public int buffedLvl() {
+	protected int buffedLvl(boolean magicCharge) {
 		int lvl = super.buffedLvl();
 		if(Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.MAGE) lvl += HeroClass.MAGE_WAND_BOOST; // shadow buff
 		if (curUser != null) {
 			WandOfMagicMissile.MagicCharge buff = curUser.buff(WandOfMagicMissile.MagicCharge.class);
-			if (buff != null && buff.level() > lvl){
+			if (buff != null && magicCharge && buff.appliesTo(this)){
 				return buff.level();
 			}
 		}
 		return lvl;
 	}
+	@Override
+	public int buffedLvl() {
+		return buffedLvl(true);
+	}
 
 	@Override
 	public int buffedVisiblyUpgraded() {
 		int bvu = super.buffedVisiblyUpgraded();
-		if(Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.MAGE) bvu -= HeroClass.MAGE_WAND_BOOST;
+		if(Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.MAGE && levelKnown) bvu -= HeroClass.MAGE_WAND_BOOST;
 		return bvu;
 	}
 
@@ -362,7 +361,7 @@ public abstract class Wand extends Item {
 		curCharges -= cursed ? 1 : chargesPerCast();
 
 		WandOfMagicMissile.MagicCharge buff = curUser.buff(WandOfMagicMissile.MagicCharge.class);
-		if (buff != null && buff.level() > super.buffedLvl()){
+		if (buff != null && buff.appliesTo(this)){
 			buff.detach();
 		}
 
@@ -373,7 +372,9 @@ public abstract class Wand extends Item {
 				&& !Dungeon.hero.belongings.contains(this)
 				&& Dungeon.hero.hasTalent(Talent.BACKUP_BARRIER,Talent.NOBLE_CAUSE)){
 			//grants 4/6 shielding
-			Buff.affect(Dungeon.hero, Barrier.class).setShield(2 + 2*Dungeon.hero.pointsInTalents(Talent.BACKUP_BARRIER, Talent.NOBLE_CAUSE));
+			int shielding = 2*(1+Dungeon.hero.pointsInTalents(Talent.BACKUP_BARRIER,Talent.NOBLE_CAUSE));
+			if(Dungeon.hero.hasTalent(Talent.BACKUP_BARRIER)) shielding = (int)Math.ceil(shielding*1.5f);
+			Buff.affect(Dungeon.hero, Barrier.class).setShield(shielding);
 		}
 
 		Invisibility.dispel();
@@ -487,6 +488,7 @@ public abstract class Wand extends Item {
 				if (target == curUser.pos || cell == curUser.pos) {
 					if (target == curUser.pos && curUser.hasTalent(Talent.SHIELD_BATTERY,Talent.PURSUIT)){
 						float shield = curUser.HT * (0.05f*curWand.curCharges);
+						if(curUser.hasTalent(Talent.SHIELD_BATTERY)) shield *= 1.5f; // bonus.
 						if (curUser.pointsInTalents(Talent.SHIELD_BATTERY,Talent.PURSUIT) == 2) shield *= 1.5f;
 						Buff.affect(curUser, Barrier.class).setShield(Math.round(shield));
 						curWand.curCharges = 0;

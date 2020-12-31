@@ -84,7 +84,7 @@ public enum Talent {
 	ENERGIZING_MEAL(20),
 	ENERGIZING_UPGRADE(21),
 	WAND_PRESERVATION(22),
-	ARCANE_VISION(23),
+	ARCANE_VISION(23), // TODO adjust
 	SHIELD_BATTERY(24),
 
 	CACHED_RATIONS(32),
@@ -200,12 +200,18 @@ public enum Talent {
 		}
 		if (hero.hasTalent(EMPOWERING_MEAL,ROYAL_PRIVILEGE)){
 			//2/3 bonus wand damage for next 3 zaps
-			Buff.affect( hero, WandEmpower.class).set(1 + hero.pointsInTalent(EMPOWERING_MEAL) + hero.pointsInTalent(ROYAL_PRIVILEGE), 3);
+			int bonus = 1+hero.pointsInTalents(EMPOWERING_MEAL,ROYAL_PRIVILEGE);
+			if(hero.hasTalent(EMPOWERING_MEAL)) {
+				bonus = (int)Math.ceil(bonus*1.5);
+			}
+			Buff.affect( hero, WandEmpower.class).set(bonus, 3);
 			ScrollOfRecharging.charge( hero );
 		}
 		if (hero.hasTalent(ENERGIZING_MEAL,ROYAL_MEAL)){
 			//5/8 turns of recharging
-			Buff.affect( hero, Recharging.class, 2 + 3*(hero.pointsInTalent(ENERGIZING_MEAL)+hero.pointsInTalent(ROYAL_MEAL)) );
+			int points = hero.pointsInTalents(ENERGIZING_MEAL,ROYAL_MEAL);
+			if(hero.hasTalent(ENERGIZING_MEAL)) points++;
+			Buff.affect( hero, Recharging.class, 2 + 3*points );
 			ScrollOfRecharging.charge( hero );
 		}
 		if (hero.hasTalent(MYSTICAL_MEAL,ROYAL_MEAL)){
@@ -296,7 +302,9 @@ public enum Talent {
 		if (hero.hasTalent(ENERGIZING_UPGRADE,RESTORATION)){
 			MagesStaff staff = hero.belongings.getItem(MagesStaff.class);
 			if (staff != null){
-				staff.gainCharge( hero.pointsInTalents(ENERGIZING_UPGRADE,RESTORATION), true);
+				int charge = hero.pointsInTalents(ENERGIZING_UPGRADE,RESTORATION);
+				if(hero.hasTalent(ENERGIZING_UPGRADE)) charge = (int)Math.ceil(charge*1.5f);
+				staff.gainCharge( charge, true);
 				ScrollOfRecharging.charge( Dungeon.hero );
 				SpellSprite.show( hero, SpellSprite.CHARGE );
 			}
@@ -343,7 +351,9 @@ public enum Talent {
 		}
 		if (hero.hasTalent(TESTED_HYPOTHESIS,KINGS_WISDOM)){
 			//2/3 turns of wand recharging
-			Buff.affect(hero, Recharging.class, 1f + hero.pointsInTalents(TESTED_HYPOTHESIS,KINGS_WISDOM));
+			int duration = 1 + hero.pointsInTalents(TESTED_HYPOTHESIS,KINGS_WISDOM);
+			if(hero.hasTalent(TESTED_HYPOTHESIS)) duration = (int)Math.ceil(duration*1.5f); // 3/5
+			Buff.affect(hero, Recharging.class, duration);
 			ScrollOfRecharging.charge(hero);
 		}
 	}
