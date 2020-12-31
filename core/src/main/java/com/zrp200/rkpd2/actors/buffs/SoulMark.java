@@ -21,10 +21,16 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
+import com.watabou.noosa.Image;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Random;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.hero.HeroSubClass;
+import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.BuffIndicator;
-import com.watabou.noosa.Image;
 
 public class SoulMark extends FlavourBuff {
 
@@ -33,6 +39,48 @@ public class SoulMark extends FlavourBuff {
 	{
 		type = buffType.NEGATIVE;
 		announced = true;
+	}
+
+	public static void process(Char defender, int level, int chargesUsed) {
+		//standard 1 - 0.92^x chance, plus 7%. Starts at 15%
+		if (defender != Dungeon.hero
+				&& (Dungeon.hero.subClass == HeroSubClass.WARLOCK || Dungeon.hero.subClass == HeroSubClass.KING)
+				&& Random.Float() > (Math.pow(0.92f, (level * chargesUsed) + 1) - 0.07f)) {
+			DelayedMark mark = affect(defender,DelayedMark.class);
+			mark.duration = DURATION+level;
+			// see Char#damage
+		}
+	}
+	// basically lets me hold onto it for a hot second. detaching adds the mark, which means I can delay activation to when I want it to.
+	public static class DelayedMark extends Buff {
+		public float duration;
+		@Override
+		public void detach() {
+			Buff.prolong(target,SoulMark.class,duration);
+			super.detach();
+		}
+		// is this needed? idk
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put("duration",duration);
+		}
+		public void restoreFromBundle(Bundle bundle) {
+			duration = bundle.getFloat("duration");
+		}
+	}
+
+	public void proc(Object src, Char defender, int damage) {
+		int restoration = Math.min(damage, defender.HP);
+
+		//physical damage that doesn't come from the hero is less effective
+		if (src != Dungeon.hero){
+			restoration = Math.round(restoration * 0.4f);
+		}
+
+		Buff.affect(Dungeon.hero, Hunger.class).satisfy(restoration);
+		Dungeon.hero.HP = (int)Math.ceil(Math.min(Dungeon.hero.HT, Dungeon.hero.HP+(restoration*0.4f)));
+		Dungeon.hero.sprite.emitter().burst( Speck.factory(Speck.HEALING), 1 );
 	}
 
 	@Override
