@@ -205,7 +205,9 @@ public enum Talent {
 		}
 		if (hero.hasTalent(ENERGIZING_MEAL,ROYAL_MEAL)){
 			//5/8 turns of recharging
-			Buff.affect( hero, Recharging.class, 2 + 3*(hero.pointsInTalent(ENERGIZING_MEAL)+hero.pointsInTalent(ROYAL_MEAL)) );
+			int points = hero.pointsInTalents(ENERGIZING_MEAL,ROYAL_MEAL);
+			if(hero.hasTalent(ENERGIZING_MEAL)) points++;
+			Buff.affect( hero, Recharging.class, 2 + 3*points );
 			ScrollOfRecharging.charge( hero );
 		}
 		if (hero.hasTalent(MYSTICAL_MEAL,ROYAL_MEAL)){
