@@ -85,7 +85,6 @@ public class WandOfMagicMissile extends DamageWand {
 				c.gainCharge(0.5f);
 			}
 		}
-
 	}
 	
 	protected int initialCharges() {
@@ -105,6 +104,10 @@ public class WandOfMagicMissile extends DamageWand {
 
 		public void setLevel(int level){
 			this.level = Math.max(level, this.level);
+		}
+
+		public boolean appliesTo(Wand wand) {
+			return level > wand.buffedLvl(false);
 		}
 
 		@Override

@@ -292,23 +292,26 @@ public abstract class Wand extends Item {
 		return this;
 	}
 
-	@Override
-	public int buffedLvl() {
+	protected int buffedLvl(boolean magicCharge) {
 		int lvl = super.buffedLvl();
 		if(Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.MAGE) lvl += HeroClass.MAGE_WAND_BOOST; // shadow buff
 		if (curUser != null) {
 			WandOfMagicMissile.MagicCharge buff = curUser.buff(WandOfMagicMissile.MagicCharge.class);
-			if (buff != null && buff.level() > lvl){
+			if (buff != null && magicCharge && buff.appliesTo(this)){
 				return buff.level();
 			}
 		}
 		return lvl;
 	}
+	@Override
+	public int buffedLvl() {
+		return buffedLvl(true);
+	}
 
 	@Override
 	public int buffedVisiblyUpgraded() {
 		int bvu = super.buffedVisiblyUpgraded();
-		if(Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.MAGE) bvu -= HeroClass.MAGE_WAND_BOOST;
+		if(Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.MAGE && levelKnown) bvu -= HeroClass.MAGE_WAND_BOOST;
 		return bvu;
 	}
 
@@ -357,7 +360,7 @@ public abstract class Wand extends Item {
 		curCharges -= cursed ? 1 : chargesPerCast();
 
 		WandOfMagicMissile.MagicCharge buff = curUser.buff(WandOfMagicMissile.MagicCharge.class);
-		if (buff != null && buff.level() > super.buffedLvl()){
+		if (buff != null && buff.appliesTo(this)){
 			buff.detach();
 		}
 

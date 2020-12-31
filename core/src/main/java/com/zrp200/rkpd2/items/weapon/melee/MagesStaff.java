@@ -27,6 +27,7 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.particles.ElmoParticle;
@@ -140,9 +141,12 @@ public class MagesStaff extends MeleeWeapon {
 	public int buffedLvl() {
 		int lvl = super.buffedLvl();
 		if (curUser != null && wand != null) {
+			int buffedLvl = wand.buffedLvl();
 			WandOfMagicMissile.MagicCharge buff = curUser.buff(WandOfMagicMissile.MagicCharge.class);
-			if (buff != null && buff.level() > lvl){
-				return buff.level();
+			if (buff != null && buff.appliesTo(wand)){
+				buffedLvl = buff.level();
+				if(curUser.heroClass == HeroClass.MAGE) buffedLvl -= HeroClass.MAGE_WAND_BOOST; // it still doesn't apply to staff
+				return buffedLvl;
 			}
 		}
 		return lvl;
