@@ -36,6 +36,7 @@ import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.effects.particles.RainbowParticle;
 import com.zrp200.rkpd2.effects.particles.ShadowParticle;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfMagicMapping;
+import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.mechanics.Ballistica;
@@ -145,7 +146,7 @@ public class WandOfPrismaticLight extends DamageWand {
 	}
 
 	@Override
-	public void onHit(MagesStaff staff, Char attacker, Char defender, int damage) {
+	public void onHit(Weapon staff, Char attacker, Char defender, int damage) {
 		//cripples enemy
 		Buff.prolong( defender, Cripple.class, 1f+staff.buffedLvl());
 	}

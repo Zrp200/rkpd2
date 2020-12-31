@@ -26,10 +26,12 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.MagicImmune;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.KindOfWeapon;
 import com.zrp200.rkpd2.items.rings.RingOfFuror;
+import com.zrp200.rkpd2.items.wands.WandOfDisintegration;
 import com.zrp200.rkpd2.items.weapon.curses.Annoying;
 import com.zrp200.rkpd2.items.weapon.curses.Displacing;
 import com.zrp200.rkpd2.items.weapon.curses.Exhausting;
@@ -51,6 +53,8 @@ import com.zrp200.rkpd2.items.weapon.enchantments.Projecting;
 import com.zrp200.rkpd2.items.weapon.enchantments.Shocking;
 import com.zrp200.rkpd2.items.weapon.enchantments.Unstable;
 import com.zrp200.rkpd2.items.weapon.enchantments.Vampiric;
+import com.zrp200.rkpd2.items.weapon.melee.BattleAxe;
+import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.utils.GLog;
@@ -101,7 +105,14 @@ abstract public class Weapon extends KindOfWeapon {
 	
 	@Override
 	public int proc( Char attacker, Char defender, int damage ) {
-		
+
+		if(attacker instanceof Hero) {
+			Hero hero = (Hero)attacker;
+			if(hero.subClass == HeroSubClass.BATTLEMAGE) {
+				MagesStaff staff = hero.belongings.getItem(MagesStaff.class);
+				if(staff != null) staff.wand().onHit(this,attacker,defender,damage);
+			}
+		}
 		if (enchantment != null && attacker.buff(MagicImmune.class) == null) {
 			damage = enchantment.proc( this, attacker, defender, damage );
 		}
@@ -196,7 +207,16 @@ abstract public class Weapon extends KindOfWeapon {
 
 	@Override
 	public int reachFactor(Char owner) {
-		return hasEnchant(Projecting.class, owner) ? RCH+1 : RCH;
+		int reach = RCH;
+		if(hasEnchant(Projecting.class, owner)) reach++;
+		if(owner instanceof Hero) {
+			Hero hero = (Hero) owner;
+			if(hero.subClass == HeroSubClass.BATTLEMAGE) {
+				MagesStaff staff = hero.belongings.getItem(MagesStaff.class);
+				if(staff != null && staff.wand() instanceof WandOfDisintegration) reach++;
+			}
+		}
+		return reach;
 	}
 
 	public int STRReq(){

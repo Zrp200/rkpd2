@@ -60,6 +60,7 @@ import java.util.ArrayList;
 public class MagesStaff extends MeleeWeapon {
 
 	private Wand wand;
+	public Wand wand() { return wand; }
 
 	public static final String AC_IMBUE = "IMBUE";
 	public static final String AC_ZAP	= "ZAP";
@@ -160,7 +161,7 @@ public class MagesStaff extends MeleeWeapon {
 								|| ((Hero) attacker).subClass == HeroSubClass.KING)) {
 			if (wand.curCharges < wand.maxCharges) wand.partialCharge += 0.5f;
 			ScrollOfRecharging.charge((Hero)attacker);
-			wand.onHit(this, attacker, defender, damage);
+			if(((Hero)attacker).subClass == HeroSubClass.KING) wand.onHit(this, attacker, defender, damage);
 		}
 		return super.proc(attacker, defender, damage);
 	}
@@ -170,8 +171,7 @@ public class MagesStaff extends MeleeWeapon {
 		int reach = super.reachFactor(owner);
 		if (owner instanceof Hero
 				&& wand instanceof WandOfDisintegration
-				&& (((Hero)owner).subClass == HeroSubClass.BATTLEMAGE
-					|| ((Hero)owner).subClass == HeroSubClass.KING)) {
+				&& ((Hero)owner).subClass == HeroSubClass.KING) {
 			reach++;
 		}
 		return reach;
