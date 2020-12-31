@@ -11,7 +11,7 @@ buildscript {
 allprojects {
 
     ext {
-        appName = 'Rat King Pixel Dungeon 2'
+        appName = 'Rat King Pixel Dungeon 2 ALPHA'
         appPackageName = 'com.zrp200.rkpd2'
 
         appVersionCode = 500
