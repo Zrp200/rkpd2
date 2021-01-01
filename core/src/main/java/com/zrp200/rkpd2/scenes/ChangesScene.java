@@ -32,6 +32,7 @@ import com.zrp200.rkpd2.ui.ScrollPane;
 import com.zrp200.rkpd2.ui.StyledButton;
 import com.zrp200.rkpd2.ui.Window;
 import com.zrp200.rkpd2.ui.changelist.ChangeInfo;
+import com.zrp200.rkpd2.ui.changelist.RKPD2Changes;
 import com.zrp200.rkpd2.ui.changelist.v0_1_X_Changes;
 import com.zrp200.rkpd2.ui.changelist.v0_2_X_Changes;
 import com.zrp200.rkpd2.ui.changelist.v0_3_X_Changes;
@@ -89,7 +90,8 @@ public class ChangesScene extends PixelScene {
 		
 		switch (changesSelected){
 			case 0: default:
-				v0_9_X_Changes.addAllChanges(changeInfos);
+				RKPD2Changes.addAllChanges(changeInfos);
+				//v0_9_X_Changes.addAllChanges(changeInfos);
 				break;
 			case 1:
 				v0_8_X_Changes.addAllChanges(changeInfos);
@@ -161,7 +163,7 @@ public class ChangesScene extends PixelScene {
 				panel.innerHeight() + 2);
 		list.scrollTo(0, 0);
 
-		StyledButton btn0_9 = new StyledButton(Chrome.Type.GREY_BUTTON_TR, "v0.9"){
+		/*StyledButton btn0_9 = new StyledButton(Chrome.Type.GREY_BUTTON_TR, "v0.9"){
 			@Override
 			protected void onClick() {
 				super.onClick();
@@ -230,7 +232,7 @@ public class ChangesScene extends PixelScene {
 		if (changesSelected != 4) btnOld.textColor( 0xBBBBBB );
 		btnOld.setRect(btn0_6.right() + 1, btn0_8.top(), 33, changesSelected == 4 ? 19 : 15);
 		addToBack(btnOld);
-
+		*/
 		Archs archs = new Archs();
 		archs.setSize( Camera.main.width, Camera.main.height );
 		addToBack( archs );
