@@ -271,9 +271,10 @@ public enum HeroClass {
 	}
 	
 	public boolean isUnlocked(){
+		return true; /*
 		//always unlock on debug builds
 		if (DeviceCompat.isDebug()) return true;
-		
+
 		switch (this){
 			case WARRIOR: default:
 				return true;
@@ -284,6 +285,7 @@ public enum HeroClass {
 			case HUNTRESS:
 				return Badges.isUnlocked(Badges.Badge.UNLOCK_HUNTRESS);
 		}
+		 */
 	}
 	
 	public String unlockMsg() {
