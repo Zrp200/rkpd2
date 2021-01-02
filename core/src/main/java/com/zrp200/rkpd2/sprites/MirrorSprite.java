@@ -21,14 +21,10 @@
 
 package com.zrp200.rkpd2.sprites;
 
-import com.watabou.utils.RectF;
-import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.mobs.npcs.AbstractMirrorImage;
-import com.zrp200.rkpd2.actors.mobs.npcs.MirrorImage;
-import com.watabou.noosa.TextureFilm;
 
 public class MirrorSprite extends MobSprite {
 	
@@ -55,6 +51,7 @@ public class MirrorSprite extends MobSprite {
 		idle = ref.idle.clone();
 
 		run = ref.run.clone();
+		if(Dungeon.hero.heroClass == HeroClass.RAT_KING) run.delay = 0.1f; // this is the actual delay, and on another mob it doesn't make sense to not do this.
 
 		attack = ref.attack.clone();
 

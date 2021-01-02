@@ -112,6 +112,15 @@ public enum HeroClass {
 
 		new ScrollOfIdentify().identify();
 
+		// give all bags.
+		new VelvetPouch().collect();
+		new PotionBandolier().collect();
+		new ScrollHolder().collect();
+		new MagicalHolster().collect();
+		Dungeon.LimitedDrops.VELVET_POUCH.drop();
+		Dungeon.LimitedDrops.POTION_BANDOLIER.drop();
+		Dungeon.LimitedDrops.SCROLL_HOLDER.drop();
+		Dungeon.LimitedDrops.MAGICAL_HOLSTER.drop();
 	}
 
 	public Badges.Badge masteryBadge() {
@@ -124,6 +133,8 @@ public enum HeroClass {
 				return Badges.Badge.MASTERY_ROGUE;
 			case HUNTRESS:
 				return Badges.Badge.MASTERY_HUNTRESS;
+			case RAT_KING:
+				return Badges.Badge.MASTERY_RAT_KING;
 		}
 		return null;
 	}
@@ -138,9 +149,6 @@ public enum HeroClass {
 			hero.belongings.armor.affixSeal(new BrokenSeal());
 		}
 
-		new PotionBandolier().collect();
-		Dungeon.LimitedDrops.POTION_BANDOLIER.drop();
-
 		new PotionOfHealing().identify();
 		new ScrollOfRage().identify();
 	}
@@ -154,9 +162,6 @@ public enum HeroClass {
 		hero.belongings.weapon.activate(hero);
 
 		Dungeon.quickslot.setSlot(0, staff);
-
-		new ScrollHolder().collect();
-		Dungeon.LimitedDrops.SCROLL_HOLDER.drop();
 
 		new ScrollOfUpgrade().identify();
 		new PotionOfLiquidFlame().identify();
@@ -175,9 +180,6 @@ public enum HeroClass {
 		Dungeon.quickslot.setSlot(0, cloak);
 		Dungeon.quickslot.setSlot(1, knives);
 
-		new VelvetPouch().collect();
-		Dungeon.LimitedDrops.VELVET_POUCH.drop();
-
 		new ScrollOfMagicMapping().identify();
 		new PotionOfInvisibility().identify();
 	}
@@ -190,23 +192,11 @@ public enum HeroClass {
 
 		Dungeon.quickslot.setSlot(0, bow);
 
-		new VelvetPouch().collect();
-		Dungeon.LimitedDrops.VELVET_POUCH.drop();
-
 		new PotionOfMindVision().identify();
 		new ScrollOfLullaby().identify();
 	}
 
 	private static void initRatKing( Hero hero ) {
-		// give all bags.
-		new VelvetPouch().collect();
-		new PotionBandolier().collect();
-		new ScrollHolder().collect();
-		new MagicalHolster().collect();
-		Dungeon.LimitedDrops.VELVET_POUCH.drop();
-		Dungeon.LimitedDrops.POTION_BANDOLIER.drop();
-		Dungeon.LimitedDrops.SCROLL_HOLDER.drop();
-		Dungeon.LimitedDrops.MAGICAL_HOLSTER.drop();
 		// warrior
 		if (hero.belongings.armor != null){
 			hero.belongings.armor.affixSeal(new BrokenSeal());

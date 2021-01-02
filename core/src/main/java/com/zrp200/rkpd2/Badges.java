@@ -50,6 +50,7 @@ public class Badges {
 		MASTERY_MAGE,
 		MASTERY_ROGUE,
 		MASTERY_HUNTRESS,
+		MASTERY_RAT_KING,
 
 		//bronze
 		UNLOCK_MAGE                 ( 1 ),
