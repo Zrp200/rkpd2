@@ -277,16 +277,19 @@ public class Belongings implements Iterable<Item> {
 		}
 	}
 	
-	public int charge( float charge ) {
+	public int charge( float charge, boolean overcharge ) {
 		
 		int count = 0;
 		
 		for (Wand.Charger charger : owner.buffs(Wand.Charger.class)){
-			charger.gainCharge(charge);
+			charger.gainCharge(charge, overcharge);
 			count++;
 		}
 		
 		return count;
+	}
+	public int charge( float charge ) {
+		return charge(charge, false);
 	}
 
 	@Override

@@ -77,11 +77,11 @@ public enum Talent {
 	LETHAL_MOMENTUM(7),
 	IMPROVISED_PROJECTILES(8),
 
-	EMPOWERING_MEAL(16),
+	ENERGIZING_MEAL_I(20),
 	SCHOLARS_INTUITION(17),
 	TESTED_HYPOTHESIS(18),
 	BACKUP_BARRIER(19),
-	ENERGIZING_MEAL(20),
+	ENERGIZING_MEAL_II(20),
 	ENERGIZING_UPGRADE(21),
 	WAND_PRESERVATION(22),
 	ARCANE_VISION(23), // TODO adjust
@@ -198,21 +198,22 @@ public enum Talent {
 				Buff.affect(hero, WarriorFoodImmunity.class, hero.cooldown());
 			}
 		}
-		if (hero.hasTalent(EMPOWERING_MEAL,ROYAL_PRIVILEGE)){
+		if (hero.hasTalent(ROYAL_PRIVILEGE)){ // SHPD empowering meal talent
 			//2/3 bonus wand damage for next 3 zaps
-			int bonus = 1+hero.pointsInTalents(EMPOWERING_MEAL,ROYAL_PRIVILEGE);
-			if(hero.hasTalent(EMPOWERING_MEAL)) {
-				bonus = (int)Math.ceil(bonus*1.5);
-			}
+			int bonus = 1+hero.pointsInTalents(ROYAL_PRIVILEGE);
 			Buff.affect( hero, WandEmpower.class).set(bonus, 3);
 			ScrollOfRecharging.charge( hero );
 		}
-		if (hero.hasTalent(ENERGIZING_MEAL,ROYAL_MEAL)){
+		if (hero.hasTalent(ENERGIZING_MEAL_I,ROYAL_MEAL)){
 			//5/8 turns of recharging
-			int points = hero.pointsInTalents(ENERGIZING_MEAL,ROYAL_MEAL);
-			if(hero.hasTalent(ENERGIZING_MEAL)) points++;
+			int points = hero.pointsInTalents(ENERGIZING_MEAL_I,ROYAL_MEAL);
 			Buff.affect( hero, Recharging.class, 2 + 3*points );
 			ScrollOfRecharging.charge( hero );
+		}
+		if (hero.hasTalent(ENERGIZING_MEAL_II)) {
+			// 1/2 charges instantly replenished, does not overcharge at this time even though I implemented functionality for it.
+			hero.belongings.charge(hero.pointsInTalent(ENERGIZING_MEAL_II),false);
+			if(!hero.hasTalent(ENERGIZING_MEAL_I)) ScrollOfRecharging.charge( hero );
 		}
 		if (hero.hasTalent(MYSTICAL_MEAL,ROYAL_MEAL)){
 			//3/5 turns of recharging
@@ -408,7 +409,7 @@ public enum Talent {
 				Collections.addAll(tierTalents, HEARTY_MEAL, ARMSMASTERS_INTUITION, TEST_SUBJECT, IRON_WILL);
 				break;
 			case MAGE:
-				Collections.addAll(tierTalents, EMPOWERING_MEAL, SCHOLARS_INTUITION, TESTED_HYPOTHESIS, BACKUP_BARRIER);
+				Collections.addAll(tierTalents, ENERGIZING_MEAL_I, SCHOLARS_INTUITION, TESTED_HYPOTHESIS, BACKUP_BARRIER);
 				break;
 			case ROGUE:
 				Collections.addAll(tierTalents, CACHED_RATIONS, THIEFS_INTUITION, SUCKER_PUNCH, PROTECTIVE_SHADOWS);
@@ -431,7 +432,7 @@ public enum Talent {
 				Collections.addAll(tierTalents, IRON_STOMACH, RESTORED_WILLPOWER, RUNIC_TRANSFERENCE, LETHAL_MOMENTUM, IMPROVISED_PROJECTILES);
 				break;
 			case MAGE:
-				Collections.addAll(tierTalents, ENERGIZING_MEAL, ENERGIZING_UPGRADE, WAND_PRESERVATION, ARCANE_VISION, SHIELD_BATTERY);
+				Collections.addAll(tierTalents, ENERGIZING_MEAL_II, ENERGIZING_UPGRADE, WAND_PRESERVATION, ARCANE_VISION, SHIELD_BATTERY);
 				break;
 			case ROGUE:
 				Collections.addAll(tierTalents, MYSTICAL_MEAL, MYSTICAL_UPGRADE, WIDE_SEARCH, SILENT_STEPS, ROGUES_FORESIGHT);

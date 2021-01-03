@@ -609,16 +609,23 @@ public abstract class Wand extends Item {
 			return Wand.this;
 		}
 
-		public void gainCharge(float charge){
-			if (curCharges < maxCharges) {
+		public void gainCharge(float charge, boolean overcharge){
+			int cap = Math.max(curCharges,maxCharges); // this allows stacking of overcharging
+			if (overcharge || curCharges < cap) {
 				partialCharge += charge;
 				while (partialCharge >= 1f) {
 					curCharges++;
 					partialCharge--;
 				}
-				curCharges = Math.min(curCharges, maxCharges);
+				if(!overcharge && curCharges < cap) {
+					curCharges = cap;
+					partialCharge = 0;
+				}
 				updateQuickslot();
 			}
+		}
+		public void gainCharge(float charge) {
+			gainCharge(charge,false);
 		}
 
 		private void setScaleFactor(float value){
