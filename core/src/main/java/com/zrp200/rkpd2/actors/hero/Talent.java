@@ -44,8 +44,12 @@ import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
 import com.zrp200.rkpd2.items.artifacts.HornOfPlenty;
+import com.zrp200.rkpd2.items.potions.Potion;
+import com.zrp200.rkpd2.items.potions.exotic.ExoticPotion;
 import com.zrp200.rkpd2.items.rings.Ring;
+import com.zrp200.rkpd2.items.scrolls.Scroll;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRecharging;
+import com.zrp200.rkpd2.items.scrolls.exotic.ExoticScroll;
 import com.zrp200.rkpd2.items.wands.Wand;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
@@ -62,7 +66,9 @@ import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 public enum Talent {
@@ -147,9 +153,40 @@ public enum Talent {
 		return Messages.get(this, name() + ".desc");
 	}
 
+	public static class ScholarsIntuitionTracker extends Buff { // this is for +1 mages intuition
+		// tracks failed identifies.
+		private HashSet<Class> failed = new HashSet<>();
+
+		public boolean attemptIntuition(Item item) {
+			if(!appliesTo(item)) return false;
+			Class itemClass = item.getClass();
+			if(item instanceof ExoticScroll) itemClass = ExoticScroll.exoToReg.get(itemClass);
+			if(item instanceof ExoticPotion) itemClass = ExoticPotion.exoToReg.get(itemClass);
+			if(Random.Int(3) > 0) failed.add(itemClass);
+			return !failed.contains(itemClass);
+		}
+		public boolean appliesTo(Item item) {
+			return item instanceof Scroll || item instanceof Potion;
+		}
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put("failed",failed.toArray(new Class[0]));
+		}
+
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			failed.addAll(Arrays.asList(bundle.getClassArray("failed")));
+		}
+	}
+
 	public static void onTalentUpgraded( Hero hero, Talent talent){
 		int points = hero.pointsInTalent(talent);
 		switch(talent) {
+			case SCHOLARS_INTUITION:
+				for(Item item : hero.belongings) onItemCollected(hero, item); // this should run it.
+				break;
 			case ROYAL_PRIVILEGE: case NATURES_BOUNTY:
 				if(hero.pointsInTalent(NATURES_BOUNTY) > 0) points++;
 				Buff.count(hero, NatureBerriesAvailable.class, 2*points);
@@ -339,6 +376,13 @@ public enum Talent {
 		}
 		if( hero.pointsInTalent(SURVIVALISTS_INTUITION) == 2 && Random.Int(3) == 0){
 			item.cursedKnown = true;
+		}
+		if( (item instanceof Scroll || item instanceof Potion) && !item.isIdentified() && hero.hasTalent(SCHOLARS_INTUITION) ) {
+			if(hero.pointsInTalent(SCHOLARS_INTUITION) == 2 || Buff.affect(hero, ScholarsIntuitionTracker.class).attemptIntuition(item)) {
+				item.identify();
+				// this gets distracting if it happens every time, so it only does it at +1.
+				if(hero.pointsInTalent(SCHOLARS_INTUITION) == 1) hero.sprite.emitter().burst(Speck.factory(Speck.QUESTION),1);
+			}
 		}
 	}
 
