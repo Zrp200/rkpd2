@@ -617,7 +617,7 @@ public abstract class Wand extends Item {
 					curCharges++;
 					partialCharge--;
 				}
-				if(!overcharge && curCharges < cap) {
+				if(!overcharge && curCharges >= cap) {
 					curCharges = cap;
 					partialCharge = 0;
 				}
