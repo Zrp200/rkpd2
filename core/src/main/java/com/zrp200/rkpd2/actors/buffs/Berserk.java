@@ -23,6 +23,8 @@ package com.zrp200.rkpd2.actors.buffs;
 
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.effects.SpellSprite;
 import com.zrp200.rkpd2.items.BrokenSeal.WarriorShield;
 import com.zrp200.rkpd2.messages.Messages;
@@ -32,8 +34,10 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.GameMath;
+import com.zrp200.rkpd2.utils.GLog;
 
 public class Berserk extends Buff {
+	// TODO should I make this two classes?
 
 	private enum State{
 		NORMAL, BERSERK, RECOVERING
@@ -66,12 +70,20 @@ public class Berserk extends Buff {
 		if (state == State.RECOVERING) levelRecovery = bundle.getFloat(LEVEL_RECOVERY);
 	}
 
+	private boolean berserker() {
+		return target instanceof Hero && ((Hero)target).subClass == HeroSubClass.BERSERKER;
+	}
+
+	protected float maxBerserkDuration() {
+		return 10 * (berserker() ? 2 : 1);
+	}
 	@Override
 	public boolean act() {
+		if(state == State.RECOVERING && berserker()) recover(1/Hunger.STARVING); // you'll recover fully automatically after a full hunger cycle (450 turns)
 		if (berserking()){
 			ShieldBuff buff = target.buff(WarriorShield.class);
 			if (target.HP <= 0) {
-				int dmg = 1 + (int)Math.ceil(target.shielding() * 0.1f);
+				int dmg = (int)Math.ceil(target.shielding() / maxBerserkDuration()); // MAYBE I'm buffing base, but whatever.
 				if (buff != null && buff.shielding() > 0) {
 					buff.absorbDamage(dmg);
 				} else {
@@ -91,10 +103,9 @@ public class Berserk extends Buff {
 				if (buff != null) buff.absorbDamage(buff.shielding());
 				power = 0f;
 			}
-		} else if (state == State.NORMAL) {
-			power -= GameMath.gate(0.1f, power, 1f) * 0.067f * Math.pow((target.HP/(float)target.HT), 2);
-			
-			if (power <= 0){
+		} else {
+			reduceRage();
+			if (power <= 0 && state != State.RECOVERING){
 				detach();
 			}
 		}
@@ -102,9 +113,18 @@ public class Berserk extends Buff {
 		return true;
 	}
 
+	private void reduceRage() {
+		// essentially while recovering your max rage is actually capped for basically all purposes.
+		power -= GameMath.gate(recovered()/10f, power, recovered()) * 0.067f * Math.pow((target.HP/(float)target.HT), 2);
+		power = Math.max(0,power);
+	}
+
+	private float damageMult() {
+		// berserker gets that 2x damage from raging
+		return berserker() && berserking() ? 2 : Math.min(1.5f,1+power/2f);
+	}
 	public int damageFactor(int dmg){
-		float bonus = Math.min(1.5f, 1f + (power / 2f));
-		return Math.round(dmg * bonus);
+		return Math.round(dmg * damageMult());
 	}
 
 	public boolean berserking(){
@@ -113,7 +133,8 @@ public class Berserk extends Buff {
 			WarriorShield shield = target.buff(WarriorShield.class);
 			if (shield != null){
 				state = State.BERSERK;
-				shield.supercharge(shield.maxShield() * 10);
+				// so basically it's the same rate of shield decrease, you just get more shield which makes it take longer.
+				shield.supercharge((int)Math.ceil(shield.maxShield() * maxBerserkDuration()));
 
 				SpellSprite.show(target, SpellSprite.BERSERK);
 				Sample.INSTANCE.play( Assets.Sounds.CHALLENGE );
@@ -124,18 +145,28 @@ public class Berserk extends Buff {
 
 		return state == State.BERSERK && target.shielding() > 0;
 	}
-	
+
+	private float rageFactor() {
+		float base = berserker() ? target.HP : target.HT;
+		return base*3;
+	}
+
 	public void damage(int damage){
-		if (state == State.RECOVERING) return;
-		power = Math.min(1.1f, power + (damage/(float)target.HT)/3f );
+		if (state == State.RECOVERING && !berserker()) return;
+		power = Math.min(1.1f, power + damage/rageFactor() );
+		if(state == State.RECOVERING) power = Math.min(recovered(),power);
 		BuffIndicator.refreshHero(); //show new power immediately
 	}
 
+	public final float recovered() {
+		return 1-levelRecovery/2;
+	}
 	public void recover(float percent){
 		if (levelRecovery > 0){
 			levelRecovery -= percent;
 			if (levelRecovery <= 0) {
 				state = State.NORMAL;
+				if(berserker()) GLog.p("You have fully recovered!"); // because by this point it should look almost exactly like the regular anyway.
 				levelRecovery = 0;
 			}
 		}
@@ -145,32 +176,33 @@ public class Berserk extends Buff {
 	public int icon() {
 		return BuffIndicator.BERSERK;
 	}
-	
+
 	@Override
 	public void tintIcon(Image icon) {
+		float r,g,b;
 		switch (state){
 			case NORMAL: default:
-				if (power < 1f) icon.hardlight(1f, 0.5f, 0f);
-				else            icon.hardlight(1f, 0f, 0f);
+				r = 1;
+				g = power < 1f ? .5f : 0f;
+				b = 0;
 				break;
-			case BERSERK:
-				icon.hardlight(1f, 0f, 0f);
-				break;
-			case RECOVERING:
-				icon.hardlight(0, 0, 1f);
+			case RECOVERING: // it's supposed to look more like the above as you get closer.
+				r = berserker() ? recovered() : 0;
+				g = .5f*r;
+				b = 1-r;
 				break;
 		}
+		icon.hardlight(r,g,b);
 	}
 	
 	@Override
 	public float iconFadePercent() {
 		switch (state){
+			case RECOVERING: if(!berserker()) return recovered();
 			case NORMAL: default:
-				return Math.max(0f, 1f - power);
+				return recovered() == 0 ? 1 : Math.max(0f, 1 - power/recovered());
 			case BERSERK:
 				return 0f;
-			case RECOVERING:
-				return 1f - levelRecovery/2f;
 		}
 	}
 
@@ -186,17 +218,28 @@ public class Berserk extends Buff {
 		}
 	}
 
+	private String getCurrentRageDesc() {
+		return Messages.get(this,"current_rage",Math.floor(power*100),Math.floor(100*(damageMult()-1)));
+	}
 	@Override
 	public String desc() {
-		float dispDamage = (damageFactor(10000) / 100f) - 100f;
+		StringBuilder desc = new StringBuilder();
 		switch (state){
 			case NORMAL: default:
-				return Messages.get(this, "angered_desc", Math.floor(power * 100f), dispDamage);
+				desc.append(Messages.get(this, "angered_desc"))
+						.append("\n\n")
+						.append(getCurrentRageDesc());
+				break;
 			case BERSERK:
-				return Messages.get(this, "berserk_desc");
+				desc.append( Messages.get(this, "berserk_desc",damageMult()));
+				break;
 			case RECOVERING:
-				return Messages.get(this, "recovering_desc", levelRecovery);
+				desc.append(Messages.get(this, "recovering_desc", Messages.get(
+						this,"recovering_penalty_" + (berserker() ? "berserk" : "default")),
+						levelRecovery));
+				if( berserker() ) desc.append("\n\n").append(getCurrentRageDesc());
+				break;
 		}
-		
+		return desc.toString();
 	}
 }
