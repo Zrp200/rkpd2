@@ -49,7 +49,6 @@ public class RKPD2Changes {
 
     public static void addAllChanges( ArrayList<ChangeInfo> changeInfos ){
         addChanges(changeInfos);
-        //add_v0_9_0_Changes(changeInfos);
     }
 
     public static void addChanges( ArrayList<ChangeInfo> changeInfos) {
@@ -61,31 +60,54 @@ public class RKPD2Changes {
         changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.RAT_KING,6), "New Class!",
                 "Added a new class! Rat King is supposed to be a sort of 'omniclass', with the perks of all the shattered classes combined.\n\n" +
                         "He also has his subclass implemented, which, in line with the above, is of course all subclasses in one. I'm pretty proud of this one, give it a shot!"));
+        changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.WARRIOR,6),"Warrior","" +
+                "_-_ Seal can now carry an infinite amount of upgrades." +
+                "\n_-_ All t1 talents buffed." +
+                "\n\n_Berserker_ basically cannot lose now (I may even nerf this later):" +
+                "\n_-_ Rage gain now scales directly with current HP for an up to 100% increase in rate as HP decreases." +
+                "\n_-_ Berserk lasts twice as long and gives double the shielding." +
+                "\n_-_ Damage multiplier during berserk is now 2x." +
+                "\n_-_ Rage can be gained while recovering and recovering happens slowly over time if no exp is gained." +
+                "\n\n_Gladiator_:" +
+                "\n_-_ Combo is no longer lost upon missing." +
+                "\n_-_ All finishers get an extra damage roll check for increased consistency." +
+                "\n_-_ Finishers can bypass infinite evasion."));
         changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.MAGE,6),"Mage",
-                "_*_ Mage now has intrinsic +2 level to all wands for purposes of power and recharge\n" +
-                        "_*_ Battlemage effects now apply to all equipped weapons, including thrown weapons. On-hit recharge remains exclusive to the staff.\n" +
-                        "_*_ Warlock can now soul mark with weapons and all damage can now trigger soul mark. Wands get full effect as if the hero was doing the damage directly.\n" +
-                        "_*_ Some talents buffed."));
+                "_-_ Mage now has intrinsic +2 level to all wands for purposes of power and recharge\n" +
+                        "_-_ Battlemage effects now apply to all equipped weapons, including thrown weapons. On-hit recharge remains exclusive to the staff.\n" +
+                        "_-_ Warlock can now soul mark with weapons and all damage can now trigger soul mark. Wands get full effect as if the hero was doing the damage directly.\n" +
+                        "_-_ Most talents buffed.\n" +
+                        "_-_ Empowering meal has been removed (for mage at least) and replaced with Energizing Meal, t2 meal replaced with something else."));
         changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.HUNTRESS,0),"Huntress",
                 "Huntress has also recieved 'tweaks'!\n\n" +
-                        "_*_ Spirit Bow now scales to +12\n" +
-                        "_*_ The Spirit bow can be enchanted simply by using a scroll of upgrade on it.\n" +
-                        "_*_ Huntress has her innate heightened vision and missile durability back!\n" +
-                        "_*_ Huntress talents have been buffed across the board by ~50%."));
+                        "_-_ Spirit Bow now scales to +12\n" +
+                        "_-_ The Spirit bow can be enchanted simply by using a scroll of upgrade on it.\n" +
+                        "_-_ Huntress has her innate heightened vision and missile durability back!\n" +
+                        "_-_ Huntress talents have been buffed across the board by ~50%."));
         changeInfos.add(changes = new ChangeInfo("Misc",false,""));
         changes.addButton(new ChangeButton(new ItemSprite(new SpiritBow().enchant(new Explosive())),"Spirit Bow enchantments",
                 "The idea here is to lower the chance of 'misfiring' when enchanting the spirit bow dramatically.\n\n" +
-                        "_*_ Added a new spirit-bow exclusive enchantment.\n" +
-                        "_*_ It, along with grim, will replace shocking, blocking, and lucky when using a scroll of enchantment on the bow (or a scroll of upgrade in the case of huntress)."));
+                        "_-_ Added a new spirit-bow exclusive enchantment.\n" +
+                        "_-_ It, along with grim, will replace shocking, blocking, and lucky when using a scroll of enchantment on the bow (or a scroll of upgrade in the case of huntress)."));
         changes.addButton(new ChangeButton(new ItemSprite(new WarriorArmor()),"Class Armor","Who liked limits anyway?"));
         changes.addButton(new ChangeButton(Icons.get(Icons.LANGS),"Disabled Languages","Since I only know English and do not have an active translation project, I've set the language to English. Sorry!"));
         // plans
         changeInfos.add(changes = new ChangeInfo("TODO",false,""));
-        changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.ROGUE,6),"Rogue","TODO"));
-        changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.WARRIOR,6),"Warrior subclasses","TODO"));
+        changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.ROGUE,6),"Rogue",""));
         changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.HUNTRESS,6),"Huntress Subclasses",
                 "While I'm pretty happy with the changes I've made thus far to the huntress, warden can easily be tweaked to be more in line with the mood, and it would be a crime to not buff sniper while I'm at it..."));
+        changes.addButton(new ChangeButton(Icons.get(Icons.PREFS),"","" +
+                "_-_ \"Balance\" tweaks to existing content as I see fit." +
+                "\n_-_ Levelgen changes?" +
+                "\n_-_ Visual stuff"));
         // closing message
+        changeInfos.add(changes = new ChangeInfo("What changed???",true, "" +
+                        "_-_ Added Warrior changes that I forgot to add to the last alpha." +
+                        "\n_-_ Reworked Scholar's Intution and mage's on-eat talents." +
+                        "\n_-_ Heroes start with all bags." +
+                        "\n_-_ Explosive/Grim on Spirit Bow somewhat less common." +
+                        "\n_-_ Explosive proc rate adjusted, can now proc on miss." +
+                        "\n_-_ Fixed a crash error with badges."));
         changeInfos.add(changes = new ChangeInfo("",true,"Thanks for testing out my alpha! While most of the art isn't in the game, and won't be in the game until it's actually released, the gameplay mechanics are a different story entirely!\n\nAll hail the mighty rat king, destroyer of Yogs!"));
     }
 }
