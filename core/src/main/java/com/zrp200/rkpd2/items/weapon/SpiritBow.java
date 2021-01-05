@@ -64,7 +64,10 @@ public class SpiritBow extends Weapon {
 		unique = true;
 		bones = false;
 	}
-	
+
+	// storing this here
+	public static final Class<?extends Enchantment>[] REMOVED_ENCHANTS = new Class[] {Shocking.class, Blocking.class, Lucky.class};
+
 	public boolean sniperSpecial = false;
 	protected boolean rangedAttack = false;
 	
@@ -256,7 +259,7 @@ public class SpiritBow extends Weapon {
 		public boolean hasEnchant(Class<? extends Enchantment> type, Char owner) {
 			return SpiritBow.this.hasEnchant(type, owner);
 		}
-		
+
 		@Override
 		public int proc(Char attacker, Char defender, int damage) {
 			return SpiritBow.this.proc(attacker, defender, damage);
