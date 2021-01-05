@@ -105,7 +105,7 @@ public class RKPD2Changes {
                         "_-_ Added Warrior changes that I forgot to add to the last alpha." +
                         "\n_-_ Reworked Scholar's Intution and mage's on-eat talents." +
                         "\n_-_ Heroes start with all bags." +
-                        "\n_-_ Explosive/Grim on Spirit Bow somewhat less common." +
+                        "\n_-_ Explosive/Grim on Spirit Bow slightly less common." +
                         "\n_-_ Explosive proc rate adjusted, can now proc on miss." +
                         "\n_-_ Fixed a crash error with badges."));
         changeInfos.add(changes = new ChangeInfo("",true,"Thanks for testing out my alpha! While most of the art isn't in the game, and won't be in the game until it's actually released, the gameplay mechanics are a different story entirely!\n\nAll hail the mighty rat king, destroyer of Yogs!"));
