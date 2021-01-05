@@ -48,6 +48,11 @@ public class Unstable extends Weapon.Enchantment {
 			Explosive.class
 	};
 
+	public static Weapon.Enchantment getRandomEnchant(Weapon weapon) {
+		Class<?extends Weapon.Enchantment> cls = Random.oneOf(randomEnchants);
+		return cls != Explosive.class || weapon instanceof SpiritBow
+				? Reflection.newInstance(cls) : getRandomEnchant(weapon);
+	}
 	@Override
 	public int proc( Weapon weapon, Char attacker, Char defender, int damage ) {
 		
@@ -57,11 +62,7 @@ public class Unstable extends Weapon.Enchantment {
 			attacker.buff(Kinetic.ConservedDamage.class).detach();
 		}
 
-		Class<?extends Weapon.Enchantment> enchantmentClass;
-		do {
-			enchantmentClass = Random.oneOf(randomEnchants);
-		} while(enchantmentClass == Explosive.class && !(weapon instanceof SpiritBow));
-		damage = Reflection.newInstance(enchantmentClass).proc( weapon, attacker, defender, damage );
+		getRandomEnchant(weapon).proc( weapon, attacker, defender, damage );
 		
 		return damage + conservedDamage;
 	}

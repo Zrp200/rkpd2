@@ -29,9 +29,15 @@ import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.effects.Splash;
 import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.bombs.Bomb;
 import com.zrp200.rkpd2.items.rings.RingOfFuror;
 import com.zrp200.rkpd2.items.rings.RingOfSharpshooting;
 import com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfEnchantment;
+import com.zrp200.rkpd2.items.weapon.enchantments.Blocking;
+import com.zrp200.rkpd2.items.weapon.enchantments.Explosive;
+import com.zrp200.rkpd2.items.weapon.enchantments.Lucky;
+import com.zrp200.rkpd2.items.weapon.enchantments.Shocking;
+import com.zrp200.rkpd2.items.weapon.enchantments.Unstable;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
@@ -285,6 +291,7 @@ public class SpiritBow extends Weapon {
 			} else {
 				if (!curUser.shoot( enemy, this )) {
 					Splash.at(cell, 0xCC99FFFF, 1);
+					if((hasEnchant(Explosive.class,curUser) || (hasEnchant(Unstable.class,curUser) && Unstable.getRandomEnchant(SpiritBow.this) instanceof Explosive)) && Explosive.tryProc(SpiritBow.this.buffedLvl())) new Bomb().explode(cell);
 				}
 				if (sniperSpecial && SpiritBow.this.augment != Augment.SPEED) sniperSpecial = false;
 			}
