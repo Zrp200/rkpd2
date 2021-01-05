@@ -170,9 +170,8 @@ public class Armor extends EquipableItem {
 			BrokenSeal.WarriorShield sealBuff = hero.buff(BrokenSeal.WarriorShield.class);
 			if (sealBuff != null) sealBuff.setArmor(null);
 
-			if (seal.level() > 0){
-				degrade();
-			}
+			degrade(seal.level());
+
 			if (seal.getGlyph() != null){
 				if (hero.hasTalent(Talent.RUNIC_TRANSFERENCE,Talent.POWER_WITHIN)
 						&& (Arrays.asList(Glyph.common).contains(seal.getGlyph().getClass())
@@ -231,7 +230,7 @@ public class Armor extends EquipableItem {
 		this.seal = seal;
 		if (seal.level() > 0){
 			//doesn't trigger upgrading logic such as affecting curses/glyphs
-			level(level()+1);
+			level(level()+seal.level());
 			Badges.validateItemLevelAquired(this);
 		}
 		if (seal.getGlyph() != null){
@@ -398,7 +397,7 @@ public class Armor extends EquipableItem {
 		
 		cursed = false;
 
-		if (seal != null && seal.level() == 0)
+		if (seal != null && seal.isUpgradable())
 			seal.upgrade();
 
 		return super.upgrade();

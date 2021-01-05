@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.buffs.ShieldBuff;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.messages.Messages;
@@ -95,7 +96,7 @@ public class BrokenSeal extends Item {
 	@Override
 	//scroll of upgrade can be used directly once, same as upgrading armor the seal is affixed to then removing it.
 	public boolean isUpgradable() {
-		return level() == 0;
+		return Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.WARRIOR || level() == 0;
 	}
 
 	protected static WndBag.Listener armorSelector = new WndBag.Listener() {
@@ -185,7 +186,9 @@ public class BrokenSeal extends Item {
 
 		public synchronized int maxShield() {
 			if (armor != null && armor.isEquipped((Hero)target)) {
-				return armor.tier + armor.level() + ((Hero) target).pointsInTalents(Talent.IRON_WILL,Talent.NOBLE_CAUSE);
+				int bonus = ((Hero)target).pointsInTalents(Talent.IRON_WILL,Talent.NOBLE_CAUSE); // 2/3
+				if(((Hero)target).hasTalent(Talent.IRON_WILL)) bonus = (int)Math.ceil(bonus*1.5f);
+				return armor.tier + armor.level() + bonus;
 			} else {
 				return 0;
 			}

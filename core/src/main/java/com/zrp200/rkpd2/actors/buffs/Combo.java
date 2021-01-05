@@ -27,6 +27,7 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.items.BrokenSeal;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.wands.WandOfBlastWave;
@@ -52,7 +53,14 @@ public class Combo extends Buff implements ActionIndicator.Action {
 	private int count = 0;
 	private float comboTime = 0f;
 	private int misses = 0;
-	
+
+	// laziness strikes again
+	// gladiator gets no miss penalty and all of his finishers roll an extra time.
+	// this means that he will never actually lose his combo in combat unless he uses it, since missing restores combo.
+	private boolean gladiatorVariant() {
+		return target instanceof Hero && ((Hero)target).subClass == HeroSubClass.GLADIATOR;
+	}
+
 	@Override
 	public int icon() {
 		return BuffIndicator.COMBO;
@@ -98,9 +106,9 @@ public class Combo extends Buff implements ActionIndicator.Action {
 	}
 
 	public void miss( Char enemy ){
-		misses++;
 		comboTime = 4f;
-		if (misses >= 2){
+		// gladiator doesn't lose combo from misses.
+		if (!gladiatorVariant() && ++misses >= 2){
 			detach();
 		}
 	}
@@ -214,6 +222,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 
 			AttackIndicator.target(enemy);
 
+			/* I've wanted to do this for a long, long time.
 			if (enemy.defenseSkill(target) >= Char.INFINITE_EVASION){
 				enemy.sprite.showStatus( CharSprite.NEUTRAL, enemy.defenseVerb() );
 				Sample.INSTANCE.play(Assets.Sounds.MISS);
@@ -221,7 +230,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 				ActionIndicator.clearAction(Combo.this);
 				((Hero)target).spendAndNext(((Hero)target).attackDelay());
 				return;
-			} else if (enemy.isInvulnerable(target.getClass())){
+			} else*/ if (enemy.isInvulnerable(target.getClass())){
 				enemy.sprite.showStatus( CharSprite.POSITIVE, Messages.get(Char.class, "invulnerable") );
 				Sample.INSTANCE.play(Assets.Sounds.MISS);
 				detach();
@@ -231,6 +240,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 			}
 
 			int dmg = target.damageRoll();
+			if(gladiatorVariant()) dmg = Math.max(target.damageRoll(), dmg); // free reroll for gladiator. This will be rather...noticable on fury.
 
 			//variance in damage dealt
 			switch(type){

@@ -193,9 +193,16 @@ public enum Talent {
 				break;
 			case ROYAL_INTUITION:
 				case ARMSMASTERS_INTUITION:
-					if(points == 2) {
+					if(talent == ARMSMASTERS_INTUITION && points > 0) points++;
+					if(points > 1) {
 						if (hero.belongings.weapon != null) hero.belongings.weapon.identify();
 						if (hero.belongings.armor != null)  hero.belongings.armor.identify();
+					}
+					// armsmaster identifies all weapons and armors
+					if(points == 3) {
+						for(Item item : hero.belongings.backpack.items) {
+							if(item instanceof Armor || item instanceof Weapon) item.identify();
+						}
 					}
 					if(talent == ARMSMASTERS_INTUITION) break;
 				case THIEFS_INTUITION:
@@ -220,14 +227,14 @@ public enum Talent {
 
 	public static void onFoodEaten( Hero hero, float foodVal, Item foodSource ){
 		if (hero.hasTalent(HEARTY_MEAL,ROYAL_PRIVILEGE)){
-			//3/5 HP healed, when hero is below 25% health
-			if (hero.HP <= hero.HT/4) {
-				hero.HP = Math.min(hero.HP + 1 + 2 * (hero.pointsInTalent(HEARTY_MEAL)+hero.pointsInTalent(ROYAL_PRIVILEGE)), hero.HT);
-				hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), hero.pointsInTalent(HEARTY_MEAL)+hero.pointsInTalent(ROYAL_PRIVILEGE));
-			//2/3 HP healed, when hero is below 50% health
-			} else if (hero.HP <= hero.HT/2){
-				hero.HP = Math.min(hero.HP + 1 + hero.pointsInTalent(HEARTY_MEAL) + hero.pointsInTalent(ROYAL_PRIVILEGE), hero.HT);
-				hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), 1+hero.pointsInTalent(HEARTY_MEAL)+hero.pointsInTalent(ROYAL_PRIVILEGE));
+			int points = hero.pointsInTalents(HEARTY_MEAL, ROYAL_PRIVILEGE);
+			int multiplier = hero.HP <= hero.HT/4 ? 2 : hero.HP <= hero.HT / 2 ? 1 : 0;
+			int heal = 1 + multiplier*points;
+			// (2/3)/(3/5) healed for priv, (3/5)/(5/8) for hearty
+			if(hero.hasTalent(HEARTY_MEAL)) heal = (int)Math.ceil(heal*1.5f);
+			if(multiplier > 0) {
+				hero.HP = Math.min(hero.HP+heal,hero.HT);
+				hero.sprite.emitter().burst(Speck.factory(Speck.HEALING),(int)Math.ceil(heal/2f)); // 2 -> 1, 3 -> 2, 5 -> 3, 8 -> 4
 			}
 		}
 		if (hero.hasTalent(IRON_STOMACH,ROYAL_MEAL)){
@@ -276,7 +283,10 @@ public enum Talent {
 
 		// 2x/instant for Warrior (see onItemEquipped)
 		if (item instanceof MeleeWeapon || item instanceof Armor){
-			factor *= 1f + hero.pointsInTalent(ROYAL_INTUITION) + hero.pointsInTalent(ARMSMASTERS_INTUITION);
+			int points = hero.pointsInTalents(ROYAL_INTUITION,ARMSMASTERS_INTUITION);
+			// basically an innate +1 for armsmaster
+			if(hero.hasTalent(ARMSMASTERS_INTUITION)) points++;
+			factor *= 1f + points;
 		}
 		// 3x/instant for mage (see Wand.wandUsed())
 		if (item instanceof Wand){
@@ -358,7 +368,7 @@ public enum Talent {
 	}
 
 	public static void onItemEquipped( Hero hero, Item item ){
-		if (hero.pointsInTalents(ARMSMASTERS_INTUITION,ROYAL_INTUITION) == 2 && (item instanceof Weapon || item instanceof Armor)){
+		if (hero.pointsInTalents(ARMSMASTERS_INTUITION,ROYAL_INTUITION) >= (hero.hasTalent(ARMSMASTERS_INTUITION) ? 1 : 2) && (item instanceof Weapon || item instanceof Armor)){
 			item.identify();
 		}
 		if (hero.hasTalent(THIEFS_INTUITION,ROYAL_INTUITION) && item instanceof Ring){
@@ -374,6 +384,8 @@ public enum Talent {
 		if (hero.pointsInTalents(THIEFS_INTUITION,ROYAL_INTUITION) == 2){
 			if (item instanceof Ring) ((Ring) item).setKnown();
 		}
+		if (hero.pointsInTalent(ARMSMASTERS_INTUITION) == 2 &&
+				(item instanceof Weapon || item instanceof Armor)) item.identify();
 		if( hero.pointsInTalent(SURVIVALISTS_INTUITION) == 2 && Random.Int(3) == 0){
 			item.cursedKnown = true;
 		}
@@ -390,9 +402,11 @@ public enum Talent {
 	public static void onItemIdentified( Hero hero, Item item ){
 		if (hero.hasTalent(TEST_SUBJECT,KINGS_WISDOM)){
 			//heal for 2/3 HP
-			hero.HP = Math.min(hero.HP + 1 + hero.pointsInTalents(TEST_SUBJECT,KINGS_WISDOM), hero.HT);
+			int heal = 1 + hero.pointsInTalents(TEST_SUBJECT,KINGS_WISDOM);
+			if(hero.pointsInTalent(TEST_SUBJECT) > 0) heal *= 1.5;
+			hero.HP = Math.min(hero.HP+heal, hero.HT);
 			Emitter e = hero.sprite.emitter();
-			if (e != null) e.burst(Speck.factory(Speck.HEALING), hero.pointsInTalents(TEST_SUBJECT,KINGS_WISDOM));
+			if (e != null) e.burst(Speck.factory(Speck.HEALING), (int)Math.ceil(heal/2f)); // 2->1,3->2,5->3
 		}
 		if (hero.hasTalent(TESTED_HYPOTHESIS,KINGS_WISDOM)){
 			//2/3 turns of wand recharging
