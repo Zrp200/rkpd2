@@ -40,12 +40,14 @@ public enum HeroSubClass {
 	
 	ASSASSIN( "assassin" ) {
 		@Override public int getBonus(Item item) {
-			return item instanceof Weapon ? 2 : 0; // for a sum of 6 total boosts in play.
+			// +3 to melee, +2 to missiles
+			return item instanceof Weapon ? 2 : 0;
 		}
 	},
 	FREERUNNER( "freerunner" ) {
 		@Override
 		public int getBonus(Item item) {
+			// +1 to melee, +2 to wands, +2 to missiles
 			if(item instanceof Wand) return 2;
 			if(item instanceof MissileWeapon) return 2;
 			return 0;
