@@ -22,6 +22,9 @@
 package com.zrp200.rkpd2.actors.hero;
 
 import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.wands.Wand;
+import com.zrp200.rkpd2.items.weapon.Weapon;
+import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.watabou.utils.Bundle;
 
@@ -35,8 +38,19 @@ public enum HeroSubClass {
 	WARLOCK( "warlock" ),
 	BATTLEMAGE( "battlemage" ),
 	
-	ASSASSIN( "assassin" ),
-	FREERUNNER( "freerunner" ),
+	ASSASSIN( "assassin" ) {
+		@Override public int getBonus(Item item) {
+			return item instanceof Weapon ? 2 : 0; // for a sum of 6 total boosts in play.
+		}
+	},
+	FREERUNNER( "freerunner" ) {
+		@Override
+		public int getBonus(Item item) {
+			if(item instanceof Wand) return 2;
+			if(item instanceof MissileWeapon) return 2;
+			return 0;
+		}
+	},
 	
 	SNIPER( "sniper" ),
 	WARDEN( "warden" ),
