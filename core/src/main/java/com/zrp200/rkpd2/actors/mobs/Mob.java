@@ -799,7 +799,6 @@ public abstract class Mob extends Char {
 
 				if (enemy instanceof Hero){
 					int points = ((Hero)enemy).pointsInTalents(Talent.SILENT_STEPS,Talent.PURSUIT);
-					if(((Hero)enemy).hasTalent(Talent.SILENT_STEPS) && points > 0) points++;
 					if (points > 0 && Dungeon.level.distance(pos, enemy.pos) >= 4 - points) {
 						enemyStealth = Float.POSITIVE_INFINITY;
 					}
