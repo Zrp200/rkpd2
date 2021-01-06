@@ -68,7 +68,7 @@ public abstract class DamageWand extends Wand{
 		if (levelKnown)
 			return Messages.get(this, "stats_desc", min(), max());
 		else {
-			int baseLevel = Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.MAGE ? HeroClass.MAGE_WAND_BOOST : 0;
+			int baseLevel = Dungeon.hero != null ? Dungeon.hero.getBonus(this) : 0;
 			return Messages.get(this, "stats_desc", min(baseLevel), max(baseLevel));
 		}
 	}

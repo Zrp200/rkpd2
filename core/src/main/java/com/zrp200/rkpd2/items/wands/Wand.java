@@ -295,8 +295,8 @@ public abstract class Wand extends Item {
 
 	protected int buffedLvl(boolean magicCharge) {
 		int lvl = super.buffedLvl();
-		if(Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.MAGE) lvl += HeroClass.MAGE_WAND_BOOST; // shadow buff
 		if (curUser != null) {
+			lvl += curUser.getBonus(this);
 			WandOfMagicMissile.MagicCharge buff = curUser.buff(WandOfMagicMissile.MagicCharge.class);
 			if (buff != null && magicCharge && buff.appliesTo(this)){
 				return buff.level();
@@ -309,12 +309,6 @@ public abstract class Wand extends Item {
 		return buffedLvl(true);
 	}
 
-	@Override
-	public int buffedVisiblyUpgraded() {
-		int bvu = super.buffedVisiblyUpgraded();
-		if(Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.MAGE && levelKnown) bvu -= HeroClass.MAGE_WAND_BOOST;
-		return bvu;
-	}
 
 	public void updateLevel() {
 		maxCharges = Math.min( initialCharges() + level(), 10 );
@@ -589,7 +583,7 @@ public abstract class Wand extends Item {
 		private void recharge(){
 			int missingCharges = maxCharges - curCharges;
 			missingCharges = Math.max(0, missingCharges);
-			if(Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.MAGE) missingCharges += HeroClass.MAGE_WAND_BOOST;
+			if(target instanceof Hero) missingCharges += ((Hero)target).getBonus(Wand.this);
 
 			float turnsToCharge = (float) (BASE_CHARGE_DELAY
 					+ (SCALING_CHARGE_ADDITION * Math.pow(scalingFactor, missingCharges)));

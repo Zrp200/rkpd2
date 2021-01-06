@@ -229,7 +229,8 @@ abstract public class Weapon extends KindOfWeapon {
 	public int level() {
 		return super.level() + (curseInfusionBonus ? 1 : 0);
 	}
-	
+
+	/* logic is now in superclass
 	//overrides as other things can equip these
 	@Override
 	public int buffedLvl() {
@@ -238,7 +239,7 @@ abstract public class Weapon extends KindOfWeapon {
 		} else {
 			return level();
 		}
-	}
+	}*/
 	
 	@Override
 	public Item upgrade() {

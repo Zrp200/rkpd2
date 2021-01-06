@@ -45,11 +45,13 @@ import com.zrp200.rkpd2.items.scrolls.ScrollOfLullaby;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfMagicMapping;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRage;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfUpgrade;
+import com.zrp200.rkpd2.items.wands.Wand;
 import com.zrp200.rkpd2.items.wands.WandOfMagicMissile;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.melee.Dagger;
 import com.zrp200.rkpd2.items.weapon.melee.Gloves;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
+import com.zrp200.rkpd2.items.weapon.melee.MeleeWeapon;
 import com.zrp200.rkpd2.items.weapon.melee.WornShortsword;
 import com.zrp200.rkpd2.items.weapon.missiles.ThrowingKnife;
 import com.zrp200.rkpd2.items.weapon.missiles.ThrowingStone;
@@ -58,8 +60,12 @@ import com.zrp200.rkpd2.messages.Messages;
 public enum HeroClass {
 
 	WARRIOR( "warrior", HeroSubClass.BERSERKER, HeroSubClass.GLADIATOR ),
-	MAGE( "mage", HeroSubClass.BATTLEMAGE, HeroSubClass.WARLOCK ),
-	ROGUE( "rogue", HeroSubClass.ASSASSIN, HeroSubClass.FREERUNNER ),
+	MAGE( "mage", HeroSubClass.BATTLEMAGE, HeroSubClass.WARLOCK ) {
+		@Override public int getBonus(Item item) { return item instanceof Wand ? 2 : 0; }
+	},
+	ROGUE( "rogue", HeroSubClass.ASSASSIN, HeroSubClass.FREERUNNER ) {
+		@Override public int getBonus(Item item) { return item instanceof MeleeWeapon ? 1 : 0; }
+	},
 	HUNTRESS( "huntress", HeroSubClass.SNIPER, HeroSubClass.WARDEN ),
 	RAT_KING ("rat_king",HeroSubClass.KING);
 
@@ -67,6 +73,7 @@ public enum HeroClass {
 	private HeroSubClass[] subClasses;
 
 	public static final int MAGE_WAND_BOOST = 2;
+	public int getBonus(Item item) { return 0; }
 
 	HeroClass( String title, HeroSubClass...subClasses ) {
 		this.title = title;

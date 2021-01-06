@@ -306,11 +306,9 @@ public class Item implements Bundlable {
 	//returns the level of the item, after it may have been modified by temporary boosts/reductions
 	//note that not all item properties should care about buffs/debuffs! (e.g. str requirement)
 	public int buffedLvl(){
-		if (Dungeon.hero.buff( Degrade.class ) != null) {
-			return Degrade.reduceLevel(level());
-		} else {
-			return level();
-		}
+		int lvl = level();
+		if ((isEquipped( Dungeon.hero ) || Dungeon.hero.belongings.contains( this )) && Dungeon.hero.buff(Degrade.class) != null) lvl = Degrade.reduceLevel(lvl);
+		return lvl + Dungeon.hero.getBonus(this);
 	}
 
 	public void level( int value ){
@@ -356,7 +354,7 @@ public class Item implements Bundlable {
 	}
 
 	public int buffedVisiblyUpgraded() {
-		return levelKnown ? buffedLvl() : 0;
+		return levelKnown ? buffedLvl()-Dungeon.hero.getBonus(this) : 0;
 	}
 	
 	public boolean visiblyCursed() {

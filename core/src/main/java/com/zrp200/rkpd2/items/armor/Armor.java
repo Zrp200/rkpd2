@@ -372,6 +372,7 @@ public class Armor extends EquipableItem {
 		return super.level() + (curseInfusionBonus ? 1 : 0);
 	}
 	
+	/* moved to superclass
 	//other things can equip these, for now we assume only the hero can be affected by levelling debuffs
 	@Override
 	public int buffedLvl() {
@@ -380,7 +381,7 @@ public class Armor extends EquipableItem {
 		} else {
 			return level();
 		}
-	}
+	}*/
 	
 	@Override
 	public Item upgrade() {

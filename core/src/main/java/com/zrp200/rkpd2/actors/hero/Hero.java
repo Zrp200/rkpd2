@@ -226,6 +226,10 @@ public class Hero extends Char {
 		return STR;
 	}
 
+	public int getBonus(Item item) {
+		return heroClass.getBonus(item) + subClass.getBonus(item);
+	}
+
 	private static final String ATTACK		= "attackSkill";
 	private static final String DEFENSE		= "defenseSkill";
 	private static final String STRENGTH	= "STR";

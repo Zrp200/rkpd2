@@ -142,12 +142,9 @@ public class MagesStaff extends MeleeWeapon {
 	public int buffedLvl() {
 		int lvl = super.buffedLvl();
 		if (curUser != null && wand != null) {
-			int buffedLvl = wand.buffedLvl();
 			WandOfMagicMissile.MagicCharge buff = curUser.buff(WandOfMagicMissile.MagicCharge.class);
 			if (buff != null && buff.appliesTo(wand)){
-				buffedLvl = buff.level();
-				if(curUser.heroClass == HeroClass.MAGE) buffedLvl -= HeroClass.MAGE_WAND_BOOST; // it still doesn't apply to staff
-				return buffedLvl;
+				return buff.level() - curUser.getBonus(wand);
 			}
 		}
 		return lvl;

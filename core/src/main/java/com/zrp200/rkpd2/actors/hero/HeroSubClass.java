@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.actors.hero;
 
+import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.messages.Messages;
 import com.watabou.utils.Bundle;
 
@@ -43,6 +44,9 @@ public enum HeroSubClass {
 	KING ("king");
 	
 	private String title;
+
+	// this corresponds to the one in HeroClass
+	public int getBonus(Item item) { return 0; }
 	
 	HeroSubClass( String title ) {
 		this.title = title;
