@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.actors.hero;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.wands.Wand;
 import com.zrp200.rkpd2.items.weapon.Weapon;
+import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.watabou.utils.Bundle;
@@ -36,7 +37,12 @@ public enum HeroSubClass {
 	BERSERKER( "berserker" ),
 	
 	WARLOCK( "warlock" ),
-	BATTLEMAGE( "battlemage" ),
+	BATTLEMAGE( "battlemage" ) {
+		@Override public int getBonus(Item item) {
+			// mage boost now also applies to staff...
+			return item instanceof MagesStaff ? 2 : 0;
+		}
+	},
 	
 	ASSASSIN( "assassin" ) {
 		@Override public int getBonus(Item item) {
