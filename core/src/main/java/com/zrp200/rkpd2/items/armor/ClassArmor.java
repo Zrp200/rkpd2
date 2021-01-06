@@ -136,11 +136,15 @@ abstract public class ClassArmor extends Armor {
 			if (!isEquipped( hero )) {
 				GLog.w( Messages.get(this, "not_equipped") );
 			} else {
-				if(charge < 35) {
-					GLog.n("WHO DESIGNED THIS?! CLASS ARMOR OVERCHARGE!!!");
-					charge = 999;
+				if(charge < 35) if(hero.HP*3 > hero.HT) {
+					GLog.n("rat king: I don't have time for this nonsense! I have a kingdom to run! CLASS ARMOR OVERCHAARGE!!!");
+					charge = 200;
+					hero.HP -= hero.HT / 3;
 					updateQuickslot();
-					ScrollOfRecharging.charge(Dungeon.hero);
+					ScrollOfRecharging.charge(hero);
+				} else {
+					GLog.w(Messages.get(this,"low_charge"));
+					return;
 				}
 				curUser = hero;
 				doSpecial();
