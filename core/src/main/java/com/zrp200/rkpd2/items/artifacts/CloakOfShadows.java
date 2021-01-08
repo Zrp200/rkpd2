@@ -29,6 +29,7 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.LockedFloor;
 import com.zrp200.rkpd2.actors.buffs.Preparation;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.Speck;
@@ -296,10 +297,11 @@ public class CloakOfShadows extends Artifact {
 					} else {
 						exp += Math.round(10f * Math.pow(0.75f, -lvlDiffFromTarget));
 					}
-					
-					if (exp >= (level() + 1) * 50 && level() < levelCap) {
+
+					int expPerLevel = target.heroClass == HeroClass.ROGUE ? 25 : 50;
+					if (exp >= (level() + 1) * expPerLevel && level() < levelCap) {
 						upgrade();
-						exp -= level() * 50;
+						exp -= level() * expPerLevel;
 						GLog.p(Messages.get(this, "levelup"));
 						
 					}
