@@ -36,7 +36,7 @@ import java.util.HashMap;
 public class RatKingArmor extends ClassArmor{
     {
         // TODO add proper asset
-        image = ItemSpriteSheet.ARMOR_HOLDER;
+        image = ItemSpriteSheet.CROWN;
     }
     // rogue, then mage, then huntress, then warrior.
     private HashMap<Callback, Mob> targets = new HashMap<>();
