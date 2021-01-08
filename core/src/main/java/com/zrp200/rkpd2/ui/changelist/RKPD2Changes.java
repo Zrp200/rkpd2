@@ -64,10 +64,10 @@ public class RKPD2Changes {
                 "_-_ Seal can now carry an infinite amount of upgrades." +
                 "\n_-_ All t1 talents buffed." +
                 "\n\n_Berserker_ basically cannot lose now (I may even nerf this later):" +
-                "\n_-_ Rage gain now scales directly with current HP for an up to 100% increase in rate as HP decreases." +
-                "\n_-_ Berserk lasts twice as long and gives double the shielding." +
+                "\n_-_ Rage gain now scales directly with current HP for an up to 2/3 increase in rate as HP decreases." +
                 "\n_-_ Damage multiplier during berserk is now 2x." +
                 "\n_-_ Rage can be gained while recovering and recovering happens slowly over time if no exp is gained." +
+                "\n_-_ Berserk duration increased somewhat (this also affects Rat King subclass)" +
                 "\n\n_Gladiator_:" +
                 "\n_-_ Combo is no longer lost upon missing." +
                 "\n_-_ All finishers get an extra damage roll check for increased consistency." +

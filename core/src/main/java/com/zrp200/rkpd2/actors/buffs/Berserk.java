@@ -75,15 +75,15 @@ public class Berserk extends Buff {
 	}
 
 	protected float maxBerserkDuration() {
-		return 10 * (berserker() ? 2 : 1);
+		return 10;
 	}
 	@Override
 	public boolean act() {
-		if(state == State.RECOVERING && berserker()) recover(1/Hunger.STARVING); // you'll recover fully automatically after a full hunger cycle (450 turns)
+		if(state == State.RECOVERING && berserker()) recover(1/Hunger.STARVING); // you'll recover fully automatically after two full hunger cycles (900 turns)
 		if (berserking()){
 			ShieldBuff buff = target.buff(WarriorShield.class);
 			if (target.HP <= 0) {
-				int dmg = (int)Math.ceil(target.shielding() / maxBerserkDuration()); // MAYBE I'm buffing base, but whatever.
+				int dmg = (int)Math.ceil(target.shielding() / maxBerserkDuration()); // MAYBE I'm buffing base, but whatever. compared to shattered it should last notably longer if you aren't taking damage.
 				if (buff != null && buff.shielding() > 0) {
 					buff.absorbDamage(dmg);
 				} else {
@@ -148,14 +148,19 @@ public class Berserk extends Buff {
 
 	private float rageFactor() {
 		float base = berserker() ? target.HP : target.HT;
-		return base*3;
+		// berserker has their rage gain increased by up to 2/3.
+		return base*2+target.HT;
 	}
 
 	public void damage(int damage){
 		if (state == State.RECOVERING && !berserker()) return;
-		power = Math.min(1.1f, power + damage/rageFactor() );
-		if(state == State.RECOVERING) power = Math.min(recovered(),power);
-		BuffIndicator.refreshHero(); //show new power immediately
+		int reducedDamage = Math.max(0,damage-target.drRoll());
+		target.HP -= reducedDamage; // temporarily deal full damage to hero. this makes current hp respond to damage, making berserker gain rage faster.
+		// recovering berserker has max rage effectively scaled.
+		double powerInc = Math.min((state == State.NORMAL?1.1f:recovered())-power,recovered()*damage/rageFactor());
+		power += powerInc; // apply increase
+		target.HP += reducedDamage; // revert damage so it can be reduced by armor properly
+		BuffIndicator.refreshHero(); // show new power immediately
 	}
 
 	public final float recovered() {
@@ -200,7 +205,7 @@ public class Berserk extends Buff {
 		switch (state){
 			case RECOVERING: if(!berserker()) return recovered();
 			case NORMAL: default:
-				return recovered() == 0 ? 1 : Math.max(0f, 1 - power/recovered());
+				return recovered() == 0 ? 1 : 1 - power/recovered();
 			case BERSERK:
 				return 0f;
 		}
