@@ -393,6 +393,7 @@ public enum Talent {
 		}
 		if (hero.pointsInTalent(ARMSMASTERS_INTUITION) == 2 &&
 				(item instanceof Weapon || item instanceof Armor)) item.identify();
+		// TODO revisit this is easily exploitable
 		if( hero.pointsInTalent(SURVIVALISTS_INTUITION) == 2 && Random.Int(3) == 0){
 			item.cursedKnown = true;
 		}
@@ -409,11 +410,13 @@ public enum Talent {
 	public static void onItemIdentified( Hero hero, Item item ){
 		if (hero.hasTalent(TEST_SUBJECT,KINGS_WISDOM)){
 			//heal for 2/3 HP
-			int heal = 1 + hero.pointsInTalents(TEST_SUBJECT,KINGS_WISDOM);
-			if(hero.pointsInTalent(TEST_SUBJECT) > 0) heal *= 1.5;
-			hero.HP = Math.min(hero.HP+heal, hero.HT);
+			int points = hero.pointsInTalents(TEST_SUBJECT,KINGS_WISDOM);
+			int heal = 1 + points;
+			if(hero.hasTalent(TEST_SUBJECT)) heal += points == 1 ? Random.Int(2) : 1; // 2-3/4
+			heal = Math.min(heal, hero.HT-hero.HP);
+			hero.HP += heal;
 			Emitter e = hero.sprite.emitter();
-			if (e != null) e.burst(Speck.factory(Speck.HEALING), (int)Math.ceil(heal/2f)); // 2->1,3->2,5->3
+			if (e != null && heal > 0) e.burst(Speck.factory(Speck.HEALING), heal == 1 ? 1 : points);
 		}
 		if (hero.hasTalent(TESTED_HYPOTHESIS,KINGS_WISDOM)){
 			//2/3 turns of wand recharging
