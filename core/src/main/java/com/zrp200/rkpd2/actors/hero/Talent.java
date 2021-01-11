@@ -237,7 +237,7 @@ public enum Talent {
 				strength += points;
 				// hearty meal heals for (2.5/4)/(4/6). priv heals for (2/3)/(3/5)
 				hero.HP += hero.hasTalent(HEARTY_MEAL) && strength == 1
-						? Random.Int(2,3) // simulate 2.5
+						? 2+Random.IntRange(2,3) // simulate 2.5
 						: (int) Math.ceil(( hero.hasTalent(HEARTY_MEAL) ? 2.5 : 2 )*Math.pow(1.5,strength-1));
 				hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), strength);
 			}
