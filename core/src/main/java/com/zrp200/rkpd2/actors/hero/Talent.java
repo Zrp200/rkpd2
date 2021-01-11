@@ -227,14 +227,19 @@ public enum Talent {
 
 	public static void onFoodEaten( Hero hero, float foodVal, Item foodSource ){
 		if (hero.hasTalent(HEARTY_MEAL,ROYAL_PRIVILEGE)){
+			// somehow I managed to make it even more confusing than before.
 			int points = hero.pointsInTalents(HEARTY_MEAL, ROYAL_PRIVILEGE);
-			int multiplier = hero.HP <= hero.HT/4 ? 2 : hero.HP <= hero.HT / 2 ? 1 : 0;
-			int heal = 1 + multiplier*points;
-			// (2/3)/(3/5) healed for priv, (3/5)/(5/8) for hearty
-			if(hero.hasTalent(HEARTY_MEAL)) heal = (int)Math.ceil(heal*1.5f);
-			if(multiplier > 0) {
-				hero.HP = Math.min(hero.HP+heal,hero.HT);
-				hero.sprite.emitter().burst(Speck.factory(Speck.HEALING),(int)Math.ceil(heal/2f)); // 2 -> 1, 3 -> 2, 5 -> 3, 8 -> 4
+			int factor = hero.hasTalent(HEARTY_MEAL) ? 3 : 4;
+			double missingHP = 1-(double)hero.HP/hero.HT;
+			int strength = (int)(missingHP*factor);
+			if(!hero.hasTalent(HEARTY_MEAL)) strength--; // missing 1/4 hp is not rewarded with healing normally.
+			if(strength-- > 0) { // adjusting for the addition of one point.
+				strength += points;
+				// hearty meal heals for (2.5/4)/(4/6). priv heals for (2/3)/(3/5)
+				hero.HP += hero.hasTalent(HEARTY_MEAL) && strength == 1
+						? Random.Int(2,3) // simulate 2.5
+						: (int) Math.ceil(( hero.hasTalent(HEARTY_MEAL) ? 2.5 : 2 )*Math.pow(1.5,strength-1));
+				hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), strength);
 			}
 		}
 		if (hero.hasTalent(IRON_STOMACH,ROYAL_MEAL)){
