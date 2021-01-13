@@ -439,6 +439,12 @@ public abstract class Char extends Actor {
 		if ( buff( Haste.class ) != null) speed *= 3f;
 		return speed;
 	}
+
+	protected float attackDelay() {
+		float delay = TICK;
+		if(buffs(Adrenaline.class) != null) delay /= 1.5f;
+		return delay;
+	}
 	
 	//used so that buffs(Shieldbuff.class) isn't called every time unnecessarily
 	private int cachedShield = 0;

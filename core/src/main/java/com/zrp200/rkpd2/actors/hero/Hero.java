@@ -547,16 +547,18 @@ public class Hero extends Char {
 			return 0;
 		}
 
+		float delay = super.attackDelay();
 		if (belongings.weapon != null) {
 			
-			return belongings.weapon.speedFactor( this );
+			delay *= belongings.weapon.speedFactor( this );
 			
 		} else {
 			//Normally putting furor speed on unarmed attacks would be unnecessary
 			//But there's going to be that one guy who gets a furor+force ring combo
 			//This is for that one guy, you shall get your fists of fury!
-			return RingOfFuror.attackDelayMultiplier(this);
+			delay *= RingOfFuror.attackDelayMultiplier(this);
 		}
+		return delay;
 	}
 
 	@Override

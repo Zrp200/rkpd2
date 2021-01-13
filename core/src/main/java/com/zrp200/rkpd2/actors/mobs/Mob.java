@@ -514,12 +514,7 @@ public abstract class Mob extends Char {
 				|| Dungeon.hero.buff(Swiftthistle.TimeBubble.class) != null)
 			sprite.add( CharSprite.State.PARALYSED );
 	}
-	
-	protected float attackDelay() {
-		float delay = 1f;
-		if ( buff(Adrenaline.class) != null) delay /= 1.5f;
-		return delay;
-	}
+
 	
 	protected boolean doAttack( Char enemy ) {
 		

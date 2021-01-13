@@ -107,7 +107,8 @@ public class RKPD2Changes {
                         "\n_-_ Heroes start with all bags." +
                         "\n_-_ Explosive/Grim on Spirit Bow slightly less common." +
                         "\n_-_ Explosive proc rate adjusted, can now proc on miss." +
-                        "\n_-_ Fixed a crash error with badges."));
+                        "\n_-_ Fixed a crash error with badges." +
+                        "\n_-_ Adrenaline now actually works with the hero!"));
         changeInfos.add(changes = new ChangeInfo("",true,"Thanks for testing out my alpha! While most of the art isn't in the game, and won't be in the game until it's actually released, the gameplay mechanics are a different story entirely!\n\nAll hail the mighty rat king, destroyer of Yogs!"));
     }
 }
