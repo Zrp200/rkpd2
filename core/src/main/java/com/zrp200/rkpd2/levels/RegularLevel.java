@@ -96,7 +96,8 @@ public abstract class RegularLevel extends Level {
 		return painter().paint(this, rooms);
 		
 	}
-	
+
+	private static final float SIZE_MODIFIER = .8f;
 	protected ArrayList<Room> initRooms() {
 		ArrayList<Room> initRooms = new ArrayList<>();
 		initRooms.add ( roomEntrance = new EntranceRoom());
@@ -107,6 +108,9 @@ public abstract class RegularLevel extends Level {
 		if (feeling == Feeling.LARGE){
 			standards = (int)Math.ceil(standards * 1.5f);
 		}
+		// reduce by designated amount to reduce levelsize for rkpd2, much like rkpd does.
+		float modified = standards*SIZE_MODIFIER; // reduce for rkpd2, inspired by rkpd
+		standards = (int)modified + Math.round( Random.Float(modified%1) );
 		for (int i = 0; i < standards; i++) {
 			StandardRoom s;
 			do {
@@ -124,6 +128,9 @@ public abstract class RegularLevel extends Level {
 		if (feeling == Feeling.LARGE){
 			specials++;
 		}
+		// reduce size of special rooms by same factor for net decrease. This will do much less in comparison to regular rooms but proportions are proportions.
+		modified = specials*SIZE_MODIFIER;
+		specials = (int)modified + Math.round( Random.Float(modified%1) );
 		SpecialRoom.initForFloor();
 		for (int i = 0; i < specials; i++) {
 			SpecialRoom s = SpecialRoom.createRoom();
@@ -132,6 +139,7 @@ public abstract class RegularLevel extends Level {
 		}
 		
 		int secrets = SecretRoom.secretsForFloor(Dungeon.depth);
+		// amount of secrets is not reduced.
 		//one additional secret for secret levels
 		if (feeling == Feeling.SECRETS) secrets++;
 		for (int i = 0; i < secrets; i++) {
