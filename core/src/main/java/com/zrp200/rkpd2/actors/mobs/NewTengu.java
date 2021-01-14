@@ -96,7 +96,10 @@ public class NewTengu extends Mob {
 	@Override
 	protected void onAdd() {
 		//when he's removed and re-added to the fight, his time is always set to now.
-		spend(-cooldown());
+		if (cooldown() > TICK) {
+			spend(-cooldown());
+			spendToWhole();
+		}
 		super.onAdd();
 	}
 	
@@ -1041,6 +1044,7 @@ public class NewTengu extends Mob {
 								
 								if (ch == Dungeon.hero && !ch.isAlive()) {
 									Dungeon.fail(NewTengu.class);
+									GLog.n( Messages.get(Electricity.class, "ondeath") );
 								}
 							}
 							

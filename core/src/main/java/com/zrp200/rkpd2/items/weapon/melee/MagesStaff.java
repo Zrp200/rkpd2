@@ -140,14 +140,11 @@ public class MagesStaff extends MeleeWeapon {
 
 	@Override
 	public int buffedLvl() {
-		int lvl = super.buffedLvl();
-		if (curUser != null && wand != null) {
-			WandOfMagicMissile.MagicCharge buff = curUser.buff(WandOfMagicMissile.MagicCharge.class);
-			if (buff != null && buff.appliesTo(wand)){
-				return Math.max(lvl,buff.level() - curUser.getBonus(wand));
-			}
+		if (curUser != null && wand != null){
+			return Math.max(super.buffedLvl(), wand.buffedLvl()-curUser.getBonus(wand));
+		} else {
+			return super.buffedLvl();
 		}
-		return lvl;
 	}
 
 	@Override

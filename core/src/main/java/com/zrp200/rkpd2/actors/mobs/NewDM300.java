@@ -155,6 +155,10 @@ public class NewDM300 extends Mob {
 		GameScene.add(Blob.seed(pos, 0, FallingRocks.class));
 		GameScene.add(Blob.seed(pos, 0, ToxicGas.class));
 
+		if (paralysed > 0){
+			return super.act();
+		}
+
 		//ability logic only triggers if DM is not supercharged
 		if (!supercharged){
 			if (turnsSinceLastAbility >= 0) turnsSinceLastAbility++;

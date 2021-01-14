@@ -295,9 +295,9 @@ public abstract class Wand extends Item {
 
 	protected int buffedLvl(boolean magicCharge) {
 		int lvl = super.buffedLvl();
-		if (curUser != null) {
+		if (charger != null && charger.target != null) {
 			lvl += curUser.getBonus(this);
-			WandOfMagicMissile.MagicCharge buff = curUser.buff(WandOfMagicMissile.MagicCharge.class);
+			WandOfMagicMissile.MagicCharge buff = charger.target.buff(WandOfMagicMissile.MagicCharge.class);
 			if (buff != null && magicCharge && buff.appliesTo(this)){
 				return buff.level();
 			}
