@@ -219,4 +219,9 @@ public class Random {
 			}
 		}
 	}
+	// randomly rounds a float up or down depending on how large it is.
+	// is supposed to more accurately represent fractional values while rounding
+	public static int round(float val) {
+		return (int) (val + Math.ceil( val%1 - Float() ) );
+	}
 }

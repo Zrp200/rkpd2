@@ -237,7 +237,7 @@ public enum Talent {
 				strength += points;
 				// hearty meal heals for (2.5/4)/(4/6). priv heals for (2/3)/(3/5)
 				hero.HP += hero.hasTalent(HEARTY_MEAL) && strength == 1
-						? 2+Random.IntRange(2,3) // simulate 2.5
+						? Random.round(2.5f) // simulate 2.5
 						: (int) Math.ceil(( hero.hasTalent(HEARTY_MEAL) ? 2.5 : 2 )*Math.pow(1.5,strength-1));
 				hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), strength);
 			}
@@ -431,10 +431,10 @@ public enum Talent {
 		if (hero.hasTalent(Talent.SUCKER_PUNCH,KINGS_WISDOM)
 				&& enemy instanceof Mob && ((Mob) enemy).surprisedBy(hero)
 				&& enemy.buff(SuckerPunchTracker.class) == null){
-			double bonus = hero.hasTalent(SUCKER_PUNCH)
-					? 1.5*(1+hero.pointsInTalent(SUCKER_PUNCH))  // 3/4-5
-					: 0.5*(2+hero.pointsInTalent(KINGS_WISDOM)); // 1-2/2
-			dmg += (int)bonus + Math.round(Random.Float((float)bonus%1));
+			float bonus = hero.hasTalent(SUCKER_PUNCH)
+					? 1.5f*(1+hero.pointsInTalent(SUCKER_PUNCH))  // 3/4-5
+					: 0.5f*(2+hero.pointsInTalent(KINGS_WISDOM)); // 1-2/2
+			dmg += Random.round( bonus );
 			Buff.affect(enemy, SuckerPunchTracker.class);
 		}
 
@@ -444,8 +444,7 @@ public enum Talent {
 			} else if (enemy.buff(FollowupStrikeTracker.class) != null){
 				int bonus = 1 + hero.pointsInTalents(FOLLOWUP_STRIKE,KINGS_WISDOM); // 2/3
 				if(hero.heroClass == HeroClass.HUNTRESS) {
-					double trueBonus = bonus*1.5f;
-					bonus = (int)trueBonus + (Math.random() < trueBonus%1 ? 1 : 0); // 3/4-5
+					bonus = Random.round( bonus*1.5f ); // 3/4-5
 				};
 				dmg += bonus;
 				if (!(enemy instanceof Mob) || !((Mob) enemy).surprisedBy(hero)){
