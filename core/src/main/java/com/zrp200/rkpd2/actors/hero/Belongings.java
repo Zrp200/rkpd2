@@ -29,6 +29,7 @@ import com.zrp200.rkpd2.items.KindOfWeapon;
 import com.zrp200.rkpd2.items.KindofMisc;
 import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.artifacts.Artifact;
+import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
 import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.keys.Key;
 import com.zrp200.rkpd2.items.rings.Ring;
@@ -244,6 +245,9 @@ public class Belongings implements Iterable<Item> {
 			} else if (item.unique) {
 				item.detachAll(backpack);
 				//you keep the bag itself, not its contents.
+				if (item instanceof CloakOfShadows && owner.heroClass == HeroClass.ROGUE) {
+					((CloakOfShadows) item).activate(owner);
+				}
 				if (item instanceof Bag){
 					((Bag)item).resurrect();
 				}

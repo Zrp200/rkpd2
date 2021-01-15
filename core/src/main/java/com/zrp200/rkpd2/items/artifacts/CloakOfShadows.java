@@ -71,7 +71,7 @@ public class CloakOfShadows extends Artifact {
 	@Override
 	public ArrayList<String> actions( Hero hero ) {
 		ArrayList<String> actions = super.actions( hero );
-		if (isEquipped( hero ) && !cursed && (charge > 0 || stealthed))
+		if ((hero.heroClass == HeroClass.ROGUE || isEquipped( hero )) && !cursed && (charge > 0 || stealthed))
 			actions.add(AC_STEALTH);
 		return actions;
 	}
@@ -84,7 +84,7 @@ public class CloakOfShadows extends Artifact {
 		if (action.equals( AC_STEALTH )) {
 
 			if (!stealthed){
-				if (!isEquipped(hero)) GLog.i( Messages.get(Artifact.class, "need_to_equip") );
+				if (!isEquipped(hero) && hero.heroClass != HeroClass.ROGUE) GLog.i( Messages.get(Artifact.class, "need_to_equip") );
 				else if (cursed)       GLog.i( Messages.get(this, "cursed") );
 				else if (charge <= 0)  GLog.i( Messages.get(this, "no_charge") );
 				else {
@@ -124,6 +124,10 @@ public class CloakOfShadows extends Artifact {
 	@Override
 	public boolean doUnequip(Hero hero, boolean collect, boolean single) {
 		if (super.doUnequip(hero, collect, single)){
+			if(hero.heroClass == HeroClass.ROGUE && collect) {
+				// just reactivate it.
+				activate(hero);
+			}
 			stealthed = false;
 			return true;
 		} else
