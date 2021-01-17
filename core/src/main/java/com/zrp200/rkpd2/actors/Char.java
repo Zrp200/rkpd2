@@ -462,25 +462,15 @@ public abstract class Char extends Actor {
 		needsShieldUpdate = false;
 		return cachedShield;
 	}
-	
-	public void damage( int dmg, Object src ) {
-		
-		if (!isAlive() || dmg < 0) {
-			return;
-		}
 
+	// splitting damage into different parts.
+	protected int modifyDamage(int dmg, Object src) {
 		if(Dungeon.hero.subClass == HeroSubClass.WARLOCK && !(src instanceof Char)) {
 			SoulMark soulMark = buff(SoulMark.class);
 			if(soulMark != null) soulMark.proc(src instanceof Wand ? Dungeon.hero : src,this,dmg);
 		}
 		SoulMark.DelayedMark mark = buff(SoulMark.DelayedMark.class);
 		if(mark != null) mark.detach(); // this prevents the above from happening the same turn.
-
-		if(isInvulnerable(src.getClass())){
-			sprite.showStatus(CharSprite.POSITIVE, Messages.get(this, "invulnerable"));
-			return;
-		}
-
 		for (ChampionEnemy buff : buffs(ChampionEnemy.class)){
 			dmg = (int) Math.ceil(dmg * buff.damageTakenFactor());
 		}
@@ -502,7 +492,25 @@ public abstract class Char extends Actor {
 				}
 			}
 		}
+		if (this.buff(Doom.class) != null && !isImmune(Doom.class)){
+			dmg *= 2;
+		}
 
+		Class<?> srcClass = src.getClass();
+		if (isImmune( srcClass )) {
+			dmg = 0;
+		} else {
+			dmg = Math.round( dmg * resist( srcClass ));
+		}
+
+		//TODO improve this when I have proper damage source logic
+		if (AntiMagic.RESISTS.contains(src.getClass()) && buff(ArcaneArmor.class) != null){
+			dmg -= Random.NormalIntRange(0, buff(ArcaneArmor.class).level());
+			if (dmg < 0) dmg = 0;
+		}
+		return dmg;
+	}
+	protected void onDamage(int dmg, Object src) {
 		Terror t = buff(Terror.class);
 		if (t != null){
 			t.recover();
@@ -517,23 +525,7 @@ public abstract class Char extends Actor {
 		if (this.buff(MagicalSleep.class) != null){
 			Buff.detach(this, MagicalSleep.class);
 		}
-		if (this.buff(Doom.class) != null && !isImmune(Doom.class)){
-			dmg *= 2;
-		}
-		
-		Class<?> srcClass = src.getClass();
-		if (isImmune( srcClass )) {
-			dmg = 0;
-		} else {
-			dmg = Math.round( dmg * resist( srcClass ));
-		}
-		
-		//TODO improve this when I have proper damage source logic
-		if (AntiMagic.RESISTS.contains(src.getClass()) && buff(ArcaneArmor.class) != null){
-			dmg -= Random.NormalIntRange(0, buff(ArcaneArmor.class).level());
-			if (dmg < 0) dmg = 0;
-		}
-		
+
 		if (buff( Paralysis.class ) != null) {
 			buff( Paralysis.class ).processDamage(dmg);
 		}
@@ -548,7 +540,7 @@ public abstract class Char extends Actor {
 		}
 		shielded -= dmg;
 		HP -= dmg;
-		
+
 		if (sprite != null) {
 			sprite.showStatus(HP > HT / 2 ?
 							CharSprite.WARNING :
@@ -561,6 +553,20 @@ public abstract class Char extends Actor {
 		if (!isAlive()) {
 			die( src );
 		}
+	}
+
+	public void damage( int dmg, Object src ) {
+		
+		if (!isAlive() || dmg < 0) {
+			return;
+		}
+
+		if(isInvulnerable(src.getClass())){
+			sprite.showStatus(CharSprite.POSITIVE, Messages.get(this, "invulnerable"));
+			return;
+		}
+
+		onDamage(modifyDamage(dmg,src),src);
 	}
 	
 	public void destroy() {

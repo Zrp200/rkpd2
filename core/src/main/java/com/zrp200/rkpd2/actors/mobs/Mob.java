@@ -614,16 +614,14 @@ public abstract class Mob extends Char {
 	}
 
 	@Override
-	public void damage( int dmg, Object src ) {
-
+	protected void onDamage(int dmg, Object src) {
 		if (state == SLEEPING) {
 			state = WANDERING;
 		}
 		if (state != HUNTING && !(src instanceof Corruption)) {
 			alerted = true;
 		}
-		
-		super.damage( dmg, src );
+		super.onDamage(dmg, src);
 	}
 	
 	
