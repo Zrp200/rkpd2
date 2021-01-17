@@ -150,7 +150,7 @@ public class DwarfKing extends Mob {
 
 	@Override
 	protected boolean act() {
-		if(yellSpecialNotice && paralysed == 0) { // takes him a hot second to realize who he's fighting.
+		if(state == HUNTING && yellSpecialNotice && paralysed == 0) { // takes him a hot second to realize who he's fighting.
 			yell(Messages.get(this, "notice_" + (Dungeon.hero.heroClass == HeroClass.RAT_KING ? "ratking" : "default")));
 			yellSpecialNotice = false;
 		}
@@ -370,6 +370,7 @@ public class DwarfKing extends Mob {
 				}
 			}
 		}
+		spend(TICK); // there's no good reason he just out and notices you.
 	}
 
 	@Override
