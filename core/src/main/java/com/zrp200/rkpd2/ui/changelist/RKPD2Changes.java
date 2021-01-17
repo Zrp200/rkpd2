@@ -21,27 +21,16 @@
 
 package com.zrp200.rkpd2.ui.changelist;
 
-import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
-import com.zrp200.rkpd2.actors.hero.HeroSubClass;
-import com.zrp200.rkpd2.actors.hero.Talent;
-import com.zrp200.rkpd2.actors.mobs.Spinner;
 import com.zrp200.rkpd2.items.armor.WarriorArmor;
-import com.zrp200.rkpd2.items.rings.RingOfEnergy;
-import com.zrp200.rkpd2.items.wands.WandOfFrost;
-import com.zrp200.rkpd2.items.wands.WandOfTransfusion;
+import com.zrp200.rkpd2.items.bags.VelvetPouch;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.enchantments.Explosive;
-import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.scenes.ChangesScene;
-import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.HeroSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
-import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
-import com.zrp200.rkpd2.sprites.SpinnerSprite;
+import com.zrp200.rkpd2.sprites.KingSprite;
 import com.zrp200.rkpd2.ui.Icons;
 import com.zrp200.rkpd2.ui.Window;
-import com.watabou.noosa.Image;
 
 import java.util.ArrayList;
 
@@ -63,7 +52,7 @@ public class RKPD2Changes {
         changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.WARRIOR,6),"Warrior","" +
                 "_-_ Seal can now carry an infinite amount of upgrades." +
                 "\n_-_ All t1 talents buffed." +
-                "\n\n_Berserker_ basically cannot lose now (I may even nerf this later):" +
+                "\n\n_Berserker_:" +
                 "\n_-_ Rage gain now scales directly with current HP for an up to 2/3 increase in rate as HP decreases." +
                 "\n_-_ Damage multiplier during berserk is now 2x." +
                 "\n_-_ Rage can be gained while recovering and recovering happens slowly over time if no exp is gained." +
@@ -78,37 +67,60 @@ public class RKPD2Changes {
                         "_-_ Warlock can now soul mark with weapons and all damage can now trigger soul mark. Wands get full effect as if the hero was doing the damage directly.\n" +
                         "_-_ Most talents buffed.\n" +
                         "_-_ Empowering meal has been removed (for mage at least) and replaced with Energizing Meal, t2 meal replaced with something else."));
+        changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.ROGUE,6),"Rogue","" +
+                "_-_ Now gets an invisible +1 to melee weapons" +
+                "\n_-_ Subclasses get more invisible upgrades to various item types." +
+                "\n_-_ Cloak levels up faster and can be used and charged while unequipped." +
+                "\n_-_ Tier 1 Talents buffed to be roughly 2x effective compared to SHPD." +
+                "\n_-_ Protective Shadows replaced by mending shadows, original sprite needs to be transferred over, however."));
         changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.HUNTRESS,0),"Huntress",
                 "Huntress has also recieved 'tweaks'!\n\n" +
                         "_-_ Spirit Bow now scales to +12\n" +
                         "_-_ The Spirit bow can be enchanted simply by using a scroll of upgrade on it.\n" +
                         "_-_ Huntress has her innate heightened vision and missile durability back!\n" +
                         "_-_ Huntress talents have been buffed across the board by ~50%."));
+        changes.addButton(new ChangeButton(new ItemSprite(new VelvetPouch()), "Bags",
+                "All heroes start with all bags. This should reduce the stress of inventory management throughout the game and also make gold more plentiful."));
         changeInfos.add(changes = new ChangeInfo("Misc",false,""));
+        changes.addButton(new ChangeButton(Icons.get(Icons.DEPTH),"Level gen changes","" +
+                "_-_ Level size reduced by 20% in honor of precedent set by Rat King Dungeon." +
+                "\n_-_ Gold yield from Rat King's room increased by 20x"));
         changes.addButton(new ChangeButton(new ItemSprite(new SpiritBow().enchant(new Explosive())),"Spirit Bow enchantments",
                 "The idea here is to lower the chance of 'misfiring' when enchanting the spirit bow dramatically.\n\n" +
                         "_-_ Added a new spirit-bow exclusive enchantment.\n" +
                         "_-_ It, along with grim, will replace shocking, blocking, and lucky when using a scroll of enchantment on the bow (or a scroll of upgrade in the case of huntress)."));
-        changes.addButton(new ChangeButton(new ItemSprite(new WarriorArmor()),"Class Armor","Who liked limits anyway?"));
-        changes.addButton(new ChangeButton(Icons.get(Icons.LANGS),"Disabled Languages","Since I only know English and do not have an active translation project, I've set the language to English. Sorry!"));
+        changes.addButton(new ChangeButton(new ItemSprite(new WarriorArmor()),"Class Armor","Who liked limits anyway? You can trade current HP for a full charge."));
+        changes.addButton(new ChangeButton(Icons.get(Icons.LANGS),"Text Changes","I've changed some of the text in the game, including:" +
+                "\n_-_ Class descriptions both ingame and in the select screen" +
+                "\n_-_ Some enemy descriptions" +
+                "\n_-_ Some boss quotes" +
+                "\n_-_ This changelog" +
+                "\n\nHowever, since I only know English and do not have an active translation project, I've set the language to English. Sorry!"));
         // plans
         changeInfos.add(changes = new ChangeInfo("TODO",false,""));
-        changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.ROGUE,6),"Rogue",""));
         changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.HUNTRESS,6),"Huntress Subclasses",
                 "While I'm pretty happy with the changes I've made thus far to the huntress, warden can easily be tweaked to be more in line with the mood, and it would be a crime to not buff sniper while I'm at it..."));
+        changes.addButton(new ChangeButton(new KingSprite(), "Boss Phases",
+                "I think it would be interesting if players could \"accelerate\" boss fights if they damage them enough. It's a complaint I've had with Shattered, and a mod like this is the perfect place to do something about it." +
+                        "\n\nThis should also contribute to making the mod run quicker during the boss fights, making it overall easier to speedrun and race."));
         changes.addButton(new ChangeButton(Icons.get(Icons.PREFS),"","" +
                 "_-_ \"Balance\" tweaks to existing content as I see fit." +
-                "\n_-_ Levelgen changes?" +
-                "\n_-_ Visual stuff"));
+                "\n_-_ Further tweaks to level sizes" +
+                "\n_-_ Visual stuff, including a retextured amulet and reworks to the starting screens." +
+                "\n_-_ Text adjustments to lore."));
         // closing message
         changeInfos.add(changes = new ChangeInfo("What changed???",true, "" +
-                        "_-_ Added Warrior changes that I forgot to add to the last alpha." +
-                        "\n_-_ Reworked Scholar's Intution and mage's on-eat talents." +
-                        "\n_-_ Heroes start with all bags." +
-                        "\n_-_ Explosive/Grim on Spirit Bow slightly less common." +
-                        "\n_-_ Explosive proc rate adjusted, can now proc on miss." +
-                        "\n_-_ Fixed a crash error with badges." +
-                        "\n_-_ Adrenaline now actually works with the hero!"));
+                        "_-_ Added reworked rogue" +
+                        "\n_-_ Implemented up to Shatterd v0.9.1d" +
+                        "\n_-_ Level size reduced by about 20%." +
+                        "\n_-_ Adjusted balance of warrior's t1 talents (test subject nerfed, rest buffed, arms unchanged)" +
+                        "\n_-_ Added a WIP sprite for Rat King Epic Armor" +
+                        "\n_-_ Nerfed berserker somewhat and adjusted warrior t1 talents" +
+                        "\n_-_ Class armor is adjusted to be less spammable, as it now requires a health penalty for overcharging." +
+                        "\n_-_ Some bosses and enemies have adjusted text and dialogue, more changes are planned here, however." +
+                        "\n_-_ Royal Meal correctly takes one turn when used with Horn of Plenty" +
+                        "\n_-_ Adrenaline now actually works with the hero!" +
+                        "\n_-_ Added icons for desktop"));
         changeInfos.add(changes = new ChangeInfo("",true,"Thanks for testing out my alpha! While most of the art isn't in the game, and won't be in the game until it's actually released, the gameplay mechanics are a different story entirely!\n\nAll hail the mighty rat king, destroyer of Yogs!"));
     }
 }
