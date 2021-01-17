@@ -32,6 +32,7 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Doom;
 import com.zrp200.rkpd2.actors.buffs.LifeLink;
 import com.zrp200.rkpd2.actors.buffs.LockedFloor;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.effects.Beam;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.Pushing;
@@ -99,6 +100,8 @@ public class DwarfKing extends Mob {
 	private static final int MIN_COOLDOWN = 10;
 	private static final int MAX_COOLDOWN = 14;
 
+	private boolean abilityUsed;
+
 	private int lastAbility = 0;
 	private static final int NONE = 0;
 	private static final int LINK = 1;
@@ -119,6 +122,10 @@ public class DwarfKing extends Mob {
 		bundle.put( SUMMON_CD, summonCooldown );
 		bundle.put( ABILITY_CD, abilityCooldown );
 		bundle.put( LAST_ABILITY, lastAbility );
+
+		bundle.put( "yell", yellSpecialNotice);
+		bundle.put( "abilityUsed", abilityUsed );
+		bundle.put( "strong", yellStrong );
 	}
 
 	@Override
@@ -130,11 +137,23 @@ public class DwarfKing extends Mob {
 		abilityCooldown = bundle.getFloat( ABILITY_CD );
 		lastAbility = bundle.getInt( LAST_ABILITY );
 
+		abilityUsed = bundle.getBoolean("abilityUsed");
+		yellSpecialNotice = bundle.getBoolean("yell");
+		yellStrong = bundle.contains("strong")
+				? bundle.getBoolean("strong")
+				: Dungeon.hero.heroClass == HeroClass.RAT_KING && phase == 1 && summonsMade < 5;
+
 		if (phase == 2) properties.add(Property.IMMOVABLE);
 	}
+	// for dialogues when he shows a new power.
+	boolean yellSpecialNotice, yellStrong;
 
 	@Override
 	protected boolean act() {
+		if(yellSpecialNotice && paralysed == 0) { // takes him a hot second to realize who he's fighting.
+			yell(Messages.get(this, "notice_" + (Dungeon.hero.heroClass == HeroClass.RAT_KING ? "ratking" : "default")));
+			yellSpecialNotice = false;
+		}
 		if (phase == 1) {
 
 			if (summonCooldown <= 0 && summonSubject(3)){
@@ -343,6 +362,8 @@ public class DwarfKing extends Mob {
 		if (!BossHealthBar.isAssigned()) {
 			BossHealthBar.assignBoss(this);
 			yell(Messages.get(this, "notice"));
+			yellSpecialNotice = true;
+			yellStrong = Dungeon.hero.heroClass == HeroClass.RAT_KING;
 			for (Char ch : Actor.chars()){
 				if (ch instanceof DriedRose.GhostHero){
 					((DriedRose.GhostHero) ch).sayBoss();
@@ -490,10 +511,22 @@ public class DwarfKing extends Mob {
 		private int pos;
 		private Class<?extends Mob> summon;
 
+		boolean firstSummon = false;
+
 		private Emitter particles;
 
 		public int getPos() {
 			return pos;
+		}
+		private DwarfKing king() { return (DwarfKing)target; }
+
+		@Override
+		public boolean attachTo(Char target) {
+			boolean result = super.attachTo(target);
+			if(result && !firstSummon) firstSummon = king().phase == 1
+					&& king().summonsMade == 0
+					&& Dungeon.hero.heroClass == HeroClass.RAT_KING;
+			return result;
 		}
 
 		@Override
@@ -501,7 +534,7 @@ public class DwarfKing extends Mob {
 			delay--;
 
 			if (delay <= 0){
-
+				boolean strong = true;
 				if (summon == DKWarlock.class){
 					particles.burst(ShadowParticle.CURSE, 10);
 					Sample.INSTANCE.play(Assets.Sounds.CURSED);
@@ -511,6 +544,7 @@ public class DwarfKing extends Mob {
 				} else {
 					particles.burst(Speck.factory(Speck.BONE), 10);
 					Sample.INSTANCE.play(Assets.Sounds.BONES);
+					strong = false;
 				}
 				particles = null;
 
@@ -532,13 +566,21 @@ public class DwarfKing extends Mob {
 					m.maxLvl = -2;
 					GameScene.add(m);
 					m.state = m.HUNTING;
-					if (((DwarfKing)target).phase == 2){
+					if (king().phase == 2){
 						Buff.affect(m, KingDamager.class);
+					}
+					if(firstSummon) {
+						king().yell(Messages.get(king(), "first_summon"));
+						if(Dungeon.hero.heroClass == HeroClass.RAT_KING) king().yell(Messages.get(king(), "summon_rk"));
+					}
+					if(strong && king().yellStrong) {
+						king().yell(Messages.get(king(), "strong"));
+						king().yellStrong = false;
 					}
 				} else {
 					Char ch = Actor.findChar(pos);
 					ch.damage(Random.NormalIntRange(20, 40), summon);
-					if (((DwarfKing)target).phase == 2){
+					if (king().phase == 2){
 						target.damage(target.HT/12, new KingDamager());
 					}
 				}
@@ -578,6 +620,8 @@ public class DwarfKing extends Mob {
 			bundle.put(DELAY, delay);
 			bundle.put(POS, pos);
 			bundle.put(SUMMON, summon);
+
+			bundle.put("first", firstSummon);
 		}
 
 		@Override
@@ -586,6 +630,8 @@ public class DwarfKing extends Mob {
 			delay = bundle.getInt(DELAY);
 			pos = bundle.getInt(POS);
 			summon = bundle.getClass(SUMMON);
+
+			firstSummon = bundle.contains("first") && bundle.getBoolean("first");
 		}
 	}
 

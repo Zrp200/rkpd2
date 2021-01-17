@@ -41,6 +41,7 @@ import com.zrp200.rkpd2.actors.buffs.Sleep;
 import com.zrp200.rkpd2.actors.buffs.Slow;
 import com.zrp200.rkpd2.actors.buffs.Terror;
 import com.zrp200.rkpd2.actors.buffs.Vertigo;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.effects.BlobEmitter;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.Speck;
@@ -262,7 +263,9 @@ public class NewDM300 extends Mob {
 		} else {
 
 			if (!chargeAnnounced){
-				yell(Messages.get(this, "supercharged"));
+				String verb = Messages.get(this,"supercharged"
+						+ (Dungeon.hero.heroClass == HeroClass.RAT_KING ? "_rk" : ""));
+				yell(verb + " " + verb + " " + verb );
 				chargeAnnounced = true;
 			}
 
@@ -323,7 +326,8 @@ public class NewDM300 extends Mob {
 		if (!BossHealthBar.isAssigned()) {
 			BossHealthBar.assignBoss(this);
 			turnsSinceLastAbility = 0;
-			yell(Messages.get(this, "notice"));
+			yell(Messages.get(this, "notice" +
+					(Dungeon.hero.heroClass == HeroClass.RAT_KING ? "_rk" : "")));
 			for (Char ch : Actor.chars()){
 				if (ch instanceof DriedRose.GhostHero){
 					((DriedRose.GhostHero) ch).sayBoss();
