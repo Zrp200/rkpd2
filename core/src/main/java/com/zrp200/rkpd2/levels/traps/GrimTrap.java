@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.mobs.npcs.RatKing;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.MagicMissile;
 import com.zrp200.rkpd2.effects.particles.ShadowParticle;
@@ -74,6 +75,9 @@ public class GrimTrap extends Trap {
 			} else {
 				damage = finalTarget.HP;
 			}
+			if(finalTarget == Dungeon.hero) {
+				damage /= 3; // innate double resist.
+			}
 			
 			final int finalDmg = damage;
 			
@@ -100,6 +104,8 @@ public class GrimTrap extends Trap {
 										if (!finalTarget.isAlive()) {
 											Dungeon.fail( GrimTrap.class );
 											GLog.n( Messages.get(GrimTrap.class, "ondeath") );
+										} else {
+											new RatKing().yell("my ambition will not be stopped!");
 										}
 									} else {
 										Sample.INSTANCE.play(Assets.Sounds.BURNING);
