@@ -407,11 +407,15 @@ public class DwarfKing extends Mob {
 				HP += HT;
 				if (HP <= 50) {
 					int difference = 50 - HP; // everything after the last 50 was deferred.
+					HP = preHP; // set HP back to original HP.
 					// literally just broke the shield in one go.
-					HP = preHP; // don't need HP anymore.
+					sprite.add(CharSprite.State.SHIELDED);
 					onDamage(dmg - difference, src); // process damage-related stuff
+					sprite.remove(CharSprite.State.SHIELDED);
+					// enter phase 3 and process the rest of the damage
 					HP = 50;
 					enterPhase3(); // skip to phase 3
+					yell("...how can this be???");
 					damage(difference, src); // apply deferred damage
 				} else {
 					// handle normally.
@@ -426,7 +430,10 @@ public class DwarfKing extends Mob {
 		else {
 			int preHP = HP;
 			super.damage(dmg, src);
-			if (phase == 2 && shielding() == 0) enterPhase3();
+			if (phase == 2 && shielding() == 0) { // standard entry into phase 3
+				enterPhase3();
+				yell(Messages.get(this, "enraged", Dungeon.hero.name()));
+			}
 			else if (isAlive() && phase == 3 && preHP > 20 && HP < 20) {
 				yell(Messages.get(this, "losing"));
 			}
@@ -469,7 +476,6 @@ public class DwarfKing extends Mob {
 			summonsMade = 1; //monk/warlock on 3rd summon
 			sprite.centerEmitter().start(Speck.factory(Speck.SCREAM), 0.4f, 2);
 			Sample.INSTANCE.play(Assets.Sounds.CHALLENGE);
-			yell(Messages.get(this, "enraged", Dungeon.hero.name()));
 		}
 
 	@Override
