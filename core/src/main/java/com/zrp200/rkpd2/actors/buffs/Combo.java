@@ -131,7 +131,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 
 	@Override
 	public String desc() {
-		String desc = Messages.get(this, "desc");
+		String desc = Messages.get(this, "desc",((Hero)target).subClass.title());
 
 		if (count >= 10)    desc += "\n\n" + Messages.get(this, "fury_desc");
 		else if (count >= 8)desc += "\n\n" + Messages.get(this, "crush_desc");

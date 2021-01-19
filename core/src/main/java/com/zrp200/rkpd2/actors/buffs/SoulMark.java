@@ -111,6 +111,6 @@ public class SoulMark extends FlavourBuff {
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", dispTurns());
+		return Messages.get(this, "desc", Dungeon.hero.subClass.title(), dispTurns());
 	}
 }

@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSprite;
@@ -89,7 +90,13 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc");
+		HeroSubClass sub = Dungeon.hero.subClass;
+		String[] args = new String[4];
+		args[0] = sub.title();
+		args[1] = sub == HeroSubClass.SNIPER ? "she" : "he";
+		args[2] = Messages.capitalize(args[1]);
+		args[3] = sub == HeroSubClass.SNIPER ? "her" : "his";
+		return Messages.get(this, "desc", args);
 	}
 	
 	@Override

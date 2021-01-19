@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroAction;
 import com.zrp200.rkpd2.actors.mobs.npcs.NPC;
 import com.zrp200.rkpd2.effects.CellEmitter;
@@ -173,7 +174,8 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 	
 	@Override
 	public String desc() {
-		String desc = Messages.get(this, "desc");
+		String cls = ((Hero)target).subClass.title();
+		String desc = Messages.get(this, "desc",cls);
 		
 		AttackLevel lvl = AttackLevel.getLvl(turnsInvis);
 
@@ -190,7 +192,7 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 			desc += "\n\n" + Messages.get(this, "desc_blink", lvl.blinkDistance);
 		}
 		
-		desc += "\n\n" + Messages.get(this, "desc_invis_time", turnsInvis);
+		desc += "\n\n" + Messages.get(this, "desc_invis_time", cls, turnsInvis);
 		
 		if (lvl.ordinal() != AttackLevel.values().length-1){
 			AttackLevel next = AttackLevel.values()[lvl.ordinal()+1];

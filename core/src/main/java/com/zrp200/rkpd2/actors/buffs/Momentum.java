@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
+import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.watabou.noosa.Image;
@@ -87,7 +88,7 @@ public class Momentum extends Buff {
 	
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", stacks*10);
+		return Messages.get(this, "desc", ((Hero)target).subClass.title(),stacks*10);
 	}
 	
 	private static final String STACKS =        "stacks";
