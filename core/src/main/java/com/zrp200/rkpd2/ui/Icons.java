@@ -25,6 +25,8 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.scenes.PixelScene;
 import com.watabou.noosa.Image;
+import com.zrp200.rkpd2.sprites.ItemSprite;
+import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
 public enum Icons {
 	
@@ -64,6 +66,7 @@ public enum Icons {
 	MAGE,
 	ROGUE,
 	HUNTRESS,
+	RAT_KING,
 	
 	//main menu icons
 	ENTER,
@@ -256,6 +259,7 @@ public enum Icons {
 			return get( ROGUE );
 		case HUNTRESS:
 			return get( HUNTRESS );
+		case RAT_KING: return new ItemSprite(ItemSpriteSheet.CROWN);
 		}
 	}
 }

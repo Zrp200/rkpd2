@@ -381,6 +381,12 @@ public class HeroSelectScene extends PixelScene {
 							new ItemSprite(ItemSpriteSheet.GLOVES, null)
 					};
 					break;
+				case RAT_KING:
+					tabIcons = new Image[]{
+						new ItemSprite(ItemSpriteSheet.CROWN),
+						new ItemSprite(ItemSpriteSheet.CROWN)
+					};
+					break;
 			}
 
 			tab = new IconTab( tabIcons[0] ){
