@@ -82,6 +82,7 @@ import com.zrp200.rkpd2.items.potions.Potion;
 import com.zrp200.rkpd2.items.potions.PotionOfExperience;
 import com.zrp200.rkpd2.items.potions.PotionOfHealing;
 import com.zrp200.rkpd2.items.potions.elixirs.ElixirOfMight;
+import com.zrp200.rkpd2.items.rings.Ring;
 import com.zrp200.rkpd2.items.rings.RingOfAccuracy;
 import com.zrp200.rkpd2.items.rings.RingOfEvasion;
 import com.zrp200.rkpd2.items.rings.RingOfForce;
@@ -227,7 +228,9 @@ public class Hero extends Char {
 	}
 
 	public int getBonus(Item item) {
-		return heroClass.getBonus(item) + subClass.getBonus(item);
+		int bonus = heroClass.getBonus(item) + subClass.getBonus(item);
+		if(item instanceof Ring) bonus += pointsInTalent(Talent.THIEFS_INTUITION); // handle thief's intuition here.
+		return bonus;
 	}
 
 	private static final String ATTACK		= "attackSkill";

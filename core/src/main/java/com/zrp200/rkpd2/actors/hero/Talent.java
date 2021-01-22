@@ -42,6 +42,7 @@ import com.zrp200.rkpd2.effects.particles.LeafParticle;
 import com.zrp200.rkpd2.items.BrokenSeal;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.Armor;
+import com.zrp200.rkpd2.items.artifacts.Artifact;
 import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
 import com.zrp200.rkpd2.items.artifacts.HornOfPlenty;
 import com.zrp200.rkpd2.items.potions.Potion;
@@ -184,41 +185,18 @@ public enum Talent {
 	public static void onTalentUpgraded( Hero hero, Talent talent){
 		int points = hero.pointsInTalent(talent);
 		switch(talent) {
-			case SCHOLARS_INTUITION:
-				for(Item item : hero.belongings) onItemCollected(hero, item); // this should run it.
+			case ARMSMASTERS_INTUITION: case SCHOLARS_INTUITION: case THIEFS_INTUITION: case ROYAL_INTUITION:
+				for(Item item : hero.belongings)
+				{
+					// rerun these.
+					onItemCollected(hero, item);
+					if(item.isEquipped(hero)) onItemEquipped(hero,item);
+				}
 				break;
 			case ROYAL_PRIVILEGE: case NATURES_BOUNTY:
 				if(hero.pointsInTalent(NATURES_BOUNTY) > 0) points++;
 				Buff.count(hero, NatureBerriesAvailable.class, 2*points);
 				break;
-			case ROYAL_INTUITION:
-				case ARMSMASTERS_INTUITION:
-					if(talent == ARMSMASTERS_INTUITION && points > 0) points++;
-					if(points > 1) {
-						if (hero.belongings.weapon != null) hero.belongings.weapon.identify();
-						if (hero.belongings.armor != null)  hero.belongings.armor.identify();
-					}
-					// armsmaster identifies all weapons and armors
-					if(points == 3) {
-						for(Item item : hero.belongings.backpack.items) {
-							if(item instanceof Armor || item instanceof Weapon) item.identify();
-						}
-					}
-					if(talent == ARMSMASTERS_INTUITION) break;
-				case THIEFS_INTUITION:
-					if(points == 2) {
-						if (hero.belongings.ring instanceof Ring) hero.belongings.ring.identify();
-						if (hero.belongings.misc instanceof Ring) hero.belongings.misc.identify();
-						for (Item item : Dungeon.hero.belongings){
-							if (item instanceof Ring){
-								((Ring) item).setKnown();
-							}
-						}
-					} else if(points == 1) {
-						if (hero.belongings.ring instanceof Ring) hero.belongings.ring.setKnown();
-						if (hero.belongings.misc instanceof Ring) ((Ring) hero.belongings.misc).setKnown();
-					}
-					break;
 		}
 	}
 
@@ -378,8 +356,10 @@ public enum Talent {
 		if (hero.pointsInTalents(ARMSMASTERS_INTUITION,ROYAL_INTUITION) >= (hero.hasTalent(ARMSMASTERS_INTUITION) ? 1 : 2) && (item instanceof Weapon || item instanceof Armor)){
 			item.identify();
 		}
-		if (hero.hasTalent(THIEFS_INTUITION,ROYAL_INTUITION) && item instanceof Ring){
-			if (hero.pointsInTalents(THIEFS_INTUITION,ROYAL_INTUITION) == 2){
+		if (hero.heroClass == HeroClass.ROGUE || hero.hasTalent(ROYAL_INTUITION) && item instanceof Ring){
+			int points = hero.pointsInTalents(THIEFS_INTUITION,ROYAL_INTUITION);
+			if(hero.heroClass == HeroClass.ROGUE ) points++; // essentially this is a 50% boost.
+			if (points >= 2){
 				item.identify();
 			} else {
 				((Ring) item).setKnown();
@@ -388,8 +368,11 @@ public enum Talent {
 	}
 
 	public static void onItemCollected( Hero hero, Item item ){
-		if (hero.pointsInTalents(THIEFS_INTUITION,ROYAL_INTUITION) == 2){
-			if (item instanceof Ring) ((Ring) item).setKnown();
+		if (hero.heroClass == HeroClass.ROGUE || hero.hasTalent(THIEFS_INTUITION,ROYAL_INTUITION)){
+			int points = hero.pointsInTalents(THIEFS_INTUITION,ROYAL_INTUITION);
+			if(hero.heroClass == HeroClass.ROGUE) points++;
+			if (points == 3 && (item instanceof Ring || item instanceof Artifact)) item.identify();
+			else if (points == 2 && item instanceof Ring) ((Ring) item).setKnown();
 		}
 		if (hero.pointsInTalent(ARMSMASTERS_INTUITION) == 2 &&
 				(item instanceof Weapon || item instanceof Armor)) item.identify();
