@@ -97,7 +97,7 @@ public abstract class RegularLevel extends Level {
 		
 	}
 
-	private static final float SIZE_MODIFIER = .8f;
+	private static final float SIZE_MODIFIER = .7f;
 	protected ArrayList<Room> initRooms() {
 		ArrayList<Room> initRooms = new ArrayList<>();
 		initRooms.add ( roomEntrance = new EntranceRoom());
