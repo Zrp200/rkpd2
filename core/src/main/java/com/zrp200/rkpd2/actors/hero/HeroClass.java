@@ -48,6 +48,7 @@ import com.zrp200.rkpd2.items.scrolls.ScrollOfUpgrade;
 import com.zrp200.rkpd2.items.wands.Wand;
 import com.zrp200.rkpd2.items.wands.WandOfMagicMissile;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
+import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.melee.Dagger;
 import com.zrp200.rkpd2.items.weapon.melee.Gloves;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
@@ -64,7 +65,7 @@ public enum HeroClass {
 		@Override public int getBonus(Item item) { return item instanceof Wand ? 2 : 0; }
 	},
 	ROGUE( "rogue", HeroSubClass.ASSASSIN, HeroSubClass.FREERUNNER ) {
-		@Override public int getBonus(Item item) { return item instanceof MeleeWeapon ? 1 : 0; }
+		@Override public int getBonus(Item item) { return item instanceof Weapon ? 1 : 0; }
 	},
 	HUNTRESS( "huntress", HeroSubClass.SNIPER, HeroSubClass.WARDEN ),
 	RAT_KING ("rat_king",HeroSubClass.KING);

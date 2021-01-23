@@ -265,8 +265,10 @@ public class CloakOfShadows extends Artifact {
 				// heal every 2/1 turns
 				if (++inc >= 3-target.pointsInTalent(Talent.MENDING_SHADOWS)){
 					inc = 0;
-					target.HP = Math.min(target.HT, target.HP+1);
-					target.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
+					if(target.HP != target.HT) {
+						target.HP = Math.min(target.HT, target.HP + 1);
+						target.sprite.emitter().burst(Speck.factory(Speck.HEALING), 1);
+					}
 				}
 			}
 			//barrier every 2/1 turns, to a max of 3/5

@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.wands.Wand;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
+import com.zrp200.rkpd2.items.weapon.melee.MeleeWeapon;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.watabou.utils.Bundle;
@@ -47,7 +48,9 @@ public enum HeroSubClass {
 	ASSASSIN( "assassin" ) {
 		@Override public int getBonus(Item item) {
 			// +3 to melee, +2 to missiles
-			return item instanceof Weapon ? 2 : 0;
+			return item instanceof MeleeWeapon ? 2
+					: item instanceof MissileWeapon ? 1
+					: 0;
 		}
 	},
 	FREERUNNER( "freerunner" ) {
@@ -55,7 +58,7 @@ public enum HeroSubClass {
 		public int getBonus(Item item) {
 			// +1 to melee, +2 to wands, +2 to missiles
 			if(item instanceof Wand) return 2;
-			if(item instanceof MissileWeapon) return 2;
+			if(item instanceof MissileWeapon) return 1;
 			return 0;
 		}
 	},
