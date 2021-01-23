@@ -58,14 +58,9 @@ public class RingOfWealth extends Ring {
 
 	private float triesToDrop = Float.MIN_VALUE;
 	private int dropsToRare = Integer.MIN_VALUE;
-	
-	public String statsInfo() {
-		if (isIdentified()){
-			return Messages.get(this, "stats", new DecimalFormat("#.##").format(100f * (Math.pow(1.20f, soloBuffedBonus()) - 1f)));
-		} else {
-			return Messages.get(this, "typical_stats", new DecimalFormat("#.##").format(20f));
-		}
-	}
+
+	@Override
+	protected float multiplier() { return 1.20f; }
 
 	private static final String TRIES_TO_DROP = "tries_to_drop";
 	private static final String DROPS_TO_RARE = "drops_to_rare";

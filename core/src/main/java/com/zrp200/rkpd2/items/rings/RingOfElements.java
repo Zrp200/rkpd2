@@ -44,14 +44,11 @@ public class RingOfElements extends Ring {
 		icon = ItemSpriteSheet.Icons.RING_ELEMENTS;
 	}
 
-	public String statsInfo() {
-		if (isIdentified()){
-			return Messages.get(this, "stats", new DecimalFormat("#.##").format(100f * (1f - Math.pow(0.825f, soloBuffedBonus()))));
-		} else {
-			return Messages.get(this, "typical_stats", new DecimalFormat("#.##").format(17.5f));
-		}
+	@Override
+	protected float multiplier() {
+		return 0.825f;
 	}
-	
+
 	@Override
 	protected RingBuff buff( ) {
 		return new Resistance();

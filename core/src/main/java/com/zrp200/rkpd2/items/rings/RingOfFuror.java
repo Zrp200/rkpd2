@@ -33,12 +33,9 @@ public class RingOfFuror extends Ring {
 		icon = ItemSpriteSheet.Icons.RING_FUROR;
 	}
 
-	public String statsInfo() {
-		if (isIdentified()){
-			return Messages.get(this, "stats", new DecimalFormat("#.##").format(100f * (Math.pow(1.105f, soloBuffedBonus()) - 1f)));
-		} else {
-			return Messages.get(this, "typical_stats", new DecimalFormat("#.##").format(10.5f));
-		}
+	@Override
+	protected float multiplier() {
+		return 1.105f;
 	}
 
 	@Override

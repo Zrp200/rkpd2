@@ -38,6 +38,7 @@ import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -177,9 +178,17 @@ public class Ring extends KindofMisc {
 	}
 	
 	protected String statsInfo(){
-		return "";
+		int level = level();
+		if(!isIdentified()) level(0);
+		double bonus = Math.pow(multiplier() < 1?1-multiplier():multiplier(),soloBuffedBonus());
+		String res = Messages.get(this,isIdentified()?"stats":"typical_stats", new DecimalFormat("#.##").format(100f * (bonus - (multiplier()<1?0:1f))));
+		level(level);
+		return res;
 	}
-	
+	protected float multiplier() {
+		return 0;
+	}
+
 	@Override
 	public Item upgrade() {
 		super.upgrade();
@@ -303,10 +312,11 @@ public class Ring extends KindofMisc {
 	}
 	
 	public int soloBonus(){
+		int base = Dungeon.hero.getBonus(this);
 		if (cursed){
-			return Math.min( 0, Ring.this.level()-2 );
+			return base+Math.min( 0, Ring.this.level()-2 );
 		} else {
-			return Ring.this.level()+1;
+			return base+Ring.this.level()+1;
 		}
 	}
 

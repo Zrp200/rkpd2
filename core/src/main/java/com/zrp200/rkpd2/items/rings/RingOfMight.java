@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.items.rings;
 
 
+import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.items.Item;
@@ -76,11 +77,11 @@ public class RingOfMight extends Ring {
 	}
 	
 	public String statsInfo() {
-		if (isIdentified()){
-			return Messages.get(this, "stats", soloBonus(), new DecimalFormat("#.##").format(100f * (Math.pow(1.035, soloBuffedBonus()) - 1f)));
-		} else {
-			return Messages.get(this, "typical_stats", 1, new DecimalFormat("#.##").format(3.5f));
-		}
+		int level = level();
+		if(!isIdentified()) level(0);
+		String res = Messages.get(this,isIdentified()?"stats":"typical_stats", soloBonus(), new DecimalFormat("#.##").format(100f * Math.pow(1.035, soloBuffedBonus()-1) - 1f));
+		level(level);
+		return res;
 	}
 
 	@Override

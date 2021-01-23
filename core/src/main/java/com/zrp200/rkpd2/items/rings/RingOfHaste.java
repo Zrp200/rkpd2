@@ -33,14 +33,11 @@ public class RingOfHaste extends Ring {
 		icon = ItemSpriteSheet.Icons.RING_HASTE;
 	}
 
-	public String statsInfo() {
-		if (isIdentified()){
-			return Messages.get(this, "stats", new DecimalFormat("#.##").format(100f * (Math.pow(1.2f, soloBuffedBonus()) - 1f)));
-		} else {
-			return Messages.get(this, "typical_stats", new DecimalFormat("#.##").format(20f));
-		}
+	@Override
+	protected float multiplier() {
+		return 1.2f;
 	}
-	
+
 	@Override
 	protected RingBuff buff( ) {
 		return new Haste();

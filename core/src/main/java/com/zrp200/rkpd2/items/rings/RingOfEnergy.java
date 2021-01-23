@@ -34,15 +34,15 @@ public class RingOfEnergy extends Ring {
 	}
 
 	public String statsInfo() {
-		if (isIdentified()){
-			return Messages.get(this, "stats",
-					new DecimalFormat("#.##").format(100f * (Math.pow(1.20f, soloBuffedBonus()) - 1f)),
-					new DecimalFormat("#.##").format(100f * (Math.pow(1.15f, soloBuffedBonus()) - 1f)));
-		} else {
-			return Messages.get(this, "typical_stats",
-					new DecimalFormat("#.##").format(20f),
-					new DecimalFormat("#.##").format(15f));
-		}
+		// manual implementation because custom message...
+		int level = level();
+		if(!isIdentified()) level(0);
+		double[] effect = {1.2,1.15};
+		String[] args = new String[2];
+		for(int i=0; i < 2; i++)
+			args[i] = new DecimalFormat("#.##").format(100*(Math.pow(effect[i],soloBuffedBonus())-1));
+		level(level);
+		return Messages.get(this, isIdentified()?"stats":"typical_stats", args);
 	}
 	
 	@Override

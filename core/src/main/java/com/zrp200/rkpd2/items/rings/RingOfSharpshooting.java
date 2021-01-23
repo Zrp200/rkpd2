@@ -35,11 +35,11 @@ public class RingOfSharpshooting extends Ring {
 	}
 
 	public String statsInfo() {
-		if (isIdentified()){
-			return Messages.get(this, "stats", soloBuffedBonus(), new DecimalFormat("#.##").format(100f * (Math.pow(1.2, soloBonus()+Dungeon.hero.getBonus(this)) - 1f)));
-		} else {
-			return Messages.get(this, "typical_stats", 1, new DecimalFormat("#.##").format(20f));
-		}
+		int level = level();
+		if(!isIdentified()) level(0);
+		String res = Messages.get(this, isIdentified()?"stats":"typical_stats", soloBuffedBonus(), new DecimalFormat("#.##").format(100f * (Math.pow(1.2, soloBonus()) - 1f)));
+		level(level);
+		return res;
 	}
 	
 	@Override
