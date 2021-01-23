@@ -356,7 +356,7 @@ public enum Talent {
 		if (hero.pointsInTalents(ARMSMASTERS_INTUITION,ROYAL_INTUITION) >= (hero.hasTalent(ARMSMASTERS_INTUITION) ? 1 : 2) && (item instanceof Weapon || item instanceof Armor)){
 			item.identify();
 		}
-		if (hero.heroClass == HeroClass.ROGUE || hero.hasTalent(ROYAL_INTUITION) && item instanceof Ring){
+		if ((hero.heroClass == HeroClass.ROGUE || hero.hasTalent(ROYAL_INTUITION)) && item instanceof Ring){
 			int points = hero.pointsInTalents(THIEFS_INTUITION,ROYAL_INTUITION);
 			if(hero.heroClass == HeroClass.ROGUE ) points++; // essentially this is a 50% boost.
 			if (points >= 2){
