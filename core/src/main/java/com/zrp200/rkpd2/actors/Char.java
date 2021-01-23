@@ -442,7 +442,7 @@ public abstract class Char extends Actor {
 
 	protected float attackDelay() {
 		float delay = TICK;
-		if(buffs(Adrenaline.class) != null) delay /= 1.5f;
+		if(buff(Adrenaline.class) != null) delay /= 1.5f;
 		return delay;
 	}
 	
