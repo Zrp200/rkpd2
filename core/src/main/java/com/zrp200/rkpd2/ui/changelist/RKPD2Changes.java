@@ -146,12 +146,13 @@ public class RKPD2Changes {
                 "\n_-_ Rogue now gets intrinsic +1 to missile weapons, subclass missile weapon boost reduced to compensate." +
                 "\n\n_Tier 1 Talents_:" +
                 "\n_-_ Thief's intuition buffed heavily, now works like warrior's but for rings and gives free upgrades based on upgrade level." +
-                "\n_-_ Sucker Punch nerfed back to SHPD levels to compensate for intrinsic upgrades on weapons."));
+                "\n_-_ Sucker Punch nerfed to be boosted by 50% instead of 100%"));
         changes.addButton(new ChangeButton(new KingSprite(),"Boss Changes","" +
                 "\n_-_ Dwarf King's phases can now be skipped with enough burst damage." +
                 "\n_-_ Dwarf King and DM-300 have altered quotes for Rat King" +
                 "\n_-_ DM-300 fight starts directly upon moving initially, instead of when you see a pylon. Better know what you are doing!"));
         changes.addButton(new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), Messages.get(ChangesScene.class, "bugfixes"),"Caused by last alpha:" +
+                "\n_-_ Detaching warrior seal crashing the game." +
                 "\n_-_ All characters having 1.5x attack speed and adrenaline still not working." +
                 "\n_-_ !!!NO TEXT FOUND!!! for dk's notice when not playing as Rat King" +
                 "\n_-_ DK not waiting to recognize you in some cases." +

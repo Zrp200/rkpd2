@@ -171,9 +171,8 @@ public class Armor extends EquipableItem {
 			if (sealBuff != null) sealBuff.setArmor(null);
 
 			BrokenSeal detaching = seal;
-			seal = null;
-
 			degrade(seal.level());
+			seal = null;
 
 			if (detaching.getGlyph() != null){
 				if (hero.hasTalent(Talent.RUNIC_TRANSFERENCE,Talent.POWER_WITHIN)

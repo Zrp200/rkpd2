@@ -414,10 +414,10 @@ public enum Talent {
 		if (hero.hasTalent(Talent.SUCKER_PUNCH,KINGS_WISDOM)
 				&& enemy instanceof Mob && ((Mob) enemy).surprisedBy(hero)
 				&& enemy.buff(SuckerPunchTracker.class) == null){
-			float bonus = /*hero.hasTalent(SUCKER_PUNCH)
-					? 1.5f*(1+hero.pointsInTalent(SUCKER_PUNCH))  // 3/4-5
-					:*/ 0.5f*(2+hero.pointsInTalents(SUCKER_PUNCH,KINGS_WISDOM)); // 1-2/2
-			dmg += Random.round( bonus );
+			int bonus = hero.hasTalent(SUCKER_PUNCH)
+					? 1+hero.pointsInTalent(SUCKER_PUNCH)  // 2/3
+					: Random.round(0.5f*(2+hero.pointsInTalents(KINGS_WISDOM))); // 1-2/2
+			dmg += bonus;
 			Buff.affect(enemy, SuckerPunchTracker.class);
 		}
 
