@@ -41,23 +41,24 @@ public class SoulMark extends FlavourBuff {
 		announced = true;
 	}
 
-	public static void process(Char defender, int level, int chargesUsed) {
+	public static void process(Char defender, int level, int chargesUsed, boolean delay) {
 		//standard 1 - 0.92^x chance, plus 7%. Starts at 15%
 		if (defender != Dungeon.hero
 				&& (Dungeon.hero.subClass == HeroSubClass.WARLOCK || Dungeon.hero.subClass == HeroSubClass.KING)
 				&& Random.Float() > (Math.pow(0.92f, (level * chargesUsed) + 1) - 0.07f)) {
 			DelayedMark mark = affect(defender,DelayedMark.class);
 			mark.duration = DURATION+level;
+			if(!delay) mark.activate();
 			// see Char#damage
 		}
 	}
 	// basically lets me hold onto it for a hot second. detaching adds the mark, which means I can delay activation to when I want it to.
 	public static class DelayedMark extends Buff {
 		public float duration;
-		@Override
-		public void detach() {
+
+		public void activate() {
 			Buff.prolong(target,SoulMark.class,duration);
-			super.detach();
+			detach();
 		}
 		// is this needed? idk
 		@Override

@@ -590,7 +590,7 @@ public abstract class Mob extends Char {
 
 		if(enemy == Dungeon.hero && Dungeon.hero.subClass == HeroSubClass.WARLOCK) {
 			// warlock can soul mark by simply attacking.
-			SoulMark.process(this,Dungeon.hero.belongings.weapon.buffedLvl(),1);
+			SoulMark.process(this,Dungeon.hero.belongings.weapon.buffedLvl(),1,true);
 		}
 
 		return damage;

@@ -176,17 +176,17 @@ public abstract class Wand extends Item {
 	}
 
 	protected void processSoulMark(Char target, int chargesUsed){
-		processSoulMark(target, buffedLvl(), chargesUsed);
+		processSoulMark(target, buffedLvl(), chargesUsed, this instanceof DamageWand);
 	}
 
 	//TODO some naming issues here. Consider renaming this method and externalizing char awareness buff
-	protected static void processSoulMark(Char target, int wandLevel, int chargesUsed){
+	protected static void processSoulMark(Char target, int wandLevel, int chargesUsed, boolean delay){
 		if (Dungeon.hero.hasTalent(Talent.ARCANE_VISION,Talent.KINGS_VISION)) {
 			int dur = 5 + 5*Dungeon.hero.pointsInTalents(Talent.ARCANE_VISION,Talent.KINGS_VISION);
 			Buff.append(Dungeon.hero, TalismanOfForesight.CharAwareness.class, dur).charID = target.id();
 		}
 
-		SoulMark.process(target,wandLevel,chargesUsed);
+		SoulMark.process(target,wandLevel,chargesUsed,delay);
 	}
 
 	@Override
