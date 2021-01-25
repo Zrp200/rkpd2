@@ -402,31 +402,40 @@ public class DwarfKing extends Mob {
 		else if (phase == 1) {
 			// yay custom logic
 			int preHP = HP;
-			int trueDamage = modifyDamage(dmg, src); // determining what our final HP is supposed to be here.
-			HP = HP - trueDamage + shielding();
+			dmg = modifyDamage(dmg, src); // determining what our final HP is supposed to be here.
+			HP = HP - dmg + shielding();
+			// adjust HP to match phase if necessary.
 			if (HP <= 50) {
 				HP += HT;
-				if (HP <= 50) {
-					int difference = 50 - HP; // everything after the last 50 was deferred.
+				float rawCrit = (HP - 50)/(HT/3f);
+				// this stops it from randomly skipping a phase randomly. the big hits are given more leverage however.
+				int criticality = rawCrit <= 2.5 ? Random.round(rawCrit) : 3; // this makes it a bit more lenient.
+				if (criticality <= 0) {
+					int dmg2 = Math.min(dmg,HP-50); // everything after the last 50 was deferred.
+					dmg = Math.max(dmg-dmg2,0);
 					HP = preHP; // set HP back to original HP.
 					// literally just broke the shield in one go.
 					sprite.add(CharSprite.State.SHIELDED);
-					onDamage(dmg - difference, src); // process damage-related stuff
+					onDamage(dmg2, src); // process damage-related stuff
 					sprite.remove(CharSprite.State.SHIELDED);
 					// enter phase 3 and process the rest of the damage
 					HP = 50;
 					enterPhase3(); // skip to phase 3
 					yell("...how can this be???");
-					damage(difference, src); // apply deferred damage
+					if(dmg > 0) damage(dmg, src); // apply deferred damage
 				} else {
 					// handle normally.
 					onDamage(dmg, src); // this is the second part of #damage.
-					enterPhase2();
+					enterPhase2(criticality);
 				}
 			}
-			int dmgTaken = -HP;
-			abilityCooldown -= dmgTaken / 8f;
-			summonCooldown -= dmgTaken / 8f;
+			else {
+				HP = preHP;
+				onDamage(dmg,src); // actually damage the guy
+				int dmgTaken = -HP;
+				abilityCooldown -= dmgTaken / 8f;
+				summonCooldown -= dmgTaken / 8f;
+			}
 		}
 		else {
 			int preHP = HP;
@@ -441,21 +450,10 @@ public class DwarfKing extends Mob {
 		}
 	}
 
-	private void enterPhase2 () {
-		int shielding = HP - 50;
+	private void enterPhase2 (int wavesLeft) {
+		int shielding = wavesLeft * (HT/3);
 		HP = 50;
-		if (shielding <= HT / 3) {
-			shielding = HT / 3; // go to wave 3
-			summonsMade = 8;
-		}
-		else if (shielding <= 2 * HT / 3) {
-			shielding = 2 * HT / 3; // go to wave 2;
-			summonsMade = 4;
-		}
-		else {
-			shielding = HT; // enter phase 2
-			summonsMade = 0;
-		}
+		summonsMade = 4*(3-wavesLeft);
 		sprite.showStatus(CharSprite.POSITIVE, Messages.get(this, "invulnerable"));
 		ScrollOfTeleportation.appear(this, NewCityBossLevel.throne);
 		properties.add(Property.IMMOVABLE);
