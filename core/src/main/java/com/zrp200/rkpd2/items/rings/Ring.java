@@ -180,8 +180,9 @@ public class Ring extends KindofMisc {
 	protected String statsInfo(){
 		int level = level();
 		if(!isIdentified()) level(0);
-		double bonus = Math.pow(multiplier() < 1?1-multiplier():multiplier(),soloBuffedBonus());
-		String res = Messages.get(this,isIdentified()?"stats":"typical_stats", new DecimalFormat("#.##").format(100f * (bonus - (multiplier()<1?0:1f))));
+		double bonus = Math.pow(multiplier(),soloBuffedBonus());
+		if(multiplier() < 1) bonus = multiplier() < 1 ? 1-bonus : bonus-1;
+		String res = Messages.get(this,(isIdentified()?"":"typical_")+"stats", new DecimalFormat("#.##").format(100f * bonus));
 		level(level);
 		return res;
 	}
