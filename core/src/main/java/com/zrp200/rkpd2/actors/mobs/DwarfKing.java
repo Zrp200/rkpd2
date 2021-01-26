@@ -265,7 +265,7 @@ public class DwarfKing extends Mob {
 	private HashSet<Mob> getSubjects(){
 		HashSet<Mob> subjects = new HashSet<>();
 		for (Mob m : Dungeon.level.mobs){
-			if (m.alignment == alignment && (m instanceof Ghoul || m instanceof Monk || m instanceof Warlock)){
+			if (m.alignment == alignment && m instanceof Subject){
 				subjects.add(m);
 			}
 		}
@@ -527,7 +527,8 @@ public class DwarfKing extends Mob {
 		return super.isImmune(effect);
 	}
 
-	public static class DKGhoul extends Ghoul {
+	public interface Subject{} // used to identify DK minions
+	public static class DKGhoul extends Ghoul implements Subject {
 		{
 			state = HUNTING;
 		}
@@ -539,13 +540,13 @@ public class DwarfKing extends Mob {
 		}
 	}
 
-	public static class DKMonk extends Monk {
+	public static class DKMonk extends Monk implements Subject {
 		{
 			state = HUNTING;
 		}
 	}
 
-	public static class DKWarlock extends Warlock {
+	public static class DKWarlock extends Warlock implements Subject {
 		{
 			state = HUNTING;
 		}

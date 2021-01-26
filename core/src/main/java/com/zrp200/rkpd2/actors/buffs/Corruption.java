@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.actors.buffs;
 
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.mobs.DwarfKing;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.BuffIndicator;
@@ -39,6 +40,9 @@ public class Corruption extends Buff {
 	public boolean attachTo(Char target) {
 		if (super.attachTo(target)){
 			target.alignment = Char.Alignment.ALLY;
+			if(target instanceof DwarfKing.Subject) { // DK logic
+				new DwarfKing().yell(Messages.get(DwarfKing.class,"corrupted",target.name()));
+			}
 			return true;
 		} else {
 			return false;
