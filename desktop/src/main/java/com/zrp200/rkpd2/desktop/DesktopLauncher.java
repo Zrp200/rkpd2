@@ -119,14 +119,14 @@ public class DesktopLauncher {
 		String basePath = "";
 		if (SharedLibraryLoader.isWindows) {
 			if (System.getProperties().getProperty("os.name").equals("Windows XP")) {
-				basePath = "Application Data/.zrp200/Shattered Pixel Dungeon/";
+				basePath = "Application Data/.zrp200/RKPD2/";
 			} else {
-				basePath = "AppData/Roaming/.zrp200/Shattered Pixel Dungeon/";
+				basePath = "AppData/Roaming/.zrp200/RKPD2/";
 			}
 		} else if (SharedLibraryLoader.isMac) {
-			basePath = "Library/Application Support/Shattered Pixel Dungeon/";
+			basePath = "Library/Application Support/RKPD2/";
 		} else if (SharedLibraryLoader.isLinux) {
-			basePath = ".shatteredpixel/shattered-pixel-dungeon/";
+			basePath = ".zrp200/rkpd2/";
 		}
 
 		//copy over prefs from old file location from legacy desktop codebase
