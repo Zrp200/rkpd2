@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.items.armor;
 import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.items.BrokenSeal;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRecharging;
 import com.zrp200.rkpd2.messages.Messages;
@@ -136,15 +137,12 @@ abstract public class ClassArmor extends Armor {
 			if (!isEquipped( hero )) {
 				GLog.w( Messages.get(this, "not_equipped") );
 			} else {
-				if(charge < 35) if(hero.HP*3 > hero.HT) {
-					GLog.n("rat king: I don't have time for this nonsense! I have a kingdom to run! CLASS ARMOR OVERCHAARGE!!! AAAAAAAAAAAAAAAAARGH!");
-					charge = 200;
-					hero.HP -= hero.HP / 3;
+				if(charge < 35) {
+					GLog.n("rat king: I don't have time for this nonsense! I have a kingdom to run! CLASS ARMOR OVERCHAARGE!!! AAARGH!");
+					charge += hero.heroClass == HeroClass.RAT_KING ? 100 : 200;
+					hero.HP = Math.max( Math.min(hero.HP,1), hero.HP*2/3 );
 					updateQuickslot();
 					ScrollOfRecharging.charge(hero);
-				} else {
-					GLog.w(Messages.get(this,"low_charge"));
-					return;
 				}
 				curUser = hero;
 				doSpecial();
