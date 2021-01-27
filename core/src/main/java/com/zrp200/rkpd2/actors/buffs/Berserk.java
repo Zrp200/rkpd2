@@ -213,13 +213,14 @@ public class Berserk extends Buff {
 
 	@Override
 	public String toString() {
+		String cls = Dungeon.hero.subClass.title();
 		switch (state){
 			case NORMAL: default:
-				return Messages.get(this, "angered");
+				return Messages.get(this, "angered",cls);
 			case BERSERK:
-				return Messages.get(this, "berserk");
+				return Messages.get(this, "berserk",cls);
 			case RECOVERING:
-				return Messages.get(this, "recovering");
+				return Messages.get(this, "recovering",cls);
 		}
 	}
 
@@ -228,18 +229,19 @@ public class Berserk extends Buff {
 	}
 	@Override
 	public String desc() {
+		String cls = Dungeon.hero.subClass.title();
 		StringBuilder desc = new StringBuilder();
 		switch (state){
 			case NORMAL: default:
-				desc.append(Messages.get(this, "angered_desc"))
+				desc.append(Messages.get(this, "angered_desc",cls))
 						.append("\n\n")
 						.append(getCurrentRageDesc());
 				break;
 			case BERSERK:
-				desc.append( Messages.get(this, "berserk_desc",damageMult()));
+				desc.append( Messages.get(this, "berserk_desc",cls,damageMult()));
 				break;
 			case RECOVERING:
-				desc.append(Messages.get(this, "recovering_desc", Messages.get(
+				desc.append(Messages.get(this, "recovering_desc", cls, Messages.get(
 						this,"recovering_penalty_" + (berserker() ? "berserk" : "default")),
 						levelRecovery));
 				if( berserker() ) desc.append("\n\n").append(getCurrentRageDesc());
