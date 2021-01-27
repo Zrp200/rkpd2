@@ -115,7 +115,7 @@ public class Berserk extends Buff {
 
 	private void reduceRage() {
 		// essentially while recovering your max rage is actually capped for basically all purposes.
-		power -= GameMath.gate(recovered()/10f, power, recovered()) * 0.067f * Math.pow((target.HP/(float)target.HT), 2);
+		power -= GameMath.gate(recovered()/10f, power, recovered()) * (recovered() * 0.067f) * Math.pow((target.HP/(float)target.HT), 2);
 		power = Math.max(0,power);
 	}
 
