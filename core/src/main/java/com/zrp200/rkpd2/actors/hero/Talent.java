@@ -418,7 +418,7 @@ public enum Talent {
 					? 1+hero.pointsInTalent(SUCKER_PUNCH)  // 2/3
 					: Random.round(0.5f*(2+hero.pointsInTalents(KINGS_WISDOM))); // 1-2/2
 			dmg += bonus;
-			Buff.affect(enemy, SuckerPunchTracker.class);
+			if(!hero.hasTalent(SUCKER_PUNCH)) Buff.affect(enemy, SuckerPunchTracker.class);
 		}
 
 		if (hero.hasTalent(Talent.FOLLOWUP_STRIKE,KINGS_WISDOM)) {
