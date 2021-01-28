@@ -21,6 +21,8 @@
 
 package com.zrp200.rkpd2.items.armor;
 
+import com.watabou.noosa.audio.Sample;
+import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.hero.Hero;
@@ -138,11 +140,12 @@ abstract public class ClassArmor extends Armor {
 				GLog.w( Messages.get(this, "not_equipped") );
 			} else {
 				if(charge < 35) {
-					GLog.n("rat king: I don't have time for this nonsense! I have a kingdom to run! CLASS ARMOR OVERCHAARGE!!! AAARGH!");
+					GLog.n("rat king: I don't have time for this nonsense! I have a kingdom to run! CLASS ARMOR OVERCHAARGE!!");
 					charge += hero.heroClass == HeroClass.RAT_KING ? 100 : 200;
 					hero.HP = Math.max( Math.min(hero.HP,1), hero.HP*2/3 );
 					updateQuickslot();
 					ScrollOfRecharging.charge(hero);
+					Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);
 				}
 				curUser = hero;
 				doSpecial();
