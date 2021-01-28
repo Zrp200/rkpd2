@@ -1135,7 +1135,7 @@ public abstract class Level implements Bundlable {
 					}
 
 				}
-			} else if (((Hero) c).hasTalent(Talent.HEIGHTENED_SENSES,Talent.KINGS_VISION)) {
+			} else if (((Hero)c).heroClass == HeroClass.HUNTRESS || ((Hero)c).hasTalent(Talent.HEIGHTENED_SENSES,Talent.KINGS_VISION)) {
 				int points = ((Hero)c).pointsInTalents(Talent.HEIGHTENED_SENSES,Talent.KINGS_VISION);
 				if(((Hero)c).heroClass == HeroClass.HUNTRESS) points++; // yup.
 				for (Mob mob : mobs) {

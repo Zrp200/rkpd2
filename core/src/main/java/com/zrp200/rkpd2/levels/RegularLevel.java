@@ -97,7 +97,7 @@ public abstract class RegularLevel extends Level {
 		
 	}
 
-	private static final float SIZE_MODIFIER = .7f;
+	private static final float[] SIZE_MODIFIER = {.5f,.7f}; // range of values
 	protected ArrayList<Room> initRooms() {
 		ArrayList<Room> initRooms = new ArrayList<>();
 		initRooms.add ( roomEntrance = new EntranceRoom());
@@ -110,7 +110,7 @@ public abstract class RegularLevel extends Level {
 		}
 		// reduce by designated amount to reduce levelsize for rkpd2, much like rkpd does.
 		// reduce for rkpd2, inspired by rkpd
-		standards = Random.round(standards * SIZE_MODIFIER);
+		standards = Random.round(standards * Random.Float(SIZE_MODIFIER[0],SIZE_MODIFIER[1]));
 		for (int i = 0; i < standards; i++) {
 			StandardRoom s;
 			do {
@@ -129,7 +129,7 @@ public abstract class RegularLevel extends Level {
 			specials++;
 		}
 		// reduce size of special rooms by same factor for net decrease. This will do much less in comparison to regular rooms but proportions are proportions.
-		specials = Random.round( specials*SIZE_MODIFIER );
+		//specials = Random.round( specials*SIZE_MODIFIER );
 		SpecialRoom.initForFloor();
 		for (int i = 0; i < specials; i++) {
 			SpecialRoom s = SpecialRoom.createRoom();

@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.items.weapon.missiles;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.Adrenaline;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Corruption;
 import com.zrp200.rkpd2.actors.buffs.PinCushion;
@@ -203,7 +204,7 @@ abstract public class MissileWeapon extends Weapon {
 	
 	@Override
 	public float castDelay(Char user, int dst) {
-		return speedFactor( user );
+		return speedFactor( user ) / (user.buff(Adrenaline.class) != null?1.5f:1);
 	}
 	
 	protected void rangedHit( Char enemy, int cell ){
