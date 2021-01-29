@@ -96,6 +96,7 @@ public class RatKingArmor extends ClassArmor{
                 }
             }
 
+            Dungeon.observe();
             curUser.sprite.operate( curUser.pos );
             //Invisibility.dispel();
             curUser.busy();
@@ -111,8 +112,8 @@ public class RatKingArmor extends ClassArmor{
                     Buff.prolong(mob, Paralysis.class, 5);
                 }
             }
-            Buff.prolong(curUser, Invisibility.class, Invisibility.DURATION/2f);
-            curUser.spend( Actor.TICK );
+            //Buff.prolong(curUser, Invisibility.class, Invisibility.DURATION/2f);
+            //curUser.spend( Actor.TICK );
             // huntress
             Item proto = new Shuriken();
             for (Mob mob : Dungeon.level.mobs) {
@@ -122,12 +123,20 @@ public class RatKingArmor extends ClassArmor{
                     Callback callback = new Callback() {
                         @Override
                         public void call() {
-                            Invisibility.dispel();
                             curUser.attack( targets.get( this ) );
+                            Invisibility.dispel();
                             targets.remove( this );
                             if (targets.isEmpty()) {
                                 //Buff.prolong(curUser, Invisibility.class, Invisibility.DURATION/2f);
-                                curUser.spendAndNext( curUser.attackDelay() );
+                                Actor.addDelayed(new Actor() {
+                                    @Override
+                                    protected boolean act() {
+                                        Buff.prolong(curUser, Invisibility.class, Invisibility.DURATION/2f);
+                                        remove(this);
+                                        return true;
+                                    }
+                                }, 3);
+                                curUser.spendAndNext(3);
                             }
                         }
                     };
@@ -142,7 +151,7 @@ public class RatKingArmor extends ClassArmor{
                 curUser.sprite.zap(curUser.pos);
                 curUser.busy();
             }
-            curUser.spendAndNext(Actor.TICK*3 ); // punishment
+            //curUser.spendAndNext(Actor.TICK*3 ); // punishment
         }
         @Override
         public String prompt() {
