@@ -312,6 +312,7 @@ public class SpiritBow extends Weapon {
 		public void cast(final Hero user, final int dst) {
 			final int cell = throwPos( user, dst );
 			SpiritBow.this.targetPos = cell;
+			rangedAttack = true;
 			if (sniperSpecial && SpiritBow.this.augment == Augment.SPEED){
 				if (flurryCount == -1) flurryCount = 3;
 				
@@ -319,7 +320,7 @@ public class SpiritBow extends Weapon {
 				
 				if (enemy == null){
 					user.spendAndNext(castDelay(user, dst));
-					sniperSpecial = false;
+					sniperSpecial = rangedAttack = false;
 					flurryCount = -1;
 					return;
 				}
@@ -345,7 +346,7 @@ public class SpiritBow extends Weapon {
 										
 										if (last) {
 											user.spendAndNext(castDelay(user, dst));
-											sniperSpecial = false;
+											sniperSpecial = rangedAttack = false;
 											flurryCount = -1;
 										}
 									}
@@ -363,6 +364,7 @@ public class SpiritBow extends Weapon {
 				
 			} else {
 				super.cast(user, dst);
+				rangedAttack = false;
 			}
 		}
 	}

@@ -204,6 +204,10 @@ abstract public class MissileWeapon extends Weapon {
 	
 	@Override
 	public float castDelay(Char user, int dst) {
+		if(user.buff(Talent.LethalMomentumTracker.class) != null) {
+			Buff.detach(user, Talent.LethalMomentumTracker.class);
+			return 0;
+		}
 		return speedFactor( user ) / (user.buff(Adrenaline.class) != null?1.5f:1);
 	}
 	
