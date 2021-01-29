@@ -146,11 +146,11 @@ public class NewTengu extends Mob {
 		super.damage(dmg, src);
 		dmg = beforeHitHP - HP;
 		
-		//tengu cannot be hit through multiple brackets at a time
+		/*//tengu cannot be hit through multiple brackets at a time
 		if ((beforeHitHP/hpBracket - HP/hpBracket) >= 2){
 			HP = hpBracket * ((beforeHitHP/hpBracket)-1) + 1;
-		}
-		
+		}*/ // yeah fuck that we want SPEED! TODO round to nearest phase?
+
 		LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
 		if (lock != null) {
 			int multiple = state == NewPrisonBossLevel.State.FIGHT_START ? 1 : 4;
