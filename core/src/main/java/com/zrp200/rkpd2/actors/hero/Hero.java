@@ -227,10 +227,9 @@ public class Hero extends Char {
 		return STR;
 	}
 
+	// this affects what items get boosted. if I want a talent to grant boosts I should go here.
 	public int getBonus(Item item) {
-		int bonus = heroClass.getBonus(item) + subClass.getBonus(item);
-		if(item instanceof Ring) bonus += pointsInTalent(Talent.THIEFS_INTUITION); // handle thief's intuition here.
-		return bonus;
+		return heroClass.getBonus(item) + subClass.getBonus(item);
 	}
 
 	private static final String ATTACK		= "attackSkill";

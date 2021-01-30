@@ -47,19 +47,17 @@ public enum HeroSubClass {
 	
 	ASSASSIN( "assassin" ) {
 		@Override public int getBonus(Item item) {
-			// +3 to melee, +2 to missiles
-			return item instanceof MeleeWeapon ? 2
-					: item instanceof MissileWeapon ? 1
-					: 0;
+			// +1 to rings / +2 to melee / +2 to thrown. total boosts = 5, but assassin has many ways of boosting his damage output further.
+			return item instanceof Weapon ? 1 : 0;
 		}
 	},
 	FREERUNNER( "freerunner" ) {
 		@Override
 		public int getBonus(Item item) {
-			// +1 to melee, +2 to wands, +2 to missiles
-			if(item instanceof Wand) return 2;
-			if(item instanceof MissileWeapon) return 1;
-			return 0;
+			// +1 to melee/ring, +3 to wands, +3 to missiles. total boosts = 7, ~50% more than assassin.
+			return item instanceof Wand ? 3
+					: item instanceof MissileWeapon ? 2
+					: 0;
 		}
 	},
 	
