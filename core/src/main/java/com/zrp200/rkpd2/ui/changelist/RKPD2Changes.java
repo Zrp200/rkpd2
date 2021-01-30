@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.ui.changelist;
 import com.watabou.noosa.Image;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
+import com.zrp200.rkpd2.items.ArmorKit;
 import com.zrp200.rkpd2.items.armor.RogueArmor;
 import com.zrp200.rkpd2.items.armor.WarriorArmor;
 import com.zrp200.rkpd2.items.bags.VelvetPouch;
@@ -63,6 +64,7 @@ public class RKPD2Changes {
                 "\n_-_ Damage multiplier during berserk is now 2x." +
                 "\n_-_ Rage can be gained while recovering and recovering happens slowly over time if no exp is gained." +
                 "\n_-_ Berserk duration increased somewhat (this also affects Rat King subclass)" +
+                "\n_-_ Berserker gains damage from indirect sources" +
                 "\n\n_Gladiator_:" +
                 "\n_-_ Combo is no longer lost upon missing." +
                 "\n_-_ All finishers get an extra damage roll check for increased consistency." +
@@ -74,10 +76,10 @@ public class RKPD2Changes {
                         "_-_ Most talents buffed.\n" +
                         "_-_ Empowering meal has been removed (for mage at least) and replaced with Energizing Meal, t2 meal replaced with something else."));
         changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.ROGUE,6),"Rogue",
-        "_-_ Now gets an invisible +1 to weapons" +
+        "_-_ Now gets an invisible +1 to weapons and rings" +
                 "\n_-_ Subclasses get more invisible upgrades to various item types." +
                 "\n_-_ Cloak levels up twice as fast and can be used and charged while unequipped." +
-                "\n_-_ Most tier 1 Talents buffed to be roughly 2x effective compared to SHPD." +
+                "\n_-_ Most tier 1 Talents buffed." +
                 "\n_-_ Protective Shadows replaced by mending shadows, original sprite needs to be transferred over, however."));
         changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.HUNTRESS,0),"Huntress",
             "Huntress has also recieved 'tweaks'!\n\n" +
@@ -89,10 +91,11 @@ public class RKPD2Changes {
                 "All heroes start with all bags. This should reduce the stress of inventory management throughout the game and also make gold more plentiful."));
         changeInfos.add(changes = new ChangeInfo("Misc",false,""));
         changes.addButton(new ChangeButton(Icons.get(Icons.DEPTH),"Level gen changes",
-            "_-_ Level size reduced by 30% in honor of precedent set by Rat King Dungeon." +
+            "_-_ Amount of standard rooms reduced by 30%-50% in honor of precedent set by Rat King Dungeon." +
             "\n_-_ Gold yield from Rat King's room increased by 20x" +
             "\n_-_ Hero takes 1/3 damage from Grim traps."));
         changes.addButton(new ChangeButton(new KingSprite(),"Boss Changes","Certain bosses have recieved adjustments:" +
+                "\n_-_ Dwarf King fight start altered." +
                 "\n_-_ Dwarf King's phases can now be skipped with enough burst damage." +
                 "\n_-_ Dwarf King and DM-300 have altered quotes for Rat King" +
                 "\n_-_ DM-300 fight starts directly upon moving initially, instead of when you see a pylon. Better know what you are doing!"));
@@ -110,7 +113,7 @@ public class RKPD2Changes {
         // plans
         changeInfos.add(changes = new ChangeInfo("TODO",false,""));
         changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.HUNTRESS,6),"Huntress Subclasses",
-                "While I'm pretty happy with the changes I've made thus far to the huntress, warden can easily be tweaked to be more in line with the mood, and it would be a crime to not buff sniper while I'm at it..."));
+                "While I'm pretty happy with the changes I've made thus far to the huntress, warden can easily be tweaked to be more in line with the mood, and it would be a crime to not buff sniper while I'm at it...\n\nWarden also needs some adjustments, likely something to do with seed/dew droprate..."));
         changes.addButton(new ChangeButton(new TenguSprite(), "Boss Phases",
             "I think it would be interesting if players could \"accelerate\" boss fights if they damage them enough. It's a complaint I've had with Shattered, and a mod like this is the perfect place to do something about it." +
             "\n\nThis should also contribute to making the mod run quicker during the boss fights, making it overall easier to speedrun and race." +
@@ -131,35 +134,47 @@ public class RKPD2Changes {
                 "\n_-_ Text adjustments to lore, may even reimplement signposts."));
         // closing message
         changeInfos.add(changes = new ChangeInfo("What changed???",true, "" +
-                "_-_ Rogue adjusted." +
-                "\n_-_ Rat King now has his own icon." +
-                "\n_-_ Level size is now reduced by 30%, up from 20%. Consider it an experiment." +
-                "\n_-_ Adjusted many enemy descriptions." +
-                "\n_-_ Adjusted talent descriptions for Rat King." +
-                "\n_-_ Challenges unlocked by default" +
-                "\n_-_ DM-300 and DK have recieved changes." +
-                "\n_-_ Important bugfixes." +
-                "\n_-_ Updated TODO section."));
-        changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.ROGUE,1),"Rogue Changes","" +
-                "_Innate_:" +
-                "\n_-_ Rogue now identifies the type of a ring upon equipping it and identifies rings 2x faster." +
-                "\n_-_ Rogue now gets intrinsic +1 to missile weapons, subclass missile weapon boost reduced to compensate." +
-                "\n\n_Tier 1 Talents_:" +
-                "\n_-_ Thief's intuition buffed heavily, now works like warrior's but for rings and gives free upgrades based on upgrade level." +
-                "\n_-_ Sucker Punch nerfed to be boosted by 50% instead of 100%"));
-        changes.addButton(new ChangeButton(new KingSprite(),"Boss Changes","" +
-                "\n_-_ Dwarf King's phases can now be skipped with enough burst damage." +
-                "\n_-_ Dwarf King and DM-300 have altered quotes for Rat King" +
-                "\n_-_ DM-300 fight starts directly upon moving initially, instead of when you see a pylon. Better know what you are doing!"));
+                "_-_ Adrenaline FINALLY works!" +
+                "\n_-_ Berserker gains rage from indirect damage now." +
+                "\n_-_ Increased special room frequency back to SHPD levels for now, regular rooms now reduced by 30-50%, up from 30%." +
+                "\n_-_ Tengu's jump limiter removed, phase 1 and 3 should run faster against high damage weapons." +
+                "\n_-_ Arcane Meal II +2 nerfed by 33%" +
+                "\n_-_ Too many bugfixes." +
+                "\n_-_ Changed save location on PC, this will clear existing saves, but you can move your old save data back into the new folder. Mobile is unaffected." +
+                ""));
+        changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.ROGUE,6),"Rogue Changes","Base:" +
+                "\n_-_ Now gets +1 to rings in general instead of through Thief's Intuition." +
+                "\n_-_ Sucker Punch now applies to ALL surprise attacks instead of just the first one." +
+                "\n\nSubclasses:" +
+                "\n_-_ Assassin now gets +2 total to melee and thrown weapons, instead of +3." +
+                "\n_-_ Freerunner gets +3 to wand levels, up from +2."));
+        changes.addButton(new ChangeButton(new KingSprite(),"Dwarf King","" +
+                "\n_-_ Waves and phase 2 in general are now easier to skip." +
+                "\n_-_ Life Link less effective against really big hits; no longer applies to damage beyond what the character can handle." +
+                "\n_-_ Adjusted initial behavior to give a more logical progression of quotes."));
+        changes.addButton(new ChangeButton(new ItemSprite(new ArmorKit()), "Class Armor",
+                "_-_ Removed limiter on overcharge below 33% max hp" +
+                "\n_-_ You still cannot be killed by using it." +
+                "\n_-_ You can now use it while berserk without penalty." +
+                "\n\n_-_ Rat King's Wrath can only be fully charged, instead of supercharged." +
+                "\n_-_ Rat King's wrath now takes 3 turns, down from 5, and bestows invisibility after spending the turns." +
+                "\n\n_-_ Shortened overcharge quote." +
+                "\n_-_ Added a charge sfx to overcharge to make it more obvious. (if the text wasn't enough)" +
+                "\n_-_ Overcharging adds instead of sets the new charge amount." +
+                "\n\n_-_ Updated descriptions to be more clear about these mechanics."));
         changes.addButton(new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), Messages.get(ChangesScene.class, "bugfixes"),"Caused by last alpha:" +
-                "\n_-_ Detaching warrior seal crashing the game." +
-                "\n_-_ All characters having 1.5x attack speed and adrenaline still not working." +
-                "\n_-_ !!!NO TEXT FOUND!!! for dk's notice when not playing as Rat King" +
-                "\n_-_ DK not waiting to recognize you in some cases." +
-                "\n_-_ Mending shadows playing vfx even when at full HP." +
+                 "\n_-_ Various issues with DK taking damage" +
+                "\n_-_ Rare issues with pit rooms in levelgen" +
+                "\n_-_ Rings of Elements and Tenacity not displaying properly." +
+                "\n_-_ Rat King's rage description not saying rat king." +
                 "\n\nFrom before last alpha:" +
-                "\n_-_ Royal Meal not consuming berries instantly." +
-                "\n_-_ Misleading Royal Intuition description"));
+                "\n_-_ Huntress not getting heightened senses +0 from the start of the game" +
+                "\n_-_ Thrown weapons not responding to adrenaline and lethal momentum." +
+                "\n_-_ Various issues with rage gain and loss, especially with rat king." +
+                "\n_-_ Royal Intuition +2 not identifying wands on zap." +
+                "\n_-_ Soul mark being applied late with non-damaging wands and wand of warding" +
+                "\n_-_ Horn of Plenty not charging from Mystical Meal unless Mending Shadow is upgraded."+
+                "\n_-_ Various text mistakes in talents."));
         changeInfos.add(changes = new ChangeInfo("",true,"Thanks for testing out my alpha! While most of the art isn't in the game, and won't be in the game until it's actually released, the gameplay mechanics are a different story entirely!\n\nAll hail the mighty rat king, destroyer of Yogs!"));
     }
 }
