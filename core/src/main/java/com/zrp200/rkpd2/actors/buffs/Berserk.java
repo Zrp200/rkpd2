@@ -154,17 +154,16 @@ public class Berserk extends Buff {
 
 	public void damage(int damage){
 		if (state == State.RECOVERING && !berserker()) return;
-		int reducedDamage = Math.max(0,damage-target.drRoll());
-		target.HP -= reducedDamage; // temporarily deal full damage to hero. this makes current hp respond to damage, making berserker gain rage faster.
+		if( berserker() ) target.HP -= damage;
 		// recovering berserker has max rage effectively scaled.
 		double powerInc = Math.min((state == State.NORMAL?1.1f:recovered())-power,recovered()*damage/rageFactor());
 		power += powerInc; // apply increase
-		target.HP += reducedDamage; // revert damage so it can be reduced by armor properly
+		if( berserker() ) target.HP += damage; // revert damage so it can be reduced by armor properly
 		BuffIndicator.refreshHero(); // show new power immediately
 	}
 
 	public final float recovered() {
-		return 1-levelRecovery/2;
+		return state == State.RECOVERING ? 1-levelRecovery/2 : 1f;
 	}
 	public void recover(float percent){
 		if (levelRecovery > 0){
