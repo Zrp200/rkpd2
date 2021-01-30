@@ -40,6 +40,7 @@ import com.zrp200.rkpd2.items.potions.PotionOfHealing;
 import com.zrp200.rkpd2.items.potions.PotionOfInvisibility;
 import com.zrp200.rkpd2.items.potions.PotionOfLiquidFlame;
 import com.zrp200.rkpd2.items.potions.PotionOfMindVision;
+import com.zrp200.rkpd2.items.rings.Ring;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfIdentify;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfLullaby;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfMagicMapping;
