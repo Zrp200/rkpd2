@@ -285,7 +285,6 @@ public class NewCityBossLevel extends Level {
 		GameScene.add( boss );
 
 		if (heroFOV[boss.pos]) {
-			boss.notice();
 			boss.sprite.alpha( 0 );
 			boss.sprite.parent.add( new AlphaTweener( boss.sprite, 1, 0.1f ) );
 		}

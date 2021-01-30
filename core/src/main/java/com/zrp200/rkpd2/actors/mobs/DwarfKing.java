@@ -75,6 +75,26 @@ public class DwarfKing extends Mob {
 
 		properties.add(Property.BOSS);
 		properties.add(Property.UNDEAD);
+
+		WANDERING = new Wandering() {
+			@Override
+			public boolean act(boolean enemyInFOV, boolean justAlerted) {
+				if(enemyInFOV && phase == 0) {
+					noticeEnemy();
+					return true;
+				}
+				return super.act(enemyInFOV, justAlerted);
+			}
+
+			@Override
+			protected boolean continueWandering() {
+				if(phase == 0) {
+					spend(TICK);
+					return true;
+				}
+				return super.continueWandering();
+			}
+		};
 	}
 
 	@Override
@@ -92,7 +112,7 @@ public class DwarfKing extends Mob {
 		return Random.NormalIntRange(0, 10);
 	}
 
-	private int phase = 1;
+	private int phase = 0; // phase 0 is when he hasn't actually reacted yet.
 	private int summonsMade = 0;
 
 	private float summonCooldown = 0;
@@ -369,6 +389,7 @@ public class DwarfKing extends Mob {
 					((DriedRose.GhostHero) ch).sayBoss();
 				}
 			}
+			if(phase == 0) phase = 1;
 		}
 		spend(TICK); // there's no good reason he just out and notices you.
 	}
@@ -390,7 +411,8 @@ public class DwarfKing extends Mob {
 			super.damage(dmg, src);
 			return;
 		} else if (!isAlive() || dmg < 0) return;
-		else if (phase == 3 && !(src instanceof Viscosity.DeferedDamage)) {
+		if(phase == 0) { notice(); }
+		if (phase == 3 && !(src instanceof Viscosity.DeferedDamage)) {
 			if (dmg >= 0) {
 				Viscosity.DeferedDamage deferred = Buff.affect(this, Viscosity.DeferedDamage.class);
 				deferred.prolong(dmg);
@@ -399,7 +421,7 @@ public class DwarfKing extends Mob {
 			}
 			return;
 		}
-		else if (phase == 1) {
+		else if (phase < 2) {
 			// yay custom logic
 			int preHP = HP;
 			dmg = modifyDamage(dmg, src); // determining what our final HP is supposed to be here.

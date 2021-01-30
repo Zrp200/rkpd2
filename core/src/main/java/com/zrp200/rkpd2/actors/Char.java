@@ -477,10 +477,13 @@ public abstract class Char extends Actor {
 					link.detach();
 				}
 			}
-			dmg = (int)Math.ceil(dmg / (float)(links.size()+1));
+			int linkedDmg = (int)Math.ceil(dmg / (float)(links.size()+1));
 			for (LifeLink link : links){
 				Char ch = (Char)Actor.findById(link.object);
-				ch.damage(dmg, link);
+				// this reduces the effectiveness of life link for redirecting huge hits.
+				int recieved = Math.min(ch.HP,linkedDmg);
+				dmg -= recieved;
+				ch.damage(recieved, link);
 				if (!ch.isAlive()){
 					link.detach();
 				}
