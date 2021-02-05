@@ -53,8 +53,9 @@ public class WandOfWarding extends Wand {
 		int maxWardEnergy = 0;
 		for (Buff buff : curUser.buffs()){
 			if (buff instanceof Wand.Charger){
-				if (((Charger) buff).wand() instanceof WandOfWarding){
-					maxWardEnergy += 2 + ((Charger) buff).wand().level();
+				Wand wand = ((Charger)buff).wand();
+				if (wand instanceof WandOfWarding){
+					maxWardEnergy += 2 + wand.level() + curUser.getBonus(wand);
 				}
 			}
 		}
@@ -167,9 +168,9 @@ public class WandOfWarding extends Wand {
 	@Override
 	public String statsDesc() {
 		if (levelKnown)
-			return Messages.get(this, "stats_desc", level()+2);
+			return Messages.get(this, "stats_desc", level()+2+Dungeon.hero.getBonus(this));
 		else
-			return Messages.get(this, "stats_desc", 2);
+			return Messages.get(this, "stats_desc", 2+Dungeon.hero.getBonus(this));
 	}
 
 	public static class Ward extends NPC {
