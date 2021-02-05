@@ -21,6 +21,8 @@
 
 package com.zrp200.rkpd2.levels.rooms.secret;
 
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.mobs.npcs.RatKing;
 import com.zrp200.rkpd2.items.Gold;
 import com.zrp200.rkpd2.items.Heap;
@@ -65,9 +67,14 @@ public class RatKingRoom extends SecretRoom {
 			addChest( level, i * level.width() + right - 1, door );
 		}
 
-		RatKing king = new RatKing();
-		king.pos = level.pointToCell(random( 2 ));
-		level.mobs.add( king );
+		int pos = level.pointToCell(random(2));
+		if(Dungeon.hero.heroClass == HeroClass.RAT_KING) {
+			Painter.set(level,pos,Terrain.SIGN); // home sweet home sign, see hero#actMove
+		} else {
+			RatKing king = new RatKing();
+			king.pos = pos;
+			level.mobs.add(king);
+		}
 	}
 	
 	private static void addChest( Level level, int pos, int door ) {

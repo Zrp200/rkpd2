@@ -712,6 +712,10 @@ public class Hero extends Char {
 			return true;
 
 		} else {
+			// Rat King room logic might as well go here.
+			if(Dungeon.level.map[action.dst] == Terrain.SIGN) {
+				if(Dungeon.depth == 5) Game.runOnRenderThread(()->GameScene.show( new WndMessage( "Home Sweet Home!")));
+			}
 			ready();
 			return false;
 		}
