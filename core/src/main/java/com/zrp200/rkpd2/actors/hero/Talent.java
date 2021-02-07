@@ -232,9 +232,9 @@ public enum Talent {
 			ScrollOfRecharging.charge( hero );
 		}
 		if (hero.hasTalent(ENERGIZING_MEAL_I,ROYAL_MEAL)){
-			//5/8 turns of recharging
+			//5/8 turns of recharging for rat king, 4/6 for mage.
 			int points = hero.pointsInTalents(ENERGIZING_MEAL_I,ROYAL_MEAL);
-			Buff.affect( hero, Recharging.class, 2 + 3*points );
+			Buff.affect( hero, Recharging.class, 2 + 3*points - hero.pointsInTalent(ENERGIZING_MEAL_I) );
 			ScrollOfRecharging.charge( hero );
 		}
 		if (hero.hasTalent(ENERGIZING_MEAL_II)) {
