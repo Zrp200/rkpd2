@@ -537,7 +537,7 @@ public class DwarfKing extends Mob {
 			beacon.upgrade();
 		}
 
-		yell( Messages.get(this, "defeated") );
+		yell( Messages.get(this, "defeated_" + (Random.Int(2)+(Dungeon.hero.heroClass == HeroClass.RAT_KING?0:1)) ) );
 	}
 
 	@Override
