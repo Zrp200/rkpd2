@@ -333,10 +333,14 @@ public enum Talent {
 
 	public static void onUpgradeScrollUsed( Hero hero ){
 		if (hero.hasTalent(ENERGIZING_UPGRADE,RESTORATION)){
+			int charge = hero.pointsInTalents(ENERGIZING_UPGRADE,RESTORATION);
+			if(hero.hasTalent(ENERGIZING_UPGRADE)) charge = (int)Math.ceil(charge*1.5f);
 			MagesStaff staff = hero.belongings.getItem(MagesStaff.class);
-			if (staff != null){
-				int charge = hero.pointsInTalents(ENERGIZING_UPGRADE,RESTORATION);
-				if(hero.hasTalent(ENERGIZING_UPGRADE)) charge = (int)Math.ceil(charge*1.5f);
+			if(hero.hasTalent(ENERGIZING_UPGRADE)) {
+				hero.belongings.charge(charge, true);
+				ScrollOfRecharging.charge( Dungeon.hero );
+				SpellSprite.show( hero, SpellSprite.CHARGE );
+			} else if (staff != null){
 				staff.gainCharge( charge, true);
 				ScrollOfRecharging.charge( Dungeon.hero );
 				SpellSprite.show( hero, SpellSprite.CHARGE );
