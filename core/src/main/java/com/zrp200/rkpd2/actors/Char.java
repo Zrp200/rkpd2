@@ -510,7 +510,7 @@ public abstract class Char extends Actor {
 	protected void onDamage(int dmg, Object src) {
 		if(Dungeon.hero.subClass == HeroSubClass.WARLOCK && !(src instanceof Char)) {
 			SoulMark soulMark = buff(SoulMark.class);
-			if(soulMark != null) soulMark.proc(src instanceof Wand ? Dungeon.hero : src,this,dmg);
+			if(soulMark != null) soulMark.proc(src,this,dmg);
 		}
 		SoulMark.DelayedMark mark = buff(SoulMark.DelayedMark.class);
 		if(mark != null) mark.activate(); // this prevents the above from happening the same turn.

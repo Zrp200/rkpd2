@@ -76,12 +76,14 @@ public class SoulMark extends FlavourBuff {
 
 		//physical damage that doesn't come from the hero is less effective
 		if (src != Dungeon.hero){
-			restoration = Math.round(restoration * 0.4f);
+			restoration = Random.round(restoration * 0.4f);
 		}
-
-		Buff.affect(Dungeon.hero, Hunger.class).satisfy(restoration);
-		Dungeon.hero.HP = (int)Math.ceil(Math.min(Dungeon.hero.HT, Dungeon.hero.HP+(restoration*0.4f)));
-		Dungeon.hero.sprite.emitter().burst( Speck.factory(Speck.HEALING), 1 );
+		if(restoration > 0)
+		{
+			Buff.affect(Dungeon.hero, Hunger.class).satisfy(restoration);
+			Dungeon.hero.HP = (int) Math.ceil(Math.min(Dungeon.hero.HT, Dungeon.hero.HP + (restoration * 0.4f)));
+			Dungeon.hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), 1);
+		}
 	}
 
 	@Override
