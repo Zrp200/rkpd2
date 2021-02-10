@@ -106,13 +106,6 @@ abstract public class Weapon extends KindOfWeapon {
 	@Override
 	public int proc( Char attacker, Char defender, int damage ) {
 
-		if(attacker instanceof Hero) {
-			Hero hero = (Hero)attacker;
-			if(hero.subClass == HeroSubClass.BATTLEMAGE) {
-				MagesStaff staff = hero.belongings.getItem(MagesStaff.class);
-				if(staff != null) staff.wand().onHit(this,attacker,defender,damage);
-			}
-		}
 		if (enchantment != null && attacker.buff(MagicImmune.class) == null) {
 			damage = enchantment.proc( this, attacker, defender, damage );
 		}

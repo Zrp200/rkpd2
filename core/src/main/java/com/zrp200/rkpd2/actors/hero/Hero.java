@@ -92,12 +92,14 @@ import com.zrp200.rkpd2.items.rings.RingOfMight;
 import com.zrp200.rkpd2.items.rings.RingOfTenacity;
 import com.zrp200.rkpd2.items.scrolls.Scroll;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfMagicMapping;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfRecharging;
 import com.zrp200.rkpd2.items.wands.WandOfLivingEarth;
 import com.zrp200.rkpd2.items.wands.WandOfWarding;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.enchantments.Blocking;
 import com.zrp200.rkpd2.items.weapon.melee.Flail;
+import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.journal.Notes;
 import com.zrp200.rkpd2.levels.Level;
@@ -1083,6 +1085,23 @@ public class Hero extends Char {
 		
 		KindOfWeapon wep = belongings.weapon;
 
+		if(subClass == HeroSubClass.BATTLEMAGE) {
+			// bm effects happen for all weapons, staff just benefits way more.
+			MagesStaff staff; float i;
+			if(wep instanceof MagesStaff) { staff=(MagesStaff)wep; i=1f; }
+			else {
+				staff = belongings.getItem(MagesStaff.class);
+				i = .4f;
+			}
+			if(staff != null) {
+				if(staff.wand().curCharges < staff.wand().maxCharges)
+				{
+					staff.gainCharge(i*.5f);
+					ScrollOfRecharging.charge(this,i);
+				}
+				staff.wand().onHit( staff,this, enemy, damage );
+			}
+		}
 		if (wep != null) damage = wep.proc( this, enemy, damage );
 
 		damage = Talent.onAttackProc( this, enemy, damage );

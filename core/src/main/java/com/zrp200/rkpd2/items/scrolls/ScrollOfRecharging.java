@@ -55,9 +55,12 @@ public class ScrollOfRecharging extends Scroll {
 		readAnimation();
 	}
 	
-	public static void charge( Char user ) {
+	public static void charge( Char user, float intensity ) {
 		Emitter e = user.sprite.centerEmitter();
-		if (e != null) e.burst( EnergyParticle.FACTORY, 15 );
+		if (e != null) e.burst( EnergyParticle.FACTORY, (int)Math.ceil(15*intensity) );
+	}
+	public static void charge( Char user ) {
+		charge(user, 1f);
 	}
 	
 	@Override
