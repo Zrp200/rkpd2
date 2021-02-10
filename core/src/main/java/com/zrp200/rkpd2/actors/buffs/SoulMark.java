@@ -28,6 +28,8 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.effects.Speck;
+import com.zrp200.rkpd2.items.wands.Wand;
+import com.zrp200.rkpd2.items.wands.WandOfWarding;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.BuffIndicator;
@@ -72,12 +74,11 @@ public class SoulMark extends FlavourBuff {
 	}
 
 	public void proc(Object src, Char defender, int damage) {
-		int restoration = Math.min(damage, defender.HP);
-
-		//physical damage that doesn't come from the hero is less effective
-		if (src != Dungeon.hero){
-			restoration = Random.round(restoration * 0.4f);
-		}
+		float multiplier = // damage that doesn't come from the hero is less effective
+				src == Dungeon.hero ? 1
+						: src instanceof Wand || src instanceof WandOfWarding.Ward ? .7f // wands are a middleground.
+						: .4f;
+		int restoration = Math.min(Random.round(damage*multiplier), defender.HP);
 		if(restoration > 0)
 		{
 			Buff.affect(Dungeon.hero, Hunger.class).satisfy(restoration);
