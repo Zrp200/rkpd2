@@ -154,38 +154,19 @@ public enum Talent {
 		return Messages.get(this, name() + ".desc");
 	}
 
-	public static class ScholarsIntuitionTracker extends Buff { // this is for +1 mages intuition
-		// tracks failed identifies.
-		private HashSet<Class> failed = new HashSet<>();
-
-		public boolean attemptIntuition(Item item) {
-			if(!appliesTo(item)) return false;
-			Class itemClass = item.getClass();
-			if(item instanceof ExoticScroll) itemClass = ExoticScroll.exoToReg.get(itemClass);
-			if(item instanceof ExoticPotion) itemClass = ExoticPotion.exoToReg.get(itemClass);
-			if(Random.Int(3) > 0) failed.add(itemClass);
-			return !failed.contains(itemClass);
-		}
-		public boolean appliesTo(Item item) {
-			return item instanceof Scroll || item instanceof Potion;
-		}
-		@Override
-		public void storeInBundle(Bundle bundle) {
-			super.storeInBundle(bundle);
-			bundle.put("failed",failed.toArray(new Class[0]));
-		}
-
-		@Override
-		public void restoreFromBundle(Bundle bundle) {
-			super.restoreFromBundle(bundle);
-			failed.addAll(Arrays.asList(bundle.getClassArray("failed")));
-		}
-	}
-
 	public static void onTalentUpgraded( Hero hero, Talent talent){
 		int points = hero.pointsInTalent(talent);
 		switch(talent) {
-			case ARMSMASTERS_INTUITION: case SCHOLARS_INTUITION: case THIEFS_INTUITION: case ROYAL_INTUITION:
+			case SCHOLARS_INTUITION:
+				for(Item item : hero.belongings) {
+					if(item instanceof Scroll || item instanceof Potion) {
+						for(int i=0; i < item.quantity() && !item.isIdentified(); i++) {
+							if(Random.Int(3) == 0) item.identify(); // it increases by 33%, so we just reroll it with a 33% chance.
+						}
+					}
+				}
+				break;
+			case ARMSMASTERS_INTUITION: case THIEFS_INTUITION: case ROYAL_INTUITION:
 				for(Item item : hero.belongings)
 				{
 					// rerun these.
@@ -381,14 +362,15 @@ public enum Talent {
 		if (hero.pointsInTalent(ARMSMASTERS_INTUITION) == 2 &&
 				(item instanceof Weapon || item instanceof Armor)) item.identify();
 		// TODO revisit this is easily exploitable
-		if( hero.pointsInTalent(SURVIVALISTS_INTUITION) == 2 && Random.Int(3) == 0){
+		if( hero.pointsInTalent(SURVIVALISTS_INTUITION) == 2 && !item.collected && Random.Int(3) == 0){
 			item.cursedKnown = true;
+			hero.sprite.emitter().burst(Speck.factory(Speck.QUESTION),1);
 		}
 		if( (item instanceof Scroll || item instanceof Potion) && !item.isIdentified() && hero.hasTalent(SCHOLARS_INTUITION) ) {
-			if(hero.pointsInTalent(SCHOLARS_INTUITION) == 2 || Buff.affect(hero, ScholarsIntuitionTracker.class).attemptIntuition(item)) {
+			if(!item.collected && Random.Int(3) >= 3-hero.pointsInTalent(SCHOLARS_INTUITION)) {
 				item.identify();
 				// this gets distracting if it happens every time, so it only does it at +1.
-				if(hero.pointsInTalent(SCHOLARS_INTUITION) == 1) hero.sprite.emitter().burst(Speck.factory(Speck.QUESTION),1);
+				hero.sprite.emitter().burst(Speck.factory(Speck.QUESTION),1);
 			}
 		}
 	}

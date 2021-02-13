@@ -83,6 +83,8 @@ public class Item implements Bundlable {
 	
 	public boolean cursed;
 	public boolean cursedKnown;
+
+	public boolean collected;
 	
 	// Unique items persist through revival
 	public boolean unique = false;
@@ -109,7 +111,6 @@ public class Item implements Bundlable {
 			
 			GameScene.pickUp( this, hero.pos );
 			Sample.INSTANCE.play( Assets.Sounds.ITEM );
-			Talent.onItemCollected( hero, this );
 			hero.spendAndNext( TIME_TO_PICK_UP );
 			return true;
 			
@@ -196,7 +197,12 @@ public class Item implements Bundlable {
 		if (items.contains( this )) {
 			return true;
 		}
-		
+
+		if (Dungeon.hero != null && Dungeon.hero.isAlive()) {
+			Badges.validateItemLevelAquired( this );
+			Talent.onItemCollected( Dungeon.hero, this );
+		}
+
 		if (stackable) {
 			for (Item item:items) {
 				if (isSimilar( item )) {
@@ -207,11 +213,8 @@ public class Item implements Bundlable {
 			}
 		}
 
-		if (Dungeon.hero != null && Dungeon.hero.isAlive()) {
-			Badges.validateItemLevelAquired( this );
-		}
-
 		items.add( this );
+		collected = true;
 		Dungeon.quickslot.replacePlaceholder(this);
 		updateQuickslot();
 		Collections.sort( items, itemComparator );
@@ -475,6 +478,7 @@ public class Item implements Bundlable {
 	private static final String CURSED			= "cursed";
 	private static final String CURSED_KNOWN	= "cursedKnown";
 	private static final String QUICKSLOT		= "quickslotpos";
+	private static final String COLLECTED		= "collected";
 	
 	@Override
 	public void storeInBundle( Bundle bundle ) {
@@ -483,6 +487,7 @@ public class Item implements Bundlable {
 		bundle.put( LEVEL_KNOWN, levelKnown );
 		bundle.put( CURSED, cursed );
 		bundle.put( CURSED_KNOWN, cursedKnown );
+		bundle.put( COLLECTED, collected );
 		if (Dungeon.quickslot.contains(this)) {
 			bundle.put( QUICKSLOT, Dungeon.quickslot.getSlot(this) );
 		}
@@ -502,6 +507,8 @@ public class Item implements Bundlable {
 		}
 		
 		cursed	= bundle.getBoolean( CURSED );
+
+		collected = bundle.getBoolean(COLLECTED);
 
 		//only want to populate slot on first load.
 		if (Dungeon.hero == null) {
