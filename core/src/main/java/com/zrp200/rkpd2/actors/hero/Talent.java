@@ -269,8 +269,9 @@ public enum Talent {
 		if (hero.hasTalent(RESTORED_WILLPOWER,RESTORATION)){
 			BrokenSeal.WarriorShield shield = hero.buff(BrokenSeal.WarriorShield.class);
 			if (shield != null){
-				int shieldToGive = Math.round(shield.maxShield() * 0.33f*(1+hero.pointsInTalents(RESTORED_WILLPOWER,RESTORATION)));
-				shield.supercharge(shieldToGive);
+				double multiplier = 0.33f*(1+hero.pointsInTalents(RESTORED_WILLPOWER,RESTORATION));
+				if(hero.hasTalent(RESTORED_WILLPOWER)) multiplier *= 1.5;
+				shield.supercharge((int)Math.round(shield.maxShield()*multiplier));
 			}
 		}
 		if (hero.hasTalent(RESTORED_NATURE,RESTORATION)){
