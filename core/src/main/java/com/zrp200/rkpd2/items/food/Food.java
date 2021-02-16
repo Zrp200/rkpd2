@@ -89,16 +89,19 @@ public class Food extends Item {
 		}
 	}
 
+	public static float eatingTime(Hero hero) {
+		int reduction = hero.pointsInTalent(Talent.IRON_STOMACH) == 2 ? 1
+				: hero.hasTalent(Talent.IRON_STOMACH)
+					|| hero.hasTalent(Talent.ENERGIZING_MEAL_II)
+					|| hero.hasTalent(Talent.MYSTICAL_MEAL)
+					|| hero.hasTalent(Talent.INVIGORATING_MEAL)
+					|| hero.hasTalent(Talent.ROYAL_MEAL) ? 2
+				: 0;
+		return TIME_TO_EAT - reduction;
+	}
+
 	protected float eatingTime(){
-		if (Dungeon.hero.hasTalent(Talent.IRON_STOMACH)
-			|| Dungeon.hero.hasTalent(Talent.ENERGIZING_MEAL_II)
-			|| Dungeon.hero.hasTalent(Talent.MYSTICAL_MEAL)
-			|| Dungeon.hero.hasTalent(Talent.INVIGORATING_MEAL)
-			|| Dungeon.hero.hasTalent(Talent.ROYAL_MEAL)){
-			return TIME_TO_EAT - 2;
-		} else {
-			return TIME_TO_EAT;
-		}
+		return eatingTime(Dungeon.hero);
 	}
 	
 	protected void satisfy( Hero hero ){
