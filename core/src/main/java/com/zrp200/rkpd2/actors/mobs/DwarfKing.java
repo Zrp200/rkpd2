@@ -46,6 +46,7 @@ import com.zrp200.rkpd2.items.armor.glyphs.Viscosity;
 import com.zrp200.rkpd2.items.artifacts.DriedRose;
 import com.zrp200.rkpd2.items.artifacts.LloydsBeacon;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
+import com.zrp200.rkpd2.items.weapon.enchantments.Grim;
 import com.zrp200.rkpd2.levels.NewCityBossLevel;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
@@ -427,7 +428,7 @@ public class DwarfKing extends Mob {
 			dmg = modifyDamage(dmg, src); // determining what our final HP is supposed to be here.
 			HP = HP - dmg + shielding();
 			// adjust HP to match phase if necessary.
-			if (HP <= 50) {
+			if (HP <= 50 && !(src instanceof Grim)) { // grim will never actually break the shield.
 				HP += HT;
 				float rawCrit = (HP - 50)/(HT/3f);
 				// this stops it from randomly skipping a phase randomly. the big hits are given more leverage however.
@@ -454,7 +455,7 @@ public class DwarfKing extends Mob {
 			else {
 				HP = preHP;
 				onDamage(dmg,src); // actually damage the guy
-				int dmgTaken = -HP;
+				int dmgTaken = preHP-HP;
 				abilityCooldown -= dmgTaken / 8f;
 				summonCooldown -= dmgTaken / 8f;
 			}
