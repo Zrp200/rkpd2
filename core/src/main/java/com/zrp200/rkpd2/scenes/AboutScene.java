@@ -21,8 +21,10 @@
 
 package com.zrp200.rkpd2.scenes;
 
+import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.ShatteredPixelDungeon;
 import com.zrp200.rkpd2.effects.Flare;
+import com.zrp200.rkpd2.sprites.RatKingSprite;
 import com.zrp200.rkpd2.ui.ExitButton;
 import com.zrp200.rkpd2.ui.Icons;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
@@ -36,6 +38,8 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.DeviceCompat;
+
+import sun.security.x509.CRLDistributionPointsExtension;
 
 public class AboutScene extends PixelScene {
 
@@ -55,6 +59,20 @@ public class AboutScene extends PixelScene {
 		Component content = list.content();
 		content.clear();
 
+		// RKPD2 Credits
+		CreditsBlock rkpd2 = new CreditsBlock(true, Window.TITLE_COLOR, "RKPD2", new RatKingSprite(), "All Thanks To _Rat King_!\nInspired by Evan's Rat King Dungeon", null,null);
+		rkpd2.setRect((w - fullWidth)/2f, 6, 120, 0);
+		content.add(rkpd2);
+
+		CreditsBlock zrp = new CreditsBlock(false, 0x9b57b6,"Development", new Image(Assets.Interfaces.ZRP200),"Zrp200",null,null);
+		zrp.setSize(colWidth/2, 0);
+		if (landscape()){
+			zrp.setPos(rkpd2.right(), rkpd2.top() + (rkpd2.height() - zrp.height())/2f);
+		} else {
+			zrp.setPos(w/2f - colWidth/2f, rkpd2.bottom()+5);
+		}
+		content.add(zrp);
+
 		//*** Shattered Pixel Dungeon Credits ***
 
 		String shpxLink = "https://ShatteredPixel.com";
@@ -69,8 +87,9 @@ public class AboutScene extends PixelScene {
 				"Developed by: _Evan Debenham_\nBased on Pixel Dungeon's open source",
 				"ShatteredPixel.com",
 				shpxLink);
-		shpx.setRect((w - fullWidth)/2f, 6, 120, 0);
+		shpx.setRect(rkpd2.left(), rkpd2.bottom()+8,120,0);
 		content.add(shpx);
+		addLine(shpx.top() - 4, content);
 
 		CreditsBlock alex = new CreditsBlock(false, Window.SHPX_COLOR,
 				"Hero Art & Design:",
