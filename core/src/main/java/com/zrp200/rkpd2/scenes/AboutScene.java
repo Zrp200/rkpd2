@@ -60,7 +60,7 @@ public class AboutScene extends PixelScene {
 		content.clear();
 
 		// RKPD2 Credits
-		CreditsBlock rkpd2 = new CreditsBlock(true, Window.TITLE_COLOR, "RKPD2", new RatKingSprite(), "All Thanks To _Rat King_!\nInspired by Evan's Rat King Dungeon", null,null);
+		CreditsBlock rkpd2 = new CreditsBlock(true, Window.TITLE_COLOR, "RKPD2", new RatKingSprite(), "All Thanks To _Rat King_!\nInspired by Evan's Rat King Dungeon", "ratking.com","https://www.youtube.com/watch?v=dQw4w9WgXcQ");
 		rkpd2.setRect((w - fullWidth)/2f, 6, 120, 0);
 		content.add(rkpd2);
 
@@ -72,6 +72,10 @@ public class AboutScene extends PixelScene {
 			zrp.setPos(w/2f - colWidth/2f, rkpd2.bottom()+5);
 		}
 		content.add(zrp);
+
+		CreditsBlock pa = new CreditsBlock(false, Window.TITLE_COLOR, "Rat King Splash Art",null,"Prolich Art","artstation.com/prolichart","https://www.artstation.com/prolichart");
+		pa.setRect(zrp.right(), zrp.top(), colWidth/2f, 0);
+		content.add(pa);
 
 		//*** Shattered Pixel Dungeon Credits ***
 
