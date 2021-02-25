@@ -228,6 +228,10 @@ public class HeroSelectScene extends PixelScene {
 
 		background.texture( cl.splashArt() );
 		background.visible = true;
+		background.scale.set(Camera.main.height/background.height);
+
+		background.x = (Camera.main.width - background.width())/2f;
+		background.y = (Camera.main.height - background.height())/2f;
 		background.hardlight(1.5f,1.5f,1.5f);
 
 		prompt.visible = false;
