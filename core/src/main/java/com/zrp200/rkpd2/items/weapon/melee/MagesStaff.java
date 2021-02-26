@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.CounterBuff;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
@@ -186,19 +187,30 @@ public class MagesStaff extends MeleeWeapon {
 		if (wand != null) wand.stopCharging();
 	}
 
+	private int wastedUpgrades; // amount of upgrades wasted on initial imbue.
 	public Item imbueWand(Wand wand, Char owner){
 
 		int oldStaffcharges = this.wand.curCharges;
 
-		if (owner == Dungeon.hero && Dungeon.hero.hasTalent(Talent.WAND_PRESERVATION, Talent.POWER_WITHIN)
-				&& Random.Float() < 0.34f + 0.33f*Dungeon.hero.pointsInTalents(Talent.WAND_PRESERVATION,Talent.POWER_WITHIN)){
-
-			Talent.WandPreservationCounter counter = Buff.affect(Dungeon.hero, Talent.WandPreservationCounter.class);
-			if (Dungeon.hero.hasTalent(Talent.WAND_PRESERVATION) || counter.count() < 3) {
-				counter.countUp(1);
-				this.wand.level(0);
+		if (owner == Dungeon.hero) {
+			boolean preserve = false;
+			if(Dungeon.hero.hasTalent(Talent.WAND_PRESERVATION, Talent.POWER_WITHIN)) {
+				int max = Dungeon.hero.pointsInTalent(Talent.WAND_PRESERVATION) < 2 ? 3 : 8;
+				Talent.WandPreservationCounter counter = Buff.affect(Dungeon.hero, Talent.WandPreservationCounter.class);
+				if (counter.count() < max && (Dungeon.hero.hasTalent(Talent.WAND_PRESERVATION) || Dungeon.hero.pointsInTalent(Talent.POWER_WITHIN) == 2 || Random.Int(3) > 0)){
+					counter.countUp(1);
+					preserve = true;
+				};
+			}
+			// mage has an intrinsic 2/3 chance to preserve a wand anyway.
+			if(preserve || Dungeon.hero.heroClass == HeroClass.MAGE && Random.Int(3) > 0) {
+				this.wand.level(wastedUpgrades);
 				if (!this.wand.collect()) {
 					Dungeon.level.drop(this.wand, owner.pos);
+				}
+				else {
+					GameScene.pickUp( this, owner.pos );
+					Sample.INSTANCE.play( Assets.Sounds.ITEM );
 				}
 				GLog.newLine();
 				GLog.p(Messages.get(this, "preserved"));
@@ -212,7 +224,10 @@ public class MagesStaff extends MeleeWeapon {
 
 		//if the staff's level is being overridden by the wand, preserve 1 upgrade
 		if (wand.level() >= this.level() && this.level() > (curseInfusionBonus ? 1 : 0)) targetLevel++;
-		
+
+		// determine how many levels were wasted
+		wastedUpgrades = this.level() + wand.level() - targetLevel;
+		// update to the target level.
 		level(targetLevel);
 		this.wand = wand;
 		updateWand(false);
@@ -304,6 +319,12 @@ public class MagesStaff extends MeleeWeapon {
 		} else {
 			info += "\n\n" + Messages.get(this, "has_wand", Messages.get(wand, "name")) + " " + wand.statsDesc();
 		}
+		if(Dungeon.hero != null) {
+			CounterBuff b = Dungeon.hero.buff(Talent.WandPreservationCounter.class);
+			if(b != null) info += "\n\n" + (int)b.count()
+					+ " wand" + (b.count() == 1 ? " has" : "s have")
+					+ " been preserved.";
+		}
 
 		return info;
 	}
@@ -319,11 +340,13 @@ public class MagesStaff extends MeleeWeapon {
 	}
 
 	private static final String WAND = "wand";
+	private static final String WAST = "wastedUpgrades";
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(WAND, wand);
+		bundle.put(WAST, wastedUpgrades);
 	}
 
 	@Override
@@ -333,6 +356,7 @@ public class MagesStaff extends MeleeWeapon {
 		if (wand != null) {
 			wand.maxCharges = Math.min(wand.maxCharges + 1, 10);
 		}
+		wastedUpgrades = bundle.getInt(WAST);
 	}
 
 	@Override
