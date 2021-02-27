@@ -123,15 +123,15 @@ public enum Talent {
 	//Warden T3
 	DURABLE_TIPS(110, 3), BARKSKIN(111, 3), SHIELDING_DEW(112, 3),
 	// TODO add unique icons
-	ROYAL_PRIVILEGE(16), // food related talents, uses empowering icon
-	ROYAL_INTUITION(49), // intuition-related talents, uses survivalist's icon
-	KINGS_WISDOM(18), // on-id + combat talents, uses tested hypothesis
+	ROYAL_PRIVILEGE(32), // food related talents, uses empowering icon
+	ROYAL_INTUITION(97), // intuition-related talents, uses survivalist's icon
+	KINGS_WISDOM(34), // on-id + combat talents, uses tested hypothesis
 	NOBLE_CAUSE(3), // other ones. uses iron will
-	ROYAL_MEAL(20), //// all on-eat talents for tier 2. uses energizing meal
+	ROYAL_MEAL(68), //// all on-eat talents for tier 2. uses arcane meal
 	RESTORATION(5), // all upgrade/potion of healing talents, uses restored willpower icon
-	POWER_WITHIN(40), // runic (3), wand preservation (3), rogue's foresight (5), rejuvenating steps (3), uses foresight.
-	KINGS_VISION(55), // improvised projectiles (4), arcane vision(4), wide search(3), heightened senses(4), uses heightened senses
-	PURSUIT(50); // durable projectiles (5),silent steps(4),lethal momentum (3),shield battery(5), uses FUS
+	POWER_WITHIN(72), // runic (3), wand preservation (3), rogue's foresight (5), rejuvenating steps (3), uses foresight.
+	KINGS_VISION(103), // improvised projectiles (4), arcane vision(4), wide search(3), heightened senses(4), uses heightened senses
+	PURSUIT(98); // durable projectiles (5),silent steps(4),lethal momentum (3),shield battery(5), uses FUS
 	// TODO is splitting up t2s arbitrarily really a good idea?
 	public static class ImprovisedProjectileCooldown extends FlavourBuff{};
 	public static class LethalMomentumTracker extends FlavourBuff{};

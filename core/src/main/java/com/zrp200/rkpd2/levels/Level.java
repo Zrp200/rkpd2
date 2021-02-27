@@ -1096,7 +1096,7 @@ public abstract class Level implements Bundlable {
 			if (c.buff(MagicalSight.class) != null){
 				sense = 8;
 			}
-			if (((Hero)c).subClass == HeroSubClass.SNIPER || ((Hero)c).subClass == HeroSubClass.KING){
+			if (((Hero)c).subClass == HeroSubClass.KING){
 				sense *= 1.5f;
 			}
 		}

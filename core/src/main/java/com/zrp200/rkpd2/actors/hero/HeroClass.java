@@ -107,6 +107,7 @@ public enum HeroClass {
 				break;
 			case RAT_KING:
 				initRatKing( hero );
+				hero.subClass = HeroSubClass.KING;
 				break;
 		}
 

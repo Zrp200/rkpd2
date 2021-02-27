@@ -1208,6 +1208,7 @@ public class Hero extends Char {
 			dmg = thorns.proc(dmg, (src instanceof Char ? (Char)src : null),  this);
 		}
 		// berserker gets rage from all sources. all hail viscosity!
+		// TODO change for 0.9.2?
 		if(!(src instanceof Char) && subClass == HeroSubClass.BERSERKER) {
 			Buff.affect(this, Berserk.class).damage(dmg);
 		}
@@ -1381,7 +1382,7 @@ public class Hero extends Char {
 
 		if (step != -1) {
 
-			if (subClass == HeroSubClass.FREERUNNER){
+			if (subClass == HeroSubClass.FREERUNNER || subClass == HeroSubClass.KING){
 				Buff.affect(this, Momentum.class).gainStack();
 			}
 
@@ -1777,7 +1778,7 @@ public class Hero extends Char {
 		Invisibility.dispel();
 		spend( attackDelay() );
 
-		if (hit && subClass == HeroSubClass.GLADIATOR){
+		if (hit && (subClass == HeroSubClass.GLADIATOR || subClass == HeroSubClass.KING)){
 			Buff.affect( this, Combo.class ).hit( enemy );
 		}
 

@@ -526,6 +526,7 @@ public abstract class Char extends Actor {
 		return dmg;
 	}
 	protected void onDamage(int dmg, Object src) {
+		// TODO change?
 		if(Dungeon.hero.subClass == HeroSubClass.WARLOCK && !(src instanceof Char)) {
 			SoulMark soulMark = buff(SoulMark.class);
 			if(soulMark != null) soulMark.proc(src,this,dmg);
