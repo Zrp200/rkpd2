@@ -29,6 +29,7 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Cripple;
 import com.zrp200.rkpd2.actors.buffs.LockedFloor;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.Chains;
 import com.zrp200.rkpd2.effects.Pushing;
 import com.zrp200.rkpd2.items.rings.RingOfEnergy;
@@ -169,6 +170,7 @@ public class EtherealChains extends Artifact {
 			return;
 		} else {
 			charge -= chargeUse;
+			Talent.onArtifactUsed(hero);
 			updateQuickslot();
 		}
 		
@@ -189,9 +191,15 @@ public class EtherealChains extends Artifact {
 		}));
 	}
 	
-	//pulls the hero along the chain to the collosionPos, if possible.
+	//pulls the hero along the chain to the collisionPos, if possible.
 	private void chainLocation( Ballistica chain, final Hero hero ){
-		
+
+		//don't pull if rooted
+		if (hero.rooted){
+			GLog.w( Messages.get(EtherealChains.class, "rooted") );
+			return;
+		}
+
 		//don't pull if the collision spot is in a wall
 		if (Dungeon.level.solid[chain.collisionPos]){
 			GLog.i( Messages.get(this, "inside_wall"));
@@ -219,6 +227,7 @@ public class EtherealChains extends Artifact {
 			return;
 		} else {
 			charge -= chargeUse;
+			Talent.onArtifactUsed(hero);
 			updateQuickslot();
 		}
 		
@@ -245,10 +254,10 @@ public class EtherealChains extends Artifact {
 	}
 	
 	@Override
-	public void charge(Hero target) {
+	public void charge(Hero target, float amount) {
 		int chargeTarget = 5+(level()*2);
 		if (charge < chargeTarget*2){
-			partialCharge += 0.5f;
+			partialCharge += 0.5f*amount;
 			if (partialCharge >= 1){
 				partialCharge--;
 				charge++;

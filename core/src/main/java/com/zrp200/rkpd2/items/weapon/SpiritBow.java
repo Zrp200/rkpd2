@@ -25,7 +25,10 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.RevealedArea;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.effects.Splash;
 import com.zrp200.rkpd2.items.Item;
@@ -69,8 +72,9 @@ public class SpiritBow extends Weapon {
 	public static final Class<?extends Enchantment>[] REMOVED_ENCHANTS = new Class[] {Shocking.class, Blocking.class, Lucky.class};
 
 	public boolean sniperSpecial = false;
+	public float sniperSpecialBonusDamage = 0f;
 	protected boolean rangedAttack = false;
-	
+
 	@Override
 	public ArrayList<String> actions(Hero hero) {
 		ArrayList<String> actions = super.actions(hero);
@@ -138,9 +142,7 @@ public class SpiritBow extends Weapon {
 	
 	@Override
 	public int STRReq(int lvl) {
-		lvl = Math.max(0, lvl);
-		//strength req decreases at +1,+3,+6,+10,etc.
-		return 10 - (int)(Math.sqrt(8 * lvl + 1) - 1)/2;
+		return STRReq(1, lvl); //tier 1
 	}
 	
 	@Override
@@ -170,8 +172,9 @@ public class SpiritBow extends Weapon {
 				damage += Random.IntRange( 0, exStr );
 			}
 		}
-		
+
 		if (sniperSpecial && rangedAttack){
+			damage = Math.round(damage * (1f + sniperSpecialBonusDamage));
 			switch (augment){
 				case NONE:
 					damage = Math.round(damage * 0.667f);
@@ -363,6 +366,18 @@ public class SpiritBow extends Weapon {
 				});
 				
 			} else {
+
+				if (user.hasTalent(Talent.SEER_SHOT)
+						&& user.buff(Talent.SeerShotCooldown.class) == null){
+					int shotPos = throwPos(user, dst);
+					if (Actor.findChar(shotPos) == null) {
+						RevealedArea a = Buff.affect(user, RevealedArea.class, 5 * user.pointsInTalent(Talent.SEER_SHOT));
+						a.depth = Dungeon.depth;
+						a.pos = shotPos;
+						Buff.affect(user, Talent.SeerShotCooldown.class, 20f);
+					}
+				}
+
 				super.cast(user, dst);
 				rangedAttack = false;
 			}

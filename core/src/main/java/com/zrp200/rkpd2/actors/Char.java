@@ -64,12 +64,14 @@ import com.zrp200.rkpd2.actors.buffs.Vulnerable;
 import com.zrp200.rkpd2.actors.buffs.Weakness;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.mobs.Elemental;
 import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.items.armor.glyphs.AntiMagic;
 import com.zrp200.rkpd2.items.armor.glyphs.Potential;
 import com.zrp200.rkpd2.items.rings.RingOfElements;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRetribution;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
 import com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfPsionicBlast;
 import com.zrp200.rkpd2.items.stones.StoneOfAggression;
 import com.zrp200.rkpd2.items.wands.Wand;
@@ -158,7 +160,15 @@ public abstract class Char extends Actor {
 	}
 
 	public boolean canInteract(Char c){
-		return Dungeon.level.adjacent( pos, c.pos );
+		if (Dungeon.level.adjacent( pos, c.pos )){
+			return true;
+		} else if (c instanceof Hero
+				&& alignment == Alignment.ALLY
+				&& Dungeon.level.distance(pos, c.pos) <= 3*Dungeon.hero.pointsInTalent(Talent.ALLY_WARP)){
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	//swaps places by default
@@ -180,9 +190,17 @@ public abstract class Char extends Actor {
 			|| c.properties().contains(Property.LARGE) && !Dungeon.level.openSpace[pos]){
 			return true;
 		}
-		
+
 		int curPos = pos;
-		
+
+		//warp instantly with allies in this case
+		if (Dungeon.hero.hasTalent(Talent.ALLY_WARP)){
+			ScrollOfTeleportation.appear(this, Dungeon.hero.pos);
+			ScrollOfTeleportation.appear(Dungeon.hero, curPos);
+			Dungeon.observe();
+			return true;
+		}
+
 		moveSprite( pos, Dungeon.hero.pos );
 		move( Dungeon.hero.pos );
 		
@@ -445,7 +463,7 @@ public abstract class Char extends Actor {
 		if(buff(Adrenaline.class) != null) delay /= 1.5f;
 		return delay;
 	}
-	
+
 	//used so that buffs(Shieldbuff.class) isn't called every time unnecessarily
 	private int cachedShield = 0;
 	public boolean needsShieldUpdate = true;
@@ -560,7 +578,7 @@ public abstract class Char extends Actor {
 	}
 
 	public void damage( int dmg, Object src ) {
-		
+
 		if (!isAlive() || dmg < 0) {
 			return;
 		}
@@ -572,7 +590,7 @@ public abstract class Char extends Actor {
 
 		onDamage(modifyDamage(dmg,src),src);
 	}
-	
+
 	public void destroy() {
 		HP = 0;
 		Actor.remove( this );
@@ -656,7 +674,7 @@ public abstract class Char extends Actor {
 	public synchronized void add( Buff buff ) {
 		
 		buffs.add( buff );
-		Actor.add( buff );
+		if (Actor.chars().contains(this)) Actor.add( buff );
 
 		if (sprite != null && buff.announced)
 			switch(buff.type){

@@ -80,7 +80,7 @@ public class NewTengu extends Mob {
 	{
 		spriteClass = TenguSprite.class;
 		
-		HP = HT = 160;
+		HP = HT = 200;
 		EXP = 20;
 		defenseSkill = 15;
 		
@@ -111,9 +111,9 @@ public class NewTengu extends Mob {
 	@Override
 	public int attackSkill( Char target ) {
 		if (Dungeon.level.adjacent(pos, target.pos)){
-			return 12;
+			return 10;
 		} else {
-			return 18;
+			return 20;
 		}
 	}
 	
@@ -140,7 +140,7 @@ public class NewTengu extends Mob {
 
 		NewPrisonBossLevel.State state = ((NewPrisonBossLevel)Dungeon.level).state();
 		
-		int hpBracket = 20;
+		int hpBracket = HT / 8;
 		
 		int beforeHitHP = HP;
 		super.damage(dmg, src);
@@ -264,8 +264,8 @@ public class NewTengu extends Mob {
 				
 				if (level.heroFOV[newPos]) CellEmitter.get( newPos ).burst( Speck.factory( Speck.WOOL ), 6 );
 				Sample.INSTANCE.play( Assets.Sounds.PUFF );
-				
-				float fill = 0.9f - 0.5f*((HP-80)/80f);
+
+				float fill = 0.9f - 0.5f*((HP-(HT/2f))/(HT/2f));
 				level.placeTrapsInTenguCell(fill);
 				
 			//otherwise, jump in a larger possible area, as the room is bigger
@@ -1002,14 +1002,14 @@ public class NewTengu extends Mob {
 		public void storeInBundle(Bundle bundle) {
 			super.storeInBundle(bundle);
 			bundle.put( SHOCKER_POS, shockerPos );
-			bundle.put( SHOCKING_ORDINALS, shockingOrdinals );
+			if (shockingOrdinals != null) bundle.put( SHOCKING_ORDINALS, shockingOrdinals );
 		}
 		
 		@Override
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
 			shockerPos = bundle.getInt( SHOCKER_POS );
-			shockingOrdinals = bundle.getBoolean( SHOCKING_ORDINALS );
+			if (bundle.contains(SHOCKING_ORDINALS)) shockingOrdinals = bundle.getBoolean( SHOCKING_ORDINALS );
 		}
 		
 		public static class ShockerBlob extends Blob {

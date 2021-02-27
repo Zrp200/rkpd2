@@ -39,6 +39,7 @@ import com.zrp200.rkpd2.actors.buffs.ChampionEnemy;
 import com.zrp200.rkpd2.actors.buffs.LockedFloor;
 import com.zrp200.rkpd2.actors.buffs.MagicalSight;
 import com.zrp200.rkpd2.actors.buffs.MindVision;
+import com.zrp200.rkpd2.actors.buffs.RevealedArea;
 import com.zrp200.rkpd2.actors.buffs.Shadows;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
@@ -463,7 +464,7 @@ public abstract class Level implements Bundlable {
 
 		Mob m = Reflection.newInstance(mobsToSpawn.remove(0));
 		if (Dungeon.isChallenged(Challenges.CHAMPION_ENEMIES)){
-			ChampionEnemy.rollForChampion(m, mobs);
+			ChampionEnemy.rollForChampion(m);
 		}
 		return m;
 	}
@@ -1077,8 +1078,9 @@ public abstract class Level implements Bundlable {
 			}
 			
 			int viewDist = c.viewDistance;
-			if (c instanceof Hero && (((Hero) c).subClass == HeroSubClass.SNIPER
-					|| ((Hero)c).subClass == HeroSubClass.KING)) viewDist *= 1.5f;
+			if (c instanceof Hero){
+				viewDist *= 1f + 0.25f*((Hero) c).pointsInTalent(Talent.FARSIGHT);
+			}
 			
 			ShadowCaster.castShadow( cx, cy, fieldOfView, blocking, viewDist );
 		} else {
@@ -1194,6 +1196,13 @@ public abstract class Level implements Bundlable {
 					BArray.or(fieldOfView, m.fieldOfView, fieldOfView);
 				}
 			}
+
+			for (RevealedArea a : c.buffs(RevealedArea.class)){
+				if (Dungeon.depth != a.depth) continue;
+				for (int i : PathFinder.NEIGHBOURS9)
+					fieldOfView[a.pos+i] = true;
+			}
+
 		}
 
 		if (c == Dungeon.hero) {

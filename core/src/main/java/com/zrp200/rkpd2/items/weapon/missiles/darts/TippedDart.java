@@ -27,7 +27,7 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.PinCushion;
 import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.actors.hero.HeroSubClass;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.wands.WandOfRegrowth;
 import com.zrp200.rkpd2.messages.Messages;
@@ -55,9 +55,8 @@ public abstract class TippedDart extends Dart {
 	
 	{
 		tier = 2;
-		
-		//so that 1.5x durability is needed for 2 uses
-		baseUses = 0.67f;
+
+		baseUses = 1f;
 	}
 	
 	private static final String AC_CLEAN = "CLEAN";
@@ -131,10 +130,7 @@ public abstract class TippedDart extends Dart {
 	protected float durabilityPerUse() {
 		float use = super.durabilityPerUse();
 		
-		if (Dungeon.hero.subClass == HeroSubClass.WARDEN
-				|| Dungeon.hero.subClass == HeroSubClass.KING){
-			use /= 2f;
-		}
+		use /= (1 + Dungeon.hero.pointsInTalent(Talent.DURABLE_TIPS));
 
 		//checks both destination and source position
 		float lotusPreserve = 0f;

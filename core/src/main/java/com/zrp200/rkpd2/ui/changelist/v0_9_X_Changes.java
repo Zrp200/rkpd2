@@ -25,12 +25,15 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.mobs.Spinner;
+import com.zrp200.rkpd2.items.artifacts.ChaliceOfBlood;
+import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
 import com.zrp200.rkpd2.items.rings.RingOfEnergy;
 import com.zrp200.rkpd2.items.wands.WandOfFrost;
 import com.zrp200.rkpd2.items.wands.WandOfTransfusion;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.ChangesScene;
 import com.zrp200.rkpd2.sprites.CharSprite;
+import com.zrp200.rkpd2.sprites.GolemSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.sprites.SpinnerSprite;
@@ -43,71 +46,161 @@ import java.util.ArrayList;
 public class v0_9_X_Changes {
 
 	public static void addAllChanges( ArrayList<ChangeInfo> changeInfos ){
+		add_v0_9_2_Changes(changeInfos);
+		add_v0_9_1_Changes(changeInfos);
 		add_v0_9_0_Changes(changeInfos);
 	}
 
-	public static void add_v0_9_0_Changes( ArrayList<ChangeInfo> changeInfos ) {
+	public static void add_v0_9_2_Changes( ArrayList<ChangeInfo> changeInfos ) {
+
+		ChangeInfo changes = new ChangeInfo("v0.9.2", true, "");
+		changes.hardlight(Window.TITLE_COLOR);
+		changeInfos.add(changes);
+
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
+		changes.hardlight(Window.TITLE_COLOR);
+		changeInfos.add(changes);
+
+		changes.addButton( new ChangeButton(Icons.get(Icons.SHPX), "Developer Commentary",
+				"_-_ Released February 26th, 2020\n" +
+				"_-_ 78 days after Shattered v0.9.1\n" +
+				"\n" +
+				"Dev commentary will be added here in the future."));
+
+		changes.addButton(new ChangeButton(Icons.get(Icons.TALENT), "Tier Three Talents!",
+				"_32 new talents have been added that span levels 13 to 20!_\n\n" +
+				"These talents are a bit different than the previous tiers. They require 3 points each, are balanced to encourage specialization, and vary based on class and subclass!\n\n" +
+				"There is one more tier of talents left to be implemented, currently slated for v0.9.3. This tier will span levels 21-30, and will interact with an existing mechanic..."));
+
+		changes.addButton( new ChangeButton( new Image(Assets.Sprites.WARRIOR, 0, 90, 12, 15), HeroSubClass.GLADIATOR.title(),
+				"I've made a variety of changes to _the Gladiator_ to make combo moves more interesting, flexible, and easier to build to:\n\n" +
+				"_-_ Combo is no longer reset on 2 misses, but misses also no longer reset combo time.\n" +
+				"_-_ Combo time increased to 5 turns from 4.\n" +
+				"_-_ Combo moves can now be selected, instead of only the strongest one being available.\n" +
+				"_-_ Combo moves have been redesigned around new flexibility and easier combo building."));
+
+		changes.addButton( new ChangeButton( new Image(Assets.Sprites.ROGUE, 0, 90, 12, 15), HeroSubClass.FREERUNNER.title(),
+				"I've redesigned _the Freerunner_'s main benefit to make it require more thought and give more visible power:\n\n" +
+				"_-_ Freerunner still builds momentum by moving, but this does nothing on its own.\n" +
+				"_-_ Freerunner can now activate momentum to start freerunning.\n" +
+				"_-_ Freerunner has 2x movespeed and bonus evasion while freerunning.\n" +
+				"_-_ Freerunning lasts for up to 20 turns, based on amount of momentum.\n" +
+				"_-_ There is a cooldown after freerunning before momentum can be build again."));
+
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
+		changes.hardlight(CharSprite.WARNING);
+		changeInfos.add(changes);
+
+		changes.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.MASTERY, null), "Other Subclass Changes",
+				"Several subclasses have received more minor changes due to the addition of talents. Primarily subclass abilities that used to be innate are now talents:\n\n" +
+				"_- Berserker:_ Rage increasing past 100% has been moved to a talent, berserking has been nerfed but can be buffed back up via a talent.\n\n" +
+				"_- Warlock:_ Gaining satiety from soul mark, and soul mark triggering from other characters have both been moved to talents.\n\n" +
+				"_- Assassin:_ Instakill threshold and blink range are both nerfed, but can be buffed back up via talents.\n\n" +
+				"_- Warden:_ Barkskin and bonus durability on darts have both been moved to talents.\n\n" +
+				"_- Sniper:_ Bonus vision range has been moved to a talent."));
+
+		changes.addButton(new ChangeButton(Icons.get(Icons.PREFS), Messages.get(ChangesScene.class, "misc"),
+				"_-_ Descriptions have been added for warden plant effects.\n\n" +
+				"_-_ Improvements have been made to wand descriptions. They now include descriptions of some hidden stats and battlemage effects.\n\n" +
+				"_-_ Renamed items no longer include their enchantment or glyph in their name.\n\n" +
+				"_-_ Developer commentary has been added to the changelog for updates from v0.1.0 to v0.5.0.\n\n" +
+				"_-_ Using darts with a crossbow now helps identify that crossbow."));
+
+		changes.addButton(new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), Messages.get(ChangesScene.class, "bugfixes"),
+				"Fixed:\n" +
+				"_-_ various rare crash bugs\n" +
+				"_-_ various rare errors with levelgen\n" +
+				"_-_ rare cases where caves fissure rooms weren't navigable\n\n" +
+
+				"_-_ Yog's visibility penalty not persisting on save/load\n" +
+				"_-_ various errors with DM-300\n" +
+				"_-_ newborn fire elemental not dropping embers in rare cases\n" +
+				"_-_ evil eyes not dropping items correctly\n" +
+				"_-_ golden lotus being corruptable\n" +
+				"_-_ rare cases where retreating characters would fail to run.\n" +
+				"_-_ giant flying enemies not able to move over chasms\n" +
+				"_-_ large characters getting pushed into enclosed spaces in rare cases.\n\n" +
+
+				"_-_ frozen/cooked meat not stacking in rare cases\n" +
+				"_-_ Warrior's seal not applying to cursed armor when it has a cursed glyph\n" +
+				"_-_ Ethereal Chains pulling a rooted hero\n" +
+				"_-_ Cloak of Shadows spending an extra charge on save/load\n" +
+				"_-_ kinetic enchantment ignoring enemy shields\n" +
+				"_-_ regrowth bombs placing plants in incorrect locations"));
+
+			changes.addButton(new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), Messages.get(ChangesScene.class, "bugfixes"),
+				"Fixed:\n" +
+				"_-_ combo moves not cancelling invisibility or time freeze\n" +
+				"_-_ cases where Assassin couldn't blink to places he should be able to blink to.\n" +
+				"_-_ some on-eat talents unintentionally stacking with themselves\n" +
+				"_-_ lethal momentum not triggering on thrown attacks\n" +
+				"_-_ player being able to input actions during combo moves\n\n" +
+
+				"_-_ targeting issues when enemies become corrupted\n" +
+				"_-_ save/load making it possible to incorrectly receive the pacifist badge.\n" +
+				"_-_ desktop crashes caused by incorrectly set game options.\n\n" +
+
+				"_-_ animation errors with ghouls dieing\n" +
+				"_-_ succubus vfx/sfx triggering when they aren't visible\n" +
+				"_-_ damage numbers appearing in incorrect locations when a target is vertigoed\n" +
+				"_-_ various rare VFX issues with Goo"));
+
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
+		changes.hardlight(CharSprite.POSITIVE);
+		changeInfos.add(changes);
+
+		changes.addButton(new ChangeButton(new Image(Assets.Sprites.TENGU, 0, 0, 14, 16), "Midgame Enemies",
+				"I have given some milder buffs out to enemies in the prison and caves, to help compensate for talents making the hero more powerful. These buffs are targeted at helping out the least lethal enemies, rather than making strong enemies even more oppressive:\n\n" +
+				"_- Necromancers:_ Max HP up to 40 from 35, evasion up to 14 from 13.\n" +
+				"_- Tengu:_ Max HP up to 200 from 160, ranged accuracy up to 20 from 18, melee accuracy down to 10 from 12.\n\n" +
+				"_- Bats:_ Damage up to 5-18 from 5-15\n" +
+				"_- DM-200s:_ HP up to 80 from 70, evasion up to 12 from 8.\n" +
+				"_- DM-300:_ Can now use abilities when being attacked by heroes it cannot see."));
+
+		changes.addButton(new ChangeButton(new Image(new GolemSprite()), "Lategame Enemies",
+				"I have given some more substantial buffs to weaker enemies in the dwarven city and demon halls, again to compensate for talents:\n\n" +
+				"_- Elementals:_ damage up to 20-25 from 16-26.\n" +
+				"_- Golems:_ HP up to 120 from 100, evasion up to 15 from 12, damage up to 25-30 from 15-35.\n\n" +
+				"_- Ripper Demons:_ Damage up to 15-25 from 12-25.\n" +
+				"_- Succubi:_ Damage up to 25-30 from 22-30.\n" +
+				"_- Scorpios:_ HP up to 110 from 95, damage up to 30-40 from 26-36."));
+
+		changes.addButton(new ChangeButton(Icons.get(Icons.CHALLENGE_ON), "Hostile Champions",
+				"I've made another round of tweaks to the Hostile Champions challenge to make it more consistent and a bit harder overall:\n\n" +
+				"_-_ Champion spawn rate up to 1/8 from 1/10.\n" +
+				"_-_ Rather than having a 1/8 chance per enemy, the game now guarantees that every 8th enemy is a champion. This should make champion spawn rates much more consistent.\n" +
+				"_-_ Removed champion enemy caps, no longer needed now that spawning is more consistent."));
+
+		changes.addButton(new ChangeButton(new Image(Assets.Interfaces.TALENT_ICONS, 80, 16, 16, 16), "On-Upgrade Talents",
+				"T2 talents are doing very well overall, but I'm handing out a buff to each on-upgrade talent as they're a bit weak and aren't picked often:\n\n" +
+				"_- Energizing Upgrade_ staff charges increased to 2/3 at +1/+2, up from 1/2 at +1/+2.\n" +
+				"_- Mystical Upgrade_ cloak of shadows charges increased to 2/3 at +1/+2, up from 1/2 at +1/+2."));
+
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, null);
+		changes.hardlight(CharSprite.NEGATIVE);
+		changeInfos.add(changes);
+
+		changes.addButton(new ChangeButton(new CloakOfShadows(),
+				"The Rogue is now consistently performing best out of all the classes after the buffs talents gave him in v0.9.1 and v0.9.0. I'm taking this opportunity to scale back his ability to evade enemies a bit:\n\n" +
+				"_- the Cloak of Shadows_ now grants 4 turns of invisibility per charge, down from 5.\n" +
+				"_- the Assassin's_ preparation mechanic has been adjusted to compensate for this."));
+
+		changes.addButton(new ChangeButton(new ChaliceOfBlood(),
+				"With artifact charging getting a bit easier to get a hold of, I'm adjusting how the chalice of blood scales when it grants bonus HP from artifact charging:\n\n" +
+				"_- the Chalice of Blood_ now grants more HP per turn with artifact charging based on its level, instead of based on dungeon depth.\n" +
+				"_-_ This scaling occurs in the same way as how the chalice scales up health regen. The max heal per turn is unchanged at 5."));
+
+		changes.addButton(new ChangeButton(new Image(Assets.Interfaces.TALENT_ICONS, 48, 48, 16, 16), "Nature's Aid",
+				"I'm nudging nature's down slightly as it is currently the strongest T1 talent by a fair margin:\n\n" +
+				"_- Nature's Aid_ turns of barkskin reduced to 3/5 at +1/+2, from 4/6 at +1/+2."));
+
+	}
+
+	public static void add_v0_9_1_Changes( ArrayList<ChangeInfo> changeInfos ) {
 
 		ChangeInfo changes = new ChangeInfo("v0.9.1", true, "");
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);
-
-		changes = new ChangeInfo("v0.9.1d", false, null);
-		changes.hardlight(Window.TITLE_COLOR);
-		changeInfos.add(changes);
-
-		changes.addButton(new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), Messages.get(ChangesScene.class, "bugfixes"),
-				"Fixed (caused by v0.9.1):\n" +
-				"_-_ Fixed error with runic transference caused by v0.9.1d\n\n" +
-				"Fixed (existed prior to v0.9.1):\n" +
-				"_-_ Targeting errors with projecting bow and ethereal chains"));
-
-		changes = new ChangeInfo("v0.9.1c", false, null);
-		changes.hardlight(Window.TITLE_COLOR);
-		changeInfos.add(changes);
-
-		changes.addButton(new ChangeButton(Icons.get(Icons.PREFS), Messages.get(ChangesScene.class, "misc"),
-				"_-_ Frozen carpaccio can now burn like mystery meat\n\n" +
-				"_-_ Challenge completion badges can now appear in rankings\n\n" +
-				"_-_ Improved blacksmith logic when upgraded item is also equipped\n\n" +
-				"_-_ Updated translations"));
-
-		changes.addButton(new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), Messages.get(ChangesScene.class, "bugfixes"),
-				"Fixed (caused by v0.9.1):\n" +
-				"_-_ Various uncommon freeze bugs caused by v0.9.1b\n" +
-				"_-_ Various minor errors with runic transference\n" +
-				"_-_ Doors failing to spawn in rare cases\n\n" +
-				"Fixed (existed prior to v0.9.1):\n" +
-				"_-_ Various rare crash bugs\n" +
-				"_-_ Rare cases where dieing to a chasm would be recorded as 'Killed by Something'\n" +
-				"_-_ Various minor errors with magical charge buff\n" +
-				"_-_ DM-300 rarely using abilities while stunned\n" +
-				"_-_ Tengu getting extra turns on game load in rare cases"));
-
-		changes = new ChangeInfo("", false, null);
-		changes.hardlight(Window.TITLE_COLOR);
-		changeInfos.add(changes);
-
-		changes = new ChangeInfo("v0.9.1a", false, null);
-		changes.hardlight(Window.TITLE_COLOR);
-		changeInfos.add(changes);
-
-		changes.addButton(new ChangeButton(Icons.get(Icons.PREFS), Messages.get(ChangesScene.class, "misc"),
-				"_-_ The shadows buff now has a green icon, instead of the regular invisibility blue.\n\n" +
-				"_-_ Slightly adjusted the Huntress' splash art to improve details on her face."));
-
-		changes.addButton(new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), Messages.get(ChangesScene.class, "bugfixes"),
-				"Fixed (caused by v0.9.1):\n" +
-				"_-_ Various rare crash bugs\n" +
-				"_-_ Errors with autotargeting and the wand of disintegration\n" +
-				"_-_ Fissure rooms in the caves rarely failing to make bridges\n" +
-				"_-_ Enemies not changing targets when their current target cannot be reached\n\n" +
-				"Fixed (existed prior to v0.9.1):\n" +
-				"_-_ Various rare crash bugs\n" +
-				"_-_ Incorrect badges rarely showing in rankings\n" +
-				"_-_ Hourglass spawning sand when unidentified or cursed\n" +
-				"_-_ Hero having a smaller tap region than other characters\n" +
-				"_-_ Questgivers rarely not being added to the journal"));
 
 		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
 		changes.hardlight(Window.TITLE_COLOR);
@@ -155,34 +248,63 @@ public class v0_9_X_Changes {
 		changes.addButton(new ChangeButton(Icons.get(Icons.PREFS), Messages.get(ChangesScene.class, "misc"),
 				"_-_ Statue grid rooms now appear in the Dwarven City, rather than the Prison.\n" +
 				"_-_ Pillar rooms now appear in the Prison, rather than the Dwarven City.\n\n" +
-				"_-_ The Sad Ghost's reward UI has been improved.\n\n" +
-				"_-_ Added a debuff indicating when enemies have thrown weapons attached to them.\n\n" +
-				"_-_ Sniper's mark, charm, and terror all now cancel if their subject is dead.\n\n" +
-				"_-_ Stones of intuition can now be used on rings.\n\n" +
-				"_-_ Barriers now decay more slowly when under 20 shielding.\n\n" +
-				"_-_ Elixir of honeyed healing now triggers on-eat talents and satiates 150 turns of hunger, up from 90.\n\n" +
-				"_-_ The Mage's staff is no longer automatically set to max charges when imbuing a new wand."));
+				"_-_ Improved blacksmith logic when upgraded item is also equipped\n" +
+				"_-_ Stones of intuition can now be used on rings.\n" +
+				"_-_ Elixir of honeyed healing now triggers on-eat talents and satiates 150 turns of hunger, up from 90.\n" +
+				"_-_ The Mage's staff is no longer automatically set to max charges when imbuing a new wand.\n" +
+				"_-_ Frozen carpaccio can now burn like mystery meat\n\n" +
+				"_-_ Necromancers now damage enemies if their summoning position is totally blocked\n" +
+				"_-_ Piranha are no longer invulnerable to electricity and frost\n\n" +
+				"_-_ Barriers now decay more slowly when under 20 shielding.\n" +
+				"_-_ Sniper's mark, charm, and terror all now cancel if their subject is dead.\n" +
+				"_-_ Rogue's foresight can now also trigger when returning to a floor, if that floor was detected initially\n" +
+				"_-_ The Overgrowth curse can now trigger starflower effects"));
+
+		changes.addButton(new ChangeButton(Icons.get(Icons.PREFS), Messages.get(ChangesScene.class, "misc"),
+				"_-_ Slightly adjusted the Huntress' splash art to improve details on her face.\n" +
+				"_-_ The Sad Ghost's reward UI has been improved.\n" +
+				"_-_ Small UI improvements to rankings window\n" +
+				"_-_ Challenge completion badges can now appear in rankings\n" +
+				"_-_ Added a debuff indicating when enemies have thrown weapons attached to them.\n" +
+				"_-_ Added some VFX to scroll of transmutation\n\n" +
+				"_-_ Updated translations and translator credits"));
 
 		changes.addButton(new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), Messages.get(ChangesScene.class, "bugfixes"),
 				"Fixed:\n" +
 				"_-_ Various minor audiovisual errors\n" +
-				"_-_ Various rare crash bugs\n" +
+				"_-_ Various rare crash and freeze bugs\n" +
+				"_-_ Targeting errors with projecting bow and ethereal chains\n" +
 				"_-_ Curse infusion not awarding item level badge\n" +
-				"_-_ Various errors with DM-300\n" +
-				"_-_ Various minor errors relating to time freeze\n" +
-				"_-_ Dwarf King and some Yog fists rarely taking negative damage\n" +
 				"_-_ Talisman gaining charge while cursed\n" +
-				"_-_ Large characters entering tunnels when vertigoed\n" +
-				"_-_ Assassin blink ignoring hero being rooted\n" +
-				"_-_ Hero being able to be both well-fed and hungry\n" +
-				"_-_ Rare AI issues when paths are blocked\n" +
-				"_-_ Various rare bugs with corruption\n" +
-				"_-_ Antimagic not applying to wards or magical sleep debuff\n" +
 				"_-_ Artifacts rarely losing levels when transmuted\n" +
+				"_-_ Hourglass spawning sand when unidentified or cursed\n" +
+				"_-_ Various rare errors with shops\n" +
+				"_-_ Scrolls of teleportation spending a turn when they fail\n" +
+				"_-_ Tengu getting extra turns on game load in rare cases\n" +
+				"_-_ Various errors with DM-300\n" +
+				"_-_ Dwarf King and some Yog fists rarely taking negative damage\n" +
+				"_-_ Warlocks not having capped health potions drops\n" +
+				"_-_ Large characters entering tunnels when vertigoed\n" +
+				"_-_ Rare AI issues when paths are blocked"));
+
+		changes.addButton(new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), Messages.get(ChangesScene.class, "bugfixes"),
+				"Fixed:\n" +
+				"_-_ Various minor errors relating to time freeze\n" +
+				"_-_ Assassin blink ignoring hero being rooted\n" +
+				"_-_ Various rare bugs with corruption\n" +
+				"_-_ Hero being able to be both well-fed and hungry\n" +
+				"_-_ Antimagic not applying to wards or magical sleep debuff\n" +
+				"_-_ Various rare errors with Gladiator's fury\n" +
+				"_-_ Various rare errors with multiplicity curse\n" +
+				"_-_ Various minor errors with magical charge buff\n" +
+				"_-_ Rare cases where dieing to a chasm would be recorded as 'Killed by Something'\n" +
+				"_-_ Hero having a smaller tap region than other characters\n" +
+				"_-_ Questgivers rarely not being added to the journal\n" +
+				"_-_ 'death from viscocity' badge not appearing in rankings\n" +
+				"_-_ Incorrect badges rarely showing in rankings\n" +
 				"_-_ High grass appearing on top of plants in rare cases\n" +
 				"_-_ Characters rarely appearing inside doors or the hero\n" +
-				"_-_ Talent points being spendable when the hero is dead\n" +
-				"_-_ Warlocks not having capped health potions drops"));
+				"_-_ Talent points being spendable when the hero is dead"));
 
 		changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
 		changes.hardlight(CharSprite.POSITIVE);
@@ -223,7 +345,11 @@ public class v0_9_X_Changes {
 				"I'm pulling down the damage of _Cave Spinners_ slightly to address player frustration:\n\n" +
 				"_-_ Melee damage down to 10-20 from 10-25"));
 
-		changes = new ChangeInfo("v0.9.0", true, "");
+	}
+
+	public static void add_v0_9_0_Changes( ArrayList<ChangeInfo> changeInfos ) {
+
+		ChangeInfo changes = new ChangeInfo("v0.9.0", true, "");
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);
 

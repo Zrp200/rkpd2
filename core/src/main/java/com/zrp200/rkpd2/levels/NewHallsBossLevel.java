@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.Bones;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.YogDzewa;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.particles.FlameParticle;
@@ -38,6 +39,7 @@ import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.tiles.CustomTilemap;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Tilemap;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
@@ -228,6 +230,16 @@ public class NewHallsBossLevel extends Level {
 		}
 
 		Dungeon.observe();
+	}
+
+	@Override
+	public void restoreFromBundle(Bundle bundle) {
+		super.restoreFromBundle(bundle);
+		for (Mob m : mobs){
+			if (m instanceof YogDzewa){
+				((YogDzewa) m).updateVisibility(this);
+			}
+		}
 	}
 
 	@Override

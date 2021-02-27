@@ -36,6 +36,7 @@ import com.zrp200.rkpd2.effects.particles.CorrosionParticle;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.mechanics.Ballistica;
+import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
@@ -104,6 +105,14 @@ public class WandOfCorrosion extends Wand {
 		particle.acc.set(0, 20);
 		particle.setSize( 0.5f, 3f );
 		particle.shuffleXY( 1f );
+	}
+
+	@Override
+	public String statsDesc() {
+		if (levelKnown)
+			return Messages.get(this, "stats_desc", 2+buffedLvl());
+		else
+			return Messages.get(this, "stats_desc", 2);
 	}
 
 }

@@ -119,6 +119,7 @@ public class NewsScene extends PixelScene {
 			boolean rightCol = false;
 			for (NewsArticle article : articles) {
 				StyledButton b = new ArticleButton(article);
+				b.multiline = true;
 				if (!rightCol) {
 					top += gap;
 					b.setRect( left, top, BTN_WIDTH, BTN_HEIGHT);
@@ -282,8 +283,6 @@ public class NewsScene extends PixelScene {
 
 		@Override
 		protected void layout() {
-			text.maxWidth( (int)(width - icon.width() - bg.marginHor() - 2));
-
 			super.layout();
 
 			icon.x = x + bg.marginLeft() + (16-icon.width())/2f;

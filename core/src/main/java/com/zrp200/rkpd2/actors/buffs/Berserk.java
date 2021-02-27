@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.SpellSprite;
 import com.zrp200.rkpd2.items.BrokenSeal.WarriorShield;
 import com.zrp200.rkpd2.messages.Messages;
@@ -44,7 +45,7 @@ public class Berserk extends Buff {
 	}
 	private State state = State.NORMAL;
 
-	private static final float LEVEL_RECOVER_START = 2f;
+	private static final float LEVEL_RECOVER_START = 3f;
 	private float levelRecovery;
 	
 	private float power = 0;
@@ -75,7 +76,7 @@ public class Berserk extends Buff {
 	}
 
 	protected float maxBerserkDuration() {
-		return 10;
+		return 20;
 	}
 	@Override
 	public boolean act() {
@@ -83,7 +84,7 @@ public class Berserk extends Buff {
 		if (berserking()){
 			ShieldBuff buff = target.buff(WarriorShield.class);
 			if (target.HP <= 0) {
-				int dmg = (int)Math.ceil(target.shielding() / maxBerserkDuration()); // MAYBE I'm buffing base, but whatever. compared to shattered it should last notably longer if you aren't taking damage.
+				int dmg = 1 + (int)Math.ceil(target.shielding() * 0.05f);
 				if (buff != null && buff.shielding() > 0) {
 					buff.absorbDamage(dmg);
 				} else {
@@ -99,7 +100,7 @@ public class Berserk extends Buff {
 				}
 			} else {
 				state = State.RECOVERING;
-				levelRecovery = LEVEL_RECOVER_START;
+				levelRecovery = LEVEL_RECOVER_START - 0.5f*Dungeon.hero.pointsInTalent(Talent.BERSERKING_STAMINA);
 				if (buff != null) buff.absorbDamage(buff.shielding());
 				power = 0f;
 			}
@@ -133,8 +134,9 @@ public class Berserk extends Buff {
 			WarriorShield shield = target.buff(WarriorShield.class);
 			if (shield != null){
 				state = State.BERSERK;
-				// so basically it's the same rate of shield decrease, you just get more shield which makes it take longer.
-				shield.supercharge((int)Math.ceil(shield.maxShield() * maxBerserkDuration()));
+				int shieldAmount = shield.maxShield() * 8;
+				shieldAmount = Math.round(shieldAmount * (1f + Dungeon.hero.pointsInTalent(Talent.BERSERKING_STAMINA)/6f));
+				shield.supercharge(shieldAmount);
 
 				SpellSprite.show(target, SpellSprite.BERSERK);
 				Sample.INSTANCE.play( Assets.Sounds.CHALLENGE );
@@ -152,14 +154,15 @@ public class Berserk extends Buff {
 		return base*2+target.HT;
 	}
 
+	public float rageAmount(){
+		return Math.min(1f, power);
+	}
+
 	public void damage(int damage){
 		if (state == State.RECOVERING && !berserker()) return;
-		if( berserker() ) target.HP -= damage;
-		// recovering berserker has max rage effectively scaled.
-		double powerInc = Math.min((state == State.NORMAL?1.1f:recovered())-power,recovered()*damage/rageFactor());
-		power += powerInc; // apply increase
-		if( berserker() ) target.HP += damage; // revert damage so it can be reduced by armor properly
-		BuffIndicator.refreshHero(); // show new power immediately
+		float maxPower = 1f + 0.15f*((Hero)target).pointsInTalent(Talent.ENDLESS_RAGE);
+		power = Math.min(maxPower, power + (damage/(float)target.HT)/3f );
+		BuffIndicator.refreshHero(); //show new power immediately
 	}
 
 	public final float recovered() {

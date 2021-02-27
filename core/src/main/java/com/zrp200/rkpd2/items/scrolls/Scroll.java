@@ -23,9 +23,12 @@ package com.zrp200.rkpd2.items.scrolls;
 
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.buffs.Blindness;
+import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.buffs.MagicImmune;
+import com.zrp200.rkpd2.actors.buffs.ScrollEmpower;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.ItemStatusHandler;
@@ -182,6 +185,12 @@ public abstract class Scroll extends Item {
 		curUser.spend( TIME_TO_READ );
 		curUser.busy();
 		((HeroSprite)curUser.sprite).read();
+
+		if (curUser.hasTalent(Talent.EMPOWERING_SCROLLS)){
+			Buff.affect(curUser, ScrollEmpower.class, 10f);
+			updateQuickslot();
+		}
+
 	}
 	
 	public boolean isKnown() {

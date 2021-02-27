@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
+import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.BuffIndicator;
@@ -46,7 +47,11 @@ public class Healing extends Buff {
 	public boolean act(){
 		
 		target.HP = Math.min(target.HT, target.HP + healingThisTick());
-		
+
+		if (target.HP == target.HT && target instanceof Hero){
+			((Hero)target).resting = false;
+		}
+
 		healingLeft -= healingThisTick();
 		
 		if (healingLeft <= 0){

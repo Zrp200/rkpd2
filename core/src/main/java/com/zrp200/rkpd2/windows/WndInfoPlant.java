@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.windows;
 
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.plants.Plant;
 import com.zrp200.rkpd2.tiles.TerrainFeaturesTilemap;
 
@@ -30,7 +31,7 @@ public class WndInfoPlant extends WndTitledMessage {
 	public WndInfoPlant( Plant plant ) {
 		
 		super(TerrainFeaturesTilemap.tile( plant.pos, Dungeon.level.map[plant.pos]),
-				plant.plantName, plant.desc());
+				Messages.titleCase(plant.plantName), plant.desc());
 
 	}
 }

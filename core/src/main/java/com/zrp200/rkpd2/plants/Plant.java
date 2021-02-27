@@ -70,12 +70,9 @@ public abstract class Plant implements Bundlable {
 		wither();
 		activate( ch );
 
-		if (Dungeon.level.heroFOV[pos] && Dungeon.hero.hasTalent(Talent.NATURES_AID,Talent.NOBLE_CAUSE)){
-			// 4/6 turns based on talent points spent (rk), 6/9 (huntress)
-			int modifier = Dungeon.hero.heroClass == HeroClass.HUNTRESS ? 3 : 2;
-			Buff.affect(Dungeon.hero, Barkskin.class).set(
-					modifier,
-					modifier*(1+Dungeon.hero.pointsInTalents(Talent.NATURES_AID,Talent.NOBLE_CAUSE)));
+		if (Dungeon.level.heroFOV[pos] && Dungeon.hero.hasTalent(Talent.NATURES_AID)){
+			// 3/5 turns based on talent points spent
+			Buff.affect(Dungeon.hero, Barkskin.class).set(2, 1 + 2*(Dungeon.hero.pointsInTalent(Talent.NATURES_AID)));
 		}
 	}
 	
@@ -119,7 +116,11 @@ public abstract class Plant implements Bundlable {
 	}
 	
 	public String desc() {
-		return Messages.get(this, "desc");
+		String desc = Messages.get(this, "desc");
+		if (Dungeon.hero.subClass == HeroSubClass.WARDEN){
+			desc += "\n\n" + Messages.get(this, "warden_desc");
+		}
+		return desc;
 	}
 	
 	public static class Seed extends Item {
@@ -207,7 +208,11 @@ public abstract class Plant implements Bundlable {
 
 		@Override
 		public String desc() {
-			return Messages.get(plantClass, "desc");
+			String desc = Messages.get(plantClass, "desc");
+			if (Dungeon.hero.subClass == HeroSubClass.WARDEN){
+				desc += "\n\n" + Messages.get(plantClass, "warden_desc");
+			}
+			return desc;
 		}
 
 		@Override

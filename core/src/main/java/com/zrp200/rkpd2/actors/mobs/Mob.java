@@ -42,10 +42,13 @@ import com.zrp200.rkpd2.actors.buffs.Terror;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.effects.Surprise;
 import com.zrp200.rkpd2.effects.Wound;
+import com.zrp200.rkpd2.effects.particles.ShadowParticle;
 import com.zrp200.rkpd2.items.Generator;
+import com.zrp200.rkpd2.items.Gold;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.artifacts.DriedRose;
 import com.zrp200.rkpd2.items.artifacts.TimekeepersHourglass;
@@ -666,12 +669,27 @@ public abstract class Mob extends Char {
 				Buff.affect(Dungeon.hero, Talent.LethalMomentumTracker.class, 1f);
 			}
 		}
-		
+
 		if (Dungeon.hero.isAlive() && !Dungeon.level.heroFOV[pos]) {
 			GLog.i( Messages.get(this, "died") );
 		}
-		
+
+		boolean soulMarked = buff(SoulMark.class) != null;
+
 		super.die( cause );
+
+		if (!(this instanceof Wraith)
+				&& soulMarked
+				&& Random.Int(10) < Dungeon.hero.pointsInTalent(Talent.NECROMANCERS_MINIONS)){
+			Wraith w = Wraith.spawnAt(pos);
+			if (w != null) {
+				Buff.affect(w, Corruption.class);
+				if (Dungeon.level.heroFOV[pos]) {
+					CellEmitter.get(pos).burst(ShadowParticle.CURSE, 6);
+					Sample.INSTANCE.play(Assets.Sounds.CURSED);
+				}
+			}
+		}
 	}
 	
 	public void rollToDropLoot(){
@@ -704,6 +722,18 @@ public abstract class Mob extends Char {
 			Dungeon.level.drop(Lucky.genLoot(), pos).sprite.drop();
 			Lucky.showFlare(sprite);
 		}
+
+		//soul eater talent
+		if (buff(SoulMark.class) != null &&
+				Random.Int(10) < Dungeon.hero.pointsInTalent(Talent.SOUL_EATER)){
+			Talent.onFoodEaten(Dungeon.hero, 0, null);
+		}
+
+		//bounty hunter talent
+		if (Dungeon.hero.buff(Talent.BountyHunterTracker.class) != null){
+			Dungeon.level.drop(new Gold(10 * Dungeon.hero.pointsInTalent(Talent.BOUNTY_HUNTER)), pos).sprite.drop();
+		}
+
 	}
 	
 	protected Object loot = null;

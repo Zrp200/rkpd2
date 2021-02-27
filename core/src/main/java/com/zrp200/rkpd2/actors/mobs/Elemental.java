@@ -29,7 +29,6 @@ import com.zrp200.rkpd2.actors.buffs.Blindness;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Burning;
 import com.zrp200.rkpd2.actors.buffs.Chill;
-import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.effects.Lightning;
 import com.zrp200.rkpd2.effects.Splash;
 import com.zrp200.rkpd2.items.potions.PotionOfFrost;
@@ -63,7 +62,7 @@ public abstract class Elemental extends Mob {
 	
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 16, 26 );
+		return Random.NormalIntRange( 20, 25 );
 	}
 	
 	@Override
@@ -209,17 +208,19 @@ public abstract class Elemental extends Mob {
 			spriteClass = ElementalSprite.NewbornFire.class;
 			
 			HT = 60;
-			HP = HT/2; //32
+			HP = HT/2; //30
 			
 			defenseSkill = 12;
 			
 			EXP = 7;
-			maxLvl = Hero.MAX_LEVEL;
-			
-			loot = new Embers();
-			lootChance = 1f;
 			
 			properties.add(Property.MINIBOSS);
+		}
+
+		@Override
+		public void die(Object cause) {
+			super.die(cause);
+			Dungeon.level.drop( new Embers(), pos ).sprite.drop();
 		}
 
 		@Override

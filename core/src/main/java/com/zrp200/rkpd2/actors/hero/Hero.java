@@ -43,6 +43,7 @@ import com.zrp200.rkpd2.actors.buffs.Combo;
 import com.zrp200.rkpd2.actors.buffs.Drowsy;
 import com.zrp200.rkpd2.actors.buffs.Foresight;
 import com.zrp200.rkpd2.actors.buffs.Fury;
+import com.zrp200.rkpd2.actors.buffs.HoldFast;
 import com.zrp200.rkpd2.actors.buffs.Hunger;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.buffs.MindVision;
@@ -52,6 +53,7 @@ import com.zrp200.rkpd2.actors.buffs.Regeneration;
 import com.zrp200.rkpd2.actors.buffs.SnipersMark;
 import com.zrp200.rkpd2.actors.buffs.Vertigo;
 import com.zrp200.rkpd2.actors.mobs.Mob;
+import com.zrp200.rkpd2.actors.mobs.Monk;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.CheckedCell;
 import com.zrp200.rkpd2.effects.Flare;
@@ -339,7 +341,8 @@ public class Hero extends Char {
 	}
 
 	public int talentPointsAvailable(int tier){
-		if (lvl < Talent.tierLevelThresholds[tier]){
+		if (lvl < Talent.tierLevelThresholds[tier]
+			|| (tier == 3 && subClass == HeroSubClass.NONE)){
 			return 0;
 		} else if (lvl >= Talent.tierLevelThresholds[tier+1]){
 			return Talent.tierLevelThresholds[tier+1] - Talent.tierLevelThresholds[tier] - talentPointsSpent(tier);
@@ -399,13 +402,8 @@ public class Hero extends Char {
 		belongings.weapon = belongings.stashedWeapon;
 		belongings.stashedWeapon = null;
 		
-		if (subClass == HeroSubClass.GLADIATOR || subClass == HeroSubClass.KING){
-			if (hit) {
-				Buff.affect( this, Combo.class ).hit( enemy );
-			} else {
-				Combo combo = buff(Combo.class);
-				if (combo != null) combo.miss( enemy );
-			}
+		if (hit && subClass == HeroSubClass.GLADIATOR || subClass == HeroSubClass.KING){
+			Buff.affect( this, Combo.class ).hit( enemy );
 		}
 
 		return hit;
@@ -420,7 +418,7 @@ public class Hero extends Char {
 		
 		if (wep instanceof MissileWeapon){
 			if (Dungeon.level.adjacent( pos, target.pos )) {
-				accuracy *= 0.5f;
+				accuracy *= (0.5f + 0.2f*pointsInTalent(Talent.POINT_BLANK));
 			} else {
 				accuracy *= 1.5f;
 			}
@@ -435,7 +433,14 @@ public class Hero extends Char {
 	
 	@Override
 	public int defenseSkill( Char enemy ) {
-		
+
+		if (buff(Combo.ParryTracker.class) != null){
+			if (canAttack(enemy)){
+				Buff.affect(this, Combo.RiposteTracker.class).enemy = enemy;
+			}
+			return INFINITE_EVASION;
+		}
+
 		float evasion = defenseSkill;
 		
 		evasion *= RingOfEvasion.evasionMultiplier( this );
@@ -450,7 +455,21 @@ public class Hero extends Char {
 
 		return Math.round(evasion);
 	}
-	
+
+	@Override
+	public String defenseVerb() {
+		Combo.ParryTracker parry = buff(Combo.ParryTracker.class);
+		if (parry == null){
+			return super.defenseVerb();
+		} else {
+			parry.parried = true;
+			if (buff(Combo.class).getComboCount() < 9 || pointsInTalent(Talent.ENHANCED_COMBO) < 2){
+				parry.detach();
+			}
+			return Messages.get(Monk.class, "parried");
+		}
+	}
+
 	@Override
 	public int drRoll() {
 		int dr = 0;
@@ -474,7 +493,11 @@ public class Hero extends Char {
 		
 		Blocking.BlockBuff block = buff(Blocking.BlockBuff.class);
 		if (block != null)              dr += block.blockingRoll();
-		
+
+		if (buff(HoldFast.class) != null){
+			dr += Random.NormalIntRange(0, 2*pointsInTalent(Talent.HOLD_FAST));
+		}
+
 		return dr;
 	}
 	
@@ -510,8 +533,10 @@ public class Hero extends Char {
 		
 		Momentum momentum = buff(Momentum.class);
 		if (momentum != null){
-			((HeroSprite)sprite).sprint( 1f + 0.05f*momentum.stacks());
+			((HeroSprite)sprite).sprint( momentum.freerunning() ? 1.5f : 1f );
 			speed *= momentum.speedMultiplier();
+		} else {
+			((HeroSprite)sprite).sprint( 1f );
 		}
 		
 		return speed;
@@ -669,8 +694,8 @@ public class Hero extends Char {
 			}
 		}
 		
-		if( (subClass == HeroSubClass.WARDEN || subClass == HeroSubClass.KING) && Dungeon.level.map[pos] == Terrain.FURROWED_GRASS){
-			Buff.affect(this, Barkskin.class).set( lvl + 5, 1 );
+		if(hasTalent(Talent.BARKSKIN) && Dungeon.level.map[pos] == Terrain.FURROWED_GRASS){
+			Buff.affect(this, Barkskin.class).set( lvl, pointsInTalent(Talent.BARKSKIN) );
 		}
 		
 		return actResult;
@@ -1073,8 +1098,13 @@ public class Hero extends Char {
 	
 	public void rest( boolean fullRest ) {
 		spendAndNext( TIME_TO_REST );
-		if (!fullRest && sprite != null) {
-			sprite.showStatus( CharSprite.DEFAULT, Messages.get(this, "wait") );
+		if (!fullRest) {
+			if (hasTalent(Talent.HOLD_FAST)){
+				Buff.affect(this, HoldFast.class);
+			}
+			if (sprite != null) {
+				sprite.showStatus(CharSprite.DEFAULT, Messages.get(this, "wait"));
+			}
 		}
 		resting = fullRest;
 	}
@@ -1118,7 +1148,8 @@ public class Hero extends Char {
 					@Override
 					protected boolean act() {
 						if (enemy.isAlive()) {
-							Buff.prolong(Hero.this, SnipersMark.class, SnipersMark.DURATION).object = enemy.id();
+							int bonusTurns = hasTalent(Talent.SHARED_UPGRADES) ? wep.buffedLvl() : 0;
+							Buff.prolong(Hero.this, SnipersMark.class, SnipersMark.DURATION + bonusTurns).set(enemy.id(), bonusTurns);
 						}
 						Actor.remove(this);
 						return true;
@@ -1245,8 +1276,8 @@ public class Hero extends Char {
 		Char lastTarget = QuickSlotButton.lastTarget;
 		if (target != null && (lastTarget == null ||
 							!lastTarget.isAlive() ||
-							!fieldOfView[lastTarget.pos]) ||
-							(lastTarget instanceof WandOfWarding.Ward && mindVisionEnemies.contains(lastTarget))){
+							lastTarget.alignment == Alignment.ALLY ||
+							!fieldOfView[lastTarget.pos])){
 			QuickSlotButton.target(target);
 		}
 		
@@ -1349,7 +1380,11 @@ public class Hero extends Char {
 		}
 
 		if (step != -1) {
-			
+
+			if (subClass == HeroSubClass.FREERUNNER){
+				Buff.affect(this, Momentum.class).gainStack();
+			}
+
 			float speed = speed();
 			
 			sprite.move(pos, step);
@@ -1359,15 +1394,8 @@ public class Hero extends Char {
 			justMoved = true;
 			
 			search(false);
-			
-			if (subClass == HeroSubClass.FREERUNNER || subClass == HeroSubClass.KING){
-				Buff.affect(this, Momentum.class).gainStack();
-			}
 
-			//FIXME this is a fairly sloppy fix for a crash involving pitfall traps.
-			//really there should be a way for traps to specify whether action should continue or
-			//not when they are pressed.
-			return InterlevelScene.mode != InterlevelScene.Mode.FALL;
+			return true;
 
 		} else {
 
@@ -1746,17 +1774,12 @@ public class Hero extends Char {
 		
 		boolean hit = attack( enemy );
 
-		if (subClass == HeroSubClass.GLADIATOR || subClass == HeroSubClass.KING){
-			if (hit) {
-				Buff.affect( this, Combo.class ).hit( enemy );
-			} else {
-				Combo combo = buff(Combo.class);
-				if (combo != null) combo.miss( enemy );
-			}
-		}
-		
 		Invisibility.dispel();
 		spend( attackDelay() );
+
+		if (hit && subClass == HeroSubClass.GLADIATOR){
+			Buff.affect( this, Combo.class ).hit( enemy );
+		}
 
 		curAction = null;
 

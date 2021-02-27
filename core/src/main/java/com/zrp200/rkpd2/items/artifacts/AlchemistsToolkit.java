@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.items.artifacts;
 
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.Recipe;
 import com.zrp200.rkpd2.items.rings.RingOfEnergy;
@@ -89,9 +90,9 @@ public class AlchemistsToolkit extends Artifact {
 	}
 	
 	@Override
-	public void charge(Hero target) {
+	public void charge(Hero target, float amount) {
 		if (charge < chargeCap){
-			partialCharge += 0.5f;
+			partialCharge += 0.5f*amount;
 			if (partialCharge >= 1){
 				partialCharge--;
 				charge++;
@@ -208,6 +209,7 @@ public class AlchemistsToolkit extends Artifact {
 		@Override
 		public void spendEnergy(int reduction) {
 			charge = Math.max(0, charge - reduction);
+			Talent.onArtifactUsed(Dungeon.hero);
 		}
 	}
 	

@@ -511,7 +511,8 @@ public abstract class RegularLevel extends Level {
 	}
 	
 	protected int randomDropCell( Class<?extends Room> roomType ) {
-		while (true) {
+		int tries = 100;
+		while (tries-- > 0) {
 			Room room = randomRoom( roomType );
 			if (room != null && room != roomEntrance) {
 				int pos = pointToCell(room.random());
@@ -533,6 +534,7 @@ public abstract class RegularLevel extends Level {
 				}
 			}
 		}
+		return -1;
 	}
 	
 	@Override

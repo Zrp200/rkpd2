@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.ui;
 
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.messages.Messages;
@@ -58,9 +59,16 @@ public class TalentsPane extends ScrollPane {
 					&& Dungeon.hero.lvl+1 >= Talent.tierLevelThresholds[tiersAvailable+1]){
 				tiersAvailable++;
 			}
+			if (tiersAvailable > 2 && Dungeon.hero.subClass == HeroSubClass.NONE){
+				tiersAvailable = 2;
+			}
 		}
 
+		tiersAvailable = Math.min(tiersAvailable, talents.size());
+
 		for (int i = 0; i < Math.min(tiersAvailable, talents.size()); i++){
+			if (talents.get(i).isEmpty()) continue;
+
 			TalentTierPane pane = new TalentTierPane(talents.get(i), i+1, canUpgrade);
 			panes.add(pane);
 			content.add(pane);
@@ -78,6 +86,8 @@ public class TalentsPane extends ScrollPane {
 
 		if (tiersAvailable == 1) {
 			blockText = PixelScene.renderTextBlock(Messages.get(this, "unlock_tier2"), 6);
+		} else if (tiersAvailable == 2) {
+			blockText = PixelScene.renderTextBlock(Messages.get(this, "unlock_tier3"), 6);
 		} else {
 			blockText = PixelScene.renderTextBlock(Messages.get(this, "coming_soon"), 6);
 		}
@@ -102,11 +112,15 @@ public class TalentsPane extends ScrollPane {
 
 		}
 
+		float bottom = Math.max(height, top + 20);
+
 		blocker.x = 0;
 		blocker.y = top;
-		blocker.size(width, height - top);
+		blocker.size(width, bottom - top);
 
-		blockText.setPos((width - blockText.width())/2f, blocker.y + (height - blocker.y)/2 - 3);
+		blockText.setPos((width - blockText.width())/2f, blocker.y + (bottom - blocker.y)/2 - 3);
+
+		content.setSize(width, bottom);
 	}
 
 	public static class TalentTierPane extends Component {

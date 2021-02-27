@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.PixelScene;
+import com.zrp200.rkpd2.ui.Icons;
 import com.zrp200.rkpd2.ui.RedButton;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
 import com.zrp200.rkpd2.ui.Window;
@@ -79,7 +80,8 @@ public class WndInfoTalent extends Window {
 					onUpgradeButton.call();
 				}
 			};
-			upgrade.setRect(0, txtInfo.bottom() + 2*GAP, WIDTH, 16);
+			upgrade.icon(Icons.get(Icons.TALENT));
+			upgrade.setRect(0, txtInfo.bottom() + 2*GAP, WIDTH, 18);
 			add(upgrade);
 			resize( WIDTH, (int)upgrade.bottom()+1 );
 		}

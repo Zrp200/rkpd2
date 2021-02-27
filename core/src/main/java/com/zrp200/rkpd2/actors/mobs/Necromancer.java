@@ -50,8 +50,8 @@ public class Necromancer extends Mob {
 	{
 		spriteClass = NecromancerSprite.class;
 		
-		HP = HT = 35;
-		defenseSkill = 13;
+		HP = HT = 40;
+		defenseSkill = 14;
 		
 		EXP = 7;
 		maxLvl = 14;
@@ -221,6 +221,7 @@ public class Necromancer extends Mob {
 					for (int c : PathFinder.NEIGHBOURS8) {
 						if (Actor.findChar(summoningPos + c) == null
 								&& Dungeon.level.passable[summoningPos + c]
+								&& (Dungeon.level.openSpace[summoningPos + c] || !hasProp(Actor.findChar(summoningPos), Property.LARGE))
 								&& Dungeon.level.trueDistance(pos, summoningPos + c) > Dungeon.level.trueDistance(pos, pushPos)) {
 							pushPos = summoningPos + c;
 						}
@@ -247,7 +248,7 @@ public class Necromancer extends Mob {
 				GameScene.add( mySkeleton );
 				Dungeon.level.occupyCell( mySkeleton );
 				Sample.INSTANCE.play(Assets.Sounds.BONES);
-				summoningEmitter.burst( Speck.factory( Speck.RATTLE ), 5 );
+				summoningEmitter.burst(Speck.factory(Speck.RATTLE), 5);
 				sprite.idle();
 				
 				if (buff(Corruption.class) != null){

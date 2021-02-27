@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.items.artifacts;
 
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.rings.RingOfEnergy;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
@@ -46,9 +47,9 @@ public class MasterThievesArmband extends Artifact {
 	}
 	
 	@Override
-	public void charge(Hero target) {
+	public void charge(Hero target, float amount) {
 		if (charge < chargeCap){
-			charge += 10;
+			charge += Math.round(10*amount);
 			updateQuickslot();
 		}
 	}
@@ -114,6 +115,7 @@ public class MasterThievesArmband extends Artifact {
 					exp += value;
 				}
 			}
+			Talent.onArtifactUsed(Dungeon.hero);
 			while(exp >= (250 + 50*level()) && level() < levelCap) {
 				exp -= (250 + 50*level());
 				upgrade();

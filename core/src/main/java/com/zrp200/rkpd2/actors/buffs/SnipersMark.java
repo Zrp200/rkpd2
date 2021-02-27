@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.messages.Messages;
@@ -39,13 +40,20 @@ import com.watabou.utils.Bundle;
 public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
 	public int object = 0;
+	public int level = 0;
 
 	private static final String OBJECT    = "object";
+	private static final String LEVEL    = "level";
 
 	public static final float DURATION = 4f;
 
 	{
 		type = buffType.POSITIVE;
+	}
+
+	public void set(int object, int level){
+		this.object = object;
+		this.level = level;
 	}
 	
 	@Override
@@ -64,13 +72,14 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put( OBJECT, object );
-
+		bundle.put( LEVEL, level );
 	}
 
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 		object = bundle.getInt( OBJECT );
+		level = bundle.getInt( LEVEL );
 	}
 
 	@Override
@@ -123,6 +132,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		if (cell == -1) return;
 		
 		bow.sniperSpecial = true;
+		bow.sniperSpecialBonusDamage = level*Dungeon.hero.pointsInTalent(Talent.SHARED_UPGRADES)/15f;
 		
 		arrow.cast(hero, cell);
 		detach();

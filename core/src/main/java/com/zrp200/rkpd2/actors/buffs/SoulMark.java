@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -74,14 +75,14 @@ public class SoulMark extends FlavourBuff {
 	}
 
 	public void proc(Object src, Char defender, int damage) {
-		float multiplier = // damage that doesn't come from the hero is less effective
-				src == Dungeon.hero ? 1
-						: src instanceof Wand || src instanceof WandOfWarding.Ward ? .7f // wands are a middleground.
-						: .4f;
-		int restoration = Math.min(Random.round(damage*multiplier), defender.HP);
+		int restoration = Math.min(damage, defender.HP);
+		//physical damage that doesn't come from the hero is less effective
+		if (defender != Dungeon.hero){
+			restoration = Math.round(restoration * 0.15f*Dungeon.hero.pointsInTalent(Talent.SOUL_SIPHON));
+		}
 		if(restoration > 0)
 		{
-			Buff.affect(Dungeon.hero, Hunger.class).satisfy(restoration);
+			Buff.affect(Dungeon.hero, Hunger.class).affectHunger(restoration*Dungeon.hero.pointsInTalent(Talent.SOUL_EATER)/3f);
 			Dungeon.hero.HP = (int) Math.ceil(Math.min(Dungeon.hero.HT, Dungeon.hero.HP + (restoration * 0.4f)));
 			Dungeon.hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), 1);
 		}

@@ -41,6 +41,7 @@ import com.zrp200.rkpd2.effects.TargetedCell;
 import com.zrp200.rkpd2.effects.particles.PurpleParticle;
 import com.zrp200.rkpd2.effects.particles.ShadowParticle;
 import com.zrp200.rkpd2.items.artifacts.DriedRose;
+import com.zrp200.rkpd2.levels.Level;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
@@ -315,11 +316,9 @@ public class YogDzewa extends Mob {
 
 		if (phase < 4 && HP <= HT - 300*phase){
 
-			Dungeon.level.viewDistance = Math.max(1, Dungeon.level.viewDistance-1);
-			if (Dungeon.hero.buff(Light.class) == null){
-				Dungeon.hero.viewDistance = Dungeon.level.viewDistance;
-			}
-			Dungeon.observe();
+			phase++;
+
+			updateVisibility(Dungeon.level);
 			GLog.n(Messages.get(this, "darkness"));
 			sprite.showStatus(CharSprite.POSITIVE, Messages.get(this, "invulnerable"));
 
@@ -344,12 +343,26 @@ public class YogDzewa extends Mob {
 
 			GameScene.add(fist, 4);
 			Actor.addDelayed( new Pushing( fist, Dungeon.level.exit, fist.pos ), -1 );
-			phase++;
 		}
 
 		LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
 		if (lock != null) lock.addTime(dmgTaken);
 
+	}
+
+	public void updateVisibility( Level level ){
+		if (phase > 1 && isAlive()){
+			level.viewDistance = 4 - (phase-1);
+		} else {
+			level.viewDistance = 4;
+		}
+		level.viewDistance = Math.max(1, level.viewDistance);
+		if (Dungeon.hero != null) {
+			if (Dungeon.hero.buff(Light.class) == null) {
+				Dungeon.hero.viewDistance = level.viewDistance;
+			}
+			Dungeon.observe();
+		}
 	}
 
 	private YogFist findFist(){
@@ -385,10 +398,7 @@ public class YogDzewa extends Mob {
 			}
 		}
 
-		Dungeon.level.viewDistance = 4;
-		if (Dungeon.hero.buff(Light.class) == null){
-			Dungeon.hero.viewDistance = Dungeon.level.viewDistance;
-		}
+		updateVisibility(Dungeon.level);
 
 		GameScene.bossSlain();
 		Dungeon.level.unseal();

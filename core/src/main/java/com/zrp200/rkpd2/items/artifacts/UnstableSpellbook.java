@@ -27,6 +27,7 @@ import com.zrp200.rkpd2.actors.buffs.Blindness;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.LockedFloor;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.particles.ElmoParticle;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Item;
@@ -151,8 +152,10 @@ public class UnstableSpellbook extends Artifact {
 								Scroll scroll = Reflection.newInstance(ExoticScroll.regToExo.get(fScroll.getClass()));
 								charge--;
 								scroll.doRead();
+								Talent.onArtifactUsed(Dungeon.hero);
 							} else {
 								fScroll.doRead();
+								Talent.onArtifactUsed(Dungeon.hero);
 							}
 						}
 						
@@ -163,6 +166,7 @@ public class UnstableSpellbook extends Artifact {
 					});
 				} else {
 					scroll.doRead();
+					Talent.onArtifactUsed(Dungeon.hero);
 				}
 				updateQuickslot();
 			}
@@ -212,9 +216,9 @@ public class UnstableSpellbook extends Artifact {
 	}
 	
 	@Override
-	public void charge(Hero target) {
+	public void charge(Hero target, float amount) {
 		if (charge < chargeCap){
-			partialCharge += 0.1f;
+			partialCharge += 0.1f*amount;
 			if (partialCharge >= 1){
 				partialCharge--;
 				charge++;

@@ -32,6 +32,7 @@ import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.buffs.LockedFloor;
 import com.zrp200.rkpd2.actors.buffs.MagicImmune;
 import com.zrp200.rkpd2.actors.buffs.Recharging;
+import com.zrp200.rkpd2.actors.buffs.ScrollEmpower;
 import com.zrp200.rkpd2.actors.buffs.SoulMark;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
@@ -237,6 +238,10 @@ public abstract class Wand extends Item {
 			desc += "\n\n" + Messages.get(Wand.class, "not_cursed");
 		}
 
+		if (Dungeon.hero.subClass == HeroSubClass.BATTLEMAGE){
+			desc += "\n\n" + Messages.get(this, "bmage_desc");
+		}
+
 		return desc;
 	}
 
@@ -295,7 +300,12 @@ public abstract class Wand extends Item {
 
 	protected int buffedLvl(boolean magicCharge) {
 		int lvl = super.buffedLvl();
+
 		if (charger != null && charger.target != null) {
+			if (charger.target.buff(ScrollEmpower.class) != null){
+				lvl += Dungeon.hero.pointsInTalent(Talent.EMPOWERING_SCROLLS);
+			}
+
 			WandOfMagicMissile.MagicCharge buff = charger.target.buff(WandOfMagicMissile.MagicCharge.class);
 			if (buff != null && magicCharge && buff.appliesTo(this)){
 				return buff.level();
@@ -353,21 +363,29 @@ public abstract class Wand extends Item {
 		
 		curCharges -= cursed ? 1 : chargesPerCast();
 
+		ScrollEmpower empower = curUser.buff(ScrollEmpower.class);
+		if (empower != null){
+			empower.detach();
+		}
+
 		WandOfMagicMissile.MagicCharge buff = curUser.buff(WandOfMagicMissile.MagicCharge.class);
 		if (buff != null && buff.appliesTo(this)){
 			buff.detach();
 		}
 
 		//if the wand is owned by the hero, but not in their inventory, it must be in the staff
-		if (curCharges == 0
-				&& charger != null
+		if (charger != null
 				&& charger.target == Dungeon.hero
-				&& !Dungeon.hero.belongings.contains(this)
-				&& Dungeon.hero.hasTalent(Talent.BACKUP_BARRIER,Talent.NOBLE_CAUSE)){
-			//grants 4/6 shielding
+				&& !Dungeon.hero.belongings.contains(this)) {
+			if (curCharges == 0 && Dungeon.hero.hasTalent(Talent.BACKUP_BARRIER,Talent.NOBLE_CAUSE)) {
+				//grants 4/6 shielding
 			int shielding = 2*(1+Dungeon.hero.pointsInTalents(Talent.BACKUP_BARRIER,Talent.NOBLE_CAUSE));
 			if(Dungeon.hero.hasTalent(Talent.BACKUP_BARRIER)) shielding = (int)Math.ceil(shielding*1.5f);
 			Buff.affect(Dungeon.hero, Barrier.class).setShield(shielding);
+			}
+			if (Dungeon.hero.hasTalent(Talent.EMPOWERED_STRIKE)){
+				Buff.prolong(Dungeon.hero, Talent.EmpoweredStrikeTracker.class, 5f);
+			}
 		}
 
 		Invisibility.dispel();

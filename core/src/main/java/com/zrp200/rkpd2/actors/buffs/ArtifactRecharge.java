@@ -21,7 +21,6 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
-import com.zrp200.rkpd2.actors.hero.Belongings;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.items.artifacts.Artifact;
 import com.zrp200.rkpd2.items.artifacts.HornOfPlenty;
@@ -38,27 +37,24 @@ public class ArtifactRecharge extends Buff {
 		type = buffType.POSITIVE;
 	}
 
-	private int left;
+	private float left;
 	public boolean ignoreHornOfPlenty;
 	
 	@Override
 	public boolean act() {
-		
-		if (target instanceof Hero){
-			Belongings b = ((Hero) target).belongings;
-			
-			if (b.artifact instanceof Artifact){
-				if (!(b.artifact instanceof HornOfPlenty) || !ignoreHornOfPlenty) {
-					((Artifact) b.artifact).charge((Hero) target);
-				}
-			}
-			if (b.misc instanceof Artifact){
-				if (!(b.misc instanceof HornOfPlenty) || !ignoreHornOfPlenty) {
-					((Artifact) b.misc).charge((Hero) target);
+
+		if (target instanceof Hero) {
+			float chargeAmount = Math.min(1, left);
+			for (Buff b : target.buffs()) {
+				if (b instanceof Artifact.ArtifactBuff) {
+					if (b instanceof HornOfPlenty.hornRecharge && ignoreHornOfPlenty){
+						continue;
+					}
+					((Artifact.ArtifactBuff) b).charge((Hero) target, chargeAmount);
 				}
 			}
 		}
-		
+
 		left--;
 		if (left <= 0){
 			detach();
@@ -69,12 +65,12 @@ public class ArtifactRecharge extends Buff {
 		return true;
 	}
 	
-	public ArtifactRecharge set( int amount ){
-		left = amount;
+	public ArtifactRecharge set( float amount ){
+		if (left < amount) left = amount;
 		return this;
 	}
 	
-	public ArtifactRecharge prolong( int amount ){
+	public ArtifactRecharge prolong( float amount ){
 		left += amount;
 		return this;
 	}
@@ -117,7 +113,7 @@ public class ArtifactRecharge extends Buff {
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
-		left = bundle.getInt(LEFT);
+		left = bundle.getFloat(LEFT);
 		ignoreHornOfPlenty = bundle.getBoolean(IGNORE_HORN);
 	}
 }
