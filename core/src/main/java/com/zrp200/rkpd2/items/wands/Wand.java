@@ -183,7 +183,7 @@ public abstract class Wand extends Item {
 	//TODO some naming issues here. Consider renaming this method and externalizing char awareness buff
 	protected static void processSoulMark(Char target, int wandLevel, int chargesUsed, boolean delay){
 		if (Dungeon.hero.hasTalent(Talent.ARCANE_VISION,Talent.KINGS_VISION)) {
-			int dur = 5 + 5*Dungeon.hero.pointsInTalents(Talent.ARCANE_VISION,Talent.KINGS_VISION);
+			int dur = 5 + 5*Dungeon.hero.pointsInTalent(Talent.ARCANE_VISION,Talent.KINGS_VISION);
 			Buff.append(Dungeon.hero, TalismanOfForesight.CharAwareness.class, dur).charID = target.id();
 		}
 
@@ -303,7 +303,7 @@ public abstract class Wand extends Item {
 
 		if (charger != null && charger.target != null) {
 			if (charger.target.buff(ScrollEmpower.class) != null){
-				lvl += Dungeon.hero.pointsInTalent(Talent.EMPOWERING_SCROLLS);
+				lvl += Dungeon.hero.pointsInTalent(Talent.EMPOWERING_SCROLLS,Talent.RK_BATTLEMAGE);
 			}
 
 			WandOfMagicMissile.MagicCharge buff = charger.target.buff(WandOfMagicMissile.MagicCharge.class);
@@ -354,7 +354,7 @@ public abstract class Wand extends Item {
 			float uses = Math.min( availableUsesToID, Talent.itemIDSpeedFactor(Dungeon.hero, this) );
 			availableUsesToID -= uses;
 			usesLeftToID -= uses;
-			if (usesLeftToID <= 0 || Dungeon.hero.pointsInTalents(Talent.SCHOLARS_INTUITION, Talent.ROYAL_INTUITION) == 2) {
+			if (usesLeftToID <= 0 || Dungeon.hero.pointsInTalent(Talent.SCHOLARS_INTUITION, Talent.ROYAL_INTUITION) == 2) {
 				identify();
 				GLog.p( Messages.get(Wand.class, "identify") );
 				Badges.validateItemLevelAquired( this );
@@ -379,11 +379,11 @@ public abstract class Wand extends Item {
 				&& !Dungeon.hero.belongings.contains(this)) {
 			if (curCharges == 0 && Dungeon.hero.hasTalent(Talent.BACKUP_BARRIER,Talent.NOBLE_CAUSE)) {
 				//grants 4/6 shielding
-			int shielding = 2*(1+Dungeon.hero.pointsInTalents(Talent.BACKUP_BARRIER,Talent.NOBLE_CAUSE));
+			int shielding = 2*(1+Dungeon.hero.pointsInTalent(Talent.BACKUP_BARRIER,Talent.NOBLE_CAUSE));
 			if(Dungeon.hero.hasTalent(Talent.BACKUP_BARRIER)) shielding = (int)Math.ceil(shielding*1.5f);
 			Buff.affect(Dungeon.hero, Barrier.class).setShield(shielding);
 			}
-			if (Dungeon.hero.hasTalent(Talent.EMPOWERED_STRIKE)){
+			if (Dungeon.hero.hasTalent(Talent.EMPOWERED_STRIKE,Talent.RK_BATTLEMAGE)){
 				Buff.prolong(Dungeon.hero, Talent.EmpoweredStrikeTracker.class, 5f);
 			}
 		}
@@ -500,7 +500,7 @@ public abstract class Wand extends Item {
 					if (target == curUser.pos && curUser.hasTalent(Talent.SHIELD_BATTERY,Talent.RESTORATION)){
 						float shield = curUser.HT * (0.05f*curWand.curCharges);
 						if(curUser.hasTalent(Talent.SHIELD_BATTERY)) shield *= 1.5f; // bonus.
-						if (curUser.pointsInTalents(Talent.SHIELD_BATTERY,Talent.RESTORATION) == 2) shield *= 1.5f;
+						if (curUser.pointsInTalent(Talent.SHIELD_BATTERY,Talent.RESTORATION) == 2) shield *= 1.5f;
 						Buff.affect(curUser, Barrier.class).setShield(Math.round(shield));
 						curWand.curCharges = 0;
 						curUser.sprite.operate(curUser.pos);

@@ -699,7 +699,7 @@ public class Dungeon {
 	}
 
 	public static void observe(){
-		int dist = 8 + 2*Dungeon.hero.pointsInTalent(Talent.FARSIGHT);
+		int dist = 8 + 2*Dungeon.hero.pointsInTalent(Talent.FARSIGHT,Talent.RK_SNIPER);
 		observe( dist+1 );
 	}
 	

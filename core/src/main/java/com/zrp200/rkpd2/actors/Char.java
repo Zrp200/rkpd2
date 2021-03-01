@@ -164,7 +164,7 @@ public abstract class Char extends Actor {
 			return true;
 		} else if (c instanceof Hero
 				&& alignment == Alignment.ALLY
-				&& Dungeon.level.distance(pos, c.pos) <= 3*Dungeon.hero.pointsInTalent(Talent.ALLY_WARP)){
+				&& Dungeon.level.distance(pos, c.pos) <= 3*Dungeon.hero.pointsInTalent(Talent.ALLY_WARP,Talent.RK_WARLOCK)){
 			return true;
 		} else {
 			return false;
@@ -194,7 +194,7 @@ public abstract class Char extends Actor {
 		int curPos = pos;
 
 		//warp instantly with allies in this case
-		if (Dungeon.hero.hasTalent(Talent.ALLY_WARP)){
+		if (Dungeon.hero.hasTalent(Talent.ALLY_WARP,Talent.RK_WARLOCK)){
 			ScrollOfTeleportation.appear(this, Dungeon.hero.pos);
 			ScrollOfTeleportation.appear(Dungeon.hero, curPos);
 			Dungeon.observe();

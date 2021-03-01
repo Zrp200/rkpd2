@@ -470,7 +470,7 @@ public class GameScene extends PixelScene {
 						}
 					}
 				}
-				int points = Dungeon.hero.pointsInTalents(Talent.ROGUES_FORESIGHT,Talent.POWER_WITHIN);
+				int points = Dungeon.hero.pointsInTalent(Talent.ROGUES_FORESIGHT,Talent.POWER_WITHIN);
 				if (points > 0
 						&& Dungeon.level instanceof RegularLevel){
 					int reqSecrets = Dungeon.level.feeling == Level.Feeling.SECRETS ? 2 : 1;

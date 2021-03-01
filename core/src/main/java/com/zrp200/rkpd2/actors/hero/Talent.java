@@ -131,7 +131,9 @@ public enum Talent {
 	RESTORATION(5), // all upgrade/potion of healing talents, uses restored willpower icon
 	POWER_WITHIN(72), // runic (3), wand preservation (3), rogue's foresight (5), rejuvenating steps (3), uses foresight.
 	KINGS_VISION(103), // improvised projectiles (4), arcane vision(4), wide search(3), heightened senses(4), uses heightened senses
-	PURSUIT(98); // durable projectiles (5),silent steps(4),lethal momentum (3),shield battery(5), uses FUS
+	PURSUIT(98), // durable projectiles (5),silent steps(4),lethal momentum (3),shield battery(5), uses FUS
+	// Rat King T3
+	RK_BERSERKER(11,3), RK_GLADIATOR(16,3), RK_BATTLEMAGE(43,3), RK_WARLOCK(47,3), RK_ASSASSIN(75,3), RK_FREERUNNER(80,3), RK_SNIPER(109,3), RK_WARDEN(102,3);
 	// TODO is splitting up t2s arbitrarily really a good idea?
 	public static class ImprovisedProjectileCooldown extends FlavourBuff{};
 	public static class LethalMomentumTracker extends FlavourBuff{};
@@ -198,7 +200,7 @@ public enum Talent {
 				Buff.count(hero, NatureBerriesAvailable.class, 2*points);
 				break;
 		}
-		if (talent == FARSIGHT){
+		if (talent == FARSIGHT || talent == RK_SNIPER){
 			Dungeon.observe();
 		}
 
@@ -210,7 +212,7 @@ public enum Talent {
 	public static void onFoodEaten( Hero hero, float foodVal, Item foodSource ){
 		if (hero.hasTalent(HEARTY_MEAL,ROYAL_PRIVILEGE)){
 			// somehow I managed to make it even more confusing than before.
-			int points = hero.pointsInTalents(HEARTY_MEAL, ROYAL_PRIVILEGE);
+			int points = hero.pointsInTalent(HEARTY_MEAL, ROYAL_PRIVILEGE);
 			int factor = hero.hasTalent(HEARTY_MEAL) ? 3 : 4;
 			double missingHP = 1-(double)hero.HP/hero.HT;
 			int strength = (int)(missingHP*factor);
@@ -231,13 +233,13 @@ public enum Talent {
 		}
 		if (hero.hasTalent(ROYAL_PRIVILEGE)){ // SHPD empowering meal talent
 			//2/3 bonus wand damage for next 3 zaps
-			int bonus = 1+hero.pointsInTalents(ROYAL_PRIVILEGE);
+			int bonus = 1+hero.pointsInTalent(ROYAL_PRIVILEGE);
 			Buff.affect( hero, WandEmpower.class).set(bonus, 3);
 			ScrollOfRecharging.charge( hero );
 		}
 		if (hero.hasTalent(ENERGIZING_MEAL_I,ROYAL_MEAL)){
 			//5/8 turns of recharging for rat king, 4/6 for mage.
-			int points = hero.pointsInTalents(ENERGIZING_MEAL_I,ROYAL_MEAL);
+			int points = hero.pointsInTalent(ENERGIZING_MEAL_I,ROYAL_MEAL);
 			Buff.prolong( hero, Recharging.class, 2 + 3*points - hero.pointsInTalent(ENERGIZING_MEAL_I) );
 			ScrollOfRecharging.charge( hero );
 		}
@@ -274,7 +276,7 @@ public enum Talent {
 
 		// 2x/instant for Warrior (see onItemEquipped)
 		if (item instanceof MeleeWeapon || item instanceof Armor){
-			int points = hero.pointsInTalents(ROYAL_INTUITION,ARMSMASTERS_INTUITION);
+			int points = hero.pointsInTalent(ROYAL_INTUITION,ARMSMASTERS_INTUITION);
 			// basically an innate +1 for armsmaster
 			if(hero.hasTalent(ARMSMASTERS_INTUITION)) points++;
 			factor *= 1f + points;
@@ -294,7 +296,7 @@ public enum Talent {
 		if (hero.hasTalent(RESTORED_WILLPOWER,RESTORATION)){
 			BrokenSeal.WarriorShield shield = hero.buff(BrokenSeal.WarriorShield.class);
 			if (shield != null){
-				double multiplier = 0.33f*(1+hero.pointsInTalents(RESTORED_WILLPOWER,RESTORATION));
+				double multiplier = 0.33f*(1+hero.pointsInTalent(RESTORED_WILLPOWER,RESTORATION));
 				if(hero.hasTalent(RESTORED_WILLPOWER)) multiplier *= 1.5;
 				shield.supercharge((int)Math.round(shield.maxShield()*multiplier));
 			}
@@ -308,7 +310,7 @@ public enum Talent {
 			for (int cell : grassCells){
 				Char ch = Actor.findChar(cell);
 				if (ch != null){
-					int duration = 1+hero.pointsInTalents(RESTORED_NATURE,RESTORATION);
+					int duration = 1+hero.pointsInTalent(RESTORED_NATURE,RESTORATION);
 					if(hero.heroClass == HeroClass.HUNTRESS) duration *= 1.5;
 					Buff.affect(ch, Roots.class, duration);
 				}
@@ -320,7 +322,7 @@ public enum Talent {
 				}
 				CellEmitter.get(cell).burst(LeafParticle.LEVEL_SPECIFIC, 4);
 			}
-			if (hero.pointsInTalents(RESTORED_NATURE,RESTORATION) == 1){
+			if (hero.pointsInTalent(RESTORED_NATURE,RESTORATION) == 1){
 				grassCells.remove(0);
 				grassCells.remove(0);
 				grassCells.remove(0);
@@ -340,7 +342,7 @@ public enum Talent {
 
 	public static void onUpgradeScrollUsed( Hero hero ){
 		if (hero.hasTalent(ENERGIZING_UPGRADE,RESTORATION)){
-			int charge = 1+hero.pointsInTalents(ENERGIZING_UPGRADE,RESTORATION);
+			int charge = 1+hero.pointsInTalent(ENERGIZING_UPGRADE,RESTORATION);
 			if(hero.hasTalent(ENERGIZING_UPGRADE)) charge = (int)Math.ceil(charge*1.5f);
 			MagesStaff staff = hero.belongings.getItem(MagesStaff.class);
 			if(hero.hasTalent(ENERGIZING_UPGRADE)) {
@@ -356,7 +358,7 @@ public enum Talent {
 		if (hero.hasTalent(MYSTICAL_UPGRADE,RESTORATION)){
 			CloakOfShadows cloak = hero.belongings.getItem(CloakOfShadows.class);
 			if (cloak != null){
-				cloak.overCharge(1+hero.pointsInTalents(MYSTICAL_UPGRADE,RESTORATION));
+				cloak.overCharge(1+hero.pointsInTalent(MYSTICAL_UPGRADE,RESTORATION));
 				ScrollOfRecharging.charge( Dungeon.hero );
 				SpellSprite.show( hero, SpellSprite.CHARGE );
 			}
@@ -364,16 +366,16 @@ public enum Talent {
 	}
 
 	public static void onArtifactUsed( Hero hero ){
-		if (hero.hasTalent(ENHANCED_RINGS)){
-			Buff.prolong(hero, EnhancedRings.class, 5f*hero.pointsInTalent(ENHANCED_RINGS));
+		if (hero.hasTalent(ENHANCED_RINGS,RK_ASSASSIN)){
+			Buff.prolong(hero, EnhancedRings.class, 5f*hero.pointsInTalent(ENHANCED_RINGS,RK_ASSASSIN));
 		}
 	}
 	public static void onItemEquipped( Hero hero, Item item ){
-		if (hero.pointsInTalents(ARMSMASTERS_INTUITION,ROYAL_INTUITION) >= (hero.hasTalent(ARMSMASTERS_INTUITION) ? 1 : 2) && (item instanceof Weapon || item instanceof Armor)){
+		if (hero.pointsInTalent(ARMSMASTERS_INTUITION,ROYAL_INTUITION) >= (hero.hasTalent(ARMSMASTERS_INTUITION) ? 1 : 2) && (item instanceof Weapon || item instanceof Armor)){
 			item.identify();
 		}
 		if ((hero.heroClass == HeroClass.ROGUE || hero.hasTalent(ROYAL_INTUITION)) && item instanceof Ring){
-			int points = hero.pointsInTalents(THIEFS_INTUITION,ROYAL_INTUITION);
+			int points = hero.pointsInTalent(THIEFS_INTUITION,ROYAL_INTUITION);
 			if(hero.heroClass == HeroClass.ROGUE ) points++; // essentially this is a 50% boost.
 			if (points >= 2){
 				item.identify();
@@ -385,7 +387,7 @@ public enum Talent {
 
 	public static void onItemCollected( Hero hero, Item item ){
 		if (hero.heroClass == HeroClass.ROGUE || hero.hasTalent(THIEFS_INTUITION,ROYAL_INTUITION)){
-			int points = hero.pointsInTalents(THIEFS_INTUITION,ROYAL_INTUITION);
+			int points = hero.pointsInTalent(THIEFS_INTUITION,ROYAL_INTUITION);
 			if(hero.heroClass == HeroClass.ROGUE) points++;
 			if (points == 3 && (item instanceof Ring || item instanceof Artifact)) item.identify();
 			else if (points == 2 && item instanceof Ring) ((Ring) item).setKnown();
@@ -410,7 +412,7 @@ public enum Talent {
 	public static void onItemIdentified( Hero hero, Item item ){
 		if (hero.hasTalent(TEST_SUBJECT,KINGS_WISDOM)){
 			//heal for 2/3 HP
-			int points = hero.pointsInTalents(TEST_SUBJECT,KINGS_WISDOM);
+			int points = hero.pointsInTalent(TEST_SUBJECT,KINGS_WISDOM);
 			int heal = 1 + points;
 			if(hero.hasTalent(TEST_SUBJECT)) heal += points == 1 ? Random.Int(2) : 1; // 2-3/4
 			heal = Math.min(heal, hero.HT-hero.HP);
@@ -420,7 +422,7 @@ public enum Talent {
 		}
 		if (hero.hasTalent(TESTED_HYPOTHESIS,KINGS_WISDOM)){
 			//2/3 turns of wand recharging
-			int duration = 1 + hero.pointsInTalents(TESTED_HYPOTHESIS,KINGS_WISDOM);
+			int duration = 1 + hero.pointsInTalent(TESTED_HYPOTHESIS,KINGS_WISDOM);
 			if(hero.hasTalent(TESTED_HYPOTHESIS)) duration = (int)Math.ceil(duration*1.5f); // 3/5
 			Buff.affect(hero, Recharging.class, duration);
 			ScrollOfRecharging.charge(hero);
@@ -433,7 +435,7 @@ public enum Talent {
 				&& enemy.buff(SuckerPunchTracker.class) == null){
 			int bonus = hero.hasTalent(SUCKER_PUNCH)
 					? 1+hero.pointsInTalent(SUCKER_PUNCH)  // 2/3
-					: Random.round(0.5f*(2+hero.pointsInTalents(KINGS_WISDOM))); // 1-2/2
+					: Random.round(0.5f*(2+hero.pointsInTalent(KINGS_WISDOM))); // 1-2/2
 			dmg += bonus;
 			if(!hero.hasTalent(SUCKER_PUNCH)) Buff.affect(enemy, SuckerPunchTracker.class);
 		}
@@ -442,7 +444,7 @@ public enum Talent {
 			if (hero.belongings.weapon instanceof MissileWeapon) {
 				Buff.affect(enemy, FollowupStrikeTracker.class);
 			} else if (enemy.buff(FollowupStrikeTracker.class) != null){
-				int bonus = 1 + hero.pointsInTalents(FOLLOWUP_STRIKE,KINGS_WISDOM); // 2/3
+				int bonus = 1 + hero.pointsInTalent(FOLLOWUP_STRIKE,KINGS_WISDOM); // 2/3
 				if(hero.heroClass == HeroClass.HUNTRESS) {
 					bonus = Random.round( bonus*1.5f ); // 3/4-5
 				};
@@ -532,6 +534,7 @@ public enum Talent {
 			case HUNTRESS:
 				Collections.addAll(tierTalents, POINT_BLANK, SEER_SHOT);
 				break;
+			case RAT_KING: break; // no unique talents... :(
 		}
 		for (Talent talent : tierTalents){
 			talents.get(2).put(talent, 0);
@@ -581,6 +584,8 @@ public enum Talent {
 			case WARDEN:
 				Collections.addAll(tierTalents, DURABLE_TIPS, BARKSKIN, SHIELDING_DEW);
 				break;
+			case KING: // this should be *lovely*
+				Collections.addAll(tierTalents, RK_BERSERKER, RK_GLADIATOR, RK_BATTLEMAGE, RK_WARLOCK, RK_ASSASSIN, RK_FREERUNNER, RK_SNIPER, RK_WARDEN);
 		}
 		for (Talent talent : tierTalents){
 			talents.get(2).put(talent, 0);

@@ -55,7 +55,7 @@ public class RevealedArea extends FlavourBuff{
 
 	@Override
 	public float iconFadePercent() {
-		float max = 5*Dungeon.hero.pointsInTalent(Talent.SEER_SHOT);
+		float max = 5*Dungeon.hero.pointsInTalent(Talent.SEER_SHOT,Talent.RK_WARDEN);
 		return Math.max(0, (max-visualcooldown()) / max);
 	}
 

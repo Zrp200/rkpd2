@@ -317,7 +317,7 @@ public class Hero extends Char {
 		}
 		return 0;
 	}
-	public int pointsInTalents( Talent... talents) {
+	public int pointsInTalent( Talent... talents) {
 		int sum = 0;
 		for(Talent talent : talents) sum += pointsInTalent(talent);
 		return sum;
@@ -418,7 +418,7 @@ public class Hero extends Char {
 		
 		if (wep instanceof MissileWeapon){
 			if (Dungeon.level.adjacent( pos, target.pos )) {
-				accuracy *= (0.5f + 0.2f*pointsInTalent(Talent.POINT_BLANK));
+				accuracy *= (0.5f + 0.2f*pointsInTalent(Talent.POINT_BLANK,Talent.RK_SNIPER));
 			} else {
 				accuracy *= 1.5f;
 			}
@@ -463,7 +463,7 @@ public class Hero extends Char {
 			return super.defenseVerb();
 		} else {
 			parry.parried = true;
-			if (buff(Combo.class).getComboCount() < 9 || pointsInTalent(Talent.ENHANCED_COMBO) < 2){
+			if (buff(Combo.class).getComboCount() < 9 || pointsInTalent(Talent.ENHANCED_COMBO,Talent.RK_GLADIATOR) < 2){
 				parry.detach();
 			}
 			return Messages.get(Monk.class, "parried");
@@ -495,7 +495,7 @@ public class Hero extends Char {
 		if (block != null)              dr += block.blockingRoll();
 
 		if (buff(HoldFast.class) != null){
-			dr += Random.NormalIntRange(0, 2*pointsInTalent(Talent.HOLD_FAST));
+			dr += Random.NormalIntRange(0, 2*pointsInTalent(Talent.HOLD_FAST,Talent.RK_BERSERKER));
 		}
 
 		return dr;
@@ -694,8 +694,8 @@ public class Hero extends Char {
 			}
 		}
 		
-		if(hasTalent(Talent.BARKSKIN) && Dungeon.level.map[pos] == Terrain.FURROWED_GRASS){
-			Buff.affect(this, Barkskin.class).set( lvl, pointsInTalent(Talent.BARKSKIN) );
+		if(hasTalent(Talent.BARKSKIN,Talent.RK_WARDEN) && Dungeon.level.map[pos] == Terrain.FURROWED_GRASS){
+			Buff.affect(this, Barkskin.class).set( lvl, pointsInTalent(Talent.BARKSKIN,Talent.RK_WARDEN) );
 		}
 		
 		return actResult;
@@ -1099,7 +1099,7 @@ public class Hero extends Char {
 	public void rest( boolean fullRest ) {
 		spendAndNext( TIME_TO_REST );
 		if (!fullRest) {
-			if (hasTalent(Talent.HOLD_FAST)){
+			if (hasTalent(Talent.HOLD_FAST,Talent.RK_BERSERKER)){
 				Buff.affect(this, HoldFast.class);
 			}
 			if (sprite != null) {
@@ -1148,7 +1148,7 @@ public class Hero extends Char {
 					@Override
 					protected boolean act() {
 						if (enemy.isAlive()) {
-							int bonusTurns = hasTalent(Talent.SHARED_UPGRADES) ? wep.buffedLvl() : 0;
+							int bonusTurns = hasTalent(Talent.SHARED_UPGRADES,Talent.RK_SNIPER) ? wep.buffedLvl() : 0;
 							Buff.prolong(Hero.this, SnipersMark.class, SnipersMark.DURATION + bonusTurns).set(enemy.id(), bonusTurns);
 						}
 						Actor.remove(this);
@@ -1221,7 +1221,7 @@ public class Hero extends Char {
 		}
 
 		if (buff(Talent.WarriorFoodImmunity.class) != null){
-			int points = pointsInTalents(Talent.IRON_STOMACH,Talent.ROYAL_MEAL);
+			int points = pointsInTalent(Talent.IRON_STOMACH,Talent.ROYAL_MEAL);
 			if(hasTalent(Talent.IRON_STOMACH)) points = 2;
 			if (points == 1)    dmg = Math.round(dmg*0.25f);
 			if (points == 2)  	dmg = Math.round(dmg*0.00f);
@@ -1861,7 +1861,7 @@ public class Hero extends Char {
 		
 		boolean smthFound = false;
 
-		int points = pointsInTalents(Talent.KINGS_VISION,Talent.WIDE_SEARCH);
+		int points = pointsInTalent(Talent.KINGS_VISION,Talent.WIDE_SEARCH);
 		boolean circular = points == 1;
 		int distance = (heroClass == HeroClass.ROGUE || heroClass == HeroClass.RAT_KING) ? 2 : 1;
 		if (points > 0) distance++;

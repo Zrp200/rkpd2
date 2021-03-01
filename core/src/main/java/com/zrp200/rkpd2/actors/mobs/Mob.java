@@ -666,7 +666,7 @@ public abstract class Mob extends Char {
 
 			if (cause == Dungeon.hero
 					&& Dungeon.hero.hasTalent(Talent.LETHAL_MOMENTUM,Talent.PURSUIT)
-					&& Random.Float() < 0.34f + 0.33f* Dungeon.hero.pointsInTalents(Talent.LETHAL_MOMENTUM,Talent.PURSUIT)){
+					&& Random.Float() < 0.34f + 0.33f* Dungeon.hero.pointsInTalent(Talent.LETHAL_MOMENTUM,Talent.PURSUIT)){
 				Buff.affect(Dungeon.hero, Talent.LethalMomentumTracker.class, 1f);
 			}
 		}
@@ -681,7 +681,7 @@ public abstract class Mob extends Char {
 
 		if (!(this instanceof Wraith)
 				&& soulMarked
-				&& Random.Int(10) < Dungeon.hero.pointsInTalent(Talent.NECROMANCERS_MINIONS)){
+				&& Random.Int(10) < Dungeon.hero.pointsInTalent(Talent.NECROMANCERS_MINIONS,Talent.RK_WARLOCK)){
 			Wraith w = Wraith.spawnAt(pos);
 			if (w != null) {
 				Buff.affect(w, Corruption.class);
@@ -726,13 +726,13 @@ public abstract class Mob extends Char {
 
 		//soul eater talent
 		if (buff(SoulMark.class) != null &&
-				Random.Int(10) < Dungeon.hero.pointsInTalent(Talent.SOUL_EATER)){
+				Random.Int(10) < Dungeon.hero.pointsInTalent(Talent.SOUL_EATER,Talent.RK_WARLOCK)){
 			Talent.onFoodEaten(Dungeon.hero, 0, null);
 		}
 
 		//bounty hunter talent
 		if (Dungeon.hero.buff(Talent.BountyHunterTracker.class) != null){
-			Dungeon.level.drop(new Gold(10 * Dungeon.hero.pointsInTalent(Talent.BOUNTY_HUNTER)), pos).sprite.drop();
+			Dungeon.level.drop(new Gold(10 * Dungeon.hero.pointsInTalent(Talent.BOUNTY_HUNTER,Talent.RK_ASSASSIN)), pos).sprite.drop();
 		}
 
 	}
@@ -822,7 +822,7 @@ public abstract class Mob extends Char {
 				float enemyStealth = enemy.stealth();
 
 				if (enemy instanceof Hero){
-					int points = ((Hero)enemy).pointsInTalents(Talent.SILENT_STEPS,Talent.PURSUIT);
+					int points = ((Hero)enemy).pointsInTalent(Talent.SILENT_STEPS,Talent.PURSUIT);
 					if (points > 0 && Dungeon.level.distance(pos, enemy.pos) >= 4 - points) {
 						enemyStealth = Float.POSITIVE_INFINITY;
 					}

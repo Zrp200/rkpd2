@@ -559,7 +559,7 @@ public class Item implements Bundlable {
 								Char ch = Actor.findChar(cell);
 								if (ch != null && ch.alignment != curUser.alignment){
 									Sample.INSTANCE.play(Assets.Sounds.HIT);
-									Buff.affect(ch, Blindness.class, 1f + curUser.pointsInTalents(Talent.IMPROVISED_PROJECTILES,Talent.KINGS_VISION));
+									Buff.affect(ch, Blindness.class, 1f + curUser.pointsInTalent(Talent.IMPROVISED_PROJECTILES,Talent.KINGS_VISION));
 									Buff.affect(curUser, Talent.ImprovisedProjectileCooldown.class, 30f);
 								}
 							}
@@ -587,7 +587,7 @@ public class Item implements Bundlable {
 								Char ch = Actor.findChar(cell);
 								if (ch != null && ch.alignment != curUser.alignment){
 									Sample.INSTANCE.play(Assets.Sounds.HIT);
-									Buff.affect(ch, Blindness.class, 1f + curUser.pointsInTalents(Talent.IMPROVISED_PROJECTILES,Talent.KINGS_VISION));
+									Buff.affect(ch, Blindness.class, 1f + curUser.pointsInTalent(Talent.IMPROVISED_PROJECTILES,Talent.KINGS_VISION));
 									Buff.affect(curUser, Talent.ImprovisedProjectileCooldown.class, curUser.hasTalent(Talent.IMPROVISED_PROJECTILES)?20f:30f);
 								}
 							}

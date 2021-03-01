@@ -947,7 +947,7 @@ public abstract class Level implements Bundlable {
 				set(ch.pos, Terrain.HIGH_GRASS);
 			}
 			GameScene.updateMap(ch.pos);
-			int points = Dungeon.hero.pointsInTalents(Talent.REJUVENATING_STEPS,Talent.POWER_WITHIN);
+			int points = Dungeon.hero.pointsInTalent(Talent.REJUVENATING_STEPS,Talent.POWER_WITHIN);
 			if(Dungeon.hero.pointsInTalent(Talent.REJUVENATING_STEPS) > 0) points++;
 			Buff.affect(ch, Talent.RejuvenatingStepsCooldown.class, 10*(float)Math.pow(2,1-points));
 		}
@@ -1079,7 +1079,7 @@ public abstract class Level implements Bundlable {
 			
 			int viewDist = c.viewDistance;
 			if (c instanceof Hero){
-				viewDist *= 1f + 0.25f*((Hero) c).pointsInTalent(Talent.FARSIGHT);
+				viewDist *= 1f + 0.25f*((Hero) c).pointsInTalent(Talent.FARSIGHT,Talent.RK_SNIPER);
 			}
 			
 			ShadowCaster.castShadow( cx, cy, fieldOfView, blocking, viewDist );
@@ -1138,7 +1138,7 @@ public abstract class Level implements Bundlable {
 
 				}
 			} else if (((Hero)c).heroClass == HeroClass.HUNTRESS || ((Hero)c).hasTalent(Talent.HEIGHTENED_SENSES,Talent.KINGS_VISION)) {
-				int points = ((Hero)c).pointsInTalents(Talent.HEIGHTENED_SENSES,Talent.KINGS_VISION);
+				int points = ((Hero)c).pointsInTalent(Talent.HEIGHTENED_SENSES,Talent.KINGS_VISION);
 				if(((Hero)c).heroClass == HeroClass.HUNTRESS) points++; // yup.
 				for (Mob mob : mobs) {
 					int p = mob.pos;

@@ -62,7 +62,7 @@ public class ScrollEmpower extends FlavourBuff {
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", (int)visualcooldown(), Dungeon.hero.pointsInTalent(Talent.EMPOWERING_SCROLLS));
+		return Messages.get(this, "desc", (int)visualcooldown(), Dungeon.hero.pointsInTalent(Talent.EMPOWERING_SCROLLS,Talent.RK_BATTLEMAGE));
 	}
 
 }

@@ -225,7 +225,7 @@ abstract public class Weapon extends KindOfWeapon {
 		//strength req decreases at +1,+3,+6,+10,etc.
 		int req = (8 + tier * 2) - (int)(Math.sqrt(8 * lvl + 1) - 1)/2;
 
-		if (Dungeon.hero.pointsInTalent(Talent.STRONGMAN) >= 2) req--;
+		if (Dungeon.hero.pointsInTalent(Talent.STRONGMAN,Talent.RK_GLADIATOR) >= 2) req--;
 
 		return req;
 	}
@@ -363,10 +363,10 @@ abstract public class Weapon extends KindOfWeapon {
 
 		protected float procChanceMultiplier( Char attacker ){
 			float multi = 1f;
-			if (attacker instanceof Hero && ((Hero) attacker).hasTalent(Talent.ENRAGED_CATALYST)){
+			if (attacker instanceof Hero && ((Hero) attacker).hasTalent(Talent.ENRAGED_CATALYST,Talent.RK_BERSERKER)){
 				Berserk rage = attacker.buff(Berserk.class);
 				if (rage != null) {
-					multi += 0.2f * rage.rageAmount() * ((Hero) attacker).pointsInTalent(Talent.ENRAGED_CATALYST);
+					multi += 0.2f * rage.rageAmount() * ((Hero) attacker).pointsInTalent(Talent.ENRAGED_CATALYST,Talent.RK_BERSERKER);
 				}
 			}
 			return multi;

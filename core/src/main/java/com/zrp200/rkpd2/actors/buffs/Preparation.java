@@ -80,7 +80,7 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 		};
 
 		public float KOThreshold(){
-			return KOThresholds[ordinal()][Dungeon.hero.pointsInTalent(Talent.ENHANCED_LETHALITY)];
+			return KOThresholds[ordinal()][Dungeon.hero.pointsInTalent(Talent.ENHANCED_LETHALITY,Talent.RK_ASSASSIN)];
 		}
 
 		//1st index is prep level, 2nd is talent level
@@ -92,7 +92,7 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 		};
 
 		public int blinkDistance(){
-			return blinkRanges[ordinal()][Dungeon.hero.pointsInTalent(Talent.ASSASSINS_REACH)];
+			return blinkRanges[ordinal()][Dungeon.hero.pointsInTalent(Talent.ASSASSINS_REACH,Talent.RK_ASSASSIN)];
 		}
 		
 		public boolean canKO(Char defender){
@@ -264,7 +264,7 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 				GLog.w(Messages.get(Preparation.class, "no_target"));
 			} else {
 
-				if (Dungeon.hero.hasTalent(Talent.BOUNTY_HUNTER)) {
+				if (Dungeon.hero.hasTalent(Talent.BOUNTY_HUNTER,Talent.RK_ASSASSIN)) {
 					Buff.affect(Dungeon.hero, Talent.BountyHunterTracker.class, 0.0f);
 				}
 
