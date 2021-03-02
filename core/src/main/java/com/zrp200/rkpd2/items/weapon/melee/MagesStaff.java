@@ -150,31 +150,20 @@ public class MagesStaff extends MeleeWeapon {
 		}
 	}
 
-	@Override
-	public int proc(Char attacker, Char defender, int damage) {
-		if (attacker.buff(Talent.EmpoweredStrikeTracker.class) != null){
-			attacker.buff(Talent.EmpoweredStrikeTracker.class).detach();
-			damage = Math.round( damage * (1f + Dungeon.hero.pointsInTalent(Talent.EMPOWERED_STRIKE,Talent.RK_BATTLEMAGE)/6f));
-		}
+	public void procBM(Char defender, int damage) {
 
-		if (wand.curCharges == wand.maxCharges && attacker instanceof Hero && Random.Int(6) < ((Hero) attacker).pointsInTalent(Talent.EXCESS_CHARGE,Talent.RK_BATTLEMAGE)){
-			Buff.affect(attacker, Barrier.class).setShield(buffedLvl()*2);
+		if (wand.curCharges == wand.maxCharges && Random.Int(Dungeon.hero.hasTalent(Talent.EXCESS_CHARGE)?4:6) < Dungeon.hero.pointsInTalent(Talent.EXCESS_CHARGE,Talent.RK_BATTLEMAGE)){
+			Buff.affect(Dungeon.hero, Barrier.class).setShield(buffedLvl()*2);
 		}
-
-		if (attacker instanceof Hero && ((Hero) attacker).hasTalent(Talent.MYSTICAL_CHARGE,Talent.RK_BATTLEMAGE)){
-			Hero hero = (Hero) attacker;
-			for (Buff b : hero.buffs()){
-				if (b instanceof Artifact.ArtifactBuff) ((Artifact.ArtifactBuff) b).charge(hero, hero.pointsInTalent(Talent.MYSTICAL_CHARGE,Talent.RK_BATTLEMAGE)/2f);
+		if (Dungeon.hero.hasTalent(Talent.MYSTICAL_CHARGE,Talent.RK_BATTLEMAGE)){
+			for (Buff b : Dungeon.hero.buffs()){
+				if (b instanceof Artifact.ArtifactBuff) ((Artifact.ArtifactBuff) b).charge(Dungeon.hero, Dungeon.hero.pointsInTalent(Talent.MYSTICAL_CHARGE,Talent.RK_BATTLEMAGE)/2f/(Dungeon.hero.hasTalent(Talent.MYSTICAL_CHARGE)?1.5f:1f));
 			}
 		}
 
-		if (wand != null &&
-				attacker instanceof Hero && ((Hero) attacker).subClass == HeroSubClass.KING) {
-			if (wand.curCharges < wand.maxCharges) wand.partialCharge += 0.5f;
-			ScrollOfRecharging.charge((Hero)attacker);
-			wand.onHit(this, attacker, defender, damage);
-		}
-		return super.proc(attacker, defender, damage);
+		if (wand.curCharges < wand.maxCharges) wand.partialCharge += 0.5f;
+		ScrollOfRecharging.charge(Dungeon.hero);
+		wand.onHit(this, Dungeon.hero, defender, damage);
 	}
 
 	@Override

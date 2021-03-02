@@ -105,7 +105,19 @@ abstract public class Weapon extends KindOfWeapon {
 	public boolean curseInfusionBonus = false;
 	
 	@Override
-	public int proc( Char attacker, Char defender, int damage ) {
+	public int proc( Char attacker, Char defender, int damage) {
+
+		// battlemage logic here
+		if(attacker == Dungeon.hero && (Dungeon.hero.subClass == HeroSubClass.KING || Dungeon.hero.subClass == HeroSubClass.BATTLEMAGE)) {
+			MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
+			if(staff != null && (staff == this || Random.Int(4) < Dungeon.hero.pointsInTalent(Talent.WAR_MAGE))) {
+				if (Dungeon.hero.buff(Talent.EmpoweredStrikeTracker.class) != null){
+					Dungeon.hero.buff(Talent.EmpoweredStrikeTracker.class).detach();
+					damage = Math.round(damage*(1f + Dungeon.hero.pointsInTalent(Talent.EMPOWERED_STRIKE,Talent.RK_BATTLEMAGE)/6f/(Dungeon.hero.hasTalent(Talent.EMPOWERED_STRIKE)?1.5f:1)));
+				}
+				staff.procBM(defender,damage);
+			}
+		}
 
 		if (enchantment != null && attacker.buff(MagicImmune.class) == null) {
 			damage = enchantment.proc( this, attacker, defender, damage );
