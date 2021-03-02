@@ -71,8 +71,13 @@ public class Berserk extends Buff {
 		if (state == State.RECOVERING) levelRecovery = bundle.getFloat(LEVEL_RECOVERY);
 	}
 
+	// this basically covers all of berserker's "buffed" talents.
 	private boolean berserker() {
 		return target instanceof Hero && ((Hero)target).subClass == HeroSubClass.BERSERKER;
+	}
+
+	private static float levelRecoverStart() {
+		return LEVEL_RECOVER_START-0.5f*Dungeon.hero.pointsInTalent(Talent.BERSERKING_STAMINA,Talent.RK_BERSERKER);
 	}
 
 	protected float maxBerserkDuration() {
@@ -80,7 +85,6 @@ public class Berserk extends Buff {
 	}
 	@Override
 	public boolean act() {
-		if(state == State.RECOVERING && berserker()) recover(1/Hunger.STARVING); // you'll recover fully automatically after two full hunger cycles (900 turns)
 		if (berserking()){
 			ShieldBuff buff = target.buff(WarriorShield.class);
 			if (target.HP <= 0) {
@@ -100,7 +104,7 @@ public class Berserk extends Buff {
 				}
 			} else {
 				state = State.RECOVERING;
-				levelRecovery = LEVEL_RECOVER_START - 0.5f*Dungeon.hero.pointsInTalent(Talent.BERSERKING_STAMINA,Talent.RK_BERSERKER);
+				levelRecovery = levelRecoverStart();
 				if (buff != null) buff.absorbDamage(buff.shielding());
 				power = 0f;
 			}
@@ -121,8 +125,7 @@ public class Berserk extends Buff {
 	}
 
 	private float damageMult() {
-		// berserker gets that 2x damage from raging
-		return berserker() && berserking() ? 2 : Math.min(1.5f,1+power/2f);
+		return Math.min(1.5f,1+power/2f);
 	}
 	public int damageFactor(int dmg){
 		return Math.round(dmg * damageMult());
@@ -135,7 +138,7 @@ public class Berserk extends Buff {
 			if (shield != null){
 				state = State.BERSERK;
 				int shieldAmount = shield.maxShield() * 8;
-				shieldAmount = Math.round(shieldAmount * (1f + Dungeon.hero.pointsInTalent(Talent.BERSERKING_STAMINA,Talent.RK_BERSERKER)/6f));
+				shieldAmount = Math.round(shieldAmount * (1f + Dungeon.hero.pointsInTalent(Talent.BERSERKING_STAMINA,Talent.RK_BERSERKER)/(Dungeon.hero.hasTalent(Talent.BERSERKING_STAMINA)?4f:6f)));
 				shield.supercharge(shieldAmount);
 
 				SpellSprite.show(target, SpellSprite.BERSERK);
@@ -149,9 +152,9 @@ public class Berserk extends Buff {
 	}
 
 	private float rageFactor() {
-		float base = berserker() ? target.HP : target.HT;
-		// berserker has their rage gain increased by up to 2/3.
-		return base*2+target.HT;
+		Hero hero = (Hero)target;
+		float weight = 0.1f*hero.pointsInTalent(Talent.ENRAGED_CATALYST)+hero.pointsInTalent(Talent.ENDLESS_RAGE);
+		return weight*target.HP+(1-weight)*target.HT;
 	}
 
 	public float rageAmount(){
@@ -161,12 +164,12 @@ public class Berserk extends Buff {
 	public void damage(int damage){
 		if (state == State.RECOVERING && !berserker()) return;
 		float maxPower = 1f + 0.15f*((Hero)target).pointsInTalent(Talent.ENDLESS_RAGE,Talent.RK_BERSERKER);
-		power = Math.min(maxPower, power + (damage/(float)target.HT)/3f );
+		power = Math.min(maxPower, power + damage/rageFactor()/3f );
 		BuffIndicator.refreshHero(); //show new power immediately
 	}
 
 	public final float recovered() {
-		return state == State.RECOVERING ? 1-levelRecovery/2 : 1f;
+		return state == State.RECOVERING ? 1-levelRecovery/levelRecoverStart() : 1f;
 	}
 	public void recover(float percent){
 		if (levelRecovery > 0){

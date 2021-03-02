@@ -587,6 +587,15 @@ public class Hero extends Char {
 			//This is for that one guy, you shall get your fists of fury!
 			delay *= RingOfFuror.attackDelayMultiplier(this);
 		}
+		if(hasTalent(Talent.ONE_MAN_ARMY)) {
+			int enemies = 0;
+			for(int dir : PathFinder.NEIGHBOURS8) {
+				Char ch = Actor.findChar(pos+dir);
+				if(ch != null && ch.alignment == Alignment.ENEMY) enemies++;
+			}
+			// every additional enemy, not the first guy.
+			delay /= 1+0.1*Math.max(0,enemies-1)*pointsInTalent(Talent.ONE_MAN_ARMY);
+		}
 		return delay;
 	}
 
