@@ -591,12 +591,6 @@ public abstract class Mob extends Char {
 		SoulMark soulMark = buff(SoulMark.class);
 		if(soulMark != null) soulMark.proc(enemy,this,damage);
 
-		if(enemy == Dungeon.hero && Dungeon.hero.subClass == HeroSubClass.WARLOCK) {
-			// TODO bind to talent?
-			// warlock can soul mark by simply attacking.
-			SoulMark.process(this,Dungeon.hero.belongings.weapon.buffedLvl(),1,true);
-		}
-
 		return damage;
 	}
 

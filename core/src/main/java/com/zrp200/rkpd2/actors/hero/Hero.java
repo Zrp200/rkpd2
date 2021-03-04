@@ -51,6 +51,7 @@ import com.zrp200.rkpd2.actors.buffs.Momentum;
 import com.zrp200.rkpd2.actors.buffs.Paralysis;
 import com.zrp200.rkpd2.actors.buffs.Regeneration;
 import com.zrp200.rkpd2.actors.buffs.SnipersMark;
+import com.zrp200.rkpd2.actors.buffs.SoulMark;
 import com.zrp200.rkpd2.actors.buffs.Vertigo;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.Monk;
@@ -1135,7 +1136,10 @@ public class Hero extends Char {
 					}
 					staff.procBM(enemy,damage);
 				}
-				break;
+		}
+		if(hasTalent(Talent.WARLOCKS_TOUCH)) {
+			// warlock can soul mark by simply attacking with warlock's touch.
+			SoulMark.process(this,(wep != null ? wep.buffedLvl():0)+pointsInTalent(Talent.WARLOCKS_TOUCH),1,true);
 		}
 		if (wep != null) damage = wep.proc( this, enemy, damage );
 
