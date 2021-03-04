@@ -1124,22 +1124,18 @@ public class Hero extends Char {
 		
 		KindOfWeapon wep = belongings.weapon;
 
-		if(subClass == HeroSubClass.BATTLEMAGE) {
-			// bm effects happen for all weapons, staff just benefits way more.
-			MagesStaff staff; float i;
-			if(wep instanceof MagesStaff) { staff=(MagesStaff)wep; i=1f; }
-			else {
-				staff = belongings.getItem(MagesStaff.class);
-				i = .4f;
-			}
-			if(staff != null) {
-				if(staff.wand().curCharges < staff.wand().maxCharges)
-				{
-					staff.gainCharge(i*.5f);
-					ScrollOfRecharging.charge(this,i);
+		// subclass logic here
+		switch(subClass) {
+			case KING: case BATTLEMAGE:
+				MagesStaff staff = belongings.getItem(MagesStaff.class);
+				if(staff != null && (staff == wep || Random.Int(4) < pointsInTalent(Talent.WAR_MAGE))) {
+					if (buff(Talent.EmpoweredStrikeTracker.class) != null){
+						buff(Talent.EmpoweredStrikeTracker.class).detach();
+						damage = Math.round(damage*(1f + pointsInTalent(Talent.EMPOWERED_STRIKE,Talent.RK_BATTLEMAGE)/6f/(hasTalent(Talent.EMPOWERED_STRIKE)?1.5f:1)));
+					}
+					staff.procBM(enemy,damage);
 				}
-				staff.wand().onHit( staff,this, enemy, damage );
-			}
+				break;
 		}
 		if (wep != null) damage = wep.proc( this, enemy, damage );
 
