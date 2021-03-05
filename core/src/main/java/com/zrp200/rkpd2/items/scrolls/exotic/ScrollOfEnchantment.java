@@ -68,7 +68,7 @@ public class ScrollOfEnchantment extends ExoticScroll {
 		int i=0;
 		for(Class enchantClass : existing) toIgnore[i++] = enchantClass;
 		// 33% for it to be ignored and thus making it impossible to be replaced.
-		for(Class enchantClass : SpiritBow.REMOVED_ENCHANTS) if(Random.Int(3) == 0) toIgnore[i++] = enchantClass;
+		for(Class enchantClass : SpiritBow.REMOVED_ENCHANTS) if(Random.Int(2) == 0) toIgnore[i++] = enchantClass;
 		return toIgnore;
 	}
 
@@ -82,12 +82,10 @@ public class ScrollOfEnchantment extends ExoticScroll {
 		if(weapon instanceof SpiritBow) {
 			// essentially a find and replace with priorities.
 			// this means that they're all technically obtainable (aside from blocking)
-			// overall effect here is that blocking is removed from the pool and shocking and lucky are much less common.
-			if(enchants[1] instanceof Blocking) enchants[1] = new Explosive();
-			if(enchants[0] instanceof Shocking) enchants[0] = new Explosive();
-			if(enchants[1] instanceof Lucky) enchants[1] = new Explosive();
+			// overall effect here is that blocking and lucky are removed from the pool.
+			if(enchants[1] instanceof Blocking || enchants[1] instanceof Lucky) enchants[1] = new Explosive();
 			// if they show up in the third slot they are replaced with grim
-			if(enchants[2] instanceof Blocking || enchants[2] instanceof Lucky || enchants[2] instanceof Shocking) enchants[2] = new Grim();
+			if(enchants[2] instanceof Blocking || enchants[2] instanceof Lucky) enchants[2] = Random.Int(3) == 0 || enchants[1] instanceof Explosive ? new Grim() : new Explosive();
 		}
 
 		GameScene.show(new WndOptions(Messages.titleCase(new ScrollOfEnchantment().name()),
