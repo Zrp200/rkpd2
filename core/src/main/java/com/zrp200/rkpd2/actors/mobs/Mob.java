@@ -726,7 +726,7 @@ public abstract class Mob extends Char {
 
 		//bounty hunter talent
 		if (Dungeon.hero.buff(Talent.BountyHunterTracker.class) != null){
-			Dungeon.level.drop(new Gold(10 * Dungeon.hero.pointsInTalent(Talent.BOUNTY_HUNTER,Talent.RK_ASSASSIN)), pos).sprite.drop();
+			Dungeon.level.drop(new Gold((Dungeon.hero.hasTalent(Talent.BOUNTY_HUNTER) ? 25 : 10) * Dungeon.hero.pointsInTalent(Talent.BOUNTY_HUNTER,Talent.RK_ASSASSIN)), pos).sprite.drop();
 		}
 
 	}

@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -102,7 +103,9 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 	
 	public int evasionBonus( int heroLvl, int excessArmorStr ){
 		if (freerunTurns > 0) {
-			return heroLvl/2 + excessArmorStr*Dungeon.hero.pointsInTalent(Talent.EVASIVE_ARMOR,Talent.RK_FREERUNNER);
+			return heroLvl/2 + excessArmorStr*(
+					(Random.round((4+heroLvl)*Dungeon.hero.pointsInTalent(Talent.EVASIVE_ARMOR)/16f)) // this effectively allows fractional evasion.
+							+ Dungeon.hero.pointsInTalent(Talent.RK_FREERUNNER));
 		} else {
 			return 0;
 		}
