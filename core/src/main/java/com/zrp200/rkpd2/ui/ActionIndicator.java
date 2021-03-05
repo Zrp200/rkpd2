@@ -23,6 +23,11 @@ package com.zrp200.rkpd2.ui;
 
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.SPDAction;
+import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.Combo;
+import com.zrp200.rkpd2.actors.buffs.Momentum;
+import com.zrp200.rkpd2.actors.buffs.Preparation;
+import com.zrp200.rkpd2.actors.buffs.SnipersMark;
 import com.zrp200.rkpd2.scenes.PixelScene;
 import com.watabou.input.GameAction;
 import com.watabou.noosa.Image;
@@ -104,9 +109,21 @@ public class ActionIndicator extends Tag {
 		updateIcon();
 	}
 
+	// list of action buffs that we should replace it with.
+	private static final Class<?extends Buff>[] actionBuffClasses = new Class[]{Preparation.class, SnipersMark.class, Combo.class, Momentum.class};
 	public static void clearAction(Action action){
-		if (ActionIndicator.action == action)
-			ActionIndicator.action = null;
+		if (ActionIndicator.action != action) return;
+		ActionIndicator.action = null;
+		for(Class<?extends Buff> actionBuffClass : actionBuffClasses) {
+			Buff b = Dungeon.hero.buff(actionBuffClass);
+			if(b != null && b != action) {
+				if(actionBuffClass == Combo.class) {
+					if(((Combo)b).getHighestMove() == null) continue;
+				}
+				setAction((Action)b);
+				return;
+			}
+		}
 	}
 
 	public static void updateIcon(){
