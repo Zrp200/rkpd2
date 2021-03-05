@@ -96,7 +96,9 @@ public class Combo extends Buff implements ActionIndicator.Action {
 
 		//TODO this won't count a kill on an enemy that gets corruped by corrupting I think?
 		if (!enemy.isAlive() || enemy.buff(Corruption.class) != null){
-			comboTime = Math.max(comboTime, 10*((Hero)target).pointsInTalent(Talent.CLEAVE,Talent.RK_GLADIATOR));
+			Hero hero = (Hero)target;
+			int multiplier = hero.hasTalent(Talent.CLEAVE) ? 10 : 15;
+			comboTime = Math.max(comboTime, multiplier*hero.pointsInTalent(Talent.CLEAVE,Talent.RK_GLADIATOR));
 		}
 
 		initialComboTime = comboTime;
@@ -371,7 +373,8 @@ public class Combo extends Buff implements ActionIndicator.Action {
 							if (!ch.isAlive()) {
 								if (hero.hasTalent(Talent.LETHAL_DEFENSE,Talent.RK_GLADIATOR) && hero.buff(BrokenSeal.WarriorShield.class) != null){
 									BrokenSeal.WarriorShield shield = hero.buff(BrokenSeal.WarriorShield.class);
-									shield.supercharge(Math.round(shield.maxShield() * hero.pointsInTalent(Talent.LETHAL_DEFENSE,Talent.RK_GLADIATOR)/3f));
+									shield.supercharge(Math.round(shield.maxShield() * hero.pointsInTalent(Talent.LETHAL_DEFENSE,Talent.RK_GLADIATOR)
+											/(hero.hasTalent(Talent.LETHAL_DEFENSE)?2f:3f)));
 								}
 							}
 						}
