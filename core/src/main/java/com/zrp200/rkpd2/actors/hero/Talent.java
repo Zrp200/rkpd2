@@ -149,7 +149,7 @@ public enum Talent {
 	int maxPoints;
 
 	// tiers 1/2/3/4 start at levels 2/7/13/21
-	public static int[] tierLevelThresholds = new int[]{0, 2, 7, 13, 21, 31};
+	public static int[] tierLevelThresholds = new int[]{0, 2, 7, 13, 21+4, 31};
 
 	Talent(int icon ){
 		this(icon, 2);
