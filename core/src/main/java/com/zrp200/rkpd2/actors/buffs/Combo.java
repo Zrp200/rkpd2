@@ -287,6 +287,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 	private void doAttack(final Char enemy){
 
 		AttackIndicator.target(enemy);
+		Buff.detach(target, Preparation.class); // not the point, otherwise this would be all that's done.
 
 		boolean wasAlly = enemy.alignment == target.alignment;
 		Hero hero = (Hero)target;

@@ -25,6 +25,8 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.PixelScene;
+import com.zrp200.rkpd2.ui.ActionIndicator;
+import com.zrp200.rkpd2.ui.RedButton;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
 import com.zrp200.rkpd2.ui.Window;
 import com.watabou.gltextures.SmartTexture;
@@ -63,6 +65,21 @@ public class WndInfoBuff extends Window {
 		txtInfo.setPos(titlebar.left(), titlebar.bottom() + 2*GAP);
 		add( txtInfo );
 
-		resize( WIDTH, (int)txtInfo.bottom() + 2 );
+		float bottom = txtInfo.bottom()+2;
+
+		if(buff instanceof ActionIndicator.Action && ActionIndicator.action != buff) {
+			RedButton button = new RedButton("Set Active") {
+				@Override
+				protected void onClick() {
+					hide();
+					ActionIndicator.setAction((ActionIndicator.Action)buff);
+				}
+			};
+			button.setRect(0,bottom+2,WIDTH,16);
+			bottom = button.bottom()+2;
+			add(button);
+		}
+
+		resize( WIDTH, (int)bottom );
 	}
 }

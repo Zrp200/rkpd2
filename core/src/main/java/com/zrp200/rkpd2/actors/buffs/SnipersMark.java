@@ -133,7 +133,9 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		
 		bow.sniperSpecial = true;
 		bow.sniperSpecialBonusDamage = level*Dungeon.hero.pointsInTalent(Talent.SHARED_UPGRADES,Talent.RK_SNIPER)/15f;
-		
+
+		Buff.detach(target, Preparation.class); // nope!
+
 		arrow.cast(hero, cell);
 		detach();
 		
