@@ -93,7 +93,8 @@ public class NewCavesBossLevel extends Level {
 		setSize(WIDTH, HEIGHT);
 
 		//These signs are visually overridden with custom tile visuals
-		Painter.fill(this, gate, Terrain.SIGN);
+		// me: WHY???
+		Painter.fill(this, gate, Terrain.LOCKED_EXIT);
 
 		//set up main boss arena
 		Painter.fillEllipse(this, mainArena, Terrain.EMPTY);
@@ -231,7 +232,7 @@ public class NewCavesBossLevel extends Level {
 
 		//seal the level when the hero moves off the entrance, the level isn't already sealed, and the gate hasn't been destroyed
 		int gatePos = pointToCell(new Point(gate.left, gate.top));
-		if (ch == Dungeon.hero && ch.pos != entrance && !locked && solid[gatePos]){
+		if (ch == Dungeon.hero && distance(ch.pos,entrance) > 1 && !locked && solid[gatePos]){
 
 			seal();
 
