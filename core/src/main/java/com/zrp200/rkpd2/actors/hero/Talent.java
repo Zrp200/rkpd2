@@ -267,6 +267,7 @@ public enum Talent {
 		if (hero.hasTalent(ROYAL_MEAL)) {
 			//effectively 1/2 turns of haste
 			Buff.prolong( hero, Haste.class, 0.67f+hero.pointsInTalent(ROYAL_MEAL));
+			hero.sprite.emitter().burst(Speck.factory(Speck.JET), 4*hero.pointsInTalent(ROYAL_MEAL));
 		}
 	}
 
@@ -348,7 +349,6 @@ public enum Talent {
 	public static void onUpgradeScrollUsed( Hero hero ){
 		if (hero.hasTalent(ENERGIZING_UPGRADE,RESTORATION)){
 			int charge = 1+hero.pointsInTalent(ENERGIZING_UPGRADE,RESTORATION);
-			if(hero.hasTalent(ENERGIZING_UPGRADE)) charge = (int)Math.ceil(charge*1.5f);
 			MagesStaff staff = hero.belongings.getItem(MagesStaff.class);
 			if(hero.hasTalent(ENERGIZING_UPGRADE)) {
 				hero.belongings.charge(charge, true);
