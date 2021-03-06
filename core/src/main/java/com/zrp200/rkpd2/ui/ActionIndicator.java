@@ -105,6 +105,7 @@ public class ActionIndicator extends Tag {
 	}
 
 	public static void setAction(Action action){
+		if(!action.usable()) return;
 		ActionIndicator.action = action;
 		updateIcon();
 	}
@@ -115,12 +116,12 @@ public class ActionIndicator extends Tag {
 		if (ActionIndicator.action != action) return;
 		ActionIndicator.action = null;
 		for(Class<?extends Buff> actionBuffClass : actionBuffClasses) {
-			Buff b = Dungeon.hero.buff(actionBuffClass);
-			if(b != null && b != action) {
+			Action a = (Action)Dungeon.hero.buff(actionBuffClass);
+			if(a != null && a != action && action.usable()) {
 				if(actionBuffClass == Combo.class) {
-					if(((Combo)b).getHighestMove() == null) continue;
+					if(((Combo)a).getHighestMove() == null) continue;
 				}
-				setAction((Action)b);
+				setAction(a);
 				return;
 			}
 		}
@@ -146,6 +147,8 @@ public class ActionIndicator extends Tag {
 		public Image getIcon();
 
 		public void doAction();
+
+		default boolean usable() { return true; }
 
 	}
 

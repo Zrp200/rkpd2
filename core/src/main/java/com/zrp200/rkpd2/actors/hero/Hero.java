@@ -403,7 +403,7 @@ public class Hero extends Char {
 		belongings.weapon = belongings.stashedWeapon;
 		belongings.stashedWeapon = null;
 		
-		if (hit && subClass == HeroSubClass.GLADIATOR || subClass == HeroSubClass.KING){
+		if (hit && (subClass == HeroSubClass.GLADIATOR || subClass == HeroSubClass.KING)){
 			Buff.affect( this, Combo.class ).hit( enemy );
 		}
 

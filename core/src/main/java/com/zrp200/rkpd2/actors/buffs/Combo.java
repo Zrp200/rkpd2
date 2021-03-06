@@ -189,6 +189,11 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		GameScene.show(new WndCombo(this));
 	}
 
+	@Override
+	public boolean usable() {
+		return getHighestMove() != null;
+	}
+
 	public enum ComboMove {
 		CLOBBER(2, 0xFF00FF00),
 		SLAM   (4, 0xFFCCFF00),
