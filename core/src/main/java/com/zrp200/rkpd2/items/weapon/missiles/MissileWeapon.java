@@ -148,7 +148,7 @@ abstract public class MissileWeapon extends Weapon {
 		if (container instanceof MagicalHolster) holster = true;
 		return super.collect(container);
 	}
-	
+
 	@Override
 	public int throwPos(Hero user, int dst) {
 
@@ -162,6 +162,10 @@ abstract public class MissileWeapon extends Weapon {
 					projecting = true;
 				}
 			}
+		}
+		if(!projecting && Dungeon.hero.hasTalent(Talent.WAR_MAGE)) { // yes this is being given for free. go figure.
+			MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
+			projecting = staff != null && staff.wand() instanceof WandOfDisintegration;
 		}
 
 		if (projecting && !Dungeon.level.solid[dst] && Dungeon.level.distance(user.pos, dst) <= 4){

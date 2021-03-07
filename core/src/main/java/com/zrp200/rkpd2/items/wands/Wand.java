@@ -176,15 +176,22 @@ public abstract class Wand extends Item {
 		charger.setScaleFactor( chargeScaleFactor );
 	}
 
-	protected void processSoulMark(Char target, int chargesUsed){
-		processSoulMark(target, buffedLvl(), chargesUsed, this instanceof DamageWand);
+	protected void processSoulMark(Char target, int chargesUsed) {
+		processSoulMark(target, buffedLvl(), chargesUsed, this instanceof DamageWand, 0);
+	}
+	protected void processSoulMark(Char target, int chargesUsed, int damage){
+		processSoulMark(target, buffedLvl(), chargesUsed, this instanceof DamageWand, damage);
 	}
 
 	//TODO some naming issues here. Consider renaming this method and externalizing char awareness buff
-	protected static void processSoulMark(Char target, int wandLevel, int chargesUsed, boolean delay){
+	protected static void processSoulMark(Char target, int wandLevel, int chargesUsed, boolean delay, int damage){
 		if (Dungeon.hero.hasTalent(Talent.ARCANE_VISION,Talent.KINGS_VISION)) {
 			int dur = 5 + 5*Dungeon.hero.pointsInTalent(Talent.ARCANE_VISION,Talent.KINGS_VISION);
 			Buff.append(Dungeon.hero, TalismanOfForesight.CharAwareness.class, dur).charID = target.id();
+		}
+		if(Random.Int(4) < Dungeon.hero.pointsInTalent(Talent.WAR_MAGE)) {
+			MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
+			if(staff != null) staff.wand().onHit(staff,Dungeon.hero,target,damage);
 		}
 
 		SoulMark.process(target,wandLevel,chargesUsed,delay);

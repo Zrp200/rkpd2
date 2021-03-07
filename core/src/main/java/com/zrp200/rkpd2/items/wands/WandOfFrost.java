@@ -78,7 +78,7 @@ public class WandOfFrost extends DamageWand {
 				ch.sprite.burst( 0xFF99CCFF, buffedLvl() / 2 + 2 );
 			}
 
-			processSoulMark(ch, chargesPerCast());
+			processSoulMark(ch, chargesPerCast(), damage);
 			ch.damage(damage, this);
 			Sample.INSTANCE.play( Assets.Sounds.HIT_MAGIC, 1, 1.1f * Random.Float(0.87f, 1.15f) );
 

@@ -156,7 +156,10 @@ public class WandOfCorruption extends Wand {
 			
 			//100% health: 5x resist   75%: 3.25x resist   50%: 2x resist   25%: 1.25x resist
 			enemyResist *= 1 + 4*Math.pow(enemy.HP/(float)enemy.HT, 2);
-			
+
+			processSoulMark(ch, chargesPerCast());
+			Sample.INSTANCE.play( Assets.Sounds.HIT_MAGIC, 1, 0.8f * Random.Float(0.87f, 1.15f) );
+
 			//debuffs placed on the enemy reduce their resistance
 			for (Buff buff : enemy.buffs()){
 				if (MAJOR_DEBUFFS.containsKey(buff.getClass()))         enemyResist *= (1f-MAJOR_DEBUFF_WEAKEN);
@@ -180,9 +183,6 @@ public class WandOfCorruption extends Wand {
 				}
 			}
 
-			processSoulMark(ch, chargesPerCast());
-			Sample.INSTANCE.play( Assets.Sounds.HIT_MAGIC, 1, 0.8f * Random.Float(0.87f, 1.15f) );
-			
 		} else {
 			Dungeon.level.pressCell(bolt.collisionPos);
 		}

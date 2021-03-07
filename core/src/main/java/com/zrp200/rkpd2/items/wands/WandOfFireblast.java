@@ -111,9 +111,10 @@ public class WandOfFireblast extends DamageWand {
 			}
 		}
 
+		int damage;
 		for ( Char ch : affectedChars ){
-			processSoulMark(ch, chargesPerCast());
-			ch.damage(damageRoll(), this);
+			processSoulMark(ch, chargesPerCast(), damage = damageRoll());
+			ch.damage(damage, this);
 			if (ch.isAlive()) {
 				Buff.affect(ch, Burning.class).reignite(ch);
 				switch (chargesPerCast()) {

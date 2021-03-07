@@ -82,8 +82,9 @@ public class WandOfBlastWave extends DamageWand {
 			Char ch = Actor.findChar(bolt.collisionPos + i);
 
 			if (ch != null){
-				processSoulMark(ch, chargesPerCast());
-				if (ch.alignment != Char.Alignment.ALLY) ch.damage(damageRoll(), this);
+				int damage = damageRoll();
+				processSoulMark(ch, chargesPerCast(), damage);
+				if (ch.alignment != Char.Alignment.ALLY) ch.damage(damage, this);
 
 				if (ch.isAlive() && ch.pos == bolt.collisionPos + i) {
 					Ballistica trajectory = new Ballistica(ch.pos, ch.pos + i, Ballistica.MAGIC_BOLT);

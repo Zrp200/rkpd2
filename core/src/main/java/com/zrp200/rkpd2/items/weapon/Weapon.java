@@ -205,7 +205,7 @@ abstract public class Weapon extends KindOfWeapon {
 		if(hasEnchant(Projecting.class, owner)) reach++;
 		if(owner instanceof Hero) {
 			Hero hero = (Hero) owner;
-			if(hero.subClass == HeroSubClass.BATTLEMAGE) {
+			if(hero.hasTalent(Talent.WAR_MAGE)) {
 				MagesStaff staff = hero.belongings.getItem(MagesStaff.class);
 				if(staff != null && staff.wand() instanceof WandOfDisintegration) reach++;
 			}
