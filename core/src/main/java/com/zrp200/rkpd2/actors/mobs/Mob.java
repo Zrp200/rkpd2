@@ -675,7 +675,9 @@ public abstract class Mob extends Char {
 
 		if (!(this instanceof Wraith)
 				&& soulMarked
-				&& Random.Int(10) < Dungeon.hero.pointsInTalent(Talent.NECROMANCERS_MINIONS,Talent.RK_WARLOCK)){
+				&& Random.Float() < (Dungeon.hero.hasTalent(Talent.NECROMANCERS_MINIONS)
+					? .15f*Dungeon.hero.pointsInTalent(Talent.NECROMANCERS_MINIONS)
+					: .1f*Dungeon.hero.pointsInTalent(Talent.RK_WARLOCK))){
 			Wraith w = Wraith.spawnAt(pos);
 			if (w != null) {
 				Buff.affect(w, Corruption.class);
@@ -720,7 +722,9 @@ public abstract class Mob extends Char {
 
 		//soul eater talent
 		if (buff(SoulMark.class) != null &&
-				Random.Int(10) < Dungeon.hero.pointsInTalent(Talent.SOUL_EATER,Talent.RK_WARLOCK)){
+				Random.Float() < Math.max(
+						.15f*Dungeon.hero.pointsInTalent(Talent.SOUL_EATER),
+						.10f*Dungeon.hero.pointsInTalent(Talent.RK_WARLOCK))){
 			Talent.onFoodEaten(Dungeon.hero, 0, null);
 		}
 

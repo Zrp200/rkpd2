@@ -84,7 +84,9 @@ public class SoulMark extends FlavourBuff {
 		}
 		if(restoration > 0)
 		{
-			Buff.affect(Dungeon.hero, Hunger.class).affectHunger(restoration*Dungeon.hero.pointsInTalent(Talent.SOUL_EATER,Talent.RK_WARLOCK)/3f);
+			Buff.affect(Dungeon.hero, Hunger.class).affectHunger(restoration*Math.max(
+					Dungeon.hero.pointsInTalent(Talent.SOUL_EATER)/2f,
+					Dungeon.hero.pointsInTalent(Talent.RK_WARLOCK)/3f));
 			Dungeon.hero.HP = (int) Math.ceil(Math.min(Dungeon.hero.HT, Dungeon.hero.HP + (restoration * 0.4f)));
 			Dungeon.hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), 1);
 		}

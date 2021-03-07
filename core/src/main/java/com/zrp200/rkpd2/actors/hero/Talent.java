@@ -245,7 +245,9 @@ public enum Talent {
 		if (hero.hasTalent(ENERGIZING_MEAL_I,ROYAL_MEAL)){
 			//5/8 turns of recharging for rat king, 4/6 for mage.
 			int points = hero.pointsInTalent(ENERGIZING_MEAL_I,ROYAL_MEAL);
-			Buff.prolong( hero, Recharging.class, 2 + 3*points - hero.pointsInTalent(ENERGIZING_MEAL_I) );
+			int duration = 2 + 3*points;
+			if(hero.hasTalent(ENERGIZING_MEAL_I)) Buff.affect( hero, Recharging.class, duration - hero.pointsInTalent(ENERGIZING_MEAL_I));
+			else								  Buff.prolong(hero, Recharging.class, duration);
 			ScrollOfRecharging.charge( hero );
 		}
 		if (hero.hasTalent(ENERGIZING_MEAL_II)) {
@@ -256,8 +258,9 @@ public enum Talent {
 		if (hero.hasTalent(MYSTICAL_MEAL,ROYAL_MEAL)){
 			//3/5 turns of recharging
 			int duration = 1 + 2*(hero.pointsInTalent(MYSTICAL_MEAL)+hero.pointsInTalent(ROYAL_MEAL));
-			if(hero.hasTalent(MYSTICAL_MEAL)) duration *= 2;
-			Buff.affect( hero, ArtifactRecharge.class).set(duration).ignoreHornOfPlenty = foodSource instanceof HornOfPlenty && !hero.hasTalent(MYSTICAL_MEAL);
+			ArtifactRecharge artifactRecharge = Buff.affect( hero, ArtifactRecharge.class);
+			if(hero.hasTalent(MYSTICAL_MEAL)) artifactRecharge.prolong((float)Math.ceil(duration*1.5)); // 5-8 turns of recharge!!!
+			else artifactRecharge.set(duration).ignoreHornOfPlenty = foodSource instanceof HornOfPlenty && !hero.hasTalent(MYSTICAL_MEAL);
 			ScrollOfRecharging.charge( hero );
 		}
 		if (hero.hasTalent(INVIGORATING_MEAL)) {
