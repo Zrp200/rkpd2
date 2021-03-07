@@ -135,7 +135,7 @@ public class RatKingArmor extends ClassArmor{
                                         remove(this);
                                         return true;
                                     }
-                                }, 3);
+                                }, 2f);
                                 curUser.spendAndNext(3);
                             }
                         }
