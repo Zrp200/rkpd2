@@ -347,7 +347,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 						trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);
 						//knock them back along that ballistica, ensuring they don't fall into a pit
 						int dist = 2;
-						if (count >= 7 && hero.pointsInTalent(Talent.ENHANCED_COMBO,Talent.RK_GLADIATOR) >= 1){
+						if (hero.pointsInTalent(Talent.ENHANCED_COMBO) >= 1 && count >= 4 || count >= 7 && hero.pointsInTalent(Talent.RK_GLADIATOR) >= 1){
 							dist ++;
 							Buff.prolong(enemy, Vertigo.class, 3);
 						} else {
@@ -467,7 +467,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 
 			} else if (!((Hero)target).canAttack(enemy)){
 				if (((Hero) target).pointsInTalent(Talent.ENHANCED_COMBO,Talent.RK_GLADIATOR) < 3
-					|| Dungeon.level.distance(target.pos, enemy.pos) > 1 + target.buff(Combo.class).count/3){
+					|| Dungeon.level.distance(target.pos, enemy.pos) > 1 + target.buff(Combo.class).count/(((Hero)target).hasTalent(Talent.ENHANCED_COMBO)?2:3)){
 					GLog.w(Messages.get(Combo.class, "bad_target"));
 				} else {
 					Ballistica c = new Ballistica(target.pos, enemy.pos, Ballistica.PROJECTILE);
