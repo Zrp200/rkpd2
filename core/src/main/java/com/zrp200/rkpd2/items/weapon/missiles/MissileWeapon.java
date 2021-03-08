@@ -32,7 +32,6 @@ import com.zrp200.rkpd2.actors.buffs.Momentum;
 import com.zrp200.rkpd2.actors.buffs.PinCushion;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
-import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.bags.Bag;
@@ -163,7 +162,7 @@ abstract public class MissileWeapon extends Weapon {
 				}
 			}
 		}
-		if(!projecting && Dungeon.hero.hasTalent(Talent.WAR_MAGE)) { // yes this is being given for free. go figure.
+		if(!projecting && Random.Int(3) < Dungeon.hero.pointsInTalent(Talent.SORCERY)) { // just like shared enchant... yay.
 			MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
 			projecting = staff != null && staff.wand() instanceof WandOfDisintegration;
 		}

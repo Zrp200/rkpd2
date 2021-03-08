@@ -85,7 +85,6 @@ import com.zrp200.rkpd2.items.potions.Potion;
 import com.zrp200.rkpd2.items.potions.PotionOfExperience;
 import com.zrp200.rkpd2.items.potions.PotionOfHealing;
 import com.zrp200.rkpd2.items.potions.elixirs.ElixirOfMight;
-import com.zrp200.rkpd2.items.rings.Ring;
 import com.zrp200.rkpd2.items.rings.RingOfAccuracy;
 import com.zrp200.rkpd2.items.rings.RingOfEvasion;
 import com.zrp200.rkpd2.items.rings.RingOfForce;
@@ -95,9 +94,8 @@ import com.zrp200.rkpd2.items.rings.RingOfMight;
 import com.zrp200.rkpd2.items.rings.RingOfTenacity;
 import com.zrp200.rkpd2.items.scrolls.Scroll;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfMagicMapping;
-import com.zrp200.rkpd2.items.scrolls.ScrollOfRecharging;
+import com.zrp200.rkpd2.items.wands.WandOfDisintegration;
 import com.zrp200.rkpd2.items.wands.WandOfLivingEarth;
-import com.zrp200.rkpd2.items.wands.WandOfWarding;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.enchantments.Blocking;
@@ -567,7 +565,8 @@ public class Hero extends Char {
 		if (wep != null){
 			return wep.canReach(this, enemy.pos);
 		} else {
-			return false;
+			MagesStaff staff = belongings.getItem(MagesStaff.class);
+			return distance(enemy) == 2 && staff != null && staff.wandClass() == WandOfDisintegration.class && Random.Int(3) < pointsInTalent(Talent.SORCERY);
 		}
 	}
 	
@@ -1129,13 +1128,17 @@ public class Hero extends Char {
 		switch(subClass) {
 			case KING: case BATTLEMAGE:
 				MagesStaff staff = belongings.getItem(MagesStaff.class);
-				if(staff != null && (staff == wep || Random.Int(4) < pointsInTalent(Talent.WAR_MAGE))) {
-					if (buff(Talent.EmpoweredStrikeTracker.class) != null){
-						buff(Talent.EmpoweredStrikeTracker.class).detach();
-						damage = Math.round(damage*(1f + pointsInTalent(Talent.EMPOWERED_STRIKE,Talent.RK_BATTLEMAGE)/6f/(hasTalent(Talent.EMPOWERED_STRIKE)?1.5f:1)));
+				if(staff != null && (staff == wep || hasTalent(Talent.SORCERY))){
+					if(staff == wep || Random.Int(12) < 3+pointsInTalent(Talent.SORCERY)) {
+						if (buff(Talent.EmpoweredStrikeTracker.class) != null) {
+							buff(Talent.EmpoweredStrikeTracker.class).detach();
+							damage = Math.round(damage * (1f + pointsInTalent(Talent.EMPOWERED_STRIKE, Talent.RK_BATTLEMAGE) / 6f / (hasTalent(Talent.EMPOWERED_STRIKE) ? 1.5f : 1)));
+							staff.procBM();
+						}
 					}
-					staff.procBM(enemy,damage);
-				}
+					if(staff == wep || Random.Int(3) < pointsInTalent())
+						staff.procWand(enemy, damage);
+					}
 		}
 		if(hasTalent(Talent.WARLOCKS_TOUCH)) {
 			// warlock can soul mark by simply attacking with warlock's touch.

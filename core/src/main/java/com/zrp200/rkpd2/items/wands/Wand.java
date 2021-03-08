@@ -35,7 +35,6 @@ import com.zrp200.rkpd2.actors.buffs.Recharging;
 import com.zrp200.rkpd2.actors.buffs.ScrollEmpower;
 import com.zrp200.rkpd2.actors.buffs.SoulMark;
 import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.MagicMissile;
@@ -189,9 +188,13 @@ public abstract class Wand extends Item {
 			int dur = 5 + 5*Dungeon.hero.pointsInTalent(Talent.ARCANE_VISION,Talent.KINGS_VISION);
 			Buff.append(Dungeon.hero, TalismanOfForesight.CharAwareness.class, dur).charID = target.id();
 		}
-		if(Random.Int(4) < Dungeon.hero.pointsInTalent(Talent.WAR_MAGE)) {
+		int sorcery = Dungeon.hero.pointsInTalent(Talent.SORCERY);
+		if(sorcery > 0) {
 			MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
-			if(staff != null) staff.wand().onHit(staff,Dungeon.hero,target,damage);
+			if(staff != null) {
+				if (Random.Int(12) < 3 + sorcery) staff.procBM();
+				if (Random.Int(3) < sorcery) staff.procWand(target, damage);
+			}
 		}
 
 		SoulMark.process(target,wandLevel,chargesUsed,delay);

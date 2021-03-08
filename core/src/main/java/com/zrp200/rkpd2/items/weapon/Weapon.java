@@ -54,7 +54,6 @@ import com.zrp200.rkpd2.items.weapon.enchantments.Projecting;
 import com.zrp200.rkpd2.items.weapon.enchantments.Shocking;
 import com.zrp200.rkpd2.items.weapon.enchantments.Unstable;
 import com.zrp200.rkpd2.items.weapon.enchantments.Vampiric;
-import com.zrp200.rkpd2.items.weapon.melee.BattleAxe;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSprite;
@@ -205,9 +204,9 @@ abstract public class Weapon extends KindOfWeapon {
 		if(hasEnchant(Projecting.class, owner)) reach++;
 		if(owner instanceof Hero) {
 			Hero hero = (Hero) owner;
-			if(hero.hasTalent(Talent.WAR_MAGE)) {
-				MagesStaff staff = hero.belongings.getItem(MagesStaff.class);
-				if(staff != null && staff.wand() instanceof WandOfDisintegration) reach++;
+			MagesStaff staff = hero.belongings.getItem(MagesStaff.class);
+			if(hero.subClass == HeroSubClass.BATTLEMAGE && staff != null && staff.wandClass() == WandOfDisintegration.class) {
+				if(staff == this || Random.Int(3) < hero.pointsInTalent(Talent.SORCERY)) reach++;
 			}
 		}
 		return reach;
