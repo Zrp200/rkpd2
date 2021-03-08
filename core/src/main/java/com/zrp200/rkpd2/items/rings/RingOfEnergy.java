@@ -42,7 +42,7 @@ public class RingOfEnergy extends Ring {
 		for(int i=0; i < 2; i++)
 			args[i] = new DecimalFormat("#.##").format(100*(Math.pow(effect[i],soloBuffedBonus())-1));
 		level(level);
-		return Messages.get(this, isIdentified()?"stats":"typical_stats", args);
+		return Messages.get(this, isIdentified()?"stats":"typical_stats", (Object[]) args);
 	}
 	
 	@Override

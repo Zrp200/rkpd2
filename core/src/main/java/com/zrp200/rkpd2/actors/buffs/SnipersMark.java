@@ -105,7 +105,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		args[1] = sub == HeroSubClass.SNIPER ? "she" : "he";
 		args[2] = Messages.capitalize(args[1]);
 		args[3] = sub == HeroSubClass.SNIPER ? "her" : "his";
-		return Messages.get(this, "desc", args);
+		return Messages.get(this, "desc", (Object[])args);
 	}
 	
 	@Override

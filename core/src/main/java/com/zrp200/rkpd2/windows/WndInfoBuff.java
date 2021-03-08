@@ -67,7 +67,7 @@ public class WndInfoBuff extends Window {
 
 		float bottom = txtInfo.bottom()+2;
 
-		if(buff instanceof ActionIndicator.Action && ActionIndicator.action != buff) {
+		if(buff instanceof ActionIndicator.Action && ActionIndicator.action != buff && ((ActionIndicator.Action)buff).usable()) {
 			RedButton button = new RedButton("Set Active") {
 				@Override
 				protected void onClick() {
