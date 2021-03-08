@@ -79,7 +79,7 @@ public class WandOfLightning extends DamageWand {
 			if (ch != curUser && ch.alignment == curUser.alignment && ch.pos != bolt.collisionPos){
 				continue;
 			}
-			int damage = Math.round(damageRoll() * multipler * (ch == curUser?1:.5f));
+			int damage = Math.round(damageRoll() * multipler * (ch != curUser?1:.5f));
 			processSoulMark(ch, chargesPerCast(), damage);
 			ch.damage(damage,this);
 		}
