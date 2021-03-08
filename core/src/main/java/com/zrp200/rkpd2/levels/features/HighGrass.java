@@ -100,13 +100,14 @@ public class HighGrass {
 			}
 			
 			if (naturalismLevel >= 0) {
+				int points = Dungeon.hero.pointsInTalent(Talent.NATURES_BETTER_AID);
 				// Seed, scales from 1/25 to 1/5
-				if (Random.Int(25 - (naturalismLevel * 5)) == 0) {
+				if (Random.Int(25 - (naturalismLevel * 5)) <= points) {
 					level.drop(Generator.random(Generator.Category.SEED), pos).sprite.drop();
 				}
 				
 				// Dew, scales from 1/6 to 1/3
-				if (Random.Int(24 - naturalismLevel*3) <= 3) {
+				if (Random.Int(24 - naturalismLevel*3) <= 3+points) {
 					level.drop(new Dewdrop(), pos).sprite.drop();
 				}
 			}
