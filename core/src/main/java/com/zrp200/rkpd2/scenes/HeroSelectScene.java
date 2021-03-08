@@ -59,7 +59,7 @@ import com.watabou.utils.GameMath;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-
+// TODO FIX BUG
 public class HeroSelectScene extends PixelScene {
 
 	private Image background;
@@ -360,7 +360,7 @@ public class HeroSelectScene extends PixelScene {
 
 			ArrayList<LinkedHashMap<Talent, Integer>> talentList = new ArrayList<>();
 			Talent.initClassTalents(cl, talentList);
-			Talent.initSubclassTalents(cl.subClasses()[secondSubclass ? 1 : 0], talentList);
+			Talent.initSubclassTalents(cl.subClasses()[secondSubclass && cl.subClasses().length > 1 ? 1 : 0], talentList);
 			talents = new TalentsPane(false, talentList);
 			add(talents);
 
@@ -382,7 +382,7 @@ public class HeroSelectScene extends PixelScene {
 			firstSub.setSize(40, firstSub.reqHeight()+2);
 			add(firstSub);
 
-			secondSub = new RedButton(Messages.titleCase(cl.subClasses()[1].title()), 7){
+			secondSub = new RedButton(Messages.titleCase(cl.subClasses()[cl.subClasses().length > 1?1:0].title()), 7){
 				@Override
 				protected void onClick() {
 					super.onClick();
