@@ -29,6 +29,8 @@ import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.scenes.CellSelector;
+import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.ActionIndicator;
@@ -126,11 +128,25 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		if (arrow == null) return;
 		
 		Char ch = (Char) Actor.findById(object);
-		if (ch == null) return;
-		
+		if (ch == null && hero.hasTalent(Talent.RANGER)) {
+			GameScene.selectCell(new CellSelector.Listener() {
+				@Override
+				public void onSelect(Integer cell) {
+					if(cell == null || cell == -1) return;
+					Char ch = Actor.findChar(cell);
+					if(ch != null && ch != hero) doSniperSpecial(hero,bow,arrow,ch);
+				}
+
+				@Override
+				public String prompt() {
+					return Messages.get(Combo.class, "prompt");
+				}
+			});
+		} else doSniperSpecial(hero,bow,arrow,ch); }
+	protected void doSniperSpecial(Hero hero, SpiritBow bow, SpiritBow.SpiritArrow arrow, Char ch) {
 		int cell = QuickSlotButton.autoAim(ch, arrow);
 		if (cell == -1) return;
-		
+
 		bow.sniperSpecial = true;
 		bow.sniperSpecialBonusDamage = level*Dungeon.hero.pointsInTalent(Talent.SHARED_UPGRADES,Talent.RK_SNIPER)/15f;
 
@@ -138,6 +154,6 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
 		arrow.cast(hero, cell);
 		detach();
-		
+
 	}
 }

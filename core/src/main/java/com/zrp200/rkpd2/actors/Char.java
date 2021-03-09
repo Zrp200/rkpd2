@@ -603,8 +603,11 @@ public abstract class Char extends Actor {
 			if (ch.buff(Terror.class) != null && ch.buff(Terror.class).object == id()){
 				ch.buff(Terror.class).detach();
 			}
-			if (ch.buff(SnipersMark.class) != null && ch.buff(SnipersMark.class).object == id()){
-				ch.buff(SnipersMark.class).detach();
+			SnipersMark snipersMark = ch.buff(SnipersMark.class);
+			if (snipersMark != null && snipersMark.object == id()){
+				if(ch == Dungeon.hero && Dungeon.hero.hasTalent(Talent.RANGER)) {
+					snipersMark.postpone(SnipersMark.DURATION + snipersMark.level); // enjoy your "free shot"
+				} else ch.buff(SnipersMark.class).detach();
 			}
 		}
 	}

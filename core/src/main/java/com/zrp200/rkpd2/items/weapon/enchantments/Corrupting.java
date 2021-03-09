@@ -28,8 +28,10 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Corruption;
 import com.zrp200.rkpd2.actors.buffs.PinCushion;
+import com.zrp200.rkpd2.actors.buffs.SnipersMark;
 import com.zrp200.rkpd2.actors.buffs.SoulMark;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.messages.Messages;
@@ -67,6 +69,11 @@ public class Corrupting extends Weapon.Enchantment {
 				} else if (buff instanceof PinCushion){
 					buff.detach();
 				}
+			}
+			SnipersMark mark = Dungeon.hero.buff(SnipersMark.class);
+			if(mark != null && mark.object == enemy.id()) {
+				mark.detach();
+				if(Dungeon.hero.hasTalent(Talent.RANGER)) Buff.affect(Dungeon.hero, SnipersMark.class, SnipersMark.DURATION+mark.level).level = mark.level;
 			}
 			if (enemy.alignment == Char.Alignment.ENEMY){
 				enemy.rollToDropLoot();

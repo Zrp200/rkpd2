@@ -1159,7 +1159,7 @@ public class Hero extends Char {
 					
 					@Override
 					protected boolean act() {
-						if (enemy.isAlive()) {
+						if (enemy.isAlive() || hasTalent(Talent.RANGER)) {
 							int bonusTurns = hasTalent(Talent.SHARED_UPGRADES,Talent.RK_SNIPER) ? wep.buffedLvl() : 0;
 							Buff.prolong(Hero.this, SnipersMark.class, SnipersMark.DURATION + bonusTurns).set(enemy.id(), bonusTurns);
 						}
