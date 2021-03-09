@@ -297,7 +297,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		boolean wasAlly = enemy.alignment == target.alignment;
 		Hero hero = (Hero)target;
 
-		if (enemy.defenseSkill(target) >= Char.INFINITE_EVASION){
+		if (enemy.defenseSkill(target) >= Char.INFINITE_EVASION && !gladiatorVariant()){
 			enemy.sprite.showStatus( CharSprite.NEUTRAL, enemy.defenseVerb() );
 			Sample.INSTANCE.play(Assets.Sounds.MISS);
 
