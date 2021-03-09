@@ -297,7 +297,7 @@ public class SpiritBow extends Weapon {
 			} else {
 				if (!curUser.shoot( enemy, this )) {
 					Splash.at(cell, 0xCC99FFFF, 1);
-					if((hasEnchant(Explosive.class,curUser) || (hasEnchant(Unstable.class,curUser) && Unstable.getRandomEnchant(SpiritBow.this) instanceof Explosive)) && Explosive.tryProc(SpiritBow.this.buffedLvl())) new Bomb().explode(cell);
+					if((hasEnchant(Explosive.class,curUser) || (hasEnchant(Unstable.class,curUser) && Unstable.getRandomEnchant(SpiritBow.this) instanceof Explosive)) && new Explosive().tryProc(curUser,SpiritBow.this.buffedLvl())) new Bomb().explode(cell);
 				}
 				if (sniperSpecial && SpiritBow.this.augment != Augment.SPEED) sniperSpecial = false;
 			}

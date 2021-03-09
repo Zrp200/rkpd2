@@ -15,14 +15,15 @@ public class Explosive extends Weapon.Enchantment {
         return REDORANGE;
     }
 
-    private static final int MULTIPLIER = 3; // upgrades are 1/3 effective, this enchantment scales like crazy even with this.
-    private static final int BASE_PROC = 6*MULTIPLIER;
-    public static boolean tryProc(int level) {
-        return Random.Int(BASE_PROC+level) >= BASE_PROC-MULTIPLIER;
+    private static final int MULTIPLIER = 3; // upgrades are 1/4 effective, this enchantment scales like crazy even with this.
+    private static final int BASE_PROC = 10*MULTIPLIER;
+    // 1/10, 4/31, 5/32, 6/33 (1/5), 7/34 (4/13), 8/35, 9/36 etc.
+    public boolean tryProc(Char attacker, int level) {
+        return Random.Float() < procChanceMultiplier(attacker)*(MULTIPLIER+level)/(BASE_PROC+level);
     }
     @Override
     public int proc(Weapon weapon, Char attacker, Char defender, int damage) {
-        if( tryProc(weapon.buffedLvl()) ) new Bomb().explode(defender.pos);
+        if( tryProc(attacker,weapon.buffedLvl()) ) new Bomb().explode(defender.pos);
         return damage;
     }
 }
