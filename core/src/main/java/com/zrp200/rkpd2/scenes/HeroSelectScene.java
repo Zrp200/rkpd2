@@ -499,17 +499,19 @@ public class HeroSelectScene extends PixelScene {
 		public void select(Tab tab) {
 			super.select(tab);
 
-			title.setPos((WIDTH-title.width())/2, MARGIN);
-			info.setPos(MARGIN, title.bottom()+2*MARGIN);
+			for(int i=0; i < 2; i++) { // fixes that visual bug, somehow...
+				title.setPos((WIDTH - title.width()) / 2, MARGIN);
+				info.setPos(MARGIN, title.bottom() + 2 * MARGIN);
 
-			firstSub.setPos((title.left() - firstSub.width())/2, 0);
-			secondSub.setPos(title.right() + (WIDTH - title.right() - secondSub.width())/2, 0);
+				firstSub.setPos((title.left() - firstSub.width()) / 2, 0);
+				secondSub.setPos(title.right() + (WIDTH - title.right() - secondSub.width()) / 2, 0);
 
-			talents.setRect(0, info.bottom()+MARGIN, WIDTH, HEIGHT - (info.bottom()+MARGIN));
+				talents.setRect(0, info.bottom() + MARGIN, WIDTH, HEIGHT - (info.bottom() + MARGIN));
 
-			resize(WIDTH, Math.max(HEIGHT, (int)info.bottom()));
+				resize(WIDTH, Math.max(HEIGHT, (int) info.bottom()+MARGIN));
 
-			layoutTabs();
+				layoutTabs();
+			}
 
 		}
 	}
