@@ -128,8 +128,8 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		if (arrow == null) return;
 		
 		Char ch = (Char) Actor.findById(object);
-		if (ch == null && hero.hasTalent(Talent.RANGER)) {
-			GameScene.selectCell(new CellSelector.Listener() {
+		if (ch == null) {
+			if(hero.hasTalent(Talent.RANGER)) GameScene.selectCell(new CellSelector.Listener() {
 				@Override
 				public void onSelect(Integer cell) {
 					if(cell == null || cell == -1) return;
