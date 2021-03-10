@@ -589,7 +589,7 @@ public enum Talent {
 				Collections.addAll(tierTalents, DURABLE_TIPS, BARKSKIN, SHIELDING_DEW, NATURES_BETTER_AID);
 				break;
 			case KING: // this should be *lovely*
-				Collections.addAll(tierTalents, RK_BERSERKER, RK_GLADIATOR, RK_BATTLEMAGE, RK_WARLOCK, RK_ASSASSIN, RK_FREERUNNER, RK_SNIPER, RK_WARDEN);
+				Collections.addAll(tierTalents, RK_BERSERKER, RK_BATTLEMAGE, RK_FREERUNNER, RK_SNIPER, RK_GLADIATOR, RK_WARLOCK, RK_ASSASSIN, RK_WARDEN);
 		}
 		for (Talent talent : tierTalents){
 			talents.get(2).put(talent, 0);
