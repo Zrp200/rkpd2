@@ -815,6 +815,14 @@ public abstract class Mob extends Char {
 		@Override
 		public boolean act( boolean enemyInFOV, boolean justAlerted ) {
 
+			//debuffs cause mobs to wake as well
+			for (Buff b : buffs()){
+				if (b.type == Buff.buffType.NEGATIVE){
+					awaken(enemyInFOV);
+					return true;
+				}
+			}
+
 			if (enemyInFOV) {
 
 				float enemyStealth = enemy.stealth();
@@ -827,23 +835,7 @@ public abstract class Mob extends Char {
 				}
 
 				if (Random.Float( distance( enemy ) + enemyStealth ) < 1) {
-					enemySeen = true;
-
-					notice();
-					state = HUNTING;
-					target = enemy.pos;
-
-					if (alignment == Alignment.ENEMY && Dungeon.isChallenged(Challenges.SWARM_INTELLIGENCE)) {
-						for (Mob mob : Dungeon.level.mobs) {
-							if (mob.paralysed <= 0
-									&& Dungeon.level.distance(pos, mob.pos) <= 8 //TODO base on pathfinder distance instead?
-									&& mob.state != mob.HUNTING) {
-								mob.beckon(target);
-							}
-						}
-					}
-
-					spend(TIME_TO_WAKE_UP);
+					awaken(enemyInFOV);
 					return true;
 				}
 
@@ -853,6 +845,30 @@ public abstract class Mob extends Char {
 			spend( TICK );
 
 			return true;
+		}
+
+		protected void awaken( boolean enemyInFOV ){
+			if (enemyInFOV) {
+				enemySeen = true;
+				notice();
+				state = HUNTING;
+				target = enemy.pos;
+			} else {
+				notice();
+				state = WANDERING;
+				target = Dungeon.level.randomDestination( Mob.this );
+			}
+
+			if (alignment == Alignment.ENEMY && Dungeon.isChallenged(Challenges.SWARM_INTELLIGENCE)) {
+				for (Mob mob : Dungeon.level.mobs) {
+					if (mob.paralysed <= 0
+									&& Dungeon.level.distance(pos, mob.pos) <= 8 //TODO base on pathfinder distance instead?
+							&& mob.state != mob.HUNTING) {
+						mob.beckon(target);
+					}
+				}
+			}
+			spend(TIME_TO_WAKE_UP);
 		}
 	}
 

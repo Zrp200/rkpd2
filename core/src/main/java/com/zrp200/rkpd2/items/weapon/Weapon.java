@@ -365,7 +365,7 @@ abstract public class Weapon extends KindOfWeapon {
 			if (attacker instanceof Hero && ((Hero) attacker).hasTalent(Talent.ENRAGED_CATALYST,Talent.RK_BERSERKER)){
 				Berserk rage = attacker.buff(Berserk.class);
 				if (rage != null) {
-					multi += 0.2f * rage.rageAmount() * ((Hero) attacker).pointsInTalent(Talent.ENRAGED_CATALYST,Talent.RK_BERSERKER);
+					multi += (rage.rageAmount() / 6f) * ((Hero) attacker).pointsInTalent(Talent.ENRAGED_CATALYST,Talent.RK_BERSERKER);
 				}
 			}
 			return multi;

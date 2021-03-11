@@ -86,9 +86,9 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 		//1st index is prep level, 2nd is talent level
 		private static final int[][] blinkRanges = new int[][]{
 				{1, 2, 3, 4},
-				{2, 3, 5, 6},
-				{3, 4, 6, 8},
-				{4, 6, 8, 10}
+				{1, 3, 4, 6},
+				{2, 4, 6, 8},
+				{2, 5, 7, 10}
 		};
 
 		public int blinkDistance(){
@@ -263,10 +263,6 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 			if (enemy == null || Dungeon.hero.isCharmedBy(enemy) || enemy instanceof NPC || !Dungeon.level.heroFOV[cell]){
 				GLog.w(Messages.get(Preparation.class, "no_target"));
 			} else {
-
-				if (Dungeon.hero.hasTalent(Talent.BOUNTY_HUNTER,Talent.RK_ASSASSIN)) {
-					Buff.affect(Dungeon.hero, Talent.BountyHunterTracker.class, 0.0f);
-				}
 
 				//just attack them then!
 				if (Dungeon.hero.canAttack(enemy)){

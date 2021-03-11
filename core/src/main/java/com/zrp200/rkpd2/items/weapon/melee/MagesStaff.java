@@ -152,7 +152,7 @@ public class MagesStaff extends MeleeWeapon {
 
 	public void procBM() {
 
-		if ((wand.curCharges == wand.maxCharges || Dungeon.hero.hasTalent(Talent.EXCESS_CHARGE)) && Random.Int(Dungeon.hero.hasTalent(Talent.EXCESS_CHARGE)?4:6) < Dungeon.hero.pointsInTalent(Talent.EXCESS_CHARGE,Talent.RK_BATTLEMAGE)){
+		if ((wand.curCharges >= wand.maxCharges || Dungeon.hero.hasTalent(Talent.EXCESS_CHARGE)) && Random.Int(Dungeon.hero.hasTalent(Talent.EXCESS_CHARGE)?4:5) < Dungeon.hero.pointsInTalent(Talent.EXCESS_CHARGE,Talent.RK_BATTLEMAGE)){
 			Buff.affect(Dungeon.hero, Barrier.class).setShield(buffedLvl()*2*wand.curCharges/wand.maxCharges);
 		}
 		if (Dungeon.hero.hasTalent(Talent.MYSTICAL_CHARGE,Talent.RK_BATTLEMAGE)){

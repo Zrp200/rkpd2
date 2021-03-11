@@ -199,7 +199,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		SLAM   (4, 0xFFCCFF00),
 		PARRY  (6, 0xFFFFFF00),
 		CRUSH  (8, 0xFFFFCC00),
-		FURY   (10, 0xFFFF0000); //TODO can currently input other actions while attacking with fury
+		FURY   (10, 0xFFFF0000);
 
 		public int comboReq, tintColor;
 
@@ -350,7 +350,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 						if (hero.pointsInTalent(Talent.ENHANCED_COMBO) >= 1 && count >= 4 || count >= 7 && hero.pointsInTalent(Talent.RK_GLADIATOR) >= 1){
 							dist ++;
 							Buff.prolong(enemy, Vertigo.class, 3);
-						} else {
+						} else if (!enemy.flying) {
 							while (dist > trajectory.dist ||
 									(dist > 0 && Dungeon.level.pit[trajectory.path.get(dist)])) {
 								dist--;
@@ -422,7 +422,8 @@ public class Combo extends Buff implements ActionIndicator.Action {
 			case FURY:
 				count--;
 				//fury attacks as many times as you have combo count
-					if (count > 0 && enemy.isAlive() && (wasAlly || enemy.alignment != target.alignment)){
+				if (count > 0 && enemy.isAlive() && hero.canAttack(enemy) &&
+						(wasAlly || enemy.alignment != target.alignment)){
 					target.sprite.attack(enemy.pos, new Callback() {
 						@Override
 						public void call() {

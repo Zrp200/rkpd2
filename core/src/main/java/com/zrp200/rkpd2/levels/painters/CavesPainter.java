@@ -91,15 +91,7 @@ public class CavesPainter extends RegularPainter {
 					level.traps.remove(corner);
 				}
 			}
-			
-			for (Room n : room.connected.keySet()) {
-				if ((n instanceof StandardRoom || n instanceof ConnectionRoom) && Random.Int( 5 ) == 0) {
-					Painter.set( level, room.connected.get( n ), Terrain.EMPTY_DECO );
-				}
-				if (n instanceof CaveRoom && room instanceof CaveRoom){
-					Painter.set( level, room.connected.get( n ), Terrain.EMPTY_DECO );
-				}
-			}
+
 		}
 		
 		for (int i=w + 1; i < l - w; i++) {
