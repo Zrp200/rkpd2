@@ -60,34 +60,31 @@ public class RKPD2Changes {
                 "_-_ Iron Will now increases the amount of upgrades the seal can store. Shield cap increased by 1 to compensate." +
                 "\n_-_ All t1 talents buffed." +
                 "\n\n_Berserker_:" +
-                "\n_-_ Rage gain now scales directly with current HP for an up to 2/3 increase in rate as HP decreases." +
-                "\n_-_ Damage multiplier during berserk is now 2x." +
-                "\n_-_ Rage can be gained while recovering and recovering happens slowly over time if no exp is gained." +
-                "\n_-_ Berserk duration increased somewhat (this also affects Rat King subclass)" +
-                "\n_-_ Berserker gains damage from indirect sources" +
+                "\n_-_ Rage gain now scales with HP as talents are upgraded" +
+                "\n_-_ Added a new talent that makes him attack faster with more enemies around" +
                 "\n\n_Gladiator_:" +
-                "\n_-_ Combo is no longer lost upon missing." +
                 "\n_-_ All finishers get an extra damage roll check for increased consistency." +
                 "\n_-_ Finishers can bypass infinite evasion."));
         changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.MAGE,6),"Mage",
                 "_-_ Mage now has intrinsic +2 level to all wands for purposes of power and recharge\n" +
-                        "_-_ Battlemage effects now apply to all equipped weapons, including thrown weapons." +
+                        "_-_ Battlemage now has a new talent that lets him spread his staff effects to all his attacks" +
                         "_-_ Battlemage gets +2 effect on his staff.\n" +
-                        "_-_ Warlock can now soul mark with weapons and all damage can now trigger soul mark. Wands get 70% effect instead of 0%.\n" +
+                        "_-_ Warlock can now soul mark with weapons and all damage can now trigger soul mark through new Warlock's Touch talent\n" +
                         "_-_ Most talents buffed.\n" +
                         "_-_ Empowering meal has been removed (for mage at least) and replaced with Energizing Meal, t2 meal replaced with something else."));
         changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.ROGUE,6),"Rogue",
         "_-_ Now gets an invisible +1 to weapons and rings" +
                 "\n_-_ Subclasses get more invisible upgrades to various item types." +
-                "\n_-_ Cloak levels up twice as fast and can be used and charged while unequipped." +
+                "\n_-_ Cloak levels up twice as fast." +
                 "\n_-_ Most tier 1 Talents buffed." +
                 "\n_-_ Protective Shadows replaced by mending shadows, original sprite needs to be transferred over, however."));
-        changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.HUNTRESS,0),"Huntress",
+        changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.HUNTRESS,6),"Huntress",
             "Huntress has also recieved 'tweaks'!\n\n" +
                     "_-_ Spirit Bow now scales to +12\n" +
                     "_-_ The Spirit bow can be enchanted simply by using a scroll of upgrade on it.\n" +
                     "_-_ Huntress has her innate heightened vision and missile durability back!\n" +
-                    "_-_ Huntress talents have been buffed across the board by ~50%."));
+                    "_-_ Huntress talents have been buffed across the board by ~50%.\n" +
+                    "_-_ Added new talents to both subclasses"));
         changes.addButton(new ChangeButton(new ItemSprite(new VelvetPouch()), "Bags",
                 "All heroes start with all bags. This should reduce the stress of inventory management throughout the game and also make gold more plentiful."));
         changeInfos.add(changes = new ChangeInfo("Misc",false,""));
@@ -95,7 +92,8 @@ public class RKPD2Changes {
             "_-_ Amount of standard rooms reduced by 30%-50% in honor of precedent set by Rat King Dungeon." +
             "\n_-_ Gold yield from Rat King's room increased by 20x" +
             "\n_-_ Hero takes 1/3 damage from Grim traps." +
-            "\n_-_ Rat King room has a sign in it if playing as rat king as a homage to RKPD"));
+            "\n_-_ Rat King room has a sign in it if playing as rat king as a homage to RKPD" +
+            "\n_-_ Enemy level caps increased by 1"));
         changes.addButton(new ChangeButton(new KingSprite(),"Boss Changes","Certain bosses have recieved adjustments:" +
                 "\n_-_ Dwarf King fight start altered." +
                 "\n_-_ Dwarf King's phases can now be skipped with enough burst damage." +
@@ -104,7 +102,8 @@ public class RKPD2Changes {
         changes.addButton(new ChangeButton(new ItemSprite(new SpiritBow().enchant(new Explosive())),"Spirit Bow enchantments",
                 "The idea here is to lower the chance of 'misfiring' when enchanting the spirit bow dramatically.\n\n" +
                         "_-_ Added a new spirit-bow exclusive enchantment.\n" +
-                        "_-_ It, along with grim, will replace shocking, blocking, and lucky when using a scroll of enchantment on the bow (or a scroll of upgrade in the case of huntress)."));
+                        "_-_ It, along with grim, will replace blocking, and lucky when using a scroll of enchantment on the bow (or a scroll of upgrade in the case of huntress).\n" +
+                        "_-_ Shocking is now rarer."));
         changes.addButton(new ChangeButton(new ItemSprite(new WarriorArmor()),"Class Armor","Who liked limits anyway? You can trade current HP for a full charge."));
         changes.addButton(new ChangeButton(Icons.get(Icons.LANGS),"Text Changes","I've changed some of the text in the game, including:" +
                 "\n_-_ Class descriptions both ingame and in the select screen" +
@@ -114,18 +113,19 @@ public class RKPD2Changes {
                 "\n\nHowever, since I only know English and do not have an active translation project, I've set the language to English. Sorry!"));
         // plans
         changeInfos.add(changes = new ChangeInfo("TODO",false,""));
-        changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.HUNTRESS,6),"Huntress Subclasses",
-                "While I'm pretty happy with the changes I've made thus far to the huntress, warden can easily be tweaked to be more in line with the mood, and it would be a crime to not buff sniper while I'm at it...\n\nWarden also needs some adjustments, likely something to do with seed/dew droprate..."));
+        changes.addButton(new ChangeButton(Icons.get(Icons.TALENT),"Talents",
+                "Freerunner/Assassin/Gladiator still don't have a 6th talent, and huntress only has 1 level in hers. Also still need to buff other talents."));
         changes.addButton(new ChangeButton(new TenguSprite(), "Boss Phases",
             "I think it would be interesting if players could \"accelerate\" boss fights if they damage them enough. It's a complaint I've had with Shattered, and a mod like this is the perfect place to do something about it." +
             "\n\nThis should also contribute to making the mod run quicker during the boss fights, making it overall easier to speedrun and race." +
             "\n\nI've already done this for Dwarf King, but Tengu and DM-300 could easily be made to do this to some degree too. The question is how much I want to let the player fuck with them, as they aren't nearly as intrinsically resistant to damage as DK is."));
         changes.addButton(new ChangeButton(Icons.get(Icons.DISPLAY),"Visual changes",
                 "_-_ Altered Warrior seal art for Warrior only" +
+                "\n_-_ Sniper memes" +
                 "\n_-_ Use of RKPD assets for amulet/amulet scene." +
                 "\n\nThese may or may not happen:" +
                 "\n_-_ Altered Mending Shadows icon as a throwback to original." +
-                "\n_-_ Custom Rat King talent icons" +
+                "\n_-_ Custom talent icons" +
                 "\n_-_ Use of RKPD assets for hero sprites"));
         changes.addButton(new ChangeButton(Icons.get(Icons.PREFS),"","" +
                 "_-_ \"Balance\" tweaks to existing content as I see fit." +
@@ -133,28 +133,32 @@ public class RKPD2Changes {
                 "\n_-_ Text adjustments to lore"));
         // closing message
         changeInfos.add(changes = new ChangeInfo("What changed???",true,"" +
-                "_-_ Warrior Seal no longer has infinite storage, instead iron will affects how many upgrades can be stored." +
-                "\n_-_ Added splash art for Rat King" +
-                "\n_-_ New menu button based off of a fusion of rkpd and shattered menu buttons" +
-                "\n_-_ About scene and intro scenes now are unique" +
-                "\n_-_ Adjusted DK quotes and altered Great Crab description." +
-                "\n_-_ Restoration now has Arcane Battery instead of Pursuit" +
-                "\n_-_ Buffed Warrior t2s." +
-                "\n_-_ Rat King in his room now is replaced by a sign in new runs where hero is rat king."));
-        changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.MAGE, 6),"Mage",
-                "_-_ Mage's intuition adjusted, now can activate on any new scroll. " +
-                        "\n_-_ +2 scholar's intuition nerfed." +
-                        "\n_-_ Wand preservation no longer infinite, now is 3/8 with 100% chance to preserve, with 2/3 chance otherwise" +
-                        "\n_-_ energizing meal I nerfed slightly to bring in line with energizing meal II." +
-                        "\n_-_ Energizing upgrade now applies to all wands" +
-                        "\n\n_-_ bm weapon on hit now restores 1/5 charge" +
-                        "\n_-_Warlock wand soul mark effectiveness nerfed by 30%"));
+                "_-_ Implemented v0.9.2 + t3 talents\n" +
+                "_-_ Redid most subclasses.\n" +
+                "_-_ Nerfed explosive again.\n" +
+                "_-_ Spirit bow scroll of enchant can now roll shocking again, grim freq reduced\n" +
+                "_-_ Level caps for enemies incrased by 1."));
+        changes.addButton(new ChangeButton(Icons.get(Icons.TALENT),"T3 talents implemented!",
+                        "_-_ Reworked most subclasses in order to get t3 talents to work:" +
+                        "\n_-_ Removed rogue's ability to use cloak unequipped, but buffed t3 talent heavily." +
+                        "\n_-_ Berserker reverted to shattered functinonality, but talents restore most of the benefits from before." +
+                        "\n_-_ Warlock reverted as well, but new Warlock's Touch talent restores functionality, as does soul siphon." +
+                        "\n_-_ Battlemage now needs Sorcery talent to get previous benefits, but now it applies to most of his t3 talents and to wands." +
+                        "\n_-_ Added unique t3 talents for Warden, Berserker, and Sniper." +
+                        "\n\nMade unique changes to talents as well!" +
+                        "\n_-_ t3 talent points increased to 12" +
+                        "\n_-_ t3 talent points are given until level 24"));
+        changes.addButton(new ChangeButton(HeroSprite.avatar(HeroClass.RAT_KING,6),"Rat King overhaul!",
+                "In response to 0.9.2, I have adjusted rat king significantly!" +
+                        "\n_-_ Added _8_ t3 talents to rat king." +
+                        "\n_-_ Implemented balance changes to rat king's talents." +
+                        "\n_-_ Added a vfx for royal meal to signify haste." +
+                        "\n_-_ Implemented subclass changes for rat king." +
+                        "\n_-_ Subclass actions can now be manually set via their buff descriptions."));
         changes.addButton(new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), Messages.get(ChangesScene.class, "bugfixes"),"" +
-                "_-_ Wand of Warding not properly responding to intrinsic upgrades." +
-                "\n_-_ Unarmed BM unable to proc bm effects" +
-                "\n_-_ Fixed soul mark vfx proccing when nothing is restored" +
-                "\n_-_ Issues with Iron Stomach and Horn of Plenty" +
-                "\n_-_ DK having incorrect interactions with Grim"));
+                "_-_ RKPD2 getting bricked after you subclass rat king" +
+                "_-_ Crashes in alchemy with scholar's intuition" +
+                "_-_ DM-300 not spawning on f15 because of evan's insistence on using signs for the gate."));
         changeInfos.add(changes = new ChangeInfo("",true,"Thanks for testing out my alpha! While most of the art isn't in the game, and won't be in the game until it's actually released, the gameplay mechanics are a different story entirely!\n\nAll hail the mighty rat king, destroyer of Yogs!\n\nNext alpha should have v0.9.2 implemented, which means it may look almost entirely different."));
     }
 }
