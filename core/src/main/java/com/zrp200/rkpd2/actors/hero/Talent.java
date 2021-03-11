@@ -390,26 +390,34 @@ public enum Talent {
 	}
 
 	public static void onItemCollected( Hero hero, Item item ){
+		boolean id = false;
 		if (hero.heroClass == HeroClass.ROGUE || hero.hasTalent(THIEFS_INTUITION,ROYAL_INTUITION)){
 			int points = hero.pointsInTalent(THIEFS_INTUITION,ROYAL_INTUITION);
 			if(hero.heroClass == HeroClass.ROGUE) points++;
-			if (points == 3 && (item instanceof Ring || item instanceof Artifact)) item.identify();
+			if (points == 3 && (item instanceof Ring || item instanceof Artifact)) {
+				item.identify();
+				id = true;
+			}
 			else if (points == 2 && item instanceof Ring) ((Ring) item).setKnown();
 		}
 		if (hero.pointsInTalent(ARMSMASTERS_INTUITION) == 2 &&
-				(item instanceof Weapon || item instanceof Armor)) item.identify();
+				(item instanceof Weapon || item instanceof Armor)) {
+			item.identify();
+			id = true;
+		}
 		// TODO revisit this is easily exploitable
 		if( hero.pointsInTalent(SURVIVALISTS_INTUITION) == 2 && !item.collected && Random.Int(3) == 0){
 			item.cursedKnown = true;
-			hero.sprite.emitter().burst(Speck.factory(Speck.QUESTION),1);
+			id = true;
 		}
 		if( (item instanceof Scroll || item instanceof Potion) && !item.isIdentified() && hero.hasTalent(SCHOLARS_INTUITION) ) {
 			if(!item.collected && Random.Int(3) >= 3-hero.pointsInTalent(SCHOLARS_INTUITION)) {
 				item.identify();
-				// this gets distracting if it happens every time, so it only does it at +1.
-				hero.sprite.emitter().burst(Speck.factory(Speck.QUESTION),1);
+				id = true;
 			}
 		}
+		if(id && hero.sprite.emitter() != null) hero.sprite.emitter().burst(Speck.factory(Speck.QUESTION),1);
+
 	}
 
 	//note that IDing can happen in alchemy scene, so be careful with VFX here
