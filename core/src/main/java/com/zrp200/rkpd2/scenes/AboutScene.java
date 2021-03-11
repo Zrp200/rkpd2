@@ -89,7 +89,7 @@ public class AboutScene extends PixelScene {
 				"Developed by: _Evan Debenham_\nBased on Pixel Dungeon's open source",
 				"ShatteredPixel.com",
 				shpxLink);
-		shpx.setRect(rkpd2.left(), rkpd2.bottom()+8,120,0);
+		shpx.setRect(rkpd2.left(), (landscape() ? rkpd2 : pa).bottom()+8,120,0);
 		content.add(shpx);
 		addLine(shpx.top() - 4, content);
 
