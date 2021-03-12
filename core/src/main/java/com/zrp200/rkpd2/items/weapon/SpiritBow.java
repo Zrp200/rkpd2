@@ -367,14 +367,15 @@ public class SpiritBow extends Weapon {
 				
 			} else {
 
-				if (user.hasTalent(Talent.SEER_SHOT)
+				if (user.hasTalent(Talent.SEER_SHOT, Talent.RK_WARDEN)
 						&& user.buff(Talent.SeerShotCooldown.class) == null){
 					int shotPos = throwPos(user, dst);
 					if (Actor.findChar(shotPos) == null) {
+						Buff.detach(user, RevealedArea.class);
 						RevealedArea a = Buff.affect(user, RevealedArea.class, 5 * user.pointsInTalent(Talent.SEER_SHOT,Talent.RK_WARDEN));
 						a.depth = Dungeon.depth;
 						a.pos = shotPos;
-						Buff.affect(user, Talent.SeerShotCooldown.class, 20f);
+						if(!user.hasTalent(Talent.SEER_SHOT)) Buff.affect(user, Talent.SeerShotCooldown.class, 20f);
 					}
 				}
 
