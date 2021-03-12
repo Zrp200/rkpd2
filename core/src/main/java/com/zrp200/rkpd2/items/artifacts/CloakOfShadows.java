@@ -71,7 +71,7 @@ public class CloakOfShadows extends Artifact {
 	@Override
 	public ArrayList<String> actions( Hero hero ) {
 		ArrayList<String> actions = super.actions( hero );
-		if ((isEquipped( hero ) || hero.hasTalent(Talent.LIGHT_CLOAK,Talent.RK_FREERUNNER))
+		if ((isEquipped( hero ) || hero.hasTalent(Talent.LIGHT_CLOAK,Talent.RK_ASSASSIN))
 				&& !cursed && (charge > 0 || activeBuff != null)) {
 			actions.add(AC_STEALTH);
 		}
@@ -86,7 +86,7 @@ public class CloakOfShadows extends Artifact {
 		if (action.equals( AC_STEALTH )) {
 
 			if (activeBuff == null){
-				if (!isEquipped(hero) && !hero.hasTalent(Talent.LIGHT_CLOAK,Talent.RK_FREERUNNER)) GLog.i( Messages.get(Artifact.class, "need_to_equip") );
+				if (!isEquipped(hero) && !hero.hasTalent(Talent.LIGHT_CLOAK,Talent.RK_ASSASSIN)) GLog.i( Messages.get(Artifact.class, "need_to_equip") );
 				else if (cursed)       GLog.i( Messages.get(this, "cursed") );
 				else if (charge <= 0)  GLog.i( Messages.get(this, "no_charge") );
 				else {
@@ -124,7 +124,7 @@ public class CloakOfShadows extends Artifact {
 	@Override
 	public boolean doUnequip(Hero hero, boolean collect, boolean single) {
 		if (super.doUnequip(hero, collect, single)){
-			if (hero.hasTalent(Talent.LIGHT_CLOAK,Talent.RK_FREERUNNER)){
+			if (hero.hasTalent(Talent.LIGHT_CLOAK,Talent.RK_ASSASSIN)){
 				activate(hero);
 			}
 
@@ -138,7 +138,7 @@ public class CloakOfShadows extends Artifact {
 		if (super.collect(container)){
 			if (container.owner instanceof Hero
 					&& passiveBuff == null
-					&& ((Hero) container.owner).hasTalent(Talent.LIGHT_CLOAK,Talent.RK_FREERUNNER)){
+					&& ((Hero) container.owner).hasTalent(Talent.LIGHT_CLOAK,Talent.RK_ASSASSIN)){
 				activate((Hero) container.owner);
 			}
 			return true;
@@ -172,7 +172,7 @@ public class CloakOfShadows extends Artifact {
 	@Override
 	public void charge(Hero target, float amount) {
 		if (charge < chargeCap) {
-			if (!isEquipped(target)) amount *= target.pointsInTalent(Talent.LIGHT_CLOAK,Talent.RK_FREERUNNER)/
+			if (!isEquipped(target)) amount *= target.pointsInTalent(Talent.LIGHT_CLOAK,Talent.RK_ASSASSIN)/
 					(target.hasTalent(Talent.LIGHT_CLOAK)?4f:10f); // moved previous "equip for free" mechanic to light cloak.
 			partialCharge += 0.25f*amount;
 			if (partialCharge >= 1){
@@ -230,7 +230,7 @@ public class CloakOfShadows extends Artifact {
 					float chargeToGain = (1f / turnsToCharge);
 					if (!isEquipped(Dungeon.hero)){
 						chargeToGain *= (Dungeon.hero.hasTalent(Talent.LIGHT_CLOAK) ? .25f : 0.1f) *
-								Dungeon.hero.pointsInTalent(Talent.LIGHT_CLOAK,Talent.RK_FREERUNNER);
+								Dungeon.hero.pointsInTalent(Talent.LIGHT_CLOAK,Talent.RK_ASSASSIN);
 					}
 					partialCharge += chargeToGain;
 				}

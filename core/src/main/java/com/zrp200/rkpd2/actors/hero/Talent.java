@@ -88,7 +88,7 @@ public enum Talent {
 	CLEAVE(14, 3), LETHAL_DEFENSE(15, 3), ENHANCED_COMBO(16, 3),
 
 	//Mage T1
-	ENERGIZING_MEAL_I(32), SCHOLARS_INTUITION(33), TESTED_HYPOTHESIS(34), BACKUP_BARRIER(35),
+	ENERGIZING_MEAL_I(36), SCHOLARS_INTUITION(33), TESTED_HYPOTHESIS(34), BACKUP_BARRIER(35),
 	//Mage T2
 	ENERGIZING_MEAL_II(36), ENERGIZING_UPGRADE(37), WAND_PRESERVATION(38), ARCANE_VISION(39), SHIELD_BATTERY(40),
 	//Mage T3
@@ -370,8 +370,8 @@ public enum Talent {
 	}
 
 	public static void onArtifactUsed( Hero hero ){
-		if (hero.hasTalent(ENHANCED_RINGS,RK_ASSASSIN)){
-			Buff.prolong(hero, EnhancedRings.class, 3f*hero.pointsInTalent(ENHANCED_RINGS,RK_ASSASSIN));
+		if (hero.hasTalent(ENHANCED_RINGS,RK_FREERUNNER)){
+			Buff.prolong(hero, EnhancedRings.class, 3f*hero.pointsInTalent(ENHANCED_RINGS,RK_FREERUNNER));
 		}
 	}
 	public static void onItemEquipped( Hero hero, Item item ){

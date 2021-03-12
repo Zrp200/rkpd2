@@ -151,12 +151,13 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 	
 	@Override
 	public String desc() {
+		String cls = Dungeon.hero.heroClass.title();
 		if (freerunTurns > 0){
-			return Messages.get(this, "running_desc", freerunTurns);
+			return Messages.get(this, "running_desc", cls, freerunTurns);
 		} else if (freerunCooldown > 0){
-			return Messages.get(this, "resting_desc", freerunCooldown);
+			return Messages.get(this, "resting_desc", cls, freerunCooldown);
 		} else {
-			return Messages.get(this, "momentum_desc", momentumStacks);
+			return Messages.get(this, "momentum_desc", cls, momentumStacks);
 		}
 	}
 	
