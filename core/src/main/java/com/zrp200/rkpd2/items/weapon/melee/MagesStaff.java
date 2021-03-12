@@ -334,12 +334,6 @@ public class MagesStaff extends MeleeWeapon {
 				info += "\n\n" + Messages.get(wand, "bmage_desc");
 			}
 		}
-		if(Dungeon.hero != null) {
-			CounterBuff b = Dungeon.hero.buff(Talent.WandPreservationCounter.class);
-			if(b != null) info += "\n\n" + (int)b.count()
-					+ " wand" + (b.count() == 1 ? " has" : "s have")
-					+ " been preserved.";
-		}
 
 		return info;
 	}
@@ -413,13 +407,15 @@ public class MagesStaff extends MeleeWeapon {
 					}
 
 					String bodyText = Messages.get(MagesStaff.class, "imbue_desc", newLevel);
-					int preservesLeft = Dungeon.hero.hasTalent(Talent.WAND_PRESERVATION) ? 3 : 0;
+					int preservesLeft = Dungeon.hero.pointsInTalent(Talent.WAND_PRESERVATION) == 2 ? 8
+							: Dungeon.hero.pointsInTalent(Talent.WAND_PRESERVATION) == 1 || Dungeon.hero.hasTalent(Talent.POWER_WITHIN) ? 3
+							: 0;
 					if (Dungeon.hero.buff(Talent.WandPreservationCounter.class) != null){
 						preservesLeft -= Dungeon.hero.buff(Talent.WandPreservationCounter.class).count();
 					}
 					if (preservesLeft > 0){
-						int preserveChance = Dungeon.hero.pointsInTalent(Talent.WAND_PRESERVATION) == 1 ? 67 : 100;
-						bodyText += "\n\n" + Messages.get(MagesStaff.class, "imbue_talent", preserveChance, preservesLeft);
+						int preserveChance = Dungeon.hero.pointsInTalent(Talent.POWER_WITHIN) == 1 ? 67 : 100;
+						bodyText += "\n\n" + Messages.get(MagesStaff.class, "imbue_talent", preserveChance, wastedUpgrades, preservesLeft);
 					} else {
 						bodyText += "\n\n" + Messages.get(MagesStaff.class, "imbue_lost");
 					}
