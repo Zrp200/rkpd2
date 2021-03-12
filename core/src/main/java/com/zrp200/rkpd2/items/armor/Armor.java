@@ -537,7 +537,7 @@ public class Armor extends EquipableItem {
 		int req = (8 + Math.round(tier * 2)) - (int)(Math.sqrt(8 * lvl + 1) - 1)/2;
 
 		if (Dungeon.hero.hasTalent(Talent.STRONGMAN,Talent.RK_GLADIATOR)){
-			req -= (Dungeon.hero.pointsInTalent(Talent.STRONGMAN,Talent.RK_GLADIATOR)+1)/2;
+			req -= Math.max(Dungeon.hero.pointsInTalent(Talent.STRONGMAN),(Dungeon.hero.pointsInTalent(Talent.RK_GLADIATOR)+1)/2);
 		}
 
 		return req;

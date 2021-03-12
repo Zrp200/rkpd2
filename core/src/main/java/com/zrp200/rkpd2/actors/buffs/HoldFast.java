@@ -61,9 +61,13 @@ public class HoldFast extends Buff {
 		return Messages.get(this, "name");
 	}
 
+	public static int armor() {
+		return Math.max(4*Dungeon.hero.pointsInTalent(Talent.HOLD_FAST), 2*Dungeon.hero.pointsInTalent(Talent.RK_BERSERKER));
+	}
+
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", 2*Dungeon.hero.pointsInTalent(Talent.HOLD_FAST,Talent.RK_BERSERKER));
+		return Messages.get(this, "desc", Dungeon.hero.heroClass.title(), armor());
 	}
 
 

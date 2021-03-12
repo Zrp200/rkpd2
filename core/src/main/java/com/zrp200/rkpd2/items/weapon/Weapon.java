@@ -224,7 +224,8 @@ abstract public class Weapon extends KindOfWeapon {
 		//strength req decreases at +1,+3,+6,+10,etc.
 		int req = (8 + tier * 2) - (int)(Math.sqrt(8 * lvl + 1) - 1)/2;
 
-		if (Dungeon.hero.pointsInTalent(Talent.STRONGMAN,Talent.RK_GLADIATOR) >= 2) req--;
+		req -= Dungeon.hero.pointsInTalent(Talent.STRONGMAN);
+		if (Dungeon.hero.pointsInTalent(Talent.RK_GLADIATOR) >= 2) req--;
 
 		return req;
 	}

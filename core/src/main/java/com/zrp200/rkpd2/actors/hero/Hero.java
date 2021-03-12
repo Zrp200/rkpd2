@@ -494,7 +494,7 @@ public class Hero extends Char {
 		if (block != null)              dr += block.blockingRoll();
 
 		if (buff(HoldFast.class) != null){
-			dr += Random.NormalIntRange(0, 2*pointsInTalent(Talent.HOLD_FAST,Talent.RK_BERSERKER));
+			dr += Random.NormalIntRange(0, HoldFast.armor());
 		}
 
 		return dr;
