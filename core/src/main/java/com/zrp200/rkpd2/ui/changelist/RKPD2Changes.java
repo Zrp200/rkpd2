@@ -137,7 +137,8 @@ public class RKPD2Changes {
                 "_-_ Redid most subclasses.\n" +
                 "_-_ Nerfed explosive again.\n" +
                 "_-_ Spirit bow scroll of enchant can now roll shocking again, grim freq reduced\n" +
-                "_-_ Level caps for enemies incrased by 1."));
+                "_-_ Level caps for enemies incrased by 1."+
+                "_-_ Changed sign design for sewers to match its actual usage (and increased app size)"));
         changes.addButton(new ChangeButton(Icons.get(Icons.TALENT),"T3 talents implemented!",
                         "_-_ Reworked most subclasses in order to get t3 talents to work:" +
                         "\n_-_ Removed rogue's ability to use cloak unequipped, but buffed t3 talent heavily." +
