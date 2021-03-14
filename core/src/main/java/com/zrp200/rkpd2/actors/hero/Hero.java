@@ -1129,14 +1129,14 @@ public class Hero extends Char {
 			case KING: case BATTLEMAGE:
 				MagesStaff staff = belongings.getItem(MagesStaff.class);
 				if(staff != null && (staff == wep || hasTalent(Talent.SORCERY))){
-					if(staff == wep || Random.Int(12) < 3+pointsInTalent(Talent.SORCERY)) {
+					if(staff == wep || Random.Int(10) < pointsInTalent(Talent.SORCERY)) {
+						staff.procBM();
+					}
+					if(staff == wep || Random.Int(6) < pointsInTalent())
 						if (buff(Talent.EmpoweredStrikeTracker.class) != null) {
 							buff(Talent.EmpoweredStrikeTracker.class).detach();
 							damage = Math.round(damage * (1f + pointsInTalent(Talent.EMPOWERED_STRIKE, Talent.RK_BATTLEMAGE) / 6f / (hasTalent(Talent.EMPOWERED_STRIKE) ? 1.5f : 1)));
 						}
-						staff.procBM();
-					}
-					if(staff == wep || Random.Int(3) < pointsInTalent())
 						staff.procWand(enemy, damage);
 					}
 		}

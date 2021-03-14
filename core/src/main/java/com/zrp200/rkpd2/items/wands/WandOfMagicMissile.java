@@ -145,7 +145,7 @@ public class WandOfMagicMissile extends DamageWand {
 
 		@Override
 		public String desc() {
-			return Messages.get(this, "desc", level(), dispTurns());
+			return Messages.get(this, "desc", level()-Dungeon.hero.getBonus(new WandOfMagicMissile()), dispTurns());
 		}
 
 		private static final String LEVEL = "level";

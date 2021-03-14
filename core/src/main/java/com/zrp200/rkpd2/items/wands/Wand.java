@@ -192,8 +192,8 @@ public abstract class Wand extends Item {
 		if(sorcery > 0) {
 			MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
 			if(staff != null) {
-				if (Random.Int(12) < 3 + sorcery) staff.procBM();
-				if (Random.Int(3) < sorcery) staff.procWand(target, damage);
+				if (Random.Int(10) < sorcery) staff.procBM();
+				if (Random.Int(6) < sorcery) staff.procWand(target, damage);
 			}
 		}
 
