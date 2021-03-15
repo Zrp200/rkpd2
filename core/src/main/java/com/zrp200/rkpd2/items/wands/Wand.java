@@ -186,6 +186,7 @@ public abstract class Wand extends Item {
 	protected static void processSoulMark(Char target, int wandLevel, int chargesUsed, boolean delay, int damage){
 		if (Dungeon.hero.hasTalent(Talent.ARCANE_VISION,Talent.KINGS_VISION)) {
 			int dur = 5 + 5*Dungeon.hero.pointsInTalent(Talent.ARCANE_VISION,Talent.KINGS_VISION);
+			if(Dungeon.hero.hasTalent(Talent.ARCANE_VISION)) dur *= 2;
 			Buff.append(Dungeon.hero, TalismanOfForesight.CharAwareness.class, dur).charID = target.id();
 		}
 		int sorcery = Dungeon.hero.pointsInTalent(Talent.SORCERY);

@@ -164,7 +164,7 @@ public abstract class Char extends Actor {
 			return true;
 		} else if (c instanceof Hero
 				&& alignment == Alignment.ALLY
-				&& Dungeon.level.distance(pos, c.pos) <= 3*Dungeon.hero.pointsInTalent(Talent.ALLY_WARP,Talent.RK_WARLOCK)){
+				&& Dungeon.level.distance(pos, c.pos) <= Math.max(4*Dungeon.hero.pointsInTalent(Talent.ALLY_WARP), 3*Dungeon.hero.pointsInTalent(Talent.RK_WARDEN))){
 			return true;
 		} else {
 			return false;

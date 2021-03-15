@@ -239,16 +239,16 @@ public enum Talent {
 			ScrollOfRecharging.charge( hero );
 		}
 		if (hero.hasTalent(ENERGIZING_MEAL_I,ROYAL_MEAL)){
-			//5/8 turns of recharging for rat king, 4/6 for mage.
+			//5/8 turns of recharging.
 			int points = hero.pointsInTalent(ENERGIZING_MEAL_I,ROYAL_MEAL);
 			int duration = 2 + 3*points;
-			if(hero.hasTalent(ENERGIZING_MEAL_I)) Buff.affect( hero, Recharging.class, duration - hero.pointsInTalent(ENERGIZING_MEAL_I));
+			if(hero.hasTalent(ENERGIZING_MEAL_I)) Buff.affect( hero, Recharging.class, duration);
 			else								  Buff.prolong(hero, Recharging.class, duration);
 			ScrollOfRecharging.charge( hero );
 		}
 		if (hero.hasTalent(ENERGIZING_MEAL_II)) {
 			// 1/1.5 charges instantly replenished, does not overcharge at this time even though I implemented functionality for it.
-			hero.belongings.charge(0.5f*(1+hero.pointsInTalent(ENERGIZING_MEAL_II)),false);
+			hero.belongings.charge(0.5f*(1+hero.pointsInTalent(ENERGIZING_MEAL_II)),hero.pointsInTalent(ENERGIZING_MEAL_II) == 2);
 			if(!hero.hasTalent(ENERGIZING_MEAL_I)) ScrollOfRecharging.charge( hero );
 		}
 		if (hero.hasTalent(MYSTICAL_MEAL,ROYAL_MEAL)){
