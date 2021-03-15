@@ -162,15 +162,10 @@ public class BrokenSeal extends Item {
 		private float partialShield;
 
 		private static final float RECHARGE_RATE = 30;
-		/*private synchronized float rechargeRate() {
-			int maxShield = maxShield();
-			int ironWill = (int)Math.ceil(((Hero)target).pointsInTalent(Talent.IRON_WILL)*1.5f);
-			return RECHARGE_RATE * (maxShield - ironWill)/maxShield; // iron will boost is deducted
-		}*/
 		@Override
 		public synchronized boolean act() {
 			if (shielding() < maxShield()) {
-				partialShield += 1/RECHARGE_RATE;
+				partialShield += 1/(RECHARGE_RATE * (1 - ((Hero)target).pointsInTalent(Talent.IRON_WILL)/(float)maxShield())); // this adjusts the seal recharge rate.
 			}
 			
 			while (partialShield >= 1){
@@ -199,8 +194,7 @@ public class BrokenSeal extends Item {
 		public synchronized int maxShield() {
 			Hero hero = (Hero)target;
 			if (armor != null && armor.isEquipped(hero)) {
-				int bonus = hero.pointsInTalent(Talent.NOBLE_CAUSE); // 2/3
-				if(hero.heroClass == HeroClass.WARRIOR) bonus++;
+				int bonus = hero.pointsInTalent(Talent.NOBLE_CAUSE,Talent.IRON_WILL);
 				return armor.tier + armor.level() + bonus;
 			} else {
 				return 0;
