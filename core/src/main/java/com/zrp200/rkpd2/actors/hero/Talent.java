@@ -193,12 +193,13 @@ public enum Talent {
 				}
 				break;
 			case ROYAL_PRIVILEGE: case NATURES_BOUNTY:
-				if(hero.pointsInTalent(NATURES_BOUNTY) > 0) points++;
-				Buff.count(hero, NatureBerriesAvailable.class, 2*points);
+				int count = talent == NATURES_BOUNTY ? 3 : 2;
+				if(points == 1) count *= 2; // for the initial upgrade.
+				Buff.count(hero, NatureBerriesAvailable.class, count*points);
 				break;
-			case BERSERKING_STAMINA: case RK_BERSERKER:
+			case BERSERKING_STAMINA:
 				Berserk berserk = hero.buff(Berserk.class);
-				if(berserk != null) berserk.recover(.5f);
+				if(berserk != null) berserk.recover(talent == RK_BERSERKER ? 1/3f : .5f);
 				break;
 		}
 		if (talent == FARSIGHT || talent == RK_SNIPER){
@@ -276,8 +277,8 @@ public enum Talent {
 
 	public static float itemIDSpeedFactor( Hero hero, Item item ){
 		// 1.75x/2.5x speed with huntress talent
-		float factor = 1f + (hero.pointsInTalent(ROYAL_INTUITION) + hero.pointsInTalent(ROYAL_INTUITION))*0.75f;
-		if(hero.pointsInTalent(SURVIVALISTS_INTUITION) > 0) factor *= 2.5;
+		float factor = 1f + hero.pointsInTalent(ROYAL_INTUITION,SURVIVALISTS_INTUITION) *0.75f;
+		if(hero.pointsInTalent(SURVIVALISTS_INTUITION) > 0) factor *= 1.5;
 
 		// 2x/instant for Warrior (see onItemEquipped)
 		if (item instanceof MeleeWeapon || item instanceof Armor){
@@ -405,8 +406,7 @@ public enum Talent {
 			item.identify();
 			id = true;
 		}
-		// TODO revisit this is easily exploitable
-		if( hero.pointsInTalent(SURVIVALISTS_INTUITION) == 2 && !item.collected && Random.Int(3) == 0){
+		if(!item.collected && Random.Int(5) < hero.pointsInTalent(SURVIVALISTS_INTUITION)){
 			item.cursedKnown = true;
 			id = true;
 		}
