@@ -155,7 +155,7 @@ public class Berserk extends Buff {
 
 	private float rageFactor() {
 		Hero hero = (Hero)target;
-		float weight = 0.1f*hero.pointsInTalent(Talent.ENRAGED_CATALYST)+hero.pointsInTalent(Talent.ENDLESS_RAGE);
+		float weight = 0.1f*hero.pointsInTalent(Talent.ENRAGED_CATALYST,Talent.ONE_MAN_ARMY,Talent.ENDLESS_RAGE);
 		return weight*target.HP+(1-weight)*target.HT;
 	}
 
