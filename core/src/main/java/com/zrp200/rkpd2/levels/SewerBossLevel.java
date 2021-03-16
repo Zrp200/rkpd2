@@ -59,7 +59,7 @@ public class SewerBossLevel extends SewerLevel {
 		initRooms.add( roomEntrance = new SewerBossEntranceRoom() );
 		initRooms.add( roomExit = new SewerBossExitRoom() );
 		
-		int standards = standardRooms(true);
+		int standards = Random.round(standardRooms(true)*Random.Float(SIZE_MODIFIER[0],SIZE_MODIFIER[1]));
 		for (int i = 0; i < standards; i++) {
 			StandardRoom s = StandardRoom.createRoom();
 			//force to normal size

@@ -391,6 +391,7 @@ public enum Talent {
 	}
 
 	public static void onItemCollected( Hero hero, Item item ){
+		if(item.isIdentified()) return;
 		boolean id = false;
 		if (hero.heroClass == HeroClass.ROGUE || hero.hasTalent(THIEFS_INTUITION,ROYAL_INTUITION)){
 			int points = hero.pointsInTalent(THIEFS_INTUITION,ROYAL_INTUITION);
