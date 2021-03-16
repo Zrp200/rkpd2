@@ -55,13 +55,10 @@ public class Combo extends Buff implements ActionIndicator.Action {
 	
 	private int count = 0;
 	private float comboTime = 0f;
-	private float initialComboTime = 5f;
+	private float initialComboTime = baseComboTime();
 
-	// laziness strikes again
-	// gladiator gets no miss penalty and all of his finishers roll an extra time.
-	// this means that he will never actually lose his combo in combat unless he uses it, since missing restores combo.
-	private boolean gladiatorVariant() {
-		return target instanceof Hero && ((Hero)target).subClass == HeroSubClass.GLADIATOR;
+	private static float baseComboTime() {
+		return 5f+Dungeon.hero.pointsInTalent(Talent.SKILL);
 	}
 
 	@Override
@@ -91,8 +88,8 @@ public class Combo extends Buff implements ActionIndicator.Action {
 	
 	public void hit( Char enemy ) {
 
-		count++;
-		comboTime = 5f;
+		if(Dungeon.hero.pointsInTalent(Talent.SKILL) == 3 && Random.Int(3) == 0) count++;
+		comboTime = baseComboTime();
 
 		//TODO this won't count a kill on an enemy that gets corruped by corrupting I think?
 		if (!enemy.isAlive() || enemy.buff(Corruption.class) != null){
@@ -100,7 +97,10 @@ public class Combo extends Buff implements ActionIndicator.Action {
 			int multiplier = hero.hasTalent(Talent.CLEAVE) ? 10 : 15;
 			comboTime = Math.max(comboTime, multiplier*hero.pointsInTalent(Talent.CLEAVE,Talent.RK_GLADIATOR));
 		}
-
+		incCombo();
+	}
+	void incCombo() {
+		count++;
 		initialComboTime = comboTime;
 
 		if ((getHighestMove() != null)) {
@@ -114,6 +114,13 @@ public class Combo extends Buff implements ActionIndicator.Action {
 
 		BuffIndicator.refreshHero(); //refresh the buff visually on-hit
 
+	}
+
+	public void miss() {
+		if(((Hero)target).pointsInTalent(Talent.SKILL) >= 2 && Random.Int(3) == 0) {
+			comboTime = baseComboTime();
+			incCombo();
+		}
 	}
 
 	@Override
@@ -297,7 +304,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		boolean wasAlly = enemy.alignment == target.alignment;
 		Hero hero = (Hero)target;
 
-		if (enemy.defenseSkill(target) >= Char.INFINITE_EVASION && !gladiatorVariant()){
+		if (enemy.defenseSkill(target) >= Char.INFINITE_EVASION){
 			enemy.sprite.showStatus( CharSprite.NEUTRAL, enemy.defenseVerb() );
 			Sample.INSTANCE.play(Assets.Sounds.MISS);
 
@@ -308,7 +315,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 			} else {
 
 			int dmg = target.damageRoll();
-			if(gladiatorVariant()) dmg = Math.max(target.damageRoll(), dmg); // free reroll for gladiator. This will be rather...noticable on fury.
+			if(hero.hasTalent(Talent.SKILL)) dmg = Math.max(target.damageRoll(), dmg); // free reroll. This will be rather...noticable on fury.
 
 			//variance in damage dealt
 			switch (moveBeingUsed) {
@@ -316,7 +323,10 @@ public class Combo extends Buff implements ActionIndicator.Action {
 					dmg = 0;
 					break;
 				case SLAM:
-					dmg += Math.round(target.drRoll() * count/5f);
+					// reroll armor for gladiator
+					int drRoll = target.drRoll();
+					if(hero.hasTalent(Talent.SKILL)) drRoll = Math.max(drRoll, target.drRoll());
+					dmg += Math.round(drRoll * count/5f);
 					break;
 				case CRUSH:
 					dmg = Math.round(dmg * 0.25f*count);
@@ -448,7 +458,8 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		if (!enemy.isAlive() || (!wasAlly && enemy.alignment == target.alignment)) {
 			if (hero.hasTalent(Talent.LETHAL_DEFENSE,Talent.RK_GLADIATOR) && hero.buff(BrokenSeal.WarriorShield.class) != null){
 				BrokenSeal.WarriorShield shield = hero.buff(BrokenSeal.WarriorShield.class);
-				shield.supercharge(Math.round(shield.maxShield() * hero.pointsInTalent(Talent.LETHAL_DEFENSE,Talent.RK_GLADIATOR)/3f));
+				shield.supercharge(Math.round(shield.maxShield() *
+						(hero.pointsInTalent(Talent.LETHAL_DEFENSE)/2f + hero.pointsInTalent(Talent.RK_GLADIATOR)/3f)));
 			}
 		}
 

@@ -1790,8 +1790,10 @@ public class Hero extends Char {
 		Invisibility.dispel();
 		spend( attackDelay() );
 
-		if (hit && (subClass == HeroSubClass.GLADIATOR || subClass == HeroSubClass.KING)){
-			Buff.affect( this, Combo.class ).hit( enemy );
+		if (subClass == HeroSubClass.GLADIATOR || subClass == HeroSubClass.KING){
+			Combo combo = Buff.affect( this, Combo.class );
+			if(hit) combo.hit(enemy);
+			else 	combo.miss();
 		}
 
 		curAction = null;
