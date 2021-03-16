@@ -434,8 +434,8 @@ public class DwarfKing extends Mob {
 				// this stops it from randomly skipping a phase randomly. the big hits are given more leverage however.
 				int criticality = rawCrit <= 2.5 ? Random.round(rawCrit) : 3; // this makes it a bit more lenient.
 				if (criticality <= 0) {
-					int dmg2 = Math.min(dmg,HP-50); // everything after the last 50 was deferred.
-					dmg = Math.max(dmg-dmg2,0);
+					int dmg2 = Math.min(dmg,preHP+250); // everything after the last 50 was deferred.
+					dmg = dmg-dmg2;
 					HP = preHP; // set HP back to original HP.
 					// literally just broke the shield in one go.
 					sprite.add(CharSprite.State.SHIELDED);

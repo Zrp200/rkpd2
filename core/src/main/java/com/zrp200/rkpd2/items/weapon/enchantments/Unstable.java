@@ -62,9 +62,7 @@ public class Unstable extends Weapon.Enchantment {
 			attacker.buff(Kinetic.ConservedDamage.class).detach();
 		}
 
-		getRandomEnchant(weapon).proc( weapon, attacker, defender, damage );
-		
-		return damage + conservedDamage;
+		return getRandomEnchant(weapon).proc( weapon, attacker, defender, damage ) + conservedDamage;
 	}
 
 	@Override
