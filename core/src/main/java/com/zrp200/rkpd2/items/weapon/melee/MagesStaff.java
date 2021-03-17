@@ -161,7 +161,7 @@ public class MagesStaff extends MeleeWeapon {
 			}
 		}
 
-		if (wand.curCharges < wand.maxCharges) wand.partialCharge += 0.5f;
+		if (wand.curCharges < wand.maxCharges) gainCharge(0.5f);
 		ScrollOfRecharging.charge(Dungeon.hero);
 	}
 	public void procWand(Char defender, int damage) {

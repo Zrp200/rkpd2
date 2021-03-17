@@ -62,7 +62,7 @@ public class EnhancedRings extends FlavourBuff{
 
 	@Override
 	public float iconFadePercent() {
-		float max = 3*Dungeon.hero.pointsInTalent(Talent.ENHANCED_RINGS,Talent.RK_FREERUNNER);
+		float max = 3*Dungeon.hero.pointsInTalent(Talent.ENHANCED_RINGS,Talent.RK_ASSASSIN);
 		return Math.max(0, (max-visualcooldown()) / max);
 	}
 
