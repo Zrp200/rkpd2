@@ -28,6 +28,7 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Barrier;
 import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.Degrade;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.buffs.LockedFloor;
 import com.zrp200.rkpd2.actors.buffs.MagicImmune;
@@ -311,6 +312,11 @@ public abstract class Wand extends Item {
 
 	protected int buffedLvl(boolean magicCharge) {
 		int lvl = super.buffedLvl();
+		MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
+		if(staff != null && staff.wand() == this && Dungeon.hero.buff(Degrade.class) != null) {
+			int bonus = Dungeon.hero.getBonus(this);
+			lvl = Degrade.reduceLevel(lvl-bonus)+bonus;
+		}
 
 		if (charger != null && charger.target != null) {
 			if (charger.target.buff(ScrollEmpower.class) != null){

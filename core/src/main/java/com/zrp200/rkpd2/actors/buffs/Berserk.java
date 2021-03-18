@@ -111,19 +111,13 @@ public class Berserk extends Buff {
 				power = 0f;
 			}
 		} else {
-			reduceRage();
-			if (power <= 0 && state != State.RECOVERING){
-				detach();
-			}
+			// essentially while recovering your max rage is actually capped for basically all purposes.
+			power -= GameMath.gate(recovered()/10f, power, recovered()) * (recovered() * 0.067f) * Math.pow((target.HP/(float)target.HT), 2);
+			if (power <= 0 && state != State.RECOVERING) detach();
+			else power = Math.max(0,power);
 		}
 		spend(TICK);
 		return true;
-	}
-
-	private void reduceRage() {
-		// essentially while recovering your max rage is actually capped for basically all purposes.
-		power -= GameMath.gate(recovered()/10f, power, recovered()) * (recovered() * 0.067f) * Math.pow((target.HP/(float)target.HT), 2);
-		power = Math.max(0,power);
 	}
 
 	private float damageMult() {
