@@ -104,27 +104,35 @@ public class ActionIndicator extends Tag {
 			action.doAction();
 	}
 
-	public static void setAction(Action action){
-		if(!action.usable()) return;
+	@Override
+	protected boolean onLongClick() {
+		return findAction(true);
+	}
+
+	public static boolean setAction(Action action){
+		if(!action.usable() || ActionIndicator.action == action) return false;
 		ActionIndicator.action = action;
 		updateIcon();
+		return true;
 	}
 
 	// list of action buffs that we should replace it with.
 	private static final Class<?extends Buff>[] actionBuffClasses = new Class[]{Preparation.class, SnipersMark.class, Combo.class, Momentum.class};
-	public static void clearAction(Action action){
-		if (ActionIndicator.action != action) return;
-		ActionIndicator.action = null;
-		for(Class<?extends Buff> actionBuffClass : actionBuffClasses) {
-			Action a = (Action)Dungeon.hero.buff(actionBuffClass);
-			if(a != null && a != action && action.usable()) {
-				if(actionBuffClass == Combo.class) {
-					if(((Combo)a).getHighestMove() == null) continue;
-				}
-				setAction(a);
-				return;
-			}
+	private static boolean findAction(boolean cycle) {
+		if(action == null) cycle = false;
+		int start = -1;
+		if(cycle) while(++start < actionBuffClasses.length && !actionBuffClasses[start].isInstance(action));
+
+		for(int i = (start+1)%actionBuffClasses.length; i != start && i < actionBuffClasses.length; i++) {
+			Buff b = Dungeon.hero.buff(actionBuffClasses[i]);
+			if(b != null && setAction((Action)b)) return true;
+			if(cycle && i+1 == actionBuffClasses.length) i = -1;
 		}
+		return false;
+	}
+
+	public static void clearAction(Action action){
+		if(ActionIndicator.action == action && !findAction(false)) ActionIndicator.action = null;
 	}
 
 	public static void updateIcon(){
