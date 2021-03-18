@@ -301,7 +301,7 @@ public class Ring extends KindofMisc {
 	public int buffedLvl() {
 		int lvl = super.buffedLvl();
 		if (Dungeon.hero.buff(EnhancedRings.class) != null){
-			lvl++;
+			lvl += Dungeon.hero.hasTalent(Talent.ENHANCED_RINGS) ? 2 : 1;
 		}
 		return lvl;
 	}
