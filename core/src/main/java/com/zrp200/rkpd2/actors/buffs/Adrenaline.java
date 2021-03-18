@@ -36,7 +36,7 @@ public class Adrenaline extends FlavourBuff {
 	
 	@Override
 	public int icon() {
-		return BuffIndicator.AMOK;
+		return BuffIndicator.RAGE;
 	}
 
 	@Override

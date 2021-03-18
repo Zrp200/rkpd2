@@ -99,7 +99,7 @@ public enum Talent {
 	SOUL_EATER(46, 3), SOUL_SIPHON(47, 3), NECROMANCERS_MINIONS(48, 3), WARLOCKS_TOUCH (113, 3),
 
 	//Rogue T1
-	CACHED_RATIONS(64), THIEFS_INTUITION(65), SUCKER_PUNCH(66), MENDING_SHADOWS(67),
+	CACHED_RATIONS(64), THIEFS_INTUITION(65), SUCKER_PUNCH(66), MENDING_SHADOWS(128),
 	//Rogue T2
 	MYSTICAL_MEAL(68), MYSTICAL_UPGRADE(69), WIDE_SEARCH(70), SILENT_STEPS(71), ROGUES_FORESIGHT(72),
 	//Rogue T3
@@ -112,7 +112,7 @@ public enum Talent {
 	//Huntress T1
 	NATURES_BOUNTY(96), SURVIVALISTS_INTUITION(97), FOLLOWUP_STRIKE(98), NATURES_AID(99),
 	//Huntress T2
-	INVIGORATING_MEAL(100), RESTORED_NATURE(101), REJUVENATING_STEPS(102), HEIGHTENED_SENSES(103), DURABLE_PROJECTILES(104),
+	INVIGORATING_MEAL(132), RESTORED_NATURE(101), REJUVENATING_STEPS(102), HEIGHTENED_SENSES(103), DURABLE_PROJECTILES(104),
 	//Huntress T3
 	POINT_BLANK(105, 3), SEER_SHOT(106, 3),
 	//Sniper T3
@@ -123,8 +123,8 @@ public enum Talent {
 	ROYAL_PRIVILEGE(32), // food related talents, uses empowering icon
 	ROYAL_INTUITION(97), // intuition-related talents, uses survivalist's icon
 	KINGS_WISDOM(34), // on-id + combat talents, uses tested hypothesis
-	NOBLE_CAUSE(3), // other ones. uses iron will
-	ROYAL_MEAL(68), //// all on-eat talents for tier 2. uses arcane meal
+	NOBLE_CAUSE(67), // other ones. uses iron will
+	ROYAL_MEAL(100), //// all on-eat talents for tier 2. uses arcane meal
 	RESTORATION(5), // all upgrade/potion of healing talents, uses restored willpower icon
 	POWER_WITHIN(72), // runic (3), wand preservation (3), rogue's foresight (5), rejuvenating steps (3), uses foresight.
 	KINGS_VISION(103), // improvised projectiles (4), arcane vision(4), wide search(3), heightened senses(4), uses heightened senses
