@@ -196,7 +196,7 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 	public void doAction() {
 		freerunTurns = 2*momentumStacks;
 		//cooldown is functionally 10+2*stacks when active effect ends
-		freerunCooldown = 10 + 4*momentumStacks;
+		freerunCooldown = Random.round((10 + 2*momentumStacks)/(1+Dungeon.hero.pointsInTalent(Talent.FAST_RECOVERY)/3f)) + freerunTurns;
 		Sample.INSTANCE.play(Assets.Sounds.MISS, 1f, 0.8f);
 		target.sprite.emitter().burst(Speck.factory(Speck.JET), 5+ momentumStacks);
 		momentumStacks = 0;

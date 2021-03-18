@@ -58,7 +58,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 	private float initialComboTime = baseComboTime();
 
 	private static float baseComboTime() {
-		return 5f+Dungeon.hero.pointsInTalent(Talent.SKILL);
+		return 5f+(Dungeon.hero != null ? Dungeon.hero.pointsInTalent(Talent.SKILL) : 0);
 	}
 
 	@Override
