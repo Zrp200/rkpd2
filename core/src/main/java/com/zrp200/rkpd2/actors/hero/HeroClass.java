@@ -66,7 +66,7 @@ public enum HeroClass {
 		@Override public int getBonus(Item item) { return item instanceof Wand ? 2 : 0; }
 	},
 	ROGUE( "rogue", HeroSubClass.ASSASSIN, HeroSubClass.FREERUNNER ) {
-		@Override public int getBonus(Item item) { return item instanceof Weapon || item instanceof Ring ? 1 : 0; }
+		@Override public int getBonus(Item item) { return item instanceof Weapon ? 1 : 0; }
 	},
 	HUNTRESS( "huntress", HeroSubClass.SNIPER, HeroSubClass.WARDEN ),
 	RAT_KING ("rat_king",HeroSubClass.KING);

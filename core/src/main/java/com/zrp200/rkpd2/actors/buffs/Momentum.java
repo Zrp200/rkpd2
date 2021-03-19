@@ -24,9 +24,11 @@ package com.zrp200.rkpd2.actors.buffs;
 import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.QuickSlot;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.ActionIndicator;
 import com.zrp200.rkpd2.ui.BuffIndicator;
@@ -64,6 +66,7 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 		if (freerunTurns > 0){
 			if (target.invisible == 0 || Dungeon.hero.pointsInTalent(Talent.SPEEDY_STEALTH,Talent.RK_FREERUNNER) < 2) {
 				freerunTurns--;
+				if(freerunTurns == 0) Item.updateQuickslot();
 			}
 		} else if (!movedLastTurn){
 			momentumStacks = (int)GameMath.gate(0, momentumStacks-1, Math.round(momentumStacks * 0.667f));
@@ -104,7 +107,7 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 	public int evasionBonus( int heroLvl, int excessArmorStr ){
 		if (freerunTurns > 0) {
 			return heroLvl/2 + excessArmorStr*(
-					(Random.round((4+heroLvl)*Dungeon.hero.pointsInTalent(Talent.EVASIVE_ARMOR)/16f)) // this effectively allows fractional evasion.
+					(Random.round((4+heroLvl)*Dungeon.hero.pointsInTalent(Talent.EVASIVE_ARMOR)/15f)) // this effectively allows fractional evasion.
 							+ Dungeon.hero.pointsInTalent(Talent.RK_FREERUNNER));
 		} else {
 			return 0;
@@ -200,6 +203,7 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 		Sample.INSTANCE.play(Assets.Sounds.MISS, 1f, 0.8f);
 		target.sprite.emitter().burst(Speck.factory(Speck.JET), 5+ momentumStacks);
 		momentumStacks = 0;
+		Item.updateQuickslot();
 		BuffIndicator.refreshHero();
 		ActionIndicator.clearAction(this);
 	}

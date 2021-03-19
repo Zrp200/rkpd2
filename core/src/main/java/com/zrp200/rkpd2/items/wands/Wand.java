@@ -32,6 +32,7 @@ import com.zrp200.rkpd2.actors.buffs.Degrade;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.buffs.LockedFloor;
 import com.zrp200.rkpd2.actors.buffs.MagicImmune;
+import com.zrp200.rkpd2.actors.buffs.Momentum;
 import com.zrp200.rkpd2.actors.buffs.Recharging;
 import com.zrp200.rkpd2.actors.buffs.ScrollEmpower;
 import com.zrp200.rkpd2.actors.buffs.SoulMark;
@@ -316,6 +317,10 @@ public abstract class Wand extends Item {
 		if(staff != null && staff.wand() == this && Dungeon.hero.buff(Degrade.class) != null) {
 			int bonus = Dungeon.hero.getBonus(this);
 			lvl = Degrade.reduceLevel(lvl-bonus)+bonus;
+		}
+		Momentum momentum = Dungeon.hero.buff(Momentum.class);
+		if(momentum != null && momentum.freerunning()) {
+			lvl += Dungeon.hero.pointsInTalent(Talent.PROJECTILE_MOMENTUM);
 		}
 
 		if (charger != null && charger.target != null) {
@@ -617,7 +622,12 @@ public abstract class Wand extends Item {
 		private void recharge(){
 			int missingCharges = maxCharges - curCharges;
 			missingCharges = Math.max(0, missingCharges);
-			if(target instanceof Hero) missingCharges += ((Hero)target).getBonus(Wand.this);
+			if(target instanceof Hero) {
+				Hero hero = (Hero)target;
+				missingCharges += ((Hero)target).getBonus(Wand.this);
+				// this is because all wands are getting this boost, and it's not tied to 'zaps'. It's basically a visible intrinsic boost.
+				Momentum m = hero.buff(Momentum.class); if(m != null && m.freerunning()) missingCharges += hero.pointsInTalent(Talent.PROJECTILE_MOMENTUM);
+			}
 
 			float turnsToCharge = (float) (BASE_CHARGE_DELAY
 					+ (SCALING_CHARGE_ADDITION * Math.pow(scalingFactor, missingCharges)));

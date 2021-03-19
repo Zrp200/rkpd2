@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.items.wands.Wand;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.items.weapon.melee.MeleeWeapon;
+import com.zrp200.rkpd2.items.weapon.melee.Whip;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.watabou.utils.Bundle;
@@ -47,17 +48,15 @@ public enum HeroSubClass {
 	
 	ASSASSIN( "assassin" ) {
 		@Override public int getBonus(Item item) {
-			// +1 to rings / +2 to melee / +2 to thrown. total boosts = 5, but assassin has many ways of boosting his damage output further.
-			return item instanceof Weapon ? 1 : 0;
+			// +2 to melee / +1 to thrown. total boosts = 3
+			return item instanceof MeleeWeapon ? 1 : 0;
 		}
 	},
 	FREERUNNER( "freerunner" ) {
 		@Override
 		public int getBonus(Item item) {
-			// +1 to melee/ring, +3 to wands, +3 to missiles. total boosts = 7, ~50% more than assassin.
-			return item instanceof Wand ? 3
-					: item instanceof MissileWeapon ? 2
-					: 0;
+			// +1 to melee, +1 to wands, +2 to missiles, +1 to whips. total boosts = 5
+			return item instanceof Wand || item instanceof MissileWeapon || item instanceof Whip ? 1 : 0;
 		}
 	},
 	
