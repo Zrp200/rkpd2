@@ -298,6 +298,10 @@ public class Hero extends Char {
 		Belongings.preview( info, bundle );
 	}
 
+	public boolean canHaveTalent(Talent talent) {
+		for(LinkedHashMap<Talent,Integer> tier : talents) if(tier.containsKey(talent)) return true;
+		return false;
+	}
 	public boolean hasTalent( Talent talent ){
 		return pointsInTalent(talent) > 0;
 	}
@@ -543,6 +547,7 @@ public class Hero extends Char {
 	}
 
 	public boolean canSurpriseAttack(){
+		if(heroClass == HeroClass.ROGUE) return true; // rogue can always surprise attack. such balance.
 		if (belongings.weapon == null || !(belongings.weapon instanceof Weapon))    return true;
 		if (STR() < ((Weapon)belongings.weapon).STRReq())                           return false;
 		if (belongings.weapon instanceof Flail)                                     return false;

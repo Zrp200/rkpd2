@@ -54,7 +54,7 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 
 	@Override
 	public boolean act() {
-		if (freerunCooldown > 0){
+		if (freerunCooldown > 0 && (target.invisible == 0 || Dungeon.hero.pointsInTalent(Talent.SPEEDY_STEALTH) < 3 || freerunTurns == 0)){
 			freerunCooldown--;
 		}
 
@@ -64,7 +64,11 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 		}
 
 		if (freerunTurns > 0){
-			if (target.invisible == 0 || Dungeon.hero.pointsInTalent(Talent.SPEEDY_STEALTH,Talent.RK_FREERUNNER) < 2) {
+			if(target.invisible > 0 && Dungeon.hero.pointsInTalent(Talent.SPEEDY_STEALTH) >= 2) {
+				freerunTurns++;
+				freerunCooldown++; // this is the flip side. you're simply delaying it, not reducing the cooldown at all.
+			}
+			else if (target.invisible == 0 || Dungeon.hero.pointsInTalent(Talent.SPEEDY_STEALTH,Talent.RK_FREERUNNER) < 2) {
 				freerunTurns--;
 				if(freerunTurns == 0) Item.updateQuickslot();
 			}
@@ -91,9 +95,9 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 	}
 
 	public boolean freerunning(){
-		return freerunTurns > 0;
+		return freerunTurns > 0 || Dungeon.hero.pointsInTalent(Talent.SPEEDY_STEALTH) == 3 && target.invisible > 0;
 	}
-	
+
 	public float speedMultiplier(){
 		if (freerunning()){
 			return 2;
@@ -105,7 +109,7 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 	}
 	
 	public int evasionBonus( int heroLvl, int excessArmorStr ){
-		if (freerunTurns > 0) {
+		if (freerunning()) {
 			return heroLvl/2 + excessArmorStr*(
 					(Random.round((4+heroLvl)*Dungeon.hero.pointsInTalent(Talent.EVASIVE_ARMOR)/15f)) // this effectively allows fractional evasion.
 							+ Dungeon.hero.pointsInTalent(Talent.RK_FREERUNNER));

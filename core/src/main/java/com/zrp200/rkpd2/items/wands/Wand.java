@@ -318,12 +318,13 @@ public abstract class Wand extends Item {
 			int bonus = Dungeon.hero.getBonus(this);
 			lvl = Degrade.reduceLevel(lvl-bonus)+bonus;
 		}
-		Momentum momentum = Dungeon.hero.buff(Momentum.class);
-		if(momentum != null && momentum.freerunning()) {
-			lvl += Dungeon.hero.pointsInTalent(Talent.PROJECTILE_MOMENTUM);
-		}
 
 		if (charger != null && charger.target != null) {
+			Momentum momentum = charger.target.buff(Momentum.class);
+			if(momentum != null && momentum.freerunning() && Dungeon.hero.canHaveTalent(Talent.PROJECTILE_MOMENTUM)) {
+				lvl += 1+Dungeon.hero.pointsInTalent(Talent.PROJECTILE_MOMENTUM);
+			}
+
 			if (charger.target.buff(ScrollEmpower.class) != null){
 				lvl += Dungeon.hero.pointsInTalent(Talent.EMPOWERING_SCROLLS,Talent.RK_BATTLEMAGE);
 			}
@@ -626,7 +627,10 @@ public abstract class Wand extends Item {
 				Hero hero = (Hero)target;
 				missingCharges += ((Hero)target).getBonus(Wand.this);
 				// this is because all wands are getting this boost, and it's not tied to 'zaps'. It's basically a visible intrinsic boost.
-				Momentum m = hero.buff(Momentum.class); if(m != null && m.freerunning()) missingCharges += hero.pointsInTalent(Talent.PROJECTILE_MOMENTUM);
+				Momentum m = hero.buff(Momentum.class);
+				if(m != null && m.freerunning() && hero.canHaveTalent(Talent.PROJECTILE_MOMENTUM)) {
+					missingCharges += 1+hero.pointsInTalent(Talent.PROJECTILE_MOMENTUM);
+				}
 			}
 
 			float turnsToCharge = (float) (BASE_CHARGE_DELAY

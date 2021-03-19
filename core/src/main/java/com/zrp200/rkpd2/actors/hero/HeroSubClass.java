@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.actors.hero;
 
+import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.wands.Wand;
 import com.zrp200.rkpd2.items.weapon.Weapon;
@@ -48,15 +49,18 @@ public enum HeroSubClass {
 	
 	ASSASSIN( "assassin" ) {
 		@Override public int getBonus(Item item) {
-			// +2 to melee / +1 to thrown. total boosts = 3
-			return item instanceof MeleeWeapon ? 1 : 0;
+			// +2 to melee / +2 to thrown. total boosts = 4
+			return item instanceof Weapon ? 2 : 0;
 		}
 	},
 	FREERUNNER( "freerunner" ) {
 		@Override
 		public int getBonus(Item item) {
-			// +1 to melee, +1 to wands, +2 to missiles, +1 to whips. total boosts = 5
-			return item instanceof Wand || item instanceof MissileWeapon || item instanceof Whip ? 1 : 0;
+			// +1 to wands* (+freerun bonus), +2 to missiles, +1 to anything with reach. total boosts = 4 before other modifiers. note that freerunner has easy access to gamebreaking mechanics.
+			return item instanceof MissileWeapon ? 2
+					: item instanceof Wand ? 1
+					: Dungeon.hero != null && item instanceof Weapon && ((Weapon) item).reachFactor(Dungeon.hero) > 1 ? 1
+					: 0;
 		}
 	},
 	

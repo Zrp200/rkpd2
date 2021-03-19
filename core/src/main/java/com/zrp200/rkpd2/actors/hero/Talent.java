@@ -65,6 +65,7 @@ import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+import com.zrp200.rkpd2.utils.GLog;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -401,6 +402,14 @@ public enum Talent {
 				id = true;
 			}
 			else if (points == 2 && item instanceof Ring) ((Ring) item).setKnown();
+			if(hero.pointsInTalent(THIEFS_INTUITION) == 1
+					&& (item instanceof Ring || item instanceof Artifact)
+					&& !item.collected && item.cursed && !item.cursedKnown
+					&& Random.Int(2) == 0) {
+				item.cursedKnown = true;
+				id = true;
+				GLog.n(String.format("The %s is cursed!",item.name()));
+			}
 		}
 		if (hero.pointsInTalent(ARMSMASTERS_INTUITION) == 2 &&
 				(item instanceof Weapon || item instanceof Armor)) {
