@@ -62,7 +62,7 @@ public class HoldFast extends Buff {
 	}
 
 	public static int armor() {
-		return Math.max(4*Dungeon.hero.pointsInTalent(Talent.HOLD_FAST), 2*Dungeon.hero.pointsInTalent(Talent.RK_BERSERKER));
+		return Math.max(3*Dungeon.hero.pointsInTalent(Talent.HOLD_FAST), 2*Dungeon.hero.pointsInTalent(Talent.RK_BERSERKER));
 	}
 
 	@Override

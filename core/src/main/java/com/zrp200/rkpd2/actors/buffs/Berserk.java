@@ -38,7 +38,6 @@ import com.watabou.utils.GameMath;
 import com.zrp200.rkpd2.utils.GLog;
 
 public class Berserk extends Buff {
-	// TODO should I make this two classes?
 
 	private enum State{
 		NORMAL, BERSERK, RECOVERING
@@ -147,10 +146,10 @@ public class Berserk extends Buff {
 		return state == State.BERSERK && target.shielding() > 0;
 	}
 
-	private float rageFactor() {
+	private float rageFactor(int damage) {
 		Hero hero = (Hero)target;
 		float weight = 0.1f*hero.pointsInTalent(Talent.ENRAGED_CATALYST,Talent.ONE_MAN_ARMY,Talent.ENDLESS_RAGE);
-		return weight*target.HP+(1-weight)*target.HT;
+		return damage/(weight*(target.HP-damage)+(1-weight)*target.HT)/3f;
 	}
 
 	public float rageAmount(){
@@ -160,7 +159,7 @@ public class Berserk extends Buff {
 	public void damage(int damage){
 		if (state == State.RECOVERING && !berserker()) return;
 		float maxPower = 1f + 0.15f*((Hero)target).pointsInTalent(Talent.ENDLESS_RAGE,Talent.RK_BERSERKER);
-		power = Math.min(maxPower, power + damage/rageFactor()/3f );
+		power = Math.min(maxPower, power + rageFactor(damage) );
 		BuffIndicator.refreshHero(); //show new power immediately
 	}
 

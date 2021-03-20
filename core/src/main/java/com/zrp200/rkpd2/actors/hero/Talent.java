@@ -411,7 +411,7 @@ public enum Talent {
 				GLog.n(String.format("The %s is cursed!",item.name()));
 			}
 		}
-		if (hero.pointsInTalent(ARMSMASTERS_INTUITION) == 2 &&
+		if (hero.pointsInTalent(ARMSMASTERS_INTUITION) == 2 && Random.Int(2) == 0 && !item.collected &&
 				(item instanceof Weapon || item instanceof Armor)) {
 			item.identify();
 			id = true;
