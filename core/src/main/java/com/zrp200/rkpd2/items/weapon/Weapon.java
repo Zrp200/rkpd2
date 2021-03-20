@@ -27,10 +27,12 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Berserk;
 import com.zrp200.rkpd2.actors.buffs.MagicImmune;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.KindOfWeapon;
+import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
 import com.zrp200.rkpd2.items.rings.RingOfFuror;
 import com.zrp200.rkpd2.items.wands.WandOfDisintegration;
 import com.zrp200.rkpd2.items.weapon.curses.Annoying;
@@ -235,16 +237,13 @@ abstract public class Weapon extends KindOfWeapon {
 		return super.level() + (curseInfusionBonus ? 1 : 0);
 	}
 
-	/* logic is now in superclass
-	//overrides as other things can equip these
 	@Override
 	public int buffedLvl() {
-		if (isEquipped( Dungeon.hero ) || Dungeon.hero.belongings.contains( this )){
-			return super.buffedLvl();
-		} else {
-			return level();
-		}
-	}*/
+		int lvl = super.buffedLvl();
+		if((isEquipped(Dungeon.hero) || Dungeon.hero.belongings.contains(this))
+				&& (Dungeon.hero.buff(CloakOfShadows.cloakStealth.class) != null && Dungeon.hero.heroClass == HeroClass.ROGUE)) lvl++;
+		return lvl;
+	}
 	
 	@Override
 	public Item upgrade() {

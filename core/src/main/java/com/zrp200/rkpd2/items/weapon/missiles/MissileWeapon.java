@@ -34,6 +34,7 @@ import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
 import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.bags.MagicalHolster;
 import com.zrp200.rkpd2.items.rings.RingOfSharpshooting;
@@ -269,7 +270,9 @@ abstract public class MissileWeapon extends Weapon {
 	}
 	
 	protected float durabilityPerUse(){
-		float usages = baseUses * (float)(Math.pow(3, level()));
+		int level = level();
+		if(Dungeon.hero.heroClass == HeroClass.ROGUE && Dungeon.hero.buff(CloakOfShadows.cloakStealth.class) != null) level++;
+		float usages = baseUses * (float)(Math.pow(3, level));
 
 		//+50%/75% durability
 		int points = Dungeon.hero.pointsInTalent(Talent.DURABLE_PROJECTILES,Talent.PURSUIT);

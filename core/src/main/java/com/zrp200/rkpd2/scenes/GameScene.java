@@ -477,8 +477,12 @@ public class GameScene extends PixelScene {
 					for (Room r : ((RegularLevel) Dungeon.level).rooms()){
 						if (r instanceof SecretRoom) reqSecrets--;
 					}
-					//50%/75% chance
-					if (reqSecrets <= 0 && Random.Int(4) <= points){
+					//50%/75% chance for power within
+					//60/90% chance for
+					float chance = Math.max(
+							.30f*(1+Dungeon.hero.pointsInTalent(Talent.ROGUES_FORESIGHT)),
+							.25f*(1+Dungeon.hero.pointsInTalent(Talent.POWER_WITHIN)));
+					if (reqSecrets <= 0 && Random.Float() < chance){
 						GLog.p(Messages.get(this, "secret_hint"));
 					}
 				}
