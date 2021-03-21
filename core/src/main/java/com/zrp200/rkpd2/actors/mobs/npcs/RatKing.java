@@ -21,11 +21,18 @@
 
 package com.zrp200.rkpd2.actors.mobs.npcs;
 
+import com.watabou.noosa.Game;
+import com.watabou.utils.Callback;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.GamesInProgress;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.items.Amulet;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.scenes.RankingsScene;
 import com.zrp200.rkpd2.sprites.RatKingSprite;
+import com.zrp200.rkpd2.windows.WndQuest;
 
 public class RatKing extends NPC {
 
@@ -101,6 +108,24 @@ public class RatKing extends NPC {
 
 		if (c != Dungeon.hero){
 			return super.interact(c);
+		}
+
+		if (Dungeon.hero.belongings.getItem(Amulet.class) != null) {
+			Game.runOnRenderThread(new Callback() {
+				@Override
+				public void call() {
+					GameScene.show(new WndQuest(RatKing.this, Messages.get(RatKing.this,"amulet")){
+						@Override
+						public void hide() {
+							Dungeon.win(RatKing.class);
+							Dungeon.deleteGame( GamesInProgress.curSlot, true );
+							Game.switchScene(RankingsScene.class);
+							super.hide();
+						}
+					});
+				}
+			});
+			return true;
 		}
 
 		if (state == SLEEPING) {

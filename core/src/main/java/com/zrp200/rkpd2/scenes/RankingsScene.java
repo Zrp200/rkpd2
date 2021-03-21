@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Rankings;
 import com.zrp200.rkpd2.ShatteredPixelDungeon;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
+import com.zrp200.rkpd2.actors.mobs.npcs.RatKing;
 import com.zrp200.rkpd2.effects.Flare;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSprite;
@@ -187,7 +188,7 @@ public class RankingsScene extends PixelScene {
 			int odd = pos % 2;
 			
 			if (rec.win) {
-				shield.view( ItemSpriteSheet.AMULET, null );
+				shield.view( rec.cause == RatKing.class ? ItemSpriteSheet.CROWN : ItemSpriteSheet.AMULET, null );
 				position.hardlight( TEXT_WIN[odd] );
 				desc.hardlight( TEXT_WIN[odd] );
 				depth.hardlight( TEXT_WIN[odd] );
