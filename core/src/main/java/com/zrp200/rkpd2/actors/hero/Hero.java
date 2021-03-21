@@ -549,7 +549,7 @@ public class Hero extends Char {
 	}
 
 	public boolean canSurpriseAttack(){
-		if(heroClass == HeroClass.ROGUE) return true; // rogue can always surprise attack. such balance.
+		//if(heroClass == HeroClass.ROGUE) return true; // rogue can always surprise attack. such balance.
 		if (belongings.weapon == null || !(belongings.weapon instanceof Weapon))    return true;
 		if (STR() < ((Weapon)belongings.weapon).STRReq())                           return false;
 		if (belongings.weapon instanceof Flail)                                     return false;
