@@ -245,9 +245,6 @@ public class Belongings implements Iterable<Item> {
 			} else if (item.unique) {
 				item.detachAll(backpack);
 				//you keep the bag itself, not its contents.
-				if (item instanceof CloakOfShadows && owner.heroClass == HeroClass.ROGUE) {
-					((CloakOfShadows) item).activate(owner);
-				}
 				if (item instanceof Bag){
 					((Bag)item).resurrect();
 				}
