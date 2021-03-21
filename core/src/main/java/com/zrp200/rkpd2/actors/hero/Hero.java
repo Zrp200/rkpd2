@@ -400,11 +400,13 @@ public class Hero extends Char {
 		//temporarily set the hero's weapon to the missile weapon being used
 		belongings.stashedWeapon = belongings.weapon;
 		belongings.weapon = wep;
+		int cell = enemy.pos;
 		boolean hit = attack( enemy );
+		wep.onRangedAttack(enemy, cell, hit);
 		Invisibility.dispel();
 		belongings.weapon = belongings.stashedWeapon;
 		belongings.stashedWeapon = null;
-		
+
 		if (hit && (subClass == HeroSubClass.GLADIATOR || subClass == HeroSubClass.KING)){
 			Buff.affect( this, Combo.class ).hit( enemy );
 		}

@@ -196,15 +196,7 @@ abstract public class MissileWeapon extends Weapon {
 		if (enemy == null || enemy == curUser) {
 				parent = null;
 				super.onThrow( cell );
-		} else {
-			if (!curUser.shoot( enemy, this )) {
-				rangedMiss( cell );
-			} else {
-				
-				rangedHit( enemy, cell );
-
-			}
-		}
+		} else curUser.shoot(enemy, this);
 	}
 
 	@Override
@@ -248,7 +240,11 @@ abstract public class MissileWeapon extends Weapon {
 		}
 		return speedFactor( user ) / (user.buff(Adrenaline.class) != null?1.5f:1);
 	}
-	
+	public void onRangedAttack(Char enemy, int cell, boolean hit) {
+		if(hit) rangedHit(enemy, cell);
+		else rangedMiss(cell);
+	}
+
 	protected void rangedHit( Char enemy, int cell ){
 		decrementDurability();
 		if (durability > 0){

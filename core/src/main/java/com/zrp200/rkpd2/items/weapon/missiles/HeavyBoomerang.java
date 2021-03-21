@@ -49,17 +49,37 @@ public class HeavyBoomerang extends MissileWeapon {
 		return  4 * tier +                  //16 base, down from 20
 				(tier) * lvl;               //scaling unchanged
 	}
-	
+
+	private boolean circling;
+	@Override
+	public void onRangedAttack(Char enemy, int cell, boolean hit) {
+		for(CircleBack cb : Dungeon.hero.buffs(CircleBack.class)) {
+			if(cb.boomerang == this) {
+				circling = true;
+				break;
+			}
+		}
+		super.onRangedAttack(enemy, cell, hit);
+		circling = false;
+	}
 	@Override
 	protected void rangedHit(Char enemy, int cell) {
+		if(circling) {
+			super.rangedHit(enemy, cell);
+			return;
+		}
 		decrementDurability();
 		if (durability > 0){
 			Buff.append(Dungeon.hero, CircleBack.class).setup(this, cell, Dungeon.hero.pos, Dungeon.depth);
 		}
 	}
-	
+
 	@Override
 	protected void rangedMiss(int cell) {
+		if(circling) {
+			super.rangedMiss(cell);
+			return;
+		}
 		parent = null;
 		Buff.append(Dungeon.hero, CircleBack.class).setup(this, cell, Dungeon.hero.pos, Dungeon.depth);
 	}
@@ -113,13 +133,7 @@ public class HeavyBoomerang extends MissileWeapon {
 												}
 												
 											} else if (returnTarget != null){
-												if (((Hero)target).shoot( returnTarget, boomerang )) {
-													boomerang.decrementDurability();
-												}
-												if (boomerang.durability > 0) {
-													Dungeon.level.drop(boomerang, returnPos).sprite.drop();
-												}
-												
+												((Hero)target).shoot( returnTarget, boomerang );
 											} else {
 												Dungeon.level.drop(boomerang, returnPos).sprite.drop();
 											}
