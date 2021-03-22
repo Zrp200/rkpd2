@@ -174,6 +174,7 @@ public class CloakOfShadows extends Artifact {
 		if (charge < chargeCap) {
 			if (!isEquipped(target)) amount *= target.pointsInTalent(Talent.LIGHT_CLOAK,Talent.RK_FREERUNNER)/
 					(target.hasTalent(Talent.LIGHT_CLOAK)?4f:10f); // moved previous "equip for free" mechanic to light cloak.
+			if(target.heroClass == HeroClass.ROGUE) amount *= 1.5f;
 			partialCharge += 0.25f*amount;
 			if (partialCharge >= 1){
 				partialCharge--;
@@ -226,6 +227,7 @@ public class CloakOfShadows extends Artifact {
 					float missing = (chargeCap - charge);
 					if (level() > 7) missing += 5*(level() - 7)/3f;
 					float turnsToCharge = (45 - missing);
+					if(((Hero)target).heroClass == HeroClass.ROGUE) turnsToCharge /= 1.5f;
 					turnsToCharge /= RingOfEnergy.artifactChargeMultiplier(target);
 					float chargeToGain = (1f / turnsToCharge);
 					if (!isEquipped(Dungeon.hero)){
