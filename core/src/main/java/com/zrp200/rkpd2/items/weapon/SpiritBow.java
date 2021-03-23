@@ -267,7 +267,10 @@ public class SpiritBow extends Weapon {
 		public int proc(Char attacker, Char defender, int damage) {
 			return SpiritBow.this.proc(attacker, defender, damage);
 		}
-		
+
+		@Override
+		public void onRangedAttack(Char enemy, int cell, boolean hit) { } // does nothing.
+
 		@Override
 		public float speedFactor(Char user) {
 			return SpiritBow.this.speedFactor(user);
