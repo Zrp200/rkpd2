@@ -18,6 +18,7 @@ import com.zrp200.rkpd2.items.weapon.enchantments.Blazing;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
 public class WandOfFirebolt extends DamageWand {
@@ -27,23 +28,29 @@ public class WandOfFirebolt extends DamageWand {
 
     @Override
     public int min(int lvl) {
-        return 1+lvl;
+        return lvl;
     }
 
     @Override
     public int max(int lvl) {
-        return 5+8*lvl;
+        return 10+8*lvl;
+    }
+
+    @Override
+    public ItemSprite.Glowing glowing() {
+        return Blazing.ORANGE;
     }
 
     @Override
     protected void onZap(Ballistica attack) {
-        for(int cell : attack.subPath(1,attack.dist-1)) {
+        Char ch = Actor.findChar(attack.collisionPos);
+        boolean found = ch != null;
+        for(int cell : attack.subPath(1,found ? attack.dist-1 : attack.dist)) {
             if(Dungeon.level.flamable[cell]) GameScene.add(Fire.seed(cell,1,Fire.class));
             Heap heap = Dungeon.level.heaps.get(cell);
             if(heap != null) heap.burn();
         }
-        Char ch = Actor.findChar(attack.collisionPos);
-        if(ch != null) {
+        if(found) {
             int dmg = damageRoll();
             processSoulMark(ch,1,damageRoll());
             ch.damage(dmg, new WandOfFireblast()); // should share resists with wand of fireblast.
@@ -83,7 +90,7 @@ public class WandOfFirebolt extends DamageWand {
 
     @Override
     public void staffFx(MagesStaff.StaffParticle particle) {
-        particle.color( 0xEE7722 );
+        particle.color( Blazing.ORANGE.color );
         particle.am = 0.5f;
         particle.setLifespan(0.6f);
         particle.acc.set(0, -40);
