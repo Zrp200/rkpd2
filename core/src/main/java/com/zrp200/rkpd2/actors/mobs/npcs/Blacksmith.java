@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.items.BrokenSeal;
 import com.zrp200.rkpd2.items.EquipableItem;
 import com.zrp200.rkpd2.items.Item;
@@ -69,19 +70,18 @@ public class Blacksmith extends NPC {
 	
 	@Override
 	public boolean interact(Char c) {
-		
-		sprite.turnTo( pos, c.pos );
 
-		if (c != Dungeon.hero){
+		sprite.turnTo(pos, c.pos);
+
+		if (c != Dungeon.hero) {
 			return true;
 		}
-		
+
 		if (!Quest.given) {
-			
 			Game.runOnRenderThread(new Callback() {
 				@Override
 				public void call() {
-					GameScene.show( new WndQuest( Blacksmith.this,
+					/*GameScene.show( new WndQuest( Blacksmith.this,
 							Quest.alternative ? Messages.get(Blacksmith.this, "blood_1") : Messages.get(Blacksmith.this, "gold_1") ) {
 						
 						@Override
@@ -99,12 +99,23 @@ public class Blacksmith extends NPC {
 								Dungeon.level.drop( pick, Dungeon.hero.pos ).sprite.drop();
 							}
 						}
-					} );
+					} );*/
+					GameScene.show(new WndQuest(Blacksmith.this, Messages.get(Blacksmith.this, Dungeon.hero.heroClass == HeroClass.RAT_KING ? "greeting_ratking" : "greeting")) {
+						@Override
+						public void onBackPressed() {
+							super.onBackPressed();
+							Quest.given = Quest.completed = true;
+							Quest.reforged = false;
+							Notes.add(Notes.Landmark.TROLL);
+						}
+					});
 				}
 			});
-			
-		} else if (!Quest.completed) {
-			if (Quest.alternative) {
+			Quest.given = Quest.completed = true;
+
+		} else {
+			if (!Quest.completed) {
+			/*if (Quest.alternative) {
 				
 				Pickaxe pick = Dungeon.hero.belongings.getItem( Pickaxe.class );
 				if (pick == null) {
@@ -121,41 +132,37 @@ public class Blacksmith extends NPC {
 					Quest.completed = true;
 					Quest.reforged = false;
 				}
-				
 			} else {
-				
-				Pickaxe pick = Dungeon.hero.belongings.getItem( Pickaxe.class );
-				DarkGold gold = Dungeon.hero.belongings.getItem( DarkGold.class );
+				*/
+				Pickaxe pick = Dungeon.hero.belongings.getItem(Pickaxe.class);
+				DarkGold gold = Dungeon.hero.belongings.getItem(DarkGold.class);
 				if (pick == null) {
-					tell( Messages.get(this, "lost_pick") );
-				} else if (gold == null || gold.quantity() < 15) {
-					tell( Messages.get(this, "gold_2") );
+					tell(Messages.get(this, "lost_pick"));
+					//} else if (gold == null || gold.quantity() < 15) {
+					//	tell( Messages.get(this, "gold_2") );
 				} else {
-					if (pick.isEquipped( Dungeon.hero )) {
-						pick.doUnequip( Dungeon.hero, false );
+					if (pick.isEquipped(Dungeon.hero)) {
+						pick.doUnequip(Dungeon.hero, false);
 					}
-					pick.detach( Dungeon.hero.belongings.backpack );
-					gold.detachAll( Dungeon.hero.belongings.backpack );
-					tell( Messages.get(this, "completed") );
-					
+					pick.detach(Dungeon.hero.belongings.backpack);
+					gold.detachAll(Dungeon.hero.belongings.backpack);
+					//tell( Messages.get(this, "completed") );
+
 					Quest.completed = true;
 					Quest.reforged = false;
 				}
-				
+				//}
 			}
-		} else if (!Quest.reforged) {
-			
-			Game.runOnRenderThread(new Callback() {
-				@Override
-				public void call() {
-					GameScene.show( new WndBlacksmith( Blacksmith.this, Dungeon.hero ) );
-				}
-			});
-			
-		} else {
-			
-			tell( Messages.get(this, "get_lost") );
-			
+			if (!Quest.reforged) {
+				Game.runOnRenderThread(new Callback() {
+					@Override
+					public void call() {
+						GameScene.show(new WndBlacksmith(Blacksmith.this, Dungeon.hero));
+					}
+				});
+			} else {
+				tell(Messages.get(this, "get_lost"));
+			}
 		}
 
 		return true;
