@@ -25,6 +25,8 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
+import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
 import com.zrp200.rkpd2.items.wands.WandOfBlastWave;
 import com.zrp200.rkpd2.levels.traps.TenguDartTrap;
 import com.zrp200.rkpd2.messages.Messages;
@@ -51,6 +53,14 @@ public class ForceCube extends MissileWeapon {
 		//no hitsound as it never hits enemies directly
 	}
 
+	boolean cloakBoost;
+	@Override
+	public int buffedLvl() {
+		int lvl = super.buffedLvl();
+		if(cloakBoost && Dungeon.hero.buff(CloakOfShadows.cloakStealth.class) == null) lvl++;
+		return lvl;
+	}
+
 	@Override
 	protected void onThrow(int cell) {
 		if (Dungeon.level.pit[cell]){
@@ -60,7 +70,7 @@ public class ForceCube extends MissileWeapon {
 
 		rangedHit( null, cell );
 		Dungeon.level.pressCell(cell);
-		
+		if(Dungeon.hero.heroClass == HeroClass.ROGUE && Dungeon.hero.buff(CloakOfShadows.cloakStealth.class) != null) cloakBoost = true; // need to manually set this to get a consistent result. this is a flaw in my implementation of the boost mechanic.
 		ArrayList<Char> targets = new ArrayList<>();
 		if (Actor.findChar(cell) != null) targets.add(Actor.findChar(cell));
 		
@@ -68,7 +78,7 @@ public class ForceCube extends MissileWeapon {
 			if (!(Dungeon.level.traps.get(cell+i) instanceof TenguDartTrap)) Dungeon.level.pressCell(cell+i);
 			if (Actor.findChar(cell + i) != null) targets.add(Actor.findChar(cell + i));
 		}
-		
+
 		for (Char target : targets){
 			curUser.shoot(target, this);
 			if (target == Dungeon.hero && !target.isAlive()){
@@ -76,8 +86,12 @@ public class ForceCube extends MissileWeapon {
 				GLog.n(Messages.get(this, "ondeath"));
 			}
 		}
-		
+
+		cloakBoost = false;
 		WandOfBlastWave.BlastWave.blast(cell);
 		Sample.INSTANCE.play( Assets.Sounds.BLAST );
 	}
+
+	@Override
+	public void onRangedAttack(Char enemy, int cell, boolean hit) { } // custom logic.
 }
