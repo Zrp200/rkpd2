@@ -25,6 +25,8 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.actors.mobs.DM200;
 import com.zrp200.rkpd2.effects.MagicMissile;
 import com.zrp200.rkpd2.effects.Speck;
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
@@ -72,6 +74,7 @@ public class DM200Sprite extends MobSprite {
 					}
 				} );
 		Sample.INSTANCE.play( Assets.Sounds.GAS );
+		GLog.w(Messages.get(DM200.class, "vent"));
 	}
 
 	@Override

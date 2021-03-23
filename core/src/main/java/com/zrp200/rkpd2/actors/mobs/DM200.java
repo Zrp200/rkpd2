@@ -21,6 +21,8 @@
 
 package com.zrp200.rkpd2.actors.mobs;
 
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.blobs.Blob;
@@ -28,12 +30,8 @@ import com.zrp200.rkpd2.actors.blobs.ToxicGas;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.mechanics.Ballistica;
-import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.DM200Sprite;
-import com.zrp200.rkpd2.utils.GLog;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.Random;
 
 public class DM200 extends Mob {
 
@@ -127,8 +125,6 @@ public class DM200 extends Mob {
 		for (int i : trajectory.subPath(0, trajectory.dist)){
 			GameScene.add(Blob.seed(i, 20, ToxicGas.class));
 		}
-
-		GLog.w(Messages.get(this, "vent"));
 		GameScene.add(Blob.seed(trajectory.collisionPos, 100, ToxicGas.class));
 
 	}

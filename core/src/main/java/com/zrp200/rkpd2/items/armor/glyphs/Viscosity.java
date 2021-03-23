@@ -27,6 +27,7 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
+import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.armor.Armor.Glyph;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
@@ -49,6 +50,12 @@ public class Viscosity extends Glyph {
 		//should build in functionality for that, but this works for now
 		int realDamage = damage - defender.drRoll();
 
+		//account for icon stomach (just skip the glyph)
+		if (defender.buff(Talent.WarriorFoodImmunity.class) != null){
+			return damage;
+		}
+
+		//account for huntress armor piercing
 		if (attacker instanceof Hero
 				&& ((Hero) attacker).belongings.weapon instanceof MissileWeapon
 				&& (((Hero) attacker).subClass == HeroSubClass.SNIPER || ((Hero)attacker).subClass == HeroSubClass.KING)
@@ -136,7 +143,7 @@ public class Viscosity extends Glyph {
 
 					Dungeon.fail( getClass() );
 					GLog.n( Messages.get(this, "ondeath") );
-					
+
 					Badges.validateDeathFromGlyph();
 				}
 				spend( TICK );

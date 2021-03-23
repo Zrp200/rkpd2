@@ -88,7 +88,9 @@ import com.zrp200.rkpd2.levels.features.Chasm;
 import com.zrp200.rkpd2.levels.features.Door;
 import com.zrp200.rkpd2.levels.traps.GrimTrap;
 import com.zrp200.rkpd2.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.CharSprite;
+import com.shatteredpixel.shatteredpixeldungeon.utils.BArray;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundlable;
@@ -195,9 +197,14 @@ public abstract class Char extends Actor {
 
 		//warp instantly with allies in this case
 		if (Dungeon.hero.hasTalent(Talent.ALLY_WARP,Talent.RK_WARLOCK)){
+			PathFinder.buildDistanceMap(c.pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
+			if (PathFinder.distance[pos] == Integer.MAX_VALUE){
+				return true;
+			}
 			ScrollOfTeleportation.appear(this, Dungeon.hero.pos);
 			ScrollOfTeleportation.appear(Dungeon.hero, curPos);
 			Dungeon.observe();
+			GameScene.updateFog();
 			return true;
 		}
 

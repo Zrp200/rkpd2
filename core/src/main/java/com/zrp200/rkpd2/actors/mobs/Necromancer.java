@@ -65,8 +65,7 @@ public class Necromancer extends Mob {
 	}
 	
 	public boolean summoning = false;
-	private Emitter summoningEmitter = null;
-	private int summoningPos = -1;
+	public int summoningPos = -1;
 	
 	private boolean firstSummon = true;
 	
@@ -77,25 +76,11 @@ public class Necromancer extends Mob {
 	protected boolean act() {
 		if (summoning && state != HUNTING){
 			summoning = false;
-			updateSpriteState();
+			if (sprite instanceof NecromancerSprite) ((NecromancerSprite) sprite).cancelSummoning();
 		}
 		return super.act();
 	}
 
-	@Override
-	public void updateSpriteState() {
-		super.updateSpriteState();
-		
-		if (summoning && summoningEmitter == null){
-			summoningEmitter = CellEmitter.get( summoningPos );
-			summoningEmitter.pour(Speck.factory(Speck.RATTLE), 0.2f);
-			sprite.zap( summoningPos );
-		} else if (!summoning && summoningEmitter != null){
-			summoningEmitter.on = false;
-			summoningEmitter = null;
-		}
-	}
-	
 	@Override
 	public int drRoll() {
 		return Random.NormalIntRange(0, 5);
@@ -126,12 +111,7 @@ public class Necromancer extends Mob {
 		if (mySkeleton != null && mySkeleton.isAlive()){
 			mySkeleton.die(null);
 		}
-		
-		if (summoningEmitter != null){
-			summoningEmitter.on = false;
-			summoningEmitter = null;
-		}
-		
+
 		super.die(cause);
 	}
 
@@ -184,9 +164,9 @@ public class Necromancer extends Mob {
 			}
 			
 			mySkeleton.HP = Math.min(mySkeleton.HP + 5, mySkeleton.HT);
-			mySkeleton.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
+			if (mySkeleton.sprite.visible) mySkeleton.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
 			
-			//otherwise give it adrenaline
+		//otherwise give it adrenaline
 		} else if (mySkeleton.buff(Adrenaline.class) == null) {
 
 			if (sprite.visible || mySkeleton.sprite.visible) {
@@ -247,9 +227,7 @@ public class Necromancer extends Mob {
 				mySkeleton.pos = summoningPos;
 				GameScene.add( mySkeleton );
 				Dungeon.level.occupyCell( mySkeleton );
-				Sample.INSTANCE.play(Assets.Sounds.BONES);
-				summoningEmitter.burst(Speck.factory(Speck.RATTLE), 5);
-				sprite.idle();
+				((NecromancerSprite)sprite).finishSummoning();
 				
 				if (buff(Corruption.class) != null){
 					Buff.affect(mySkeleton, Corruption.class);
@@ -285,9 +263,6 @@ public class Necromancer extends Mob {
 				if (summoningPos != -1){
 					
 					summoning = true;
-					summoningEmitter = CellEmitter.get(summoningPos);
-					summoningEmitter.pour(Speck.factory(Speck.RATTLE), 0.2f);
-					
 					sprite.zap( summoningPos );
 					
 					spend( firstSummon ? TICK : 2*TICK );

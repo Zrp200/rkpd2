@@ -159,8 +159,10 @@ public class Goo extends Mob {
 					sprite.attack(enemy.pos);
 				}
 			} else {
+				if (pumpedUp >= 2){
+					((GooSprite)sprite).triggerEmitters();
+				}
 				attack( enemy );
-				((GooSprite)sprite).triggerEmitters();
 			}
 
 			spend( attackDelay() );

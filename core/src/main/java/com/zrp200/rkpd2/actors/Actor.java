@@ -104,7 +104,12 @@ public abstract class Actor implements Bundlable {
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		time = bundle.getFloat( TIME );
-		id = bundle.getInt( ID );
+		int incomingID = bundle.getInt( ID );
+		if (Actor.findById(incomingID) == null){
+			id = incomingID;
+		} else {
+			id = nextID++;
+		}
 	}
 
 	private static int nextID = 1;
@@ -203,7 +208,7 @@ public abstract class Actor implements Bundlable {
 	public static boolean processing(){
 		return current != null;
 	}
-	
+
 	public static boolean keepActorThreadAlive = true;
 	
 	public static void process() {
@@ -273,11 +278,9 @@ public abstract class Actor implements Bundlable {
 						current = null;
 						interrupted = false;
 					}
-					
-					synchronized (GameScene.class){
-						//signals to the gamescene that actor processing is finished for now
-						GameScene.class.notify();
-					}
+
+					//signals to the gamescene that actor processing is finished for now
+					Thread.currentThread().notify();
 					
 					try {
 						Thread.currentThread().wait();

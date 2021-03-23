@@ -408,7 +408,7 @@ public class NewPrisonBossLevel extends Level {
 				tengu.sprite.kill();
 				if (d != null) tengu.add(d);
 				
-				GameScene.flash(0xFFFFFF);
+				GameScene.flash(0x80FFFFFF);
 				Sample.INSTANCE.play(Assets.Sounds.BLAST);
 				
 				state = State.FIGHT_PAUSE;
@@ -429,7 +429,7 @@ public class NewPrisonBossLevel extends Level {
 				GameScene.add(tengu);
 				tengu.notice();
 				
-				GameScene.flash(0xFFFFFF);
+				GameScene.flash(0x80FFFFFF);
 				Sample.INSTANCE.play(Assets.Sounds.BLAST);
 				
 				state = State.FIGHT_ARENA;
@@ -479,7 +479,7 @@ public class NewPrisonBossLevel extends Level {
 					}
 				}
 				
-				GameScene.flash(0xFFFFFF);
+				GameScene.flash(0x80FFFFFF);
 				Sample.INSTANCE.play(Assets.Sounds.BLAST);
 				
 				state = State.WON;

@@ -558,21 +558,17 @@ public class GameScene extends PixelScene {
 	}
 
 	public boolean waitForActorThread(int msToWait ){
-		synchronized (GameScene.class) {
-			if (actorThread == null || !actorThread.isAlive()) {
-				return true;
-			}
-			synchronized (actorThread) {
-				actorThread.interrupt();
-			}
+		if (actorThread == null || !actorThread.isAlive()) {
+			return true;
+		}
+		synchronized (actorThread) {
+			actorThread.interrupt();
 			try {
-				GameScene.class.wait(msToWait);
+				actorThread.wait(msToWait);
 			} catch (InterruptedException e) {
 				ShatteredPixelDungeon.reportException(e);
 			}
-			synchronized (actorThread) {
-				return !Actor.processing();
-			}
+			return !Actor.processing();
 		}
 	}
 	
@@ -1001,7 +997,12 @@ public class GameScene extends PixelScene {
 	}
 
 	public static void flash( int color, boolean lightmode ) {
-		scene.fadeIn( 0xFF000000 | color, lightmode );
+		//greater than 0 to account for negative values (which have the first bit set to 1)
+		if (color > 0 && color < 0x01000000) {
+			scene.fadeIn(0xFF000000 | color, lightmode);
+		} else {
+			scene.fadeIn(color, lightmode);
+		}
 	}
 
 	public static void gameOver() {
