@@ -54,21 +54,18 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 
 	@Override
 	public boolean act() {
-		if (freerunCooldown > 0 && (target.invisible == 0 || Dungeon.hero.pointsInTalent(Talent.SPEEDY_STEALTH) < 3 || freerunTurns == 0)){
+		if (freerunCooldown > 0){
 			freerunCooldown--;
 		}
+		if(freerunCooldown > 0 && freerunTurns == 0 && target.invisible > 0 && Dungeon.hero.pointsInTalent(Talent.SPEEDY_STEALTH) >= 2) freerunCooldown--; // reduce an extra time.
 
 		if (freerunCooldown == 0 && target.invisible > 0 && Dungeon.hero.pointsInTalent(Talent.SPEEDY_STEALTH,Talent.RK_FREERUNNER) >= 1){
-			momentumStacks = Math.min(momentumStacks + 2, 10);
+			momentumStacks = Math.min(momentumStacks + (Dungeon.hero.hasTalent(Talent.SPEEDY_STEALTH)?3:2), 10);
 			movedLastTurn = true;
 		}
 
 		if (freerunTurns > 0){
-			if(target.invisible > 0 && Dungeon.hero.pointsInTalent(Talent.SPEEDY_STEALTH) >= 2) {
-				freerunTurns++;
-				freerunCooldown++; // this is the flip side. you're simply delaying it, not reducing the cooldown at all.
-			}
-			else if (target.invisible == 0 || Dungeon.hero.pointsInTalent(Talent.SPEEDY_STEALTH,Talent.RK_FREERUNNER) < 2) {
+			if (target.invisible == 0 || Dungeon.hero.pointsInTalent(Talent.SPEEDY_STEALTH,Talent.RK_FREERUNNER) < 2) {
 				freerunTurns--;
 				if(freerunTurns == 0) Item.updateQuickslot();
 			}
@@ -137,7 +134,8 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 	@Override
 	public float iconFadePercent() {
 		if (freerunTurns > 0){
-			return (20 - freerunTurns) / 20f;
+			int duration = (int)Math.ceil(20*(1+Dungeon.hero.pointsInTalent(Talent.FAST_RECOVERY)/3f));
+			return (duration - freerunTurns) / (float)duration;
 		} else if (freerunCooldown > 0){
 			return (freerunCooldown) / 30f;
 		} else {
@@ -201,9 +199,9 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 
 	@Override
 	public void doAction() {
-		freerunTurns = 2*momentumStacks;
+		freerunTurns = (int)Math.ceil(2*momentumStacks*(1+Dungeon.hero.pointsInTalent(Talent.FAST_RECOVERY)/3f));
 		//cooldown is functionally 10+2*stacks when active effect ends
-		freerunCooldown = Random.round((10 + 2*momentumStacks)/(1+Dungeon.hero.pointsInTalent(Talent.FAST_RECOVERY)/3f)) + freerunTurns;
+		freerunCooldown = 10 + 2*momentumStacks + freerunTurns;
 		Sample.INSTANCE.play(Assets.Sounds.MISS, 1f, 0.8f);
 		target.sprite.emitter().burst(Speck.factory(Speck.JET), 5+ momentumStacks);
 		momentumStacks = 0;
