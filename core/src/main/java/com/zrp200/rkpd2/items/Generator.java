@@ -103,6 +103,7 @@ import com.zrp200.rkpd2.items.wands.WandOfCorrosion;
 import com.zrp200.rkpd2.items.wands.WandOfCorruption;
 import com.zrp200.rkpd2.items.wands.WandOfDisintegration;
 import com.zrp200.rkpd2.items.wands.WandOfFireblast;
+import com.zrp200.rkpd2.items.wands.WandOfFirebolt;
 import com.zrp200.rkpd2.items.wands.WandOfFrost;
 import com.zrp200.rkpd2.items.wands.WandOfLightning;
 import com.zrp200.rkpd2.items.wands.WandOfLivingEarth;
@@ -319,8 +320,9 @@ public class Generator {
 					WandOfWarding.class,
 					WandOfTransfusion.class,
 					WandOfCorruption.class,
-					WandOfRegrowth.class };
-			WAND.probs = new float[]{ 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3 };
+					WandOfRegrowth.class,
+					WandOfFirebolt.class};
+			WAND.probs = new float[]{ 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 2 };
 			
 			//see generator.randomWeapon
 			WEAPON.classes = new Class<?>[]{};

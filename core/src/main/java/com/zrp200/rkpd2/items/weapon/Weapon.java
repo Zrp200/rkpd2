@@ -360,7 +360,7 @@ abstract public class Weapon extends KindOfWeapon {
 			
 		public abstract int proc( Weapon weapon, Char attacker, Char defender, int damage );
 
-		protected float procChanceMultiplier( Char attacker ){
+		public static float procChanceMultiplier( Char attacker ){
 			float multi = 1f;
 			if (attacker instanceof Hero && ((Hero) attacker).hasTalent(Talent.ENRAGED_CATALYST,Talent.RK_BERSERKER)){
 				Berserk rage = attacker.buff(Berserk.class);
