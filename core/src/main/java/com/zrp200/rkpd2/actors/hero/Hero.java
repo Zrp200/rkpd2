@@ -1136,10 +1136,10 @@ public class Hero extends Char {
 			case KING: case BATTLEMAGE:
 				MagesStaff staff = belongings.getItem(MagesStaff.class);
 				if(staff != null && (staff == wep || hasTalent(Talent.SORCERY))){
-					if(staff == wep || Random.Int(10) < pointsInTalent(Talent.SORCERY)) {
+					if(staff == wep || Random.Int(5) < pointsInTalent(Talent.SORCERY)) {
 						staff.procBM();
 					}
-					if(staff == wep || Random.Int(6) < pointsInTalent())
+					if(staff == wep || Random.Int(3) < pointsInTalent())
 						if (buff(Talent.EmpoweredStrikeTracker.class) != null) {
 							buff(Talent.EmpoweredStrikeTracker.class).detach();
 							damage = Math.round(damage * (1f + pointsInTalent(Talent.EMPOWERED_STRIKE, Talent.RK_BATTLEMAGE) / 6f / (hasTalent(Talent.EMPOWERED_STRIKE) ? 1.5f : 1)));
@@ -1149,7 +1149,7 @@ public class Hero extends Char {
 		}
 		if(hasTalent(Talent.WARLOCKS_TOUCH)) {
 			// warlock can soul mark by simply attacking with warlock's touch.
-			SoulMark.process(enemy,(wep != null ? wep.buffedLvl():0)+pointsInTalent(Talent.WARLOCKS_TOUCH),1,Random.Int(6) >= pointsInTalent(Talent.WARLOCKS_TOUCH));
+			SoulMark.process(enemy,(wep != null ? wep.buffedLvl():0)+Math.max(0,pointsInTalent(Talent.WARLOCKS_TOUCH)-1),1,Random.Int(4) >= pointsInTalent(Talent.WARLOCKS_TOUCH));
 		}
 		if (wep != null) damage = wep.proc( this, enemy, damage );
 
