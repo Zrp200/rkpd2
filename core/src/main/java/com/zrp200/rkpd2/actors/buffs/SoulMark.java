@@ -80,7 +80,8 @@ public class SoulMark extends FlavourBuff {
 		//physical damage that doesn't come from the hero is less effective
 		if (defender != Dungeon.hero){
 			// wand damage is handled prior this method's calling.
-			restoration = Math.round(restoration * Dungeon.hero.pointsInTalent(Talent.SOUL_SIPHON,Talent.RK_WARLOCK) * (Dungeon.hero.hasTalent(Talent.SOUL_SIPHON) ? 1/6f : .15f));
+			int points = Dungeon.hero.pointsInTalent(Talent.SOUL_SIPHON,Talent.RK_WARLOCK);
+			restoration = Math.round(restoration * (Dungeon.hero.hasTalent(Talent.SOUL_SIPHON) ? src instanceof Char ? points*.2f : 1f*(1+points) : points * .15f));
 		}
 		if(restoration > 0)
 		{
