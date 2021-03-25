@@ -52,17 +52,6 @@ public class HeavyBoomerang extends MissileWeapon {
 
 	private boolean circling;
 	@Override
-	public void onRangedAttack(Char enemy, int cell, boolean hit) {
-		for(CircleBack cb : Dungeon.hero.buffs(CircleBack.class)) {
-			if(cb.boomerang == this) {
-				circling = true;
-				break;
-			}
-		}
-		super.onRangedAttack(enemy, cell, hit);
-		circling = false;
-	}
-	@Override
 	protected void rangedHit(Char enemy, int cell) {
 		if(circling) {
 			super.rangedHit(enemy, cell);
@@ -86,14 +75,14 @@ public class HeavyBoomerang extends MissileWeapon {
 	
 	public static class CircleBack extends Buff {
 		
-		private MissileWeapon boomerang;
+		private HeavyBoomerang boomerang;
 		private int thrownPos;
 		private int returnPos;
 		private int returnDepth;
 		
 		private int left;
 		
-		public void setup( MissileWeapon boomerang, int thrownPos, int returnPos, int returnDepth){
+		public void setup( HeavyBoomerang boomerang, int thrownPos, int returnPos, int returnDepth){
 			this.boomerang = boomerang;
 			this.thrownPos = thrownPos;
 			this.returnPos = returnPos;
@@ -133,7 +122,9 @@ public class HeavyBoomerang extends MissileWeapon {
 												}
 												
 											} else if (returnTarget != null){
+												boomerang.circling = true;
 												((Hero)target).shoot( returnTarget, boomerang );
+												boomerang.circling = false;
 											} else {
 												Dungeon.level.drop(boomerang, returnPos).sprite.drop();
 											}
@@ -168,7 +159,7 @@ public class HeavyBoomerang extends MissileWeapon {
 		@Override
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
-			boomerang = (MissileWeapon) bundle.get(BOOMERANG);
+			boomerang = (HeavyBoomerang) bundle.get(BOOMERANG);
 			thrownPos = bundle.getInt(THROWN_POS);
 			returnPos = bundle.getInt(RETURN_POS);
 			returnDepth = bundle.getInt(RETURN_DEPTH);
