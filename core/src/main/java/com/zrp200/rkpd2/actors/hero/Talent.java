@@ -362,9 +362,20 @@ public enum Talent {
 			}
 		}
 		if (hero.hasTalent(MYSTICAL_UPGRADE,RESTORATION)){
+			boolean charge = false;
+			if(hero.hasTalent(MYSTICAL_UPGRADE)) {
+				for(Artifact.ArtifactBuff buff : Dungeon.hero.buffs(Artifact.ArtifactBuff.class)) {
+					if(buff.artifactClass() != CloakOfShadows.class) {
+						buff.charge(hero,(int)Math.floor((hero.pointsInTalent(MYSTICAL_UPGRADE)+1)*(1/.375f))); // 5/8 turns of artifact recharge... instantly. poggers.
+						charge = true;
+					}
+				}
+			}
 			CloakOfShadows cloak = hero.belongings.getItem(CloakOfShadows.class);
 			if (cloak != null){
 				cloak.overCharge(1+hero.pointsInTalent(MYSTICAL_UPGRADE,RESTORATION));
+				charge = true; }
+			if(charge) {
 				ScrollOfRecharging.charge( Dungeon.hero );
 				SpellSprite.show( hero, SpellSprite.CHARGE );
 			}

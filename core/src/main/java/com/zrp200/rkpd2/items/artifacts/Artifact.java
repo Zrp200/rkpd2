@@ -228,6 +228,10 @@ public class Artifact extends KindofMisc {
 			Artifact.this.charge(target, amount);
 		}
 
+		public Class<?extends Artifact> artifactClass() {
+			return Artifact.this.getClass();
+		}
+
 	}
 	
 	private static final String EXP = "exp";
