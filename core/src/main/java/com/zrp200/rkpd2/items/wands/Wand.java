@@ -652,14 +652,16 @@ public abstract class Wand extends Item {
 		}
 
 		public void gainCharge(float charge, boolean overcharge){
+			int maxCharges = Wand.this.maxCharges;
+			if(overcharge) maxCharges += Math.ceil(charge);
 			int cap = Math.max(curCharges,maxCharges); // this allows stacking of overcharging
-			if (overcharge || curCharges < cap) {
+			if (curCharges < cap) {
 				partialCharge += charge;
 				while (partialCharge >= 1f) {
 					curCharges++;
 					partialCharge--;
 				}
-				if(!overcharge && curCharges >= cap) {
+				if(curCharges >= cap) {
 					curCharges = cap;
 					partialCharge = 0;
 				}

@@ -249,8 +249,8 @@ public enum Talent {
 			ScrollOfRecharging.charge( hero );
 		}
 		if (hero.hasTalent(ENERGIZING_MEAL_II)) {
-			// 1/1.5 charges instantly replenished, does not overcharge at this time even though I implemented functionality for it.
-			hero.belongings.charge(0.5f*(1+hero.pointsInTalent(ENERGIZING_MEAL_II)),hero.pointsInTalent(ENERGIZING_MEAL_II) == 2);
+			// 1/1.5 charges instantly replenished.
+			hero.belongings.charge(0.5f*(1+hero.pointsInTalent(ENERGIZING_MEAL_II)),true);
 			if(!hero.hasTalent(ENERGIZING_MEAL_I)) ScrollOfRecharging.charge( hero );
 		}
 		if (hero.hasTalent(MYSTICAL_MEAL,ROYAL_MEAL)){

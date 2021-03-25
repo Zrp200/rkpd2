@@ -69,7 +69,7 @@ public class SpiritBow extends Weapon {
 	}
 
 	// storing this here
-	public static final Class<?extends Enchantment>[] REMOVED_ENCHANTS = new Class[] {Shocking.class, Blocking.class, Lucky.class};
+	public static final Class<?extends Enchantment>[] REMOVED_ENCHANTS = new Class[] {Blocking.class, Lucky.class};
 
 	public boolean sniperSpecial = false;
 	public float sniperSpecialBonusDamage = 0f;
