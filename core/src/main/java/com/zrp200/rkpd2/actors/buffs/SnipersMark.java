@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.IntArray;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
@@ -64,7 +65,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	}
 
 	public void set(int object, int level){
-		this.level = level;
+		this.level = Math.max(this.level,level);
 		if(objects.size == maxObjects()) {
 			pruneObjects();
 			if(objects.size == maxObjects()) objects.removeIndex(0);
@@ -154,6 +155,8 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 					if(cell == null || cell == -1) return;
 					Char ch = Actor.findChar(cell);
 					if(ch != null && ch != hero) {
+						// there's no need to update the shot count if there's just 1 guy.
+						hero.busy();
 						doSniperSpecial(hero,bow,ch);
 					}
 				}
@@ -164,21 +167,32 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 				}
 			});
 		} else {
+			// populate list of targets.
+			Array<Char> targets = new Array<>();
 			for(int i=0; i < objects.size; i++) {
 				Char ch = (Char) Actor.findById(objects.get(i));
-				if(ch != null && doSniperSpecial(hero,bow,ch)) objects.removeIndex(i--);
+				if(ch != null && canDoSniperSpecial(bow,ch)) {
+					objects.removeIndex(i--);
+					targets.add(ch);
+				}
 			}
+			bow.shotCount = targets.size;
+			if(targets.size > 0) hero.busy();
+			for(Char ch : targets) doSniperSpecial(hero,bow,ch);
 		}
 	}
 
-	protected boolean doSniperSpecial(Hero hero, SpiritBow bow, Char ch) {
-
-		SpiritBow.SpiritArrow arrow = bow.knockArrow(); // need a unique arrow for every character.
+	private boolean canDoSniperSpecial(SpiritBow bow, Char ch) {
+		SpiritBow.SpiritArrow arrow = bow.knockArrow();
 		if(arrow == null) return false;
+		return arrow != null && QuickSlotButton.autoAim(ch, arrow) != -1;
+	}
+	protected void doSniperSpecial(Hero hero, SpiritBow bow, Char ch) {
+		if(!canDoSniperSpecial(bow,ch)) return;
+		SpiritBow.SpiritArrow arrow = bow.knockArrow(); // need a unique arrow for every character.
 		arrow.sniperSpecial = true; // :D
 
 		int cell = QuickSlotButton.autoAim(ch, arrow);
-		if (cell == -1) return false;
 
 		arrow.sniperSpecialBonusDamage = level*Dungeon.hero.pointsInTalent(Talent.SHARED_UPGRADES,Talent.RK_SNIPER)/15f;
 
@@ -186,6 +200,5 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
 		arrow.cast(hero, cell);
 		detach();
-		return true;
 	}
 }

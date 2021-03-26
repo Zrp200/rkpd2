@@ -261,7 +261,13 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	}
 	
 	public void zap( int cell, Callback callback ) {
-		animCallback = callback;
+		if(animCallback != null) {
+			Callback curCallback = animCallback;
+			animCallback = () -> { // this allows me to effectively stack callbacks while keeping sequence of events intact.
+				curCallback.call();
+				callback.call();
+			};
+		} else animCallback = callback;
 		zap( cell );
 	}
 	

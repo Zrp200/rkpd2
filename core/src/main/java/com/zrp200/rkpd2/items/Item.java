@@ -529,7 +529,8 @@ public class Item implements Bundlable {
 	public void throwSound(){
 		Sample.INSTANCE.play(Assets.Sounds.MISS, 0.6f, 0.6f, 1.5f);
 	}
-	
+
+	protected boolean forceSkipDelay = false; // this is used exclusively for spirit bow...
 	public void cast( final Hero user, final int dst ) {
 		
 		final int cell = throwPos( user, dst );
@@ -565,11 +566,13 @@ public class Item implements Bundlable {
 									Buff.affect(curUser, Talent.ImprovisedProjectileCooldown.class, curUser.hasTalent(Talent.IMPROVISED_PROJECTILES) ? 15f : 30f);
 								}
 							}
-							if (user.buff(Talent.LethalMomentumTracker.class) != null){
-								user.buff(Talent.LethalMomentumTracker.class).detach();
-								user.next();
-							} else {
-								user.spendAndNext(delay);
+							if(!forceSkipDelay) {
+								if (user.buff(Talent.LethalMomentumTracker.class) != null){
+									user.buff(Talent.LethalMomentumTracker.class).detach();
+									user.next();
+								} else {
+									user.spendAndNext(delay);
+								}
 							}
 						}
 					});
@@ -593,7 +596,7 @@ public class Item implements Bundlable {
 									Buff.affect(curUser, Talent.ImprovisedProjectileCooldown.class, curUser.hasTalent(Talent.IMPROVISED_PROJECTILES)?15f:30f);
 								}
 							}
-							user.spendAndNext(delay);
+							if(!forceSkipDelay) user.spendAndNext(delay);
 						}
 					});
 		}

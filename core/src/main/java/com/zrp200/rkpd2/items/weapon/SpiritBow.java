@@ -156,7 +156,7 @@ public class SpiritBow extends Weapon {
 	}
 	
 	private int targetPos;
-	
+
 	@Override
 	public int damageRoll(Char owner) {
 		int damage = augment.damageFactor(super.damageRoll(owner));
@@ -205,7 +205,8 @@ public class SpiritBow extends Weapon {
 	public SpiritArrow knockArrow(){
 		return new SpiritArrow();
 	}
-	
+
+	public int shotCount; // used for sniper specials
 	public class SpiritArrow extends MissileWeapon {
 		
 		{
@@ -295,7 +296,6 @@ public class SpiritBow extends Weapon {
 					Splash.at(cell, 0xCC99FFFF, 1);
 					if((hasEnchant(Explosive.class,curUser) || (hasEnchant(Unstable.class,curUser) && Unstable.getRandomEnchant(SpiritBow.this) instanceof Explosive)) && new Explosive().tryProc(curUser,SpiritBow.this.buffedLvl())) new Bomb().explode(cell);
 				}
-				if (sniperSpecial && SpiritBow.this.augment != Augment.SPEED) sniperSpecial = false;
 			}
 		}
 
@@ -316,16 +316,13 @@ public class SpiritBow extends Weapon {
 				final Char enemy = Actor.findChar( cell );
 				
 				if (enemy == null){
-					user.spendAndNext(castDelay(user, dst));
-					sniperSpecial = false;
+					if(shotCount-- <= 0) user.spendAndNext(castDelay(user, dst));
 					flurryCount = -1;
 					return;
 				}
 				QuickSlotButton.target(enemy);
 				
 				final boolean last = flurryCount == 1;
-				
-				user.busy();
 				
 				throwSound();
 				
@@ -342,8 +339,7 @@ public class SpiritBow extends Weapon {
 										}
 										
 										if (last) {
-											user.spendAndNext(castDelay(user, dst));
-											sniperSpecial = false;
+											if(--shotCount <= 0) user.spendAndNext(castDelay(user, dst));
 											flurryCount = -1;
 										}
 									}
@@ -372,7 +368,7 @@ public class SpiritBow extends Weapon {
 						if(!user.hasTalent(Talent.SEER_SHOT)) Buff.affect(user, Talent.SeerShotCooldown.class, 20f);
 					}
 				}
-
+				forceSkipDelay = sniperSpecial && --shotCount > 0;
 				super.cast(user, dst);
 			}
 		}
