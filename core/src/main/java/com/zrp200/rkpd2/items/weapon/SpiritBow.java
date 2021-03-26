@@ -39,7 +39,6 @@ import com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfEnchantment;
 import com.zrp200.rkpd2.items.weapon.enchantments.Blocking;
 import com.zrp200.rkpd2.items.weapon.enchantments.Explosive;
 import com.zrp200.rkpd2.items.weapon.enchantments.Lucky;
-import com.zrp200.rkpd2.items.weapon.enchantments.Shocking;
 import com.zrp200.rkpd2.items.weapon.enchantments.Unstable;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.messages.Messages;
@@ -70,10 +69,6 @@ public class SpiritBow extends Weapon {
 
 	// storing this here
 	public static final Class<?extends Enchantment>[] REMOVED_ENCHANTS = new Class[] {Blocking.class, Lucky.class};
-
-	public boolean sniperSpecial = false;
-	public float sniperSpecialBonusDamage = 0f;
-	protected boolean rangedAttack = false;
 
 	@Override
 	public ArrayList<String> actions(Hero hero) {
@@ -172,44 +167,10 @@ public class SpiritBow extends Weapon {
 				damage += Random.IntRange( 0, exStr );
 			}
 		}
-
-		if (sniperSpecial && rangedAttack){
-			damage = Math.round(damage * (1f + sniperSpecialBonusDamage));
-			switch (augment){
-				case NONE:
-					damage = Math.round(damage * 0.667f);
-					break;
-				case SPEED:
-					damage = Math.round(damage * 0.5f);
-					break;
-				case DAMAGE:
-					//as distance increases so does damage, capping at 3x:
-					//1.20x|1.35x|1.52x|1.71x|1.92x|2.16x|2.43x|2.74x|3.00x
-					int distance = Dungeon.level.distance(owner.pos, targetPos) - 1;
-					float multiplier = Math.min(3f, 1.2f * (float)Math.pow(1.125f, distance));
-					damage = Math.round(damage * multiplier);
-					break;
-			}
-		}
 		
 		return damage;
 	}
-	
-	@Override
-	public float speedFactor(Char owner) {
-		if (sniperSpecial && rangedAttack){
-			switch (augment){
-				case NONE: default:
-					return 0f;
-				case SPEED:
-					return 1f * RingOfFuror.attackDelayMultiplier(owner);
-				case DAMAGE:
-					return 2f * RingOfFuror.attackDelayMultiplier(owner);
-			}
-		} else {
-			return super.speedFactor(owner);
-		}
-	}
+
 	
 	@Override
 	public int level() {
@@ -252,10 +213,32 @@ public class SpiritBow extends Weapon {
 
 			hitSound = Assets.Sounds.HIT_ARROW;
 		}
-		
+
+		public boolean sniperSpecial = false;
+		public float sniperSpecialBonusDamage = 0f;
+
 		@Override
 		public int damageRoll(Char owner) {
-			return SpiritBow.this.damageRoll(owner);
+			int damage = SpiritBow.this.damageRoll(owner);
+			if (sniperSpecial){
+				damage = Math.round(damage * (1f + sniperSpecialBonusDamage));
+				switch (SpiritBow.this.augment) {
+					case NONE:
+						damage = Math.round(damage * 0.667f);
+						break;
+					case SPEED:
+						damage = Math.round(damage * 0.5f);
+						break;
+					case DAMAGE:
+						//as distance increases so does damage, capping at 3x:
+						//1.20x|1.35x|1.52x|1.71x|1.92x|2.16x|2.43x|2.74x|3.00x
+						int distance = Dungeon.level.distance(owner.pos, targetPos) - 1;
+						float multiplier = Math.min(3f, 1.2f * (float) Math.pow(1.125f, distance));
+						damage = Math.round(damage * multiplier);
+						break;
+				}
+			}
+			return damage;
 		}
 		
 		@Override
@@ -273,7 +256,18 @@ public class SpiritBow extends Weapon {
 
 		@Override
 		public float speedFactor(Char user) {
-			return SpiritBow.this.speedFactor(user);
+			if(sniperSpecial) {
+				switch (SpiritBow.this.augment) {
+					case NONE:
+					default:
+						return 0f;
+					case SPEED:
+						return 1f * RingOfFuror.attackDelayMultiplier(user);
+					case DAMAGE:
+						return 2f * RingOfFuror.attackDelayMultiplier(user);
+				}
+			}
+			else return SpiritBow.this.speedFactor(user);
 		}
 		
 		@Override
@@ -292,7 +286,6 @@ public class SpiritBow extends Weapon {
 
 		@Override
 		protected void onThrow( int cell ) {
-			rangedAttack = true;
 			Char enemy = Actor.findChar( cell );
 			if (enemy == null || enemy == curUser) {
 				parent = null;
@@ -304,7 +297,6 @@ public class SpiritBow extends Weapon {
 				}
 				if (sniperSpecial && SpiritBow.this.augment != Augment.SPEED) sniperSpecial = false;
 			}
-			rangedAttack = false;
 		}
 
 		@Override
@@ -318,7 +310,6 @@ public class SpiritBow extends Weapon {
 		public void cast(final Hero user, final int dst) {
 			final int cell = throwPos( user, dst );
 			SpiritBow.this.targetPos = cell;
-			rangedAttack = true;
 			if (sniperSpecial && SpiritBow.this.augment == Augment.SPEED){
 				if (flurryCount == -1) flurryCount = 3;
 				
@@ -326,7 +317,7 @@ public class SpiritBow extends Weapon {
 				
 				if (enemy == null){
 					user.spendAndNext(castDelay(user, dst));
-					sniperSpecial = rangedAttack = false;
+					sniperSpecial = false;
 					flurryCount = -1;
 					return;
 				}
@@ -352,7 +343,7 @@ public class SpiritBow extends Weapon {
 										
 										if (last) {
 											user.spendAndNext(castDelay(user, dst));
-											sniperSpecial = rangedAttack = false;
+											sniperSpecial = false;
 											flurryCount = -1;
 										}
 									}
@@ -383,7 +374,6 @@ public class SpiritBow extends Weapon {
 				}
 
 				super.cast(user, dst);
-				rangedAttack = false;
 			}
 		}
 	}

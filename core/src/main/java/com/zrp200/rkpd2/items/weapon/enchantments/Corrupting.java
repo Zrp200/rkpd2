@@ -71,10 +71,7 @@ public class Corrupting extends Weapon.Enchantment {
 				}
 			}
 			SnipersMark mark = Dungeon.hero.buff(SnipersMark.class);
-			if(mark != null && mark.object == enemy.id()) {
-				mark.detach();
-				if(Dungeon.hero.hasTalent(Talent.RANGER)) Buff.affect(Dungeon.hero, SnipersMark.class, SnipersMark.DURATION+mark.level).level = mark.level;
-			}
+			if(mark != null) mark.remove(enemy.id());
 			if (enemy.alignment == Char.Alignment.ENEMY){
 				enemy.rollToDropLoot();
 			}

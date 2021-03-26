@@ -21,12 +21,15 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
+import com.badlogic.gdx.utils.IntArray;
+import com.watabou.noosa.Image;
+import com.watabou.utils.Bundle;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
@@ -36,12 +39,10 @@ import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.ActionIndicator;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.ui.QuickSlotButton;
-import com.watabou.noosa.Image;
-import com.watabou.utils.Bundle;
 
 public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
-	public int object = 0;
+	private final IntArray objects = new IntArray();
 	public int level = 0;
 
 	private static final String OBJECT    = "object";
@@ -53,9 +54,28 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		type = buffType.POSITIVE;
 	}
 
+	private static int maxObjects() {
+		return Math.max(1,1+Dungeon.hero.pointsInTalent(Talent.RANGER)-1);
+	}
+	private void pruneObjects() {
+		for(int i=0; i < objects.size; i++) {
+			if(Actor.findById(objects.get(i)) == null) objects.removeIndex(i--);
+		}
+	}
+
 	public void set(int object, int level){
-		this.object = object;
 		this.level = level;
+		if(objects.size == maxObjects()) {
+			pruneObjects();
+			if(objects.size == maxObjects()) objects.removeIndex(0);
+		}
+		objects.add(object);
+	}
+	public void remove(int object) { remove(object,false); }
+	public void remove(int object, boolean special) {
+		if( !objects.removeValue(object) || !objects.isEmpty() || special) return;
+		if(((Hero)target).hasTalent(Talent.RANGER)) postpone(DURATION + level);
+		else detach();
 	}
 	
 	@Override
@@ -73,14 +93,15 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
-		bundle.put( OBJECT, object );
+		bundle.put( OBJECT + "S", objects.items );
 		bundle.put( LEVEL, level );
 	}
 
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
-		object = bundle.getInt( OBJECT );
+		if(bundle.contains(OBJECT)) objects.add(bundle.getInt(OBJECT));
+		else objects.addAll(bundle.getIntArray(OBJECT+"S"));
 		level = bundle.getInt( LEVEL );
 	}
 
@@ -123,18 +144,18 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		
 		SpiritBow bow = hero.belongings.getItem(SpiritBow.class);
 		if (bow == null) return;
-		
-		SpiritBow.SpiritArrow arrow = bow.knockArrow();
-		if (arrow == null) return;
-		
-		Char ch = (Char) Actor.findById(object);
-		if (ch == null) {
+
+		if (bow.knockArrow() == null) return; // this is just a test.
+
+		if (objects.isEmpty()) {
 			if(hero.hasTalent(Talent.RANGER)) GameScene.selectCell(new CellSelector.Listener() {
 				@Override
 				public void onSelect(Integer cell) {
 					if(cell == null || cell == -1) return;
 					Char ch = Actor.findChar(cell);
-					if(ch != null && ch != hero) doSniperSpecial(hero,bow,arrow,ch);
+					if(ch != null && ch != hero) {
+						doSniperSpecial(hero,bow,ch);
+					}
 				}
 
 				@Override
@@ -142,18 +163,29 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 					return Messages.get(Combo.class, "prompt");
 				}
 			});
-		} else doSniperSpecial(hero,bow,arrow,ch); }
-	protected void doSniperSpecial(Hero hero, SpiritBow bow, SpiritBow.SpiritArrow arrow, Char ch) {
-		int cell = QuickSlotButton.autoAim(ch, arrow);
-		if (cell == -1) return;
+		} else {
+			for(int i=0; i < objects.size; i++) {
+				Char ch = (Char) Actor.findById(objects.get(i));
+				if(ch != null && doSniperSpecial(hero,bow,ch)) objects.removeIndex(i--);
+			}
+		}
+	}
 
-		bow.sniperSpecial = true;
-		bow.sniperSpecialBonusDamage = level*Dungeon.hero.pointsInTalent(Talent.SHARED_UPGRADES,Talent.RK_SNIPER)/15f;
+	protected boolean doSniperSpecial(Hero hero, SpiritBow bow, Char ch) {
+
+		SpiritBow.SpiritArrow arrow = bow.knockArrow(); // need a unique arrow for every character.
+		if(arrow == null) return false;
+		arrow.sniperSpecial = true; // :D
+
+		int cell = QuickSlotButton.autoAim(ch, arrow);
+		if (cell == -1) return false;
+
+		arrow.sniperSpecialBonusDamage = level*Dungeon.hero.pointsInTalent(Talent.SHARED_UPGRADES,Talent.RK_SNIPER)/15f;
 
 		Buff.detach(target, Preparation.class); // nope!
 
 		arrow.cast(hero, cell);
 		detach();
-
+		return true;
 	}
 }
