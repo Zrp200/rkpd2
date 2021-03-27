@@ -59,7 +59,7 @@ public class SpiritBow extends Weapon {
 	
 	{
 		image = ItemSpriteSheet.SPIRIT_BOW;
-		
+
 		defaultAction = AC_SHOOT;
 		usesTargeting = true;
 		
@@ -316,7 +316,7 @@ public class SpiritBow extends Weapon {
 				final Char enemy = Actor.findChar( cell );
 				
 				if (enemy == null){
-					if(shotCount-- <= 0) user.spendAndNext(castDelay(user, dst));
+					if(--shotCount <= 0) user.spendAndNext(castDelay(user, dst));
 					flurryCount = -1;
 					return;
 				}
