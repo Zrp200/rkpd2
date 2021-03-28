@@ -33,6 +33,7 @@ import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.MerchantsBeacon;
 import com.zrp200.rkpd2.items.Stylus;
 import com.zrp200.rkpd2.items.Torch;
+import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.armor.LeatherArmor;
 import com.zrp200.rkpd2.items.armor.MailArmor;
 import com.zrp200.rkpd2.items.armor.PlateArmor;
@@ -50,6 +51,7 @@ import com.zrp200.rkpd2.items.scrolls.ScrollOfIdentify;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfMagicMapping;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRemoveCurse;
 import com.zrp200.rkpd2.items.stones.StoneOfAugmentation;
+import com.zrp200.rkpd2.items.wands.WandOfFirebolt;
 import com.zrp200.rkpd2.items.weapon.melee.MeleeWeapon;
 import com.zrp200.rkpd2.items.weapon.missiles.darts.TippedDart;
 import com.zrp200.rkpd2.levels.Level;
@@ -152,39 +154,42 @@ public class ShopRoom extends SpecialRoom {
 		ArrayList<Item> itemsToSpawn = new ArrayList<>();
 
 		MeleeWeapon w;
+		Armor a;
 		switch (Dungeon.depth) {
 		case 6: default:
 			w = (MeleeWeapon) Generator.random(Generator.wepTiers[1]);
 			itemsToSpawn.add( Generator.random(Generator.misTiers[1]).quantity(2).identify() );
-			itemsToSpawn.add( new LeatherArmor().identify() );
+			a = new LeatherArmor();
 			break;
 			
 		case 11:
 			w = (MeleeWeapon) Generator.random(Generator.wepTiers[2]);
 			itemsToSpawn.add( Generator.random(Generator.misTiers[2]).quantity(2).identify() );
-			itemsToSpawn.add( new MailArmor().identify() );
+			a = new MailArmor();
 			break;
 			
 		case 16:
 			w = (MeleeWeapon) Generator.random(Generator.wepTiers[3]);
 			itemsToSpawn.add( Generator.random(Generator.misTiers[3]).quantity(2).identify() );
-			itemsToSpawn.add( new ScaleArmor().identify() );
+			a = new ScaleArmor();
 			break;
 
 		case 20: case 21:
 			w = (MeleeWeapon) Generator.random(Generator.wepTiers[4]);
 			itemsToSpawn.add( Generator.random(Generator.misTiers[4]).quantity(2).identify() );
-			itemsToSpawn.add( new PlateArmor().identify() );
+			a = new PlateArmor();
 			itemsToSpawn.add( new Torch() );
 			itemsToSpawn.add( new Torch() );
 			itemsToSpawn.add( new Torch() );
 			break;
 		}
-		w.enchant(null);
 		w.cursed = false;
-		w.level(0);
 		w.identify();
 		itemsToSpawn.add(w);
+
+		a = (Armor) a.random().identify();
+		a.cursed = false;
+		itemsToSpawn.add(a);
 		
 		itemsToSpawn.add( TippedDart.randomTipped(2) );
 
@@ -253,11 +258,10 @@ public class ShopRoom extends SpecialRoom {
 		switch (Random.Int(10)){
 			case 0:
 				rare = Generator.random( Generator.Category.WAND );
-				rare.level( 0 );
+				if(!(rare instanceof WandOfFirebolt)) rare = Generator.random( Generator.Category.WAND );
 				break;
 			case 1:
 				rare = Generator.random(Generator.Category.RING);
-				rare.level( 0 );
 				break;
 			case 2:
 				rare = Generator.random( Generator.Category.ARTIFACT );
@@ -266,6 +270,7 @@ public class ShopRoom extends SpecialRoom {
 				rare = new Stylus();
 		}
 		rare.cursed = false;
+		rare.levelKnown = true;
 		rare.cursedKnown = true;
 		itemsToSpawn.add( rare );
 

@@ -110,7 +110,7 @@ public abstract class RegularLevel extends Level {
 		}
 		// reduce by designated amount to reduce levelsize for rkpd2, much like rkpd does.
 		// reduce for rkpd2, inspired by rkpd
-		standards = Random.round(standards * Random.Float(SIZE_MODIFIER[0],SIZE_MODIFIER[1]));
+		standards = (int)Math.floor(standards * Random.Float(SIZE_MODIFIER[0],SIZE_MODIFIER[1]));
 		for (int i = 0; i < standards; i++) {
 			StandardRoom s;
 			do {

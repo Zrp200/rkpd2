@@ -30,6 +30,7 @@ import com.zrp200.rkpd2.items.quest.CeremonialCandle;
 import com.zrp200.rkpd2.items.quest.CorpseDust;
 import com.zrp200.rkpd2.items.quest.Embers;
 import com.zrp200.rkpd2.items.wands.Wand;
+import com.zrp200.rkpd2.items.wands.WandOfFirebolt;
 import com.zrp200.rkpd2.journal.Notes;
 import com.zrp200.rkpd2.levels.Level;
 import com.zrp200.rkpd2.levels.rooms.Room;
@@ -301,7 +302,8 @@ public class Wandmaker extends NPC {
 				spawned = true;
 
 				given = false;
-				wand1 = (Wand) Generator.random(Generator.Category.WAND);
+				// rolls an extra time to try to get wand of firebolt.
+				for(int i=0; i < 2 && !(wand1 instanceof WandOfFirebolt); i++) wand1 = (Wand) Generator.random(Generator.Category.WAND);
 				wand1.cursed = false;
 				wand1.upgrade();
 
