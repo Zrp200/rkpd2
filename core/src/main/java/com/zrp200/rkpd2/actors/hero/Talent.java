@@ -42,6 +42,7 @@ import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.effects.SpellSprite;
 import com.zrp200.rkpd2.effects.particles.LeafParticle;
 import com.zrp200.rkpd2.items.BrokenSeal;
+import com.zrp200.rkpd2.items.EquipableItem;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.artifacts.Artifact;
@@ -427,7 +428,7 @@ public enum Talent {
 			item.identify();
 			id = true;
 		}
-		if(!item.collected && Random.Int(5) < hero.pointsInTalent(SURVIVALISTS_INTUITION)){
+		if(!item.collected && !item.cursedKnown && (item instanceof EquipableItem && !(item instanceof MissileWeapon) || item instanceof Wand) && Random.Int(5) < hero.pointsInTalent(SURVIVALISTS_INTUITION)){
 			item.cursedKnown = true;
 			id = true;
 		}
