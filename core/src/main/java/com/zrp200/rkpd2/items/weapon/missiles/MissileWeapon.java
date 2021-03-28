@@ -153,7 +153,8 @@ abstract public class MissileWeapon extends Weapon {
 	public int throwPos(Hero user, int dst) {
 
 		boolean projecting = hasEnchant(Projecting.class, user);
-		if (!projecting && Random.Int(3) < user.pointsInTalent(Talent.SHARED_ENCHANTMENT,Talent.RK_SNIPER)){
+		if (!projecting && Random.Int(3) < user.pointsInTalent(Talent.RK_SNIPER)
+				|| user.hasTalent(Talent.SHARED_ENCHANTMENT) && Random.Int(4) <= user.pointsInTalent(Talent.SHARED_ENCHANTMENT)) {
 			if (this instanceof Dart && ((Dart) this).crossbowHasEnchant(Dungeon.hero) && !user.hasTalent(Talent.SHARED_ENCHANTMENT)){ // how DARE evan crush huntress synergies???
 				//do nothing
 			} else {
@@ -201,7 +202,8 @@ abstract public class MissileWeapon extends Weapon {
 
 	@Override
 	public int proc(Char attacker, Char defender, int damage) {
-		if (attacker == Dungeon.hero && Random.Int(3) < Dungeon.hero.pointsInTalent(Talent.SHARED_ENCHANTMENT,Talent.RK_SNIPER)){
+		if (attacker == Dungeon.hero && Random.Int(3) < Dungeon.hero.pointsInTalent(Talent.RK_SNIPER)
+				|| Dungeon.hero.hasTalent(Talent.SHARED_ENCHANTMENT) && Random.Int(4) <= Dungeon.hero.pointsInTalent(Talent.SHARED_ENCHANTMENT)){
 			if (this instanceof Dart && ((Dart) this).crossbowHasEnchant(Dungeon.hero) && !Dungeon.hero.hasTalent(Talent.SHARED_ENCHANTMENT)){ // HUNTRESS MUST BE BUFFED
  				//do nothing
 			} else {

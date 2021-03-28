@@ -47,6 +47,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	public int level = 0;
 
 	private static final String OBJECT    = "object";
+	private static final String OBJECTS	  = "objects";
 	private static final String LEVEL    = "level";
 
 	public static final float DURATION = 4f;
@@ -58,17 +59,22 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	private static int maxObjects() {
 		return Math.max(1,1+Dungeon.hero.pointsInTalent(Talent.RANGER)-1);
 	}
-	private void pruneObjects() {
+	// this is basically a garbage collect. This may have weird behavior when you change floors, idk.
+	private boolean pruneObjects() {
+		boolean result = false;
 		for(int i=0; i < objects.size; i++) {
-			if(Actor.findById(objects.get(i)) == null) objects.removeIndex(i--);
+			if(Actor.findById(objects.get(i)) == null) {
+				objects.removeIndex(i--);
+				result = true;
+			}
 		}
+		return result;
 	}
 
 	public void set(int object, int level){
 		this.level = Math.max(this.level,level);
-		if(objects.size == maxObjects()) {
-			pruneObjects();
-			if(objects.size == maxObjects()) objects.removeIndex(0);
+		if(objects.size == maxObjects() && pruneObjects() && objects.size == maxObjects()) {
+			objects.removeIndex(0);
 		}
 		objects.add(object);
 	}
@@ -94,7 +100,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
-		bundle.put( OBJECT + "S", objects.items );
+		bundle.put( OBJECTS, objects.items );
 		bundle.put( LEVEL, level );
 	}
 
@@ -102,7 +108,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 		if(bundle.contains(OBJECT)) objects.add(bundle.getInt(OBJECT));
-		else objects.addAll(bundle.getIntArray(OBJECT+"S"));
+		else objects.addAll(bundle.getIntArray(OBJECTS));
 		level = bundle.getInt( LEVEL );
 	}
 
@@ -129,7 +135,9 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		args[1] = sub == HeroSubClass.SNIPER ? "she" : "he";
 		args[2] = Messages.capitalize(args[1]);
 		args[3] = sub == HeroSubClass.SNIPER ? "her" : "his";
-		return Messages.get(this, "desc", (Object[])args);
+		String msg = Messages.get(this, "desc", (Object[])args);
+		if(objects.size > 1) msg += "\n\nThere are " + objects.size + " characters currently being targeted.";
+		return msg;
 	}
 	
 	@Override
@@ -177,8 +185,11 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 				}
 			}
 			bow.shotCount = targets.size;
-			if(targets.size > 0) hero.busy();
-			for(Char ch : targets) doSniperSpecial(hero,bow,ch);
+			if(targets.size > 0) {
+				hero.busy();
+				for(Char ch : targets) doSniperSpecial(hero,bow,ch);
+			}
+			else if(!objects.isEmpty() && pruneObjects() && objects.isEmpty()) doAction();
 		}
 	}
 

@@ -423,7 +423,9 @@ public class Hero extends Char {
 		
 		if (wep instanceof MissileWeapon){
 			if (Dungeon.level.adjacent( pos, target.pos )) {
-				accuracy *= (0.5f + 0.2f*pointsInTalent(Talent.POINT_BLANK,Talent.RK_SNIPER));
+				int points = pointsInTalent(Talent.POINT_BLANK,Talent.RK_SNIPER);
+				if(canHaveTalent(Talent.POINT_BLANK)) points++;
+				accuracy *= (0.5f + 0.2f*points);
 			} else {
 				accuracy *= 1.5f;
 			}

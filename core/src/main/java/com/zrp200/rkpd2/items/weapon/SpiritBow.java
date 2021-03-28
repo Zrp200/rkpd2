@@ -365,7 +365,7 @@ public class SpiritBow extends Weapon {
 						RevealedArea a = Buff.affect(user, RevealedArea.class, 5 * user.pointsInTalent(Talent.SEER_SHOT,Talent.RK_WARDEN));
 						a.depth = Dungeon.depth;
 						a.pos = shotPos;
-						if(!user.hasTalent(Talent.SEER_SHOT)) Buff.affect(user, Talent.SeerShotCooldown.class, 20f);
+						Buff.affect(user, Talent.SeerShotCooldown.class, user.hasTalent(Talent.SEER_SHOT) ? 20f : 10f);
 					}
 				}
 				forceSkipDelay = sniperSpecial && --shotCount > 0;
