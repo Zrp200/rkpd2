@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.sprites;
 
+import com.watabou.noosa.Image;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.effects.CellEmitter;
@@ -93,7 +94,15 @@ public class ItemSprite extends MovieClip {
 		
 		view(image, glowing);
 	}
-	
+
+	public ItemSprite(Image other) { copy(other); }
+	@Override
+	public void copy(Image other) {
+		super.copy(other);
+		if(other instanceof ItemSprite) glow(((ItemSprite) other).glowing);
+		// TODO is it needed to copy the emitter?
+	}
+
 	public void originToCenter() {
 		origin.set(width / 2, height / 2);
 	}

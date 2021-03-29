@@ -168,7 +168,7 @@ public class WndJournal extends WndTabbed {
 			label = PixelScene.renderTextBlock( 7 );
 			add( label );
 			
-			icon = new Image();
+			icon = initializeIcon(); // this allows me to hijack the type of icon.
 			add( icon );
 			
 			depth = new BitmapText( PixelScene.pixelFont);
@@ -177,6 +177,10 @@ public class WndJournal extends WndTabbed {
 			line = new ColorBlock( 1, 1, 0xFF222222);
 			add(line);
 			
+		}
+
+		protected Image initializeIcon() {
+			return new Image();
 		}
 		
 		@Override
@@ -742,14 +746,19 @@ public class WndJournal extends WndTabbed {
 				}
 				
 			}
-			
-			public boolean onClick( float x, float y ) {
+
+			@Override
+			protected Image initializeIcon() { // this lets me have it glow. BWAHAHAHAHA.
+				return new ItemSprite();
+			}
+
+			public boolean onClick(float x, float y ) {
 				if (inside( x, y ) && seen) {
 					if (item instanceof ClassArmor){
-						GameScene.show(new WndTitledMessage(new Image(icon),
+						GameScene.show(new WndTitledMessage(new ItemSprite(icon),
 								Messages.titleCase(item.trueName()), item.desc()));
 					} else {
-						GameScene.show(new WndTitledMessage(new Image(icon),
+						GameScene.show(new WndTitledMessage(new ItemSprite(icon),
 								Messages.titleCase(item.trueName()), item.info()));
 					}
 					return true;

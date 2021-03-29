@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.ui.changelist;
 
+import com.watabou.utils.Reflection;
 import com.zrp200.rkpd2.ShatteredPixelDungeon;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.messages.Messages;
@@ -53,7 +54,9 @@ public class ChangeButton extends Component {
 	}
 	
 	protected void onClick() {
-		ShatteredPixelDungeon.scene().add(new ChangesWindow(new Image(icon), title, message));
+		Image image = Reflection.newInstance(icon.getClass());
+		image.copy(icon);
+		ShatteredPixelDungeon.scene().add(new ChangesWindow(image, title, message));
 	}
 	
 	@Override
