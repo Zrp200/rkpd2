@@ -46,14 +46,14 @@ public class WandOfFirebolt extends DamageWand {
         Char ch = Actor.findChar(attack.collisionPos);
         boolean found = ch != null;
         for(int cell : attack.subPath(1,found ? attack.dist-1 : attack.dist)) {
-            if(Dungeon.level.flamable[cell]) GameScene.add(Fire.seed(cell,1,Fire.class));
+            if(Dungeon.level.flamable[cell] || cell == attack.collisionPos) GameScene.add(Fire.seed(cell,1,Fire.class));
             Heap heap = Dungeon.level.heaps.get(cell);
             if(heap != null) heap.burn();
         }
         if(found) {
             int dmg = damageRoll();
             processSoulMark(ch,1,damageRoll());
-            ch.damage(dmg, new WandOfFireblast()); // should share resists with wand of fireblast.
+            ch.damage(dmg, this);
             if(ch.isAlive()) Buff.affect(ch, Burning.class).reignite(ch);
             ch.sprite.emitter().burst(FlameParticle.FACTORY, 5);
         }
@@ -81,7 +81,7 @@ public class WandOfFirebolt extends DamageWand {
             if (Random.Int( 2 ) == 0) {
                 Buff.affect( defender, Burning.class ).reignite( defender );
             }
-            defender.damage( Random.Int( 1, level+2 ), new Blazing() );
+            if(!defender.isImmune(getClass())) defender.damage( Random.Int( 1, level+2 ), this);
 
             defender.sprite.emitter().burst( FlameParticle.FACTORY, level + 1 );
 
@@ -96,5 +96,10 @@ public class WandOfFirebolt extends DamageWand {
         particle.acc.set(0, -40);
         particle.setSize( 0f, 3f);
         particle.shuffleXY( 1.5f );
+    }
+
+    @Override
+    public int value() {
+        return super.value()*4/3;
     }
 }
