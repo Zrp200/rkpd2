@@ -271,10 +271,9 @@ public enum HeroClass {
 	}
 	
 	public boolean isUnlocked(){
-		return true; /*
 		//always unlock on debug builds
-		if (DeviceCompat.isDebug()) return true;
-
+		return /*DeviceCompat.isDebug() ||*/ this != RAT_KING || Badges.isUnlocked(Badges.Badge.UNLOCK_RAT_KING);
+		/*
 		switch (this){
 			case WARRIOR: default:
 				return true;
@@ -289,16 +288,7 @@ public enum HeroClass {
 	}
 	
 	public String unlockMsg() {
-		switch (this){
-			case WARRIOR: default:
-				return "";
-			case MAGE:
-				return Messages.get(HeroClass.class, "mage_unlock");
-			case ROGUE:
-				return Messages.get(HeroClass.class, "rogue_unlock");
-			case HUNTRESS:
-				return Messages.get(HeroClass.class, "huntress_unlock");
-		}
+		return Messages.get(HeroClass.class, title + "_unlock");
 	}
 
 	private static final String CLASS	= "class";

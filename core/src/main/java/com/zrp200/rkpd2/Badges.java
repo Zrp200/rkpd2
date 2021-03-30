@@ -56,6 +56,7 @@ public class Badges {
 		UNLOCK_MAGE                 ( 1 ),
 		UNLOCK_ROGUE                ( 2 ),
 		UNLOCK_HUNTRESS             ( 3 ),
+		UNLOCK_RAT_KING				( 27),
 		MONSTERS_SLAIN_1            ( 4 ),
 		MONSTERS_SLAIN_2            ( 5 ),
 		GOLD_COLLECTED_1            ( 6 ),
@@ -699,6 +700,9 @@ public class Badges {
 		if (Statistics.thrownAssists >= 15 && !global.contains(Badge.UNLOCK_HUNTRESS)){
 			displayBadge( Badge.UNLOCK_HUNTRESS );
 		}
+	}
+	public static void validateRatKingUnlock() {
+		if(!global.contains(Badge.UNLOCK_RAT_KING)) displayBadge(Badge.UNLOCK_RAT_KING);
 	}
 	
 	public static void validateMasteryCombo( int n ) {

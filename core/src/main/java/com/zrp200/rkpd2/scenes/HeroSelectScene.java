@@ -21,6 +21,8 @@
 
 package com.zrp200.rkpd2.scenes;
 
+import com.watabou.noosa.audio.Sample;
+import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Chrome;
 import com.zrp200.rkpd2.Dungeon;
@@ -330,6 +332,15 @@ public class HeroSelectScene extends PixelScene {
 			} else {
 				setSelectedHero(cl);
 			}
+		}
+
+		@Override
+		protected boolean onLongClick() {
+			if(cl.isUnlocked()) return false;
+			if(cl == HeroClass.RAT_KING) Badges.validateRatKingUnlock();
+			Sample.INSTANCE.play(Assets.Sounds.LEVELUP);
+			update();
+			return true;
 		}
 	}
 
