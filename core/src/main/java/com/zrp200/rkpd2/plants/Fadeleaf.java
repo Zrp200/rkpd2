@@ -103,7 +103,12 @@ public class Fadeleaf extends Plant {
 			CellEmitter.get( pos ).start( Speck.factory( Speck.LIGHT ), 0.2f, 3 );
 		}
 	}
-	
+
+	@Override
+	public String wardenDesc(HeroSubClass subClass) {
+		return wardenDesc(subClass, subClass == HeroSubClass.WARDEN ? "her" : "him");
+	}
+
 	public static class Seed extends Plant.Seed {
 		{
 			image = ItemSpriteSheet.SEED_FADELEAF;

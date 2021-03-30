@@ -57,6 +57,11 @@ public class Earthroot extends Plant {
 			Camera.main.shake( 1, 0.4f );
 		}
 	}
+
+	@Override
+	public String wardenDesc(HeroSubClass subClass) {
+		return wardenDesc(subClass, subClass == HeroSubClass.WARDEN ? "her" : "him");
+	}
 	
 	public static class Seed extends Plant.Seed {
 		{

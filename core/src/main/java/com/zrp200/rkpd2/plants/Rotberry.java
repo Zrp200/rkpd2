@@ -46,7 +46,7 @@ public class Rotberry extends Plant {
 		
 		Dungeon.level.drop( new Seed(), pos ).sprite.drop();
 	}
-	
+
 	@Override
 	public void wither() {
 		Dungeon.level.uproot( pos );
@@ -56,6 +56,11 @@ public class Rotberry extends Plant {
 		}
 		
 		//no warden benefit
+	}
+
+	@Override
+	public String wardenDesc(HeroSubClass subClass) {
+		return wardenDesc(subClass, subClass == HeroSubClass.WARDEN ? "her" : "his");
 	}
 
 	public static class Seed extends Plant.Seed {

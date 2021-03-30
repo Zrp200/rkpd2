@@ -538,7 +538,7 @@ public abstract class Char extends Actor {
 	}
 	protected void onDamage(int dmg, Object src) {
 		// TODO change?
-		if(Dungeon.hero.hasTalent(Talent.SOUL_SIPHON) && !(src instanceof Char)) {
+		if(src instanceof Char || Dungeon.hero.hasTalent(Talent.SOUL_SIPHON)) {
 			SoulMark soulMark = buff(SoulMark.class);
 			if(soulMark != null) soulMark.proc(src,this,dmg);
 		}

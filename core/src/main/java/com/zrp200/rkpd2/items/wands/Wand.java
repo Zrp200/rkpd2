@@ -254,7 +254,7 @@ public abstract class Wand extends Item {
 		}
 
 		if (Dungeon.hero.subClass == HeroSubClass.BATTLEMAGE || Dungeon.hero.subClass == HeroSubClass.KING){
-			desc += "\n\n" + Messages.get(this, "bmage_desc", Dungeon.hero.subClass.title());
+			desc += "\n\n" + Messages.get(this, "bmage_desc", Messages.titleCase(Dungeon.hero.subClass.title()));
 		}
 
 		return desc;

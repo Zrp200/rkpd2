@@ -520,6 +520,8 @@ public class Armor extends EquipableItem {
 			cursed = true;
 		} else if (effectRoll >= 0.85f){
 			inscribe();
+		} else {
+			inscribe(null);
 		}
 
 		return this;

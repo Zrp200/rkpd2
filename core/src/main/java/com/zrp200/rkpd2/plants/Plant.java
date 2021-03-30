@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.plants;
 
+import com.badlogic.gdx.utils.Array;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
@@ -117,12 +118,22 @@ public abstract class Plant implements Bundlable {
 	
 	public String desc() {
 		String desc = Messages.get(this, "desc");
-		if (Dungeon.hero.subClass == HeroSubClass.WARDEN || Dungeon.hero.subClass == HeroSubClass.KING){
-			desc += "\n\n" + Messages.get(this, "warden_desc");
+		HeroSubClass subClass = Dungeon.hero.subClass;
+		if (subClass == HeroSubClass.WARDEN || subClass == HeroSubClass.KING){
+			desc += "\n\n" + wardenDesc(subClass);
 		}
 		return desc;
 	}
-	
+
+	protected final String wardenDesc(HeroSubClass subClass, Object... args) {
+		Array<Object> array = new Array(args);
+		array.insert(0, Messages.titleCase(subClass.title()));
+		return Messages.get(this, "warden_desc", array.items);
+	}
+	public String wardenDesc(HeroSubClass subClass) {
+		return wardenDesc(subClass,subClass == HeroSubClass.WARDEN ? "she" : "he");
+	}
+
 	public static class Seed extends Item {
 
 		public static final String AC_PLANT	= "PLANT";
@@ -209,8 +220,9 @@ public abstract class Plant implements Bundlable {
 		@Override
 		public String desc() {
 			String desc = Messages.get(plantClass, "desc");
-			if (Dungeon.hero.subClass == HeroSubClass.WARDEN){
-				desc += "\n\n" + Messages.get(plantClass, "warden_desc");
+			HeroSubClass subClass = Dungeon.hero.subClass;
+			if (subClass == HeroSubClass.WARDEN || subClass == HeroSubClass.KING){
+				desc += "\n\n" + Reflection.newInstance(plantClass).wardenDesc(subClass);
 			}
 			return desc;
 		}

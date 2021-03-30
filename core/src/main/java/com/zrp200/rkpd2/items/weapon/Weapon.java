@@ -297,6 +297,8 @@ abstract public class Weapon extends KindOfWeapon {
 			cursed = true;
 		} else if (effectRoll >= 0.9f){
 			enchant();
+		} else {
+			enchant(null);
 		}
 
 		return this;

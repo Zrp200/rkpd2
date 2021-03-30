@@ -331,7 +331,7 @@ public class MagesStaff extends MeleeWeapon {
 			else                            info += " " + Messages.get(this, "cursed_wand");
 
 			if (Dungeon.hero.subClass == HeroSubClass.BATTLEMAGE || Dungeon.hero.subClass == HeroSubClass.KING){
-				info += "\n\n" + Messages.get(wand, "bmage_desc", Messages.capitalize(Dungeon.hero.subClass.title()));
+				info += "\n\n" + Messages.get(wand, "bmage_desc", Messages.titleCase(Dungeon.hero.subClass.title()));
 			}
 		}
 
