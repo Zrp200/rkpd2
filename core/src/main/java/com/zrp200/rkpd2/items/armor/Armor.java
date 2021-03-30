@@ -513,6 +513,7 @@ public class Armor extends EquipableItem {
 		
 		//30% chance to be cursed
 		//15% chance to be inscribed
+		cursed = false; // not cursed by default.
 		float effectRoll = Random.Float();
 		if (effectRoll < 0.3f) {
 			inscribe(Glyph.randomCurse());

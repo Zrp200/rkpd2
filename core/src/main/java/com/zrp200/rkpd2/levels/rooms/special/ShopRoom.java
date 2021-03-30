@@ -183,13 +183,12 @@ public class ShopRoom extends SpecialRoom {
 			itemsToSpawn.add( new Torch() );
 			break;
 		}
-		w.cursed = false;
+		while(w.cursed) w = (MeleeWeapon) w.random();
 		w.identify();
 		itemsToSpawn.add(w);
 
-		a = (Armor) a.random().identify();
-		a.cursed = false;
-		itemsToSpawn.add(a);
+		do { a = (Armor) a.random(); } while(a.cursed);
+		itemsToSpawn.add(a.identify());
 		
 		itemsToSpawn.add( TippedDart.randomTipped(2) );
 
