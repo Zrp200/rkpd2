@@ -340,6 +340,7 @@ public class HeroSelectScene extends PixelScene {
 			if(cl == HeroClass.RAT_KING) Badges.validateRatKingUnlock();
 			Sample.INSTANCE.play(Assets.Sounds.LEVELUP);
 			update();
+			onClick();
 			return true;
 		}
 	}
