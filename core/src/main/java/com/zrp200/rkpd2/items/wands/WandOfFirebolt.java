@@ -33,7 +33,7 @@ public class WandOfFirebolt extends DamageWand {
 
     @Override
     public int max(int lvl) {
-        return 10+8*lvl;
+        return 9+6*lvl;
     }
 
     @Override

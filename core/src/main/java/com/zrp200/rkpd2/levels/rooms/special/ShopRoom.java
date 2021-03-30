@@ -257,7 +257,6 @@ public class ShopRoom extends SpecialRoom {
 		switch (Random.Int(10)){
 			case 0:
 				rare = Generator.random( Generator.Category.WAND );
-				if(!(rare instanceof WandOfFirebolt)) rare = Generator.random( Generator.Category.WAND );
 				break;
 			case 1:
 				rare = Generator.random(Generator.Category.RING);

@@ -302,8 +302,7 @@ public class Wandmaker extends NPC {
 				spawned = true;
 
 				given = false;
-				// rolls an extra time to try to get wand of firebolt.
-				for(int i=0; i < 2 && !(wand1 instanceof WandOfFirebolt); i++) wand1 = (Wand) Generator.random(Generator.Category.WAND);
+				wand1 = (Wand) Generator.random(Generator.Category.WAND);
 				wand1.cursed = false;
 				wand1.upgrade();
 
