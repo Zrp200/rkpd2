@@ -597,11 +597,9 @@ public class Hero extends Char {
 			delay *= RingOfFuror.attackDelayMultiplier(this);
 		}
 		if(hasTalent(Talent.ONE_MAN_ARMY)) {
+			Dungeon.level.updateFieldOfView( this, fieldOfView );
 			int enemies = 0;
-			for(int dir : PathFinder.NEIGHBOURS8) {
-				Char ch = Actor.findChar(pos+dir);
-				if(ch != null && ch.alignment == Alignment.ENEMY) enemies++;
-			}
+			for(Char ch : Dungeon.level.mobs) if(fieldOfView[ch.pos] && ch.alignment == Alignment.ENEMY) enemies++;
 			// every additional enemy, not the first guy.
 			delay /= 1+0.1*Math.max(0,enemies-1)*pointsInTalent(Talent.ONE_MAN_ARMY);
 		}

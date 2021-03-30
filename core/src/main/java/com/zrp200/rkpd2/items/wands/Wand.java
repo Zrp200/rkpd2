@@ -178,14 +178,16 @@ public abstract class Wand extends Item {
 	}
 
 	protected void processSoulMark(Char target, int chargesUsed) {
-		processSoulMark(target, buffedLvl(), chargesUsed, this instanceof DamageWand, 0);
+		processSoulMark(target, chargesUsed, 0);
 	}
 	protected void processSoulMark(Char target, int chargesUsed, int damage){
-		processSoulMark(target, buffedLvl(), chargesUsed, this instanceof DamageWand, damage);
+		// staff logic is handled here actually.
+		MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
+		processSoulMark(target, buffedLvl(), chargesUsed, this instanceof DamageWand, damage, staff != null && staff.wand() == this);
 	}
 
 	//TODO some naming issues here. Consider renaming this method and externalizing char awareness buff
-	protected static void processSoulMark(Char target, int wandLevel, int chargesUsed, boolean delay, int damage){
+	protected static void processSoulMark(Char target, int wandLevel, int chargesUsed, boolean delay, int damage, boolean isStaff){
 		if (Dungeon.hero.hasTalent(Talent.ARCANE_VISION,Talent.KINGS_VISION)) {
 			int dur = 5 + 5*Dungeon.hero.pointsInTalent(Talent.ARCANE_VISION,Talent.KINGS_VISION);
 			if(Dungeon.hero.hasTalent(Talent.ARCANE_VISION)) dur *= 2;
@@ -195,8 +197,8 @@ public abstract class Wand extends Item {
 		if(sorcery > 0) {
 			MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
 			if(staff != null) {
-				if (Random.Int(10) < sorcery) staff.procBM();
-				if (Random.Int(6) < sorcery) staff.procWand(target, damage);
+				if (Random.Int(isStaff ? 20 : 10) < sorcery) staff.procBM();
+				if (Random.Int(isStaff ? 12 :  6) < sorcery) staff.procWand(target, damage);
 			}
 		}
 

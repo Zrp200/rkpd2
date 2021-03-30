@@ -90,7 +90,7 @@ public class DewVial extends Item {
 
 				int curShield = 0;
 				if (hero.buff(Barrier.class) != null) curShield = hero.buff(Barrier.class).shielding();
-				if (hero.hasTalent(Talent.SHIELDING_DEW)) curShield += Math.floor((missingHealthPercent/0.05f)*0.2f*hero.pointsInTalent(Talent.SHIELDING_DEW)); // this tries to predict the total increase via individual dewdrops.
+				//if (hero.hasTalent(Talent.SHIELDING_DEW)) curShield += Math.floor((missingHealthPercent/0.05f)*0.2f*hero.pointsInTalent(Talent.SHIELDING_DEW)); // this tries to predict the total increase via individual dewdrops.
 				int maxShield = Math.round(hero.HT *0.2f*hero.pointsInTalent(Talent.SHIELDING_DEW,Talent.RK_WARDEN));
 				if (hero.hasTalent(Talent.SHIELDING_DEW,Talent.RK_WARDEN)){
 					float missingShieldPercent = 1f - (curShield / (float)maxShield);

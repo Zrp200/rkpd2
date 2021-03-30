@@ -660,11 +660,8 @@ public abstract class Mob extends Char {
 
 			if (cause == Dungeon.hero
 					&& Dungeon.hero.hasTalent(Talent.LETHAL_MOMENTUM,Talent.PURSUIT,Talent.LETHAL_MOMENTUM_2)
-					&& Random.Float() < Math.max(
-						(1+Dungeon.hero.pointsInTalent(Talent.LETHAL_MOMENTUM_2))/4f,
-						(1+Dungeon.hero.pointsInTalent(Talent.LETHAL_MOMENTUM,Talent.PURSUIT))/3f)) {
+					&& Random.Float() < ((Dungeon.hero.hasTalent(Talent.LETHAL_MOMENTUM)?2:1)+Dungeon.hero.pointsInTalent(Talent.LETHAL_MOMENTUM,Talent.PURSUIT,Talent.LETHAL_MOMENTUM_2))/(Dungeon.hero.hasTalent(Talent.PURSUIT)?3f:4f))
 				Buff.affect(Dungeon.hero, Talent.LethalMomentumTracker.class, 1f);
-			}
 		}
 
 		if (Dungeon.hero.isAlive() && !Dungeon.level.heroFOV[pos]) {

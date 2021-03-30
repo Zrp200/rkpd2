@@ -342,7 +342,7 @@ public class CloakOfShadows extends Artifact {
 						exp += Math.round(10f * Math.pow(0.75f, -lvlDiffFromTarget));
 					}
 
-					int expPerLevel = target.heroClass == HeroClass.ROGUE ? 25 : 50;
+					int expPerLevel = 50;
 					if (exp >= (level() + 1) * expPerLevel && level() < levelCap) {
 						upgrade();
 						exp -= level() * expPerLevel;
