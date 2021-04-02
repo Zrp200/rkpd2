@@ -159,7 +159,7 @@ public class Berserk extends Buff {
 	public void damage(int damage){
 		if (state == State.RECOVERING && !berserker()) return;
 		float maxPower = 1f + 0.15f*((Hero)target).pointsInTalent(Talent.ENDLESS_RAGE,Talent.RK_BERSERKER);
-		power = Math.min(maxPower, power + rageFactor(damage) );
+		power = Math.min(maxPower*recovered(), power + rageFactor(damage) );
 		BuffIndicator.refreshHero(); //show new power immediately
 	}
 
@@ -213,14 +213,13 @@ public class Berserk extends Buff {
 
 	@Override
 	public String toString() {
-		String cls = Dungeon.hero.subClass.title();
 		switch (state){
 			case NORMAL: default:
-				return Messages.get(this, "angered",cls);
+				return Messages.get(this, "angered");
 			case BERSERK:
-				return Messages.get(this, "berserk",cls);
+				return Messages.get(this, "berserk");
 			case RECOVERING:
-				return Messages.get(this, "recovering",cls);
+				return Messages.get(this, "recovering");
 		}
 	}
 
@@ -229,7 +228,7 @@ public class Berserk extends Buff {
 	}
 	@Override
 	public String desc() {
-		String cls = Dungeon.hero.subClass.title();
+		String cls = Messages.titleCase(Dungeon.hero.subClass.title());
 		StringBuilder desc = new StringBuilder();
 		switch (state){
 			case NORMAL: default:
@@ -242,7 +241,7 @@ public class Berserk extends Buff {
 				break;
 			case RECOVERING:
 				desc.append(Messages.get(this, "recovering_desc", cls, Messages.get(
-						this,"recovering_penalty_" + (berserker() ? "berserk" : "default")),
+						this,"recovering_penalty_" + (berserker() ? "berserk" : "default"), cls),
 						levelRecovery));
 				if( berserker() ) desc.append("\n\n").append(getCurrentRageDesc());
 				break;
