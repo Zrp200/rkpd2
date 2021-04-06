@@ -115,13 +115,13 @@ public class BrokenSeal extends Item {
 				} else if (armor.glyph != null && seal.getGlyph() != null
 						&& armor.glyph.getClass() != seal.getGlyph().getClass()) {
 					GameScene.show(new WndOptions(Messages.get(BrokenSeal.class, "choose_title"),
-							Messages.get(BrokenSeal.class, "choose_desc"),
+							Messages.get(BrokenSeal.class, "choose_desc") + (Dungeon.hero.pointsInTalent(Talent.RUNIC_TRANSFERENCE) < 2 ? "\n\n" + Messages.get(BrokenSeal.class, "lose_warning"):""),
 							armor.glyph.name(),
 							seal.getGlyph().name()){
 						@Override
 						protected void onSelect(int index) {
 							if (index == 0) seal.setGlyph(null);
-							//if index is 1, then the glyph transfer happens in affixSeal
+							//if index is 1 or runic transference is maxed, then the glyph transfer happens in affixSeal
 
 							GLog.p(Messages.get(BrokenSeal.class, "affix"));
 							Dungeon.hero.sprite.operate(Dungeon.hero.pos);
@@ -141,6 +141,14 @@ public class BrokenSeal extends Item {
 			}
 		}
 	};
+
+	@Override
+	public String desc() {
+		HeroClass heroClass = Dungeon.hero.heroClass;
+		return Messages.get(this, "desc",
+				heroClass == HeroClass.WARRIOR ? " from the glorious king of rats" : "",
+				heroClass.title());
+	}
 
 	private static final String GLYPH = "glyph";
 

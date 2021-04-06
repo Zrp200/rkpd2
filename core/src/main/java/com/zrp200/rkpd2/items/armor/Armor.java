@@ -179,7 +179,7 @@ public class Armor extends EquipableItem {
 						&& (Arrays.asList(Glyph.common).contains(detaching.getGlyph().getClass())
 							|| Arrays.asList(Glyph.uncommon).contains(detaching.getGlyph().getClass()))){
 					inscribe(null);
-				} else if (hero.pointsInTalent(Talent.RUNIC_TRANSFERENCE,Talent.POWER_WITHIN) == 2){
+				} else if (hero.pointsInTalent(Talent.RUNIC_TRANSFERENCE) >= 1 || hero.pointsInTalent(Talent.POWER_WITHIN) == 2){
 					inscribe(null);
 				} else {
 					detaching.setGlyph(null);
@@ -239,6 +239,7 @@ public class Armor extends EquipableItem {
 		if (seal.getGlyph() != null){
 			inscribe(seal.getGlyph());
 		}
+		else if( seal.getGlyph() == null && Dungeon.hero.pointsInTalent(Talent.RUNIC_TRANSFERENCE) == 2) seal.setGlyph(glyph);
 		if (isEquipped(Dungeon.hero)){
 			Buff.affect(Dungeon.hero, BrokenSeal.WarriorShield.class).setArmor(this);
 		}
