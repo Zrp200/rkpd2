@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.ui;
 
+import com.watabou.noosa.ui.Button;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.SPDAction;
 import com.zrp200.rkpd2.actors.buffs.Buff;
@@ -57,6 +58,8 @@ public class ActionIndicator extends Tag {
 	public void destroy() {
 		super.destroy();
 		instance = null;
+
+		longClickListener.destroy();
 	}
 	
 	@Override
@@ -108,6 +111,11 @@ public class ActionIndicator extends Tag {
 	protected boolean onLongClick() {
 		return findAction(true);
 	}
+
+	private final Button longClickListener = new Button() {
+		@Override public GameAction keyAction() { return SPDAction.TAG_CYCLE; }
+		@Override protected void onClick()      { findAction(true); }
+	};
 
 	public static boolean setAction(Action action){
 		if(!action.usable() || ActionIndicator.action == action) return false;
