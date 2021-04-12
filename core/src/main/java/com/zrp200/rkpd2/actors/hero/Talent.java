@@ -197,9 +197,9 @@ public enum Talent {
 			case ROYAL_PRIVILEGE: case NATURES_BOUNTY:
 				int count = talent == NATURES_BOUNTY ? 3 : 2;
 				if(points == 1) count *= 2; // for the initial upgrade.
-				Buff.count(hero, NatureBerriesAvailable.class, count*points);
+				Buff.count(hero, NatureBerriesAvailable.class, count);
 				break;
-			case BERSERKING_STAMINA:
+			case BERSERKING_STAMINA: // takes immediate effect
 				Berserk berserk = hero.buff(Berserk.class);
 				if(berserk != null) berserk.recover(1/3f);
 				break;
