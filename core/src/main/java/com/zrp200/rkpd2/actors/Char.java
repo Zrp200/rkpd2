@@ -67,6 +67,7 @@ import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.mobs.Elemental;
 import com.zrp200.rkpd2.items.Heap;
+import com.zrp200.rkpd2.items.KindOfWeapon;
 import com.zrp200.rkpd2.items.armor.glyphs.AntiMagic;
 import com.zrp200.rkpd2.items.armor.glyphs.Potential;
 import com.zrp200.rkpd2.items.rings.RingOfElements;
@@ -296,6 +297,11 @@ public abstract class Char extends Actor {
 			
 			if (this instanceof Hero){
 				Hero h = (Hero)this;
+				KindOfWeapon wep = h.belongings.weapon;
+				if(h.hasTalent(Talent.WARLOCKS_TOUCH)) {
+					// warlock can soul mark by simply attacking with warlock's touch.
+					SoulMark.process(enemy,(wep != null ? wep.buffedLvl():0)+Math.max(0,h.pointsInTalent(Talent.WARLOCKS_TOUCH)-1),1,Random.Int(4) >= h.pointsInTalent(Talent.WARLOCKS_TOUCH));
+				}
 				if (h.belongings.weapon instanceof MissileWeapon
 						&& (h.subClass == HeroSubClass.SNIPER || h.subClass == HeroSubClass.KING)
 						&& !Dungeon.level.adjacent(h.pos, enemy.pos)){
@@ -538,7 +544,7 @@ public abstract class Char extends Actor {
 	}
 	protected void onDamage(int dmg, Object src) {
 		// TODO change?
-		if(src instanceof Char || Dungeon.hero.hasTalent(Talent.SOUL_SIPHON)) {
+		if(!(src instanceof Char) && Dungeon.hero.hasTalent(Talent.SOUL_SIPHON)) { // character damage is already handled before damage is dealt.
 			SoulMark soulMark = buff(SoulMark.class);
 			if(soulMark != null) soulMark.proc(src,this,dmg);
 		}

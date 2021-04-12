@@ -440,6 +440,7 @@ public class DwarfKing extends Mob {
 					// literally just broke the shield in one go.
 					sprite.add(CharSprite.State.SHIELDED);
 					onDamage(dmg2, src); // process damage-related stuff
+					Sample.INSTANCE.play(Assets.Sounds.SHATTER);
 					sprite.remove(CharSprite.State.SHIELDED);
 					// enter phase 3 and process the rest of the damage
 					HP = 50;

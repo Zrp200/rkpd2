@@ -1147,10 +1147,6 @@ public class Hero extends Char {
 						staff.procWand(enemy, damage);
 					}
 		}
-		if(hasTalent(Talent.WARLOCKS_TOUCH)) {
-			// warlock can soul mark by simply attacking with warlock's touch.
-			SoulMark.process(enemy,(wep != null ? wep.buffedLvl():0)+Math.max(0,pointsInTalent(Talent.WARLOCKS_TOUCH)-1),1,Random.Int(4) >= pointsInTalent(Talent.WARLOCKS_TOUCH));
-		}
 		if (wep != null) damage = wep.proc( this, enemy, damage );
 
 		damage = Talent.onAttackProc( this, enemy, damage );

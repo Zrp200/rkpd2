@@ -389,18 +389,21 @@ public enum Talent {
 		}
 	}
 	public static void onItemEquipped( Hero hero, Item item ){
+		boolean id = false;
 		if (hero.pointsInTalent(ARMSMASTERS_INTUITION,ROYAL_INTUITION) >= (hero.hasTalent(ARMSMASTERS_INTUITION) ? 1 : 2) && (item instanceof Weapon || item instanceof Armor)){
-			item.identify();
+			if(id = !item.isIdentified()) item.identify();
 		}
 		if ((hero.heroClass == HeroClass.ROGUE || hero.hasTalent(ROYAL_INTUITION)) && item instanceof Ring){
 			int points = hero.pointsInTalent(THIEFS_INTUITION,ROYAL_INTUITION);
 			if(hero.heroClass == HeroClass.ROGUE ) points++; // essentially this is a 50% boost.
-			if (points >= 2){
+			if (!item.isIdentified() && points >= 2){
 				item.identify();
+				id = true;
 			} else {
 				((Ring) item).setKnown();
 			}
 		}
+		if(id && hero.sprite.emitter() != null) hero.sprite.emitter().burst(Speck.factory(Speck.QUESTION),1);
 	}
 
 	public static void onItemCollected( Hero hero, Item item ){

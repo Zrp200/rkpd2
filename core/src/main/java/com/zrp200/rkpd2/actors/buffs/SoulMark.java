@@ -51,7 +51,7 @@ public class SoulMark extends FlavourBuff {
 				&& Random.Float() > (Math.pow(0.92f, (level * chargesUsed) + 1) - 0.07f)) {
 			DelayedMark mark = affect(defender,DelayedMark.class);
 			mark.duration = DURATION+level;
-			if(!delay) mark.activate();
+			if(!delay) mark.activate(); // is active immediately, which means that if damage is taken directly afterwards it'll be processed.
 			// see Char#damage
 		}
 	}
@@ -78,10 +78,13 @@ public class SoulMark extends FlavourBuff {
 		if(!(src instanceof Char) && !Dungeon.hero.hasTalent(Talent.SOUL_SIPHON)) return; // this shouldn't come up, but in case it does...
 		int restoration = Math.min(damage, defender.HP);
 		//physical damage that doesn't come from the hero is less effective
-		if (defender != Dungeon.hero){
+		if (src != Dungeon.hero){
 			// wand damage is handled prior this method's calling.
 			int points = Dungeon.hero.pointsInTalent(Talent.SOUL_SIPHON,Talent.RK_WARLOCK);
-			restoration = Math.round(restoration * (Dungeon.hero.hasTalent(Talent.SOUL_SIPHON) ? src instanceof Char ? points*.2f : 1f*(1+points) : points * .15f));
+			restoration = Math.round(restoration * (
+					Dungeon.hero.hasTalent(Talent.SOUL_SIPHON) ?
+							src instanceof Char ? points*.2f : 1f*(1+points)
+							: points * .15f));
 		}
 		if(restoration > 0)
 		{
