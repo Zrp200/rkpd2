@@ -173,7 +173,7 @@ public class BrokenSeal extends Item {
 		@Override
 		public synchronized boolean act() {
 			if (shielding() < maxShield()) {
-				partialShield += 1/(RECHARGE_RATE * (1 - ((Hero)target).pointsInTalent(Talent.IRON_WILL)/(float)maxShield())); // this adjusts the seal recharge rate.
+				partialShield += 1/(RECHARGE_RATE /* * (1 - ((Hero)target).pointsInTalent(Talent.IRON_WILL)/(float)maxShield())*/); // this adjusts the seal recharge rate.
 			}
 			
 			while (partialShield >= 1){
@@ -203,6 +203,8 @@ public class BrokenSeal extends Item {
 			Hero hero = (Hero)target;
 			if (armor != null && armor.isEquipped(hero)) {
 				int bonus = hero.pointsInTalent(Talent.NOBLE_CAUSE,Talent.IRON_WILL);
+				BrokenSeal brokenSeal = armor.checkSeal();
+				if(brokenSeal != null && brokenSeal.level() > 1) bonus -= brokenSeal.level()-1; // doesn't stack, sorry.
 				return armor.tier + armor.level() + bonus;
 			} else {
 				return 0;

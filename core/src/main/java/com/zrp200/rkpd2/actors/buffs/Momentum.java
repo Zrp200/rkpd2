@@ -134,7 +134,7 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 	@Override
 	public float iconFadePercent() {
 		if (freerunTurns > 0){
-			int duration = (int)Math.ceil(20*(1+Dungeon.hero.pointsInTalent(Talent.FAST_RECOVERY)/3f));
+			int duration = (int)Math.ceil(20*(1+Dungeon.hero.pointsInTalent(Talent.FAST_RECOVERY)/6f));
 			return (duration - freerunTurns) / (float)duration;
 		} else if (freerunCooldown > 0){
 			return (freerunCooldown) / 30f;
@@ -156,7 +156,7 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 	
 	@Override
 	public String desc() {
-		String cls = Dungeon.hero.heroClass.title();
+		String cls = Messages.titleCase(Dungeon.hero.heroClass.title());
 		if (freerunTurns > 0){
 			return Messages.get(this, "running_desc", cls, freerunTurns);
 		} else if (freerunCooldown > 0){
@@ -199,7 +199,8 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 
 	@Override
 	public void doAction() {
-		freerunTurns = (int)Math.ceil(2*momentumStacks*(1+Dungeon.hero.pointsInTalent(Talent.FAST_RECOVERY)/3f));
+		// 20 / 24 / 27 / 30 at max.
+		freerunTurns = (int)Math.ceil(2*momentumStacks*(1+Dungeon.hero.pointsInTalent(Talent.FAST_RECOVERY)/6f));
 		//cooldown is functionally 10+2*stacks when active effect ends
 		freerunCooldown = 10 + 2*momentumStacks + freerunTurns;
 		Sample.INSTANCE.play(Assets.Sounds.MISS, 1f, 0.8f);

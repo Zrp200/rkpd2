@@ -76,9 +76,7 @@ public class Berserk extends Buff {
 	}
 
 	private static float levelRecoverStart() {
-		return LEVEL_RECOVER_START-(
-				Dungeon.hero.pointsInTalent(Talent.BERSERKING_STAMINA)/2f +
-				Dungeon.hero.pointsInTalent(Talent.RK_BERSERKER)/3f);
+		return LEVEL_RECOVER_START-Dungeon.hero.pointsInTalent(Talent.BERSERKING_STAMINA,Talent.RK_BERSERKER)/3f;
 	}
 
 	protected float maxBerserkDuration() {
@@ -149,7 +147,7 @@ public class Berserk extends Buff {
 	private float rageFactor(int damage) {
 		Hero hero = (Hero)target;
 		float weight = 0.1f*hero.pointsInTalent(Talent.ENRAGED_CATALYST,Talent.ONE_MAN_ARMY,Talent.ENDLESS_RAGE);
-		return damage/(weight*(target.HP-damage)+(1-weight)*target.HT)/3f;
+		return damage/(weight*Math.max(0,target.HP-damage)+(1-weight)*target.HT)/3f;
 	}
 
 	public float rageAmount(){

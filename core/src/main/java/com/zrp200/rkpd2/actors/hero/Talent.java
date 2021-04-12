@@ -201,7 +201,7 @@ public enum Talent {
 				break;
 			case BERSERKING_STAMINA:
 				Berserk berserk = hero.buff(Berserk.class);
-				if(berserk != null) berserk.recover(talent == RK_BERSERKER ? 1/3f : .5f);
+				if(berserk != null) berserk.recover(1/3f);
 				break;
 		}
 		if (talent == FARSIGHT || talent == RK_SNIPER){
@@ -259,7 +259,8 @@ public enum Talent {
 			int duration = 1 + 2*(hero.pointsInTalent(MYSTICAL_MEAL)+hero.pointsInTalent(ROYAL_MEAL));
 			ArtifactRecharge artifactRecharge = Buff.affect( hero, ArtifactRecharge.class);
 			if(hero.hasTalent(MYSTICAL_MEAL)) artifactRecharge.prolong((float)Math.ceil(duration*1.5)); // 5-8 turns of recharge!!!
-			else artifactRecharge.set(duration).ignoreHornOfPlenty = foodSource instanceof HornOfPlenty && !hero.hasTalent(MYSTICAL_MEAL);
+			else artifactRecharge.set(duration);
+			artifactRecharge.ignoreHornOfPlenty = foodSource instanceof HornOfPlenty;
 			ScrollOfRecharging.charge( hero );
 		}
 		if (hero.hasTalent(INVIGORATING_MEAL)) {
@@ -474,7 +475,7 @@ public enum Talent {
 					? 1+hero.pointsInTalent(SUCKER_PUNCH)  // 2/3
 					: Random.round(0.5f*(2+hero.pointsInTalent(KINGS_WISDOM))); // 1-2/2
 			dmg += bonus;
-			if(!hero.hasTalent(SUCKER_PUNCH)) Buff.affect(enemy, SuckerPunchTracker.class);
+			Buff.affect(enemy, SuckerPunchTracker.class);
 		}
 
 		if (hero.hasTalent(Talent.FOLLOWUP_STRIKE,KINGS_WISDOM)) {
