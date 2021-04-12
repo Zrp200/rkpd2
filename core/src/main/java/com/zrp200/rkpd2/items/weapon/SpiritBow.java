@@ -180,8 +180,7 @@ public class SpiritBow extends Weapon {
 	private double internalLevel() {
 		double level = curseInfusionBonus ? 1 : 0;
 		if(Dungeon.hero == null) return level;
-		double rate = 5f;
-		if(Dungeon.hero.heroClass == HeroClass.HUNTRESS) rate /= 2; // goes up to +12 with huntress.
+		double rate = 30d/(Dungeon.hero.heroClass == HeroClass.HUNTRESS ? 10 : 6);
 		return level + Dungeon.hero.lvl / rate;
 	}
 

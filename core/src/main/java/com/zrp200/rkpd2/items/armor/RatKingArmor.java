@@ -146,8 +146,8 @@ public class RatKingArmor extends ClassArmor{
                                             remove(this);
                                             return true;
                                         }
-                                    }, delay++);
-                                curUser.spendAndNext(delay);
+                                    }, ++delay);
+                                curUser.spendAndNext(delay+1);
                                 if(stages[0] || stages[1] || stages[2]) {
                                     charge -= 35;
                                     updateQuickslot();

@@ -368,7 +368,7 @@ public enum Talent {
 			if(hero.hasTalent(MYSTICAL_UPGRADE)) {
 				for(Artifact.ArtifactBuff buff : Dungeon.hero.buffs(Artifact.ArtifactBuff.class)) {
 					if(buff.artifactClass() != CloakOfShadows.class) {
-						buff.charge(hero,(int)Math.floor((hero.pointsInTalent(MYSTICAL_UPGRADE)+1)*(1/.375f))); // 5/8 turns of artifact recharge... instantly. poggers.
+						buff.charge(hero,4*(1+hero.pointsInTalent(MYSTICAL_UPGRADE))); // 8/12 turns sounds legit...
 						charge = true;
 					}
 				}

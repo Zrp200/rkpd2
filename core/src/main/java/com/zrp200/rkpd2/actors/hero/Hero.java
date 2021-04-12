@@ -1222,11 +1222,11 @@ public class Hero extends Char {
 		if (thorns != null) {
 			dmg = thorns.proc(dmg, (src instanceof Char ? (Char)src : null),  this);
 		}
-		// berserker gets rage from all sources. all hail viscosity!
+		/*// berserker gets rage from all sources. all hail viscosity!
 		// TODO change for 0.9.2?
 		if(!(src instanceof Char) && subClass == HeroSubClass.BERSERKER) {
 			Buff.affect(this, Berserk.class).damage(dmg);
-		}
+		}*/
 		dmg = (int)Math.ceil(dmg * RingOfTenacity.damageMultiplier( this ));
 
 		//TODO improve this when I have proper damage source logic
