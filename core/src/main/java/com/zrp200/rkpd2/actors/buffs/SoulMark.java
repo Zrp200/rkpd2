@@ -60,6 +60,7 @@ public class SoulMark extends FlavourBuff {
 		public float duration;
 
 		public void activate() {
+			if(target == null) return;
 			Buff.prolong(target,SoulMark.class,duration);
 			detach();
 		}
