@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.items.armor.curses;
 
+import com.watabou.utils.Bundlable;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
@@ -75,13 +76,10 @@ public class Multiplicity extends Armor.Glyph {
 					} else {
 						Actor.fixTime();
 						
-						m = (Mob)Reflection.newInstance(attacker.getClass());
+						m = (Mob)Bundlable.clone(attacker);
 						
 						if (m != null) {
-							
-							Bundle store = new Bundle();
-							attacker.storeInBundle(store);
-							m.restoreFromBundle(store);
+
 							m.pos = 0;
 							m.HP = m.HT;
 							if (m.buff(PinCushion.class) != null) {

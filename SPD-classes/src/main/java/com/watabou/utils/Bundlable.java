@@ -25,5 +25,14 @@ public interface Bundlable {
 
 	void restoreFromBundle( Bundle bundle );
 	void storeInBundle( Bundle bundle );
-	
+
+	// clones any Bundlable object
+	static <T extends Bundlable> T clone(T o) {
+		Bundle bundle = new Bundle();
+		o.storeInBundle(bundle);
+		@SuppressWarnings("unchecked") T clone = (T)Reflection.newInstance(o.getClass());
+		if(clone == null) return null;
+		clone.restoreFromBundle(bundle);
+		return clone;
+	}
 }

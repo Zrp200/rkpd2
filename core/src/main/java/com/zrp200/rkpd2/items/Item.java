@@ -232,15 +232,12 @@ public class Item implements Bundlable {
 			return null;
 		} else {
 			//pssh, who needs copy constructors?
-			Item split = Reflection.newInstance(getClass());
+			Item split = Bundlable.clone(this);
 			
 			if (split == null){
 				return null;
 			}
-			
-			Bundle copy = new Bundle();
-			this.storeInBundle(copy);
-			split.restoreFromBundle(copy);
+
 			split.quantity(amount);
 			quantity -= amount;
 			
