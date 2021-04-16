@@ -480,8 +480,8 @@ public class HeroSelectScene extends PixelScene {
 						info.text(Messages.get(WndHeroInfo.class, "talents_desc"), INFO_WIDTH);
 					}
 					talents.visible = talents.active = value;
-					firstSub.visible = firstSub.active = value;
-					secondSub.visible = secondSub.active = value;
+					firstSub.visible = firstSub.active
+							= secondSub.visible = secondSub.active = value && cl.subClasses().length == 2;
 				}
 			};
 			add(tab);

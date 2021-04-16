@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.actors.mobs.npcs;
 
+import com.watabou.utils.Reflection;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
@@ -93,9 +94,10 @@ public class Shopkeeper extends NPC {
 		return true;
 	}
 
-	//shopkeepers are greedy!
+	//shopkeepers are greedy! they're not super on the ball about how good the items they're selling are, though.
+	// TODO really what should have been done is define a "base value" method so I don't have to duplicate things over and over.
 	public static int sellPrice(Item item){
-		return item.value() * 5 * (Dungeon.depth / 5 + 1);
+		return (int)Math.ceil((Reflection.newInstance(item.getClass()).quantity(item.quantity()).value()+item.value())/2f * 5 * (Dungeon.depth / 5 + 1));
 	}
 	
 	public static WndBag sell() {

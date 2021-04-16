@@ -107,6 +107,7 @@ public class Blacksmith extends NPC {
 							Quest.given = Quest.completed = true;
 							Quest.reforged = false;
 							Notes.add(Notes.Landmark.TROLL);
+							interact(c); // go directly into the reward.
 						}
 					});
 				}

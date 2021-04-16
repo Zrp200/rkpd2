@@ -387,7 +387,9 @@ public enum Talent {
 
 	public static void onArtifactUsed( Hero hero ){
 		if (hero.hasTalent(ENHANCED_RINGS,RK_ASSASSIN)){
-			Buff.prolong(hero, EnhancedRings.class, 3f*hero.pointsInTalent(ENHANCED_RINGS,RK_ASSASSIN));
+			float duration = 3f*hero.pointsInTalent(ENHANCED_RINGS,RK_ASSASSIN);
+			if(hero.hasTalent(ENHANCED_RINGS)) Buff.affect(hero, EnhancedRings.class, duration);
+			else Buff.prolong(hero, EnhancedRings.class, duration);
 		}
 	}
 	public static void onItemEquipped( Hero hero, Item item ){

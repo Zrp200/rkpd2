@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.actors.mobs.npcs;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.mobs.Golem;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.Monk;
@@ -113,7 +114,8 @@ public class Imp extends NPC {
 			}
 			
 		} else {
-			tell( Quest.alternative ? Messages.get(this, "monks_1") : Messages.get(this, "golems_1") );
+			tell( Messages.get(this, "greeting"+(Dungeon.hero.heroClass == HeroClass.RAT_KING ? "_rk" : ""))+"\n"+
+					(Quest.alternative ? Messages.get(this, "monks_1") : Messages.get(this, "golems_1")) );
 			Quest.given = true;
 			Quest.completed = false;
 			Notes.add( Notes.Landmark.IMP );

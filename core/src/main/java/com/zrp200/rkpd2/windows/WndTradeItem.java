@@ -40,6 +40,8 @@ public class WndTradeItem extends WndInfoItem {
 
 	private WndBag owner;
 
+	private static float MULT=1.5f;
+
 	//selling
 	public WndTradeItem( final Item item, WndBag owner ) {
 
@@ -51,7 +53,7 @@ public class WndTradeItem extends WndInfoItem {
 
 		if (item.quantity() == 1) {
 
-			RedButton btnSell = new RedButton( Messages.get(this, "sell", item.value()) ) {
+			RedButton btnSell = new RedButton( Messages.get(this, "sell", (int)(item.value()*MULT)) ) {
 				@Override
 				protected void onClick() {
 					sell( item );
@@ -175,7 +177,7 @@ public class WndTradeItem extends WndInfoItem {
 		//selling items in the sell interface doesn't spend time
 		hero.spend(-hero.cooldown());
 
-		new Gold( item.value() ).doPickUp( hero );
+		new Gold( (int)(item.value()*MULT) ).doPickUp( hero );
 	}
 	
 	private void sellOne( Item item ) {
@@ -191,7 +193,7 @@ public class WndTradeItem extends WndInfoItem {
 			//selling items in the sell interface doesn't spend time
 			hero.spend(-hero.cooldown());
 
-			new Gold( item.value() ).doPickUp( hero );
+			new Gold( (int)(item.value()*MULT) ).doPickUp( hero );
 		}
 	}
 	

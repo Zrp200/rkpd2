@@ -187,7 +187,7 @@ public abstract class Scroll extends Item {
 		((HeroSprite)curUser.sprite).read();
 
 		if (curUser.hasTalent(Talent.EMPOWERING_SCROLLS,Talent.RK_BATTLEMAGE)){
-			Buff.affect(curUser, ScrollEmpower.class, curUser.hasTalent(Talent.EMPOWERING_SCROLLS) ? 30f : 20f);
+			Buff.affect(curUser, ScrollEmpower.class, curUser.hasTalent(Talent.EMPOWERING_SCROLLS) ? 40f : 20f);
 			updateQuickslot();
 		}
 

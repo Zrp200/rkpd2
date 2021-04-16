@@ -52,7 +52,7 @@ public class ScrollEmpower extends FlavourBuff {
 
 	@Override
 	public float iconFadePercent() {
-		int duration = Dungeon.hero != null && Dungeon.hero.hasTalent(Talent.EMPOWERING_SCROLLS) ? 30 : 20;
+		int duration = Dungeon.hero != null && Dungeon.hero.hasTalent(Talent.EMPOWERING_SCROLLS) ? 40 : 20;
 		return Math.max(0, (duration-visualcooldown()) / duration);
 	}
 

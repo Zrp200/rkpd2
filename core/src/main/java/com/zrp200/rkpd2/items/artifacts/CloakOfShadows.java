@@ -66,7 +66,7 @@ public class CloakOfShadows extends Artifact {
 		bones = false;
 	}
 
-	public static final float ROGUE_BOOST = 4/3f;
+	public static final float ROGUE_BOOST = 1.5f;
 
 	public static final String AC_STEALTH = "STEALTH";
 
