@@ -240,7 +240,15 @@ abstract public class MissileWeapon extends Weapon {
 			Buff.detach(user, Talent.LethalMomentumTracker.class);
 			return 0;
 		}
-		return speedFactor( user ) / (user.buff(Adrenaline.class) != null?1.5f:1);
+		float speedFactor = speedFactor( user );
+		if(user instanceof Hero && ((Hero)user).hasTalent(Talent.ONE_MAN_ARMY)) {
+			Hero hero = (Hero)user;
+			int targets = 0;
+			Char enemy = Actor.findChar(dst);
+			for(Char c : Dungeon.level.mobs) if(c.alignment == Char.Alignment.ENEMY && (c == enemy || hero.canAttack(c) || c.canAttack(hero) || throwPos(hero,c.pos) == c.pos)) targets++;
+			speedFactor /= 1+.1f*hero.pointsInTalent(Talent.ONE_MAN_ARMY )*Math.max(0,targets-1);
+		}
+		return speedFactor / (user.buff(Adrenaline.class) != null?1.5f:1);
 	}
 	public void onRangedAttack(Char enemy, int cell, boolean hit) {
 		if(hit) rangedHit(enemy, cell);

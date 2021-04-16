@@ -69,7 +69,7 @@ public class MirrorImage extends AbstractMirrorImage {
 	}
 	
 	@Override
-	protected boolean canAttack(Char enemy) {
+	public boolean canAttack(Char enemy) {
 		return super.canAttack(enemy) || (hero.belongings.weapon != null && hero.belongings.weapon.canReach(this, enemy.pos));
 	}
 	

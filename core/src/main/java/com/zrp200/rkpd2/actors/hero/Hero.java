@@ -560,14 +560,7 @@ public class Hero extends Char {
 	}
 
 	public boolean canAttack(Char enemy){
-		if (enemy == null || pos == enemy.pos || !Actor.chars().contains(enemy)) {
-			return false;
-		}
-
-		//can always attack adjacent enemies
-		if (Dungeon.level.adjacent(pos, enemy.pos)) {
-			return true;
-		}
+		if(super.canAttack(enemy)) return true;
 
 		KindOfWeapon wep = Dungeon.hero.belongings.weapon;
 
@@ -597,9 +590,8 @@ public class Hero extends Char {
 			delay *= RingOfFuror.attackDelayMultiplier(this);
 		}
 		if(hasTalent(Talent.ONE_MAN_ARMY)) {
-			Dungeon.level.updateFieldOfView( this, fieldOfView );
 			int enemies = 0;
-			for(Char ch : Dungeon.level.mobs) if(fieldOfView[ch.pos] && ch.alignment == Alignment.ENEMY) enemies++;
+			for(Char ch : Dungeon.level.mobs) if(ch.alignment == Alignment.ENEMY && (canAttack(ch) || ch.canAttack(this))) enemies++;
 			// every additional enemy, not the first guy.
 			delay /= 1+0.1*Math.max(0,enemies-1)*pointsInTalent(Talent.ONE_MAN_ARMY);
 		}
@@ -1237,7 +1229,6 @@ public class Hero extends Char {
 
 		if (buff(Talent.WarriorFoodImmunity.class) != null){
 			int points = pointsInTalent(Talent.IRON_STOMACH,Talent.ROYAL_MEAL);
-			if(hasTalent(Talent.IRON_STOMACH)) points = 2;
 			if (points == 1)    dmg = Math.round(dmg*0.25f);
 			if (points == 2)  	dmg = Math.round(dmg*0.00f);
 		}

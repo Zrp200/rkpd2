@@ -128,6 +128,8 @@ public abstract class Actor implements Bundlable {
 	private static HashSet<Char> chars = new HashSet<>();
 	private static volatile Actor current;
 
+	public static Actor current() { return current; }
+
 	private static SparseArray<Actor> ids = new SparseArray<>();
 
 	private static float now = 0;

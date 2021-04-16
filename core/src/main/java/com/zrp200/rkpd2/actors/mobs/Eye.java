@@ -84,14 +84,16 @@ public class Eye extends Mob {
 	public boolean beamCharged;
 
 	@Override
-	protected boolean canAttack( Char enemy ) {
+	public boolean canAttack(Char enemy) {
 
 		if (beamCooldown == 0) {
 			Ballistica aim = new Ballistica(pos, enemy.pos, Ballistica.STOP_SOLID);
 
 			if (enemy.invisible == 0 && !isCharmedBy(enemy) && fieldOfView[enemy.pos] && aim.subPath(1, aim.dist).contains(enemy.pos)){
-				beam = aim;
-				beamTarget = aim.collisionPos;
+				if(Actor.current() == this) {
+					beam = aim;
+					beamTarget = aim.collisionPos;
+				}
 				return true;
 			} else
 				//if the beam is charged, it has to attack, will aim at previous location of target.

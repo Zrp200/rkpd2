@@ -396,6 +396,18 @@ public abstract class Char extends Actor {
 		}
 	}
 
+	public boolean canAttack(Char enemy) {
+		if (enemy == null || pos == enemy.pos || !Actor.chars().contains(enemy)) {
+			return false;
+		}
+
+		//can always attack adjacent enemies
+		if (Dungeon.level.adjacent(pos, enemy.pos)) {
+			return true;
+		}
+		return false;
+	}
+
 	public static int INFINITE_ACCURACY = 1_000_000;
 	public static int INFINITE_EVASION = 1_000_000;
 

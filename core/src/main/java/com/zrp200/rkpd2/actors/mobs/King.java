@@ -111,7 +111,7 @@ public class King extends Mob {
 	}
 	
 	@Override
-	protected boolean canAttack( Char enemy ) {
+	public boolean canAttack( Char enemy ) {
 		return canTryToSummon() ?
 				pos == ((OldCityBossLevel)Dungeon.level).pedestal( nextPedestal ) :
 				Dungeon.level.adjacent( pos, enemy.pos );

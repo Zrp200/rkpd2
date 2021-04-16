@@ -147,7 +147,7 @@ public class Berserk extends Buff {
 	private float rageFactor(int damage) {
 		Hero hero = (Hero)target;
 		float weight = 0.1f*hero.pointsInTalent(Talent.ENRAGED_CATALYST,Talent.ONE_MAN_ARMY,Talent.ENDLESS_RAGE);
-		return damage/(weight*Math.max(0,target.HP-damage)+(1-weight)*target.HT)/3f;
+		return damage/(weight*target.HP+(1-weight)*target.HT)/3f;
 	}
 
 	public float rageAmount(){
@@ -157,7 +157,7 @@ public class Berserk extends Buff {
 	public void damage(int damage){
 		if (state == State.RECOVERING && !berserker()) return;
 		float maxPower = 1f + 0.15f*((Hero)target).pointsInTalent(Talent.ENDLESS_RAGE,Talent.RK_BERSERKER);
-		power = Math.min(maxPower*recovered(), power + rageFactor(damage) );
+		power = Math.min(maxPower*recovered(), power + rageFactor(damage)*recovered() );
 		BuffIndicator.refreshHero(); //show new power immediately
 	}
 
@@ -190,7 +190,7 @@ public class Berserk extends Buff {
 				b = 0;
 				break;
 			case RECOVERING: // it's supposed to look more like the above as you get closer.
-				r = berserker() ? recovered() : 0;
+				r = berserker() ? .75f*recovered() : 0;
 				g = .5f*r;
 				b = 1-r;
 				break;
@@ -203,7 +203,7 @@ public class Berserk extends Buff {
 		switch (state){
 			case RECOVERING: if(!berserker()) return recovered();
 			case NORMAL: default:
-				return recovered() == 0 ? 1 : 1 - power/recovered();
+				return recovered() == 0 ? 0 : 1 - power/recovered();
 			case BERSERK:
 				return 0f;
 		}
@@ -241,7 +241,10 @@ public class Berserk extends Buff {
 				desc.append(Messages.get(this, "recovering_desc", cls, Messages.get(
 						this,"recovering_penalty_" + (berserker() ? "berserk" : "default"), cls),
 						levelRecovery));
-				if( berserker() ) desc.append("\n\n").append(getCurrentRageDesc());
+				if( berserker() ) {
+					desc.append("\n\n% recovered: ").append( (int)Math.floor(recovered() * 100) );
+					if(power > 0) desc.append("\n").append(getCurrentRageDesc());
+				}
 				break;
 		}
 		return desc.toString();

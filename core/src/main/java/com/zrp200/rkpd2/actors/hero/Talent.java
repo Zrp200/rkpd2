@@ -224,10 +224,11 @@ public enum Talent {
 			if(strength-- > 0) { // adjusting for the addition of one point.
 				strength += points;
 				// hearty meal heals for (2.5/4)/(4/6). priv heals for (2/3)/(3/5)
-				hero.HP += hero.hasTalent(HEARTY_MEAL) && strength == 1
+				int boost = hero.hasTalent(HEARTY_MEAL) && strength == 1
 						? Random.round(2.5f) // simulate 2.5
 						: (int) Math.ceil(( hero.hasTalent(HEARTY_MEAL) ? 2.5 : 2 )*Math.pow(1.5,strength-1));
-				hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), strength);
+				hero.HP += boost;
+				hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), Math.round(boost*2f/3));
 			}
 		}
 		if (hero.hasTalent(IRON_STOMACH,ROYAL_MEAL)){
@@ -456,7 +457,7 @@ public enum Talent {
 			heal = Math.min(heal, hero.HT-hero.HP);
 			hero.HP += heal;
 			Emitter e = hero.sprite.emitter();
-			if (e != null && heal > 0) e.burst(Speck.factory(Speck.HEALING), heal == 1 ? 1 : points);
+			if (e != null && heal > 0) e.burst(Speck.factory(Speck.HEALING), Math.max(1,Math.round(heal*2f/3)));
 		}
 		if (hero.hasTalent(TESTED_HYPOTHESIS,KINGS_WISDOM)){
 			//2/3 turns of wand recharging
