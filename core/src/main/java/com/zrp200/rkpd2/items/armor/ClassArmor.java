@@ -35,6 +35,8 @@ import com.watabou.utils.Bundle;
 
 import java.util.ArrayList;
 
+import static com.zrp200.rkpd2.Dungeon.hero;
+
 abstract public class ClassArmor extends Armor {
 
 	private static final String AC_SPECIAL = "SPECIAL";
@@ -140,8 +142,8 @@ abstract public class ClassArmor extends Armor {
 				GLog.w( Messages.get(this, "not_equipped") );
 			} else {
 				if(charge < 35) {
-					GLog.n("rat king: I don't have time for this nonsense! I have a kingdom to run! CLASS ARMOR OVERCHAARGE!!");
-					charge += hero.heroClass == HeroClass.RAT_KING ? 100 : 200;
+					GLog.n("Rat King: I don't have time for this nonsense! I have a kingdom to run! CLASS ARMOR SUPERCHAARGE!!");
+					charge += 100;
 					hero.HP = Math.max( Math.min(hero.HP,1), hero.HP*2/3 );
 					updateQuickslot();
 					ScrollOfRecharging.charge(hero);
@@ -152,6 +154,11 @@ abstract public class ClassArmor extends Armor {
 			}
 			
 		}
+	}
+
+	protected void useCharge() {
+		charge -= 35;
+		updateQuickslot();
 	}
 
 	@Override

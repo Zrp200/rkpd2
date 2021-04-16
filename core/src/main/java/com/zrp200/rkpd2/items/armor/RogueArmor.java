@@ -58,7 +58,7 @@ public class RogueArmor extends ClassArmor {
 		public void onSelect( Integer target ) {
 			if (target != null) {
 				
-				PathFinder.buildDistanceMap(curUser.pos, BArray.not(Dungeon.level.solid,null), 8);
+				PathFinder.buildDistanceMap(curUser.pos, BArray.not(Dungeon.level.solid,null)/*, 8*/);
 				
 				if ( PathFinder.distance[target] == Integer.MAX_VALUE ||
 					!Dungeon.level.heroFOV[target] ||

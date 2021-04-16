@@ -47,14 +47,11 @@ public class HuntressArmor extends ClassArmor {
 	@Override
 	public void doSpecial() {
 
-		charge -= 35;
-		updateQuickslot();
-
 		Item proto = new Shuriken();
 		
 		for (Mob mob : Dungeon.level.mobs) {
-			if (Dungeon.level.distance(curUser.pos, mob.pos) <= 12
-				&& Dungeon.level.heroFOV[mob.pos]
+			if (/*Dungeon.level.distance(curUser.pos, mob.pos) <= 12
+				&&*/ Dungeon.level.heroFOV[mob.pos]
 				&& mob.alignment != Char.Alignment.ALLY) {
 				
 				Callback callback = new Callback() {
@@ -81,6 +78,7 @@ public class HuntressArmor extends ClassArmor {
 			return;
 		}
 
+		useCharge();
 		curUser.sprite.zap( curUser.pos );
 		curUser.busy();
 	}
