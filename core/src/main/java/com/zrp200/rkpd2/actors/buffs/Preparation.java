@@ -83,16 +83,16 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 			return KOThresholds[ordinal()][Dungeon.hero.pointsInTalent(Talent.ENHANCED_LETHALITY,Talent.RK_ASSASSIN)];
 		}
 
-		//1st index is prep level, 2nd is talent level
-		private static final int[][] blinkRanges = new int[][]{
-				{1, 2, 3, 4},
-				{2, 3, 5, 6},
-				{3, 5, 7, 10},
-				{4, 7, 10, 14}
+		//1st index is prep level, 2nd is talent level, third is type.
+		private static final int[][][] blinkRanges = new int[][][]{
+				{{1, 2, 3, 4}, {1, 2, 3, 4}},
+				{{1, 3, 4, 6}, {2, 3, 5, 6}},
+				{{2, 4, 6, 8}, {3, 5, 7,10}},
+				{{2, 5, 7,10}, {4, 7,10,14}}
 		};
 
 		public int blinkDistance(){
-			return blinkRanges[ordinal()][Dungeon.hero.pointsInTalent(Talent.ASSASSINS_REACH,Talent.RK_ASSASSIN)];
+			return blinkRanges[Dungeon.hero.pointsInTalent(Talent.ASSASSINS_REACH,Talent.RK_ASSASSIN)][Dungeon.hero.hasTalent(Talent.ASSASSINS_REACH)?1:0][ordinal()];
 		}
 		
 		public boolean canKO(Char defender){

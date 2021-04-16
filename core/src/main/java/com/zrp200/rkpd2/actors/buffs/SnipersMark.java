@@ -73,7 +73,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
 	public void set(int object, int level){
 		this.level = Math.max(this.level,level);
-		if(objects.size == maxObjects() && pruneObjects() && objects.size == maxObjects()) {
+		if(objects.size == maxObjects() && (!pruneObjects() || objects.size == maxObjects())) {
 			objects.removeIndex(0);
 		}
 		objects.add(object);
