@@ -73,6 +73,6 @@ public class EnhancedRings extends FlavourBuff{
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", Messages.capitalize(Dungeon.hero.heroClass.title()), (int)visualcooldown());
+		return Messages.get(this, "desc", Messages.titleCase(Dungeon.hero.heroClass.title()), (int)visualcooldown());
 	}
 }
