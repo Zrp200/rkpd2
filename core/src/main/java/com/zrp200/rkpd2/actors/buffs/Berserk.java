@@ -169,7 +169,10 @@ public class Berserk extends Buff {
 			levelRecovery -= percent;
 			if (levelRecovery <= 0) {
 				state = State.NORMAL;
-				if(berserker()) GLog.p("You have fully recovered!"); // because by this point it should look almost exactly like the regular anyway.
+				if(berserker()) {
+					GLog.p("You have fully recovered!"); // because by this point it should look almost exactly like the regular anyway.
+					Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);
+				}
 				levelRecovery = 0;
 			}
 		}
