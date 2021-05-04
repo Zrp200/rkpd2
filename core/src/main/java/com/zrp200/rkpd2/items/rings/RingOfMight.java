@@ -77,11 +77,10 @@ public class RingOfMight extends Ring {
 	}
 	
 	public String statsInfo() {
-		int level = level();
-		if(!isIdentified()) level(0);
-		String res = Messages.get(this,isIdentified()?"stats":"typical_stats", soloBonus(), new DecimalFormat("#.##").format(100f * Math.pow(1.035, soloBuffedBonus()-1) - 1f));
-		level(level);
-		return res;
+		// if I want to get this working with innate boosts again, then I'll just have to
+		return Messages.get(this, isIdentified()?"stats":"typical_stats",
+				soloBonus(),
+				new DecimalFormat("#.##").format(100f * (Math.pow(1.035, soloBuffedBonus()) - 1f)));
 	}
 
 	@Override

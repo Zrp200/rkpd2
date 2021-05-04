@@ -181,7 +181,7 @@ public class Ring extends KindofMisc {
 	protected String statsInfo(){
 		int level = level();
 		if(!isIdentified()) level(0);
-		double bonus = Math.pow(multiplier(),soloBuffedBonus());
+		double bonus = Math.pow(multiplier(),soloBuffedBonus(false));
 		bonus = multiplier() < 1 ? 1-bonus : bonus-1;
 		String res = Messages.get(this,(isIdentified()?"":"typical_")+"stats", new DecimalFormat("#.##").format(100f * bonus));
 		level(level);
@@ -297,13 +297,21 @@ public class Ring extends KindofMisc {
 		}
 	}
 
+	private int applyEnhancedRings() {
+		return Dungeon.hero.buff(EnhancedRings.class) != null
+				? Dungeon.hero.hasTalent(Talent.ENHANCED_RINGS) ? 2 : 1
+				: 0;
+	}
+
 	@Override
 	public int buffedLvl() {
-		int lvl = super.buffedLvl();
-		if (Dungeon.hero.buff(EnhancedRings.class) != null){
-			lvl += Dungeon.hero.hasTalent(Talent.ENHANCED_RINGS) ? 2 : 1;
-		}
-		return lvl;
+		return super.buffedLvl() + applyEnhancedRings();
+	}
+
+	@Override
+	public int buffedVisiblyUpgraded() {
+		int level = super.buffedVisiblyUpgraded();
+		return levelKnown ? level : level+applyEnhancedRings(); // the boost is shown as boosting +0, regardless.
 	}
 
 	public static int getBonus(Char target, Class<?extends RingBuff> type){
@@ -321,22 +329,32 @@ public class Ring extends KindofMisc {
 		}
 		return bonus;
 	}
-	
+
+	// this was changed to show visible values, so if you want the actual effect of a given ring, call the corresponding method with a true argument.
 	public int soloBonus(){
-		int base = Dungeon.hero.getBonus(this);
-		if (cursed){
-			return base+Math.min( 0, Ring.this.level()-2 );
-		} else {
-			return base+Ring.this.level()+1;
+		return soloBonus(false);
+	}
+	protected int soloBonus(boolean trueEffect){
+		return computeBonus(false, trueEffect);
+	}
+
+	// for getting numbers...
+	private int computeBonus(boolean buffed, boolean trueEffect) {
+		int level;
+		int bonus = Dungeon.hero.getBonus(this);
+		if ( trueEffect ) {
+			level = buffed ? buffedLvl() - bonus : level();
 		}
+		else level = buffed ? buffedVisiblyUpgraded() : visiblyUpgraded();
+		level += bonus;
+		return ( trueEffect ? cursed : visiblyCursed() ) ? Math.min(0, level-2) : level+1;
 	}
 
 	public int soloBuffedBonus(){
-		if (cursed){
-			return Math.min( 0, Ring.this.buffedLvl()-2 );
-		} else {
-			return Ring.this.buffedLvl()+1;
-		}
+		return soloBuffedBonus(false);
+	}
+	protected int soloBuffedBonus(boolean trueEffect){
+		return computeBonus(true, trueEffect);
 	}
 
 	public class RingBuff extends Buff {
@@ -350,11 +368,11 @@ public class Ring extends KindofMisc {
 		}
 
 		public int level(){
-			return Ring.this.soloBonus();
+			return Ring.this.soloBonus(true);
 		}
 
 		public int buffedLvl(){
-			return Ring.this.soloBuffedBonus();
+			return Ring.this.soloBuffedBonus(true);
 		}
 
 	}
