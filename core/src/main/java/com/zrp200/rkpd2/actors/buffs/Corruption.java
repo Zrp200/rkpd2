@@ -21,8 +21,12 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
+import com.zrp200.rkpd2.Badges;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.mobs.DwarfKing;
+import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.BuffIndicator;
@@ -40,13 +44,45 @@ public class Corruption extends Buff {
 	public boolean attachTo(Char target) {
 		if (super.attachTo(target)){
 			target.alignment = Char.Alignment.ALLY;
-			if(target instanceof DwarfKing.Subject) { // DK logic
-				new DwarfKing().yell(Messages.get(DwarfKing.class,"corrupted",target.name()));
-			}
 			return true;
 		} else {
 			return false;
 		}
+	}
+
+	// this handles all corrupting logic. I was getting annoyed by the duplication.
+	public static boolean corrupt(Char ch) {
+		boolean droppingLoot = ch.alignment != Char.Alignment.ALLY;
+
+		if(ch.isImmune(Corruption.class) || ch.buff(Corruption.class) != null) return false;
+		affect(ch, Corruption.class);
+
+		if(ch instanceof DwarfKing.Subject) { // DK logic
+			new DwarfKing().yell( Messages.get(DwarfKing.class,"corrupted",ch.name()));
+		}
+
+		ch.HP = ch.HT;
+		for (Buff buff : ch.buffs()) {
+			if (buff.type == Buff.buffType.NEGATIVE
+					&& !(buff instanceof SoulMark || buff instanceof Corruption)) {
+				buff.detach();
+			} else if (buff instanceof PinCushion){
+				buff.detach();
+			}
+		}
+
+		if (ch instanceof Mob && droppingLoot) ((Mob)ch).rollToDropLoot();
+
+		Statistics.enemiesSlain++;
+		Badges.validateMonstersSlain();
+		Statistics.qualifiedForNoKilling = false;
+		if (ch instanceof Mob && ( (Mob)ch ).EXP > 0 && Dungeon.hero.lvl <= ( (Mob)ch ).maxLvl+1) {
+			Dungeon.hero.sprite.showStatus(CharSprite.POSITIVE, Messages.get(ch, "exp", ( (Mob)ch ).EXP));
+			Dungeon.hero.earnExp(( (Mob)ch ).EXP, ch.getClass());
+		} else {
+			Dungeon.hero.earnExp(0, ch.getClass());
+		}
+		return true;
 	}
 	
 	@Override

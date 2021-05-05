@@ -21,23 +21,12 @@
 
 package com.zrp200.rkpd2.items.weapon.enchantments;
 
-import com.zrp200.rkpd2.Badges;
-import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.Statistics;
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Corruption;
-import com.zrp200.rkpd2.actors.buffs.PinCushion;
-import com.zrp200.rkpd2.actors.buffs.SnipersMark;
-import com.zrp200.rkpd2.actors.buffs.SoulMark;
-import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.items.weapon.Weapon;
-import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
-import com.watabou.utils.Random;
 
 public class Corrupting extends Weapon.Enchantment {
 	
@@ -53,41 +42,9 @@ public class Corrupting extends Weapon.Enchantment {
 		float procChance = (level+5f)/(level+25f) * procChanceMultiplier(attacker);
 		if (damage >= defender.HP
 				&& Random.Float() < procChance
-				&& !defender.isImmune(Corruption.class)
-				&& defender.buff(Corruption.class) == null
 				&& defender instanceof Mob
-				&& defender.isAlive()){
-			
-			Mob enemy = (Mob) defender;
-			Hero hero = (attacker instanceof Hero) ? (Hero) attacker : Dungeon.hero;
-			
-			enemy.HP = enemy.HT;
-			for (Buff buff : enemy.buffs()) {
-				if (buff.type == Buff.buffType.NEGATIVE
-						&& !(buff instanceof SoulMark)) {
-					buff.detach();
-				} else if (buff instanceof PinCushion){
-					buff.detach();
-				}
-			}
-			SnipersMark mark = Dungeon.hero.buff(SnipersMark.class);
-			if(mark != null) mark.remove(enemy.id());
-			if (enemy.alignment == Char.Alignment.ENEMY){
-				enemy.rollToDropLoot();
-			}
-			
-			Buff.affect(enemy, Corruption.class);
-			
-			Statistics.enemiesSlain++;
-			Badges.validateMonstersSlain();
-			Statistics.qualifiedForNoKilling = false;
-			if (enemy.EXP > 0 && hero.lvl <= enemy.maxLvl+1) {
-				hero.sprite.showStatus(CharSprite.POSITIVE, Messages.get(enemy, "exp", enemy.EXP));
-				hero.earnExp(enemy.EXP, enemy.getClass());
-			} else {
-				hero.earnExp(0, enemy.getClass());
-			}
-			
+				&& defender.isAlive()
+				&& Corruption.corrupt(defender)){
 			return 0;
 		}
 		
