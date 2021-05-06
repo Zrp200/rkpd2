@@ -34,6 +34,7 @@ import com.zrp200.rkpd2.actors.buffs.EnhancedRings;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.buffs.Haste;
 import com.zrp200.rkpd2.actors.buffs.Recharging;
+import com.zrp200.rkpd2.actors.buffs.RevealedArea;
 import com.zrp200.rkpd2.actors.buffs.Roots;
 import com.zrp200.rkpd2.actors.buffs.WandEmpower;
 import com.zrp200.rkpd2.actors.mobs.Mob;
@@ -202,6 +203,10 @@ public enum Talent {
 			case BERSERKING_STAMINA: // takes immediate effect
 				Berserk berserk = hero.buff(Berserk.class);
 				if(berserk != null) berserk.recover(1/3f);
+				break;
+			case SEER_SHOT:
+				float mod = points == 1 ? 0 : 1f/(points-1);
+				for(RevealedArea buff : hero.buffs(RevealedArea.class)) buff.postpone(buff.cooldown() * mod);
 				break;
 		}
 		if (talent == FARSIGHT || talent == RK_SNIPER){
