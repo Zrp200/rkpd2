@@ -287,14 +287,20 @@ public class SpiritBow extends Weapon {
 		@Override
 		protected void onThrow( int cell ) {
 			Char enemy = Actor.findChar( cell );
+			boolean hitGround;
 			if (enemy == null || enemy == curUser) {
 				parent = null;
-				Splash.at( cell, 0xCC99FFFF, 1 );
+				hitGround = true;
 			} else {
-				if (!curUser.shoot( enemy, this )) {
-					Splash.at(cell, 0xCC99FFFF, 1);
-					if((hasEnchant(Explosive.class,curUser) || (hasEnchant(Unstable.class,curUser) && Unstable.getRandomEnchant(SpiritBow.this) instanceof Explosive)) && new Explosive().tryProc(curUser,SpiritBow.this.buffedLvl())) new Bomb().explode(cell);
-				}
+				hitGround = !curUser.shoot( enemy, this );
+			}
+			if(hitGround) {
+				Splash.at(cell, 0xCC99FFFF, 1);
+				if((hasEnchant(Explosive.class,curUser)
+						|| (hasEnchant(Unstable.class,curUser)
+						&& Unstable.getRandomEnchant(SpiritBow.this) instanceof Explosive))
+							&& new Explosive().tryProc(curUser, SpiritBow.this.buffedLvl()))
+					new Bomb().explode(cell);
 			}
 		}
 

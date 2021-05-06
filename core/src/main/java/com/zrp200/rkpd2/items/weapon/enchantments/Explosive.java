@@ -15,7 +15,7 @@ public class Explosive extends Weapon.Enchantment {
         return REDORANGE;
     }
 
-    private static final int MULTIPLIER = 3; // upgrades are 1/4 effective, this enchantment scales like crazy even with this.
+    private static final int MULTIPLIER = 3; // upgrades are 1/3 effective, this enchantment scales like crazy even with this.
     private static final int BASE_PROC = 10*MULTIPLIER;
     // 1/10, 4/31, 5/32, 6/33 (1/5), 7/34 (4/13), 8/35, 9/36 etc.
     public boolean tryProc(Char attacker, int level) {
