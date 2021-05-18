@@ -4,7 +4,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.3'
+        classpath 'com.android.tools.build:gradle:3.6.4'
     }
 }
 
@@ -12,10 +12,10 @@ allprojects {
 
     ext {
         appName = 'RKPD2'
-        appPackageName = 'com.zrp200.rkpd2'
+        appPackageName = 'com.zrp200.rkpd2abyssal'
 
         appVersionCode = 551
-        appVersionName = '0.0.1'
+        appVersionName = '0.0.1Abyss'
 
         appJavaCompatibility = JavaVersion.VERSION_1_8
 

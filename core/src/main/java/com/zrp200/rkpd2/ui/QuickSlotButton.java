@@ -21,10 +21,15 @@
 
 package com.zrp200.rkpd2.ui;
 
+import com.watabou.input.GameAction;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.ui.Button;
+import com.watabou.utils.PathFinder;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.SPDAction;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.mobs.Phantom;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
@@ -32,10 +37,6 @@ import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.utils.BArray;
 import com.zrp200.rkpd2.windows.WndBag;
-import com.watabou.input.GameAction;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.ui.Button;
-import com.watabou.utils.PathFinder;
 
 public class QuickSlotButton extends Button implements WndBag.Listener {
 	
@@ -261,11 +262,11 @@ public class QuickSlotButton extends Button implements WndBag.Listener {
 			}
 		}
 	}
-	
+
 	public static void target( Char target ) {
-		if (target != null && target.alignment != Char.Alignment.ALLY) {
+		if (target != null && target.alignment != Char.Alignment.ALLY && !(target instanceof Phantom)) {
 			lastTarget = target;
-			
+
 			TargetHealthIndicator.instance.target( target );
 		}
 	}

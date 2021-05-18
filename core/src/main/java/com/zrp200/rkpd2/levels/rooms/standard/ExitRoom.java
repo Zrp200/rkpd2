@@ -21,11 +21,14 @@
 
 package com.zrp200.rkpd2.levels.rooms.standard;
 
+import com.watabou.utils.Point;
+import com.watabou.utils.Random;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.mobs.FinalFroggit;
 import com.zrp200.rkpd2.levels.Level;
 import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.levels.painters.Painter;
 import com.zrp200.rkpd2.levels.rooms.Room;
-import com.watabou.utils.Point;
 
 public class ExitRoom extends StandardRoom {
 	
@@ -46,6 +49,17 @@ public class ExitRoom extends StandardRoom {
 		
 		for (Room.Door door : connected.values()) {
 			door.set( Room.Door.Type.REGULAR );
+		}
+
+		if (Dungeon.depth > 25) {
+			for (int i = 0; i < Random.IntRange(1, 5); i++) {
+				FinalFroggit npc = new FinalFroggit();
+				do {
+					npc.pos = level.pointToCell(random());
+				} while (level.map[npc.pos] != Terrain.EMPTY || level.findMob(npc.pos) != null || npc.pos == level.exit);
+				npc.state = npc.SLEEPING;
+				level.mobs.add(npc);
+			}
 		}
 		
 		level.exit = level.pointToCell(random( 2 ));

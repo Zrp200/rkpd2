@@ -21,17 +21,17 @@
 
 package com.zrp200.rkpd2.windows;
 
+import com.watabou.input.PointerEvent;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.PointerArea;
+import com.watabou.utils.SparseArray;
 import com.zrp200.rkpd2.Chrome;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
 import com.zrp200.rkpd2.ui.Window;
-import com.watabou.input.PointerEvent;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.PointerArea;
-import com.watabou.utils.SparseArray;
 
 public class WndStory extends Window {
 
@@ -42,21 +42,25 @@ public class WndStory extends Window {
 	private static final float bgR	= 0.77f;
 	private static final float bgG	= 0.73f;
 	private static final float bgB	= 0.62f;
-	
+
 	public static final int ID_SEWERS		= 0;
 	public static final int ID_PRISON		= 1;
 	public static final int ID_CAVES		= 2;
 	public static final int ID_CITY     	= 3;
 	public static final int ID_HALLS		= 4;
-	
+	public static final int ID_ABYSS        = 5;
+	public static final int ID_GAUNTLET     = 6;
+
 	private static final SparseArray<String> CHAPTERS = new SparseArray<>();
-	
+
 	static {
 		CHAPTERS.put( ID_SEWERS, "sewers" );
 		CHAPTERS.put( ID_PRISON, "prison" );
 		CHAPTERS.put( ID_CAVES, "caves" );
 		CHAPTERS.put( ID_CITY, "city" );
 		CHAPTERS.put( ID_HALLS, "halls" );
+		CHAPTERS.put( ID_ABYSS, "abyss");
+		CHAPTERS.put( ID_GAUNTLET, "gauntlet");
 	}
 
 	private IconTitle ttl;

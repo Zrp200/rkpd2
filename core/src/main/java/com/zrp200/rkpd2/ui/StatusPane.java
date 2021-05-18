@@ -21,6 +21,13 @@
 
 package com.zrp200.rkpd2.ui;
 
+import com.watabou.input.GameAction;
+import com.watabou.noosa.*;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.noosa.particles.Emitter;
+import com.watabou.noosa.ui.Button;
+import com.watabou.noosa.ui.Component;
+import com.watabou.utils.ColorMath;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.SPDAction;
@@ -33,17 +40,6 @@ import com.zrp200.rkpd2.sprites.HeroSprite;
 import com.zrp200.rkpd2.windows.WndGame;
 import com.zrp200.rkpd2.windows.WndHero;
 import com.zrp200.rkpd2.windows.WndJournal;
-import com.watabou.input.GameAction;
-import com.watabou.noosa.BitmapText;
-import com.watabou.noosa.Camera;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.NinePatch;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.noosa.particles.Emitter;
-import com.watabou.noosa.ui.Button;
-import com.watabou.noosa.ui.Component;
-import com.watabou.utils.ColorMath;
 
 public class StatusPane extends Component {
 
@@ -109,7 +105,7 @@ public class StatusPane extends Component {
 
 		talentBlink = 0;
 
-		compass = new Compass( Statistics.amuletObtained ? Dungeon.level.entrance : Dungeon.level.exit );
+		compass = new Compass( Statistics.amuletObtained ? (Dungeon.depth >= 27 ? Dungeon.level.exit : Dungeon.level.entrance) : Dungeon.level.exit );
 		add( compass );
 
 		rawShielding = new Image( Assets.Interfaces.SHLD_BAR );

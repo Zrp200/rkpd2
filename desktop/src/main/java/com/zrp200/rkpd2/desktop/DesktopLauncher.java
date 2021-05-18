@@ -29,16 +29,15 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3FileHandle;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Preferences;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.SharedLibraryLoader;
+import com.watabou.noosa.Game;
+import com.watabou.utils.FileUtils;
+import com.watabou.utils.Point;
 import com.zrp200.rkpd2.SPDSettings;
 import com.zrp200.rkpd2.ShatteredPixelDungeon;
 import com.zrp200.rkpd2.services.news.News;
 import com.zrp200.rkpd2.services.news.NewsImpl;
 import com.zrp200.rkpd2.services.updates.UpdateImpl;
 import com.zrp200.rkpd2.services.updates.Updates;
-import com.watabou.noosa.Game;
-import com.watabou.utils.FileUtils;
-import com.watabou.utils.Point;
-
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 import java.io.PrintWriter;
@@ -119,14 +118,14 @@ public class DesktopLauncher {
 		String basePath = "";
 		if (SharedLibraryLoader.isWindows) {
 			if (System.getProperties().getProperty("os.name").equals("Windows XP")) {
-				basePath = "Application Data/.zrp200/RKPD2/";
+				basePath = "Application Data/.zrp200/ARKPD2/";
 			} else {
-				basePath = "AppData/Roaming/.zrp200/RKPD2/";
+				basePath = "AppData/Roaming/.zrp200/ARKPD2/";
 			}
 		} else if (SharedLibraryLoader.isMac) {
-			basePath = "Library/Application Support/RKPD2/";
+			basePath = "Library/Application Support/ARKPD2/";
 		} else if (SharedLibraryLoader.isLinux) {
-			basePath = ".zrp200/rkpd2/";
+			basePath = ".zrp200/arkpd2/";
 		}
 
 		//copy over prefs from old file location from legacy desktop codebase
@@ -149,8 +148,7 @@ public class DesktopLauncher {
 		DesktopWindowListener listener = new DesktopWindowListener();
 		config.setWindowListener( listener );
 		
-		config.setWindowIcon("icons/icon_16.png", "icons/icon_32.png", "icons/icon_64.png",
-				"icons/icon_128.png", "icons/icon_256.png");
+		config.setWindowIcon("icons/icon_256.png");
 
 		new Lwjgl3Application(new ShatteredPixelDungeon(new DesktopPlatformSupport()), config);
 	}

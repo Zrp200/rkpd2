@@ -21,28 +21,25 @@
 
 package com.zrp200.rkpd2.scenes;
 
-import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.Rankings;
-import com.zrp200.rkpd2.ShatteredPixelDungeon;
-import com.zrp200.rkpd2.actors.hero.HeroClass;
-import com.zrp200.rkpd2.actors.mobs.npcs.RatKing;
-import com.zrp200.rkpd2.effects.Flare;
-import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.sprites.ItemSprite;
-import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
-import com.zrp200.rkpd2.ui.Archs;
-import com.zrp200.rkpd2.ui.ExitButton;
-import com.zrp200.rkpd2.ui.Icons;
-import com.zrp200.rkpd2.ui.RenderedTextBlock;
-import com.zrp200.rkpd2.ui.Window;
-import com.zrp200.rkpd2.windows.WndError;
-import com.zrp200.rkpd2.windows.WndRanking;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.ui.Button;
 import com.watabou.utils.GameMath;
+import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Rankings;
+import com.zrp200.rkpd2.ShatteredPixelDungeon;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
+import com.zrp200.rkpd2.actors.mobs.npcs.RatKing;
+import com.zrp200.rkpd2.effects.Flare;
+import com.zrp200.rkpd2.items.quest.Chaosstone;
+import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.sprites.ItemSprite;
+import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
+import com.zrp200.rkpd2.ui.*;
+import com.zrp200.rkpd2.windows.WndError;
+import com.zrp200.rkpd2.windows.WndRanking;
 
 public class RankingsScene extends PixelScene {
 	
@@ -188,11 +185,19 @@ public class RankingsScene extends PixelScene {
 			int odd = pos % 2;
 			
 			if (rec.win) {
-				shield.view( rec.cause == RatKing.class ? ItemSpriteSheet.CROWN : ItemSpriteSheet.AMULET, null );
-				position.hardlight( TEXT_WIN[odd] );
-				desc.hardlight( TEXT_WIN[odd] );
-				depth.hardlight( TEXT_WIN[odd] );
-				level.hardlight( TEXT_WIN[odd] );
+				if (rec.cause == Chaosstone.class){
+					shield.view(ItemSpriteSheet.CHAOSSTONE, new ItemSprite.Glowing());
+					position.hardlight(TEXT_WIN[odd]);
+					desc.hardlight(TEXT_WIN[odd]);
+					depth.hardlight(TEXT_WIN[odd]);
+					level.hardlight(TEXT_WIN[odd]);
+				} else {
+					shield.view(rec.cause == RatKing.class ? ItemSpriteSheet.CROWN : ItemSpriteSheet.AMULET, null);
+					position.hardlight(TEXT_WIN[odd]);
+					desc.hardlight(TEXT_WIN[odd]);
+					depth.hardlight(TEXT_WIN[odd]);
+					level.hardlight(TEXT_WIN[odd]);
+				}
 			} else {
 				position.hardlight( TEXT_LOSE[odd] );
 				desc.hardlight( TEXT_LOSE[odd] );

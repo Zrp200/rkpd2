@@ -49,6 +49,11 @@ public class RKPD2Changes {
     public static void addChanges( ArrayList<ChangeInfo> changeInfos) {
         ChangeInfo changes;
 
+        changeInfos.add(changes = new ChangeInfo("Abyssal", true, ""));
+        changes.hardlight(Window.TITLE_COLOR);
+        changes.addButton(new ChangeButton(Icons.get(Icons.INFO), "Developer Commentary", "This mod brings Abyss endless chapter from Summoning PD. That's all.\n\n-TrashboxBobylev"));
+
+
         changeInfos.add(changes = new ChangeInfo("v0.0.1", true, ""));
         changes.hardlight(Window.TITLE_COLOR);
         changes.addButton(new ChangeButton(Icons.get(Icons.INFO), "Developer Commentary", "This update is mostly just bugfixes and balance adjustments. More substantial changes should come when SHPD v0.9.3 is released.\n\nDo note that while things are intended to be broken, I'm aiming for a state where things are 'evenly' overpowered such that you can play any class or do any build and be like 'that's really damn good' for everything, rather than resetting (or just choosing talents!) for that same broken build every time."));

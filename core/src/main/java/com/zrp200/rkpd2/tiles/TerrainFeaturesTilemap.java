@@ -21,17 +21,17 @@
 
 package com.zrp200.rkpd2.tiles;
 
+import com.watabou.noosa.Image;
+import com.watabou.noosa.tweeners.ScaleTweener;
+import com.watabou.utils.PointF;
+import com.watabou.utils.RectF;
+import com.watabou.utils.SparseArray;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.levels.LastShopLevel;
 import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.levels.traps.Trap;
 import com.zrp200.rkpd2.plants.Plant;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.tweeners.ScaleTweener;
-import com.watabou.utils.PointF;
-import com.watabou.utils.RectF;
-import com.watabou.utils.SparseArray;
 
 //TODO add in a proper set of vfx for plants growing/withering, grass burning, discovering traps
 public class TerrainFeaturesTilemap extends DungeonTilemap {
@@ -66,6 +66,7 @@ public class TerrainFeaturesTilemap extends DungeonTilemap {
 		}
 
 		int stage = (Dungeon.depth-1)/5;
+		if (stage > 5) stage = 1;
 		if (Dungeon.depth == 21 && Dungeon.level instanceof LastShopLevel) stage--;
 		if (tile == Terrain.HIGH_GRASS){
 			return 9 + 16*stage + (DungeonTileSheet.tileVariance[pos] >= 50 ? 1 : 0);

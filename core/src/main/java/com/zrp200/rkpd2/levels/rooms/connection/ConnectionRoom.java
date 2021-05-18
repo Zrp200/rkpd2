@@ -21,11 +21,11 @@
 
 package com.zrp200.rkpd2.levels.rooms.connection;
 
-import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.levels.rooms.Room;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.levels.rooms.Room;
 
 import java.util.ArrayList;
 
@@ -86,6 +86,10 @@ public abstract class ConnectionRoom extends Room {
 	}
 	
 	public static ConnectionRoom createRoom(){
+		if (Dungeon.depth >= 25){
+			float[] chance = new float[]{1, 1, 1, 1, 1, 1};
+			return Reflection.newInstance(rooms.get(Random.chances(chance)));
+		}
 		return Reflection.newInstance(rooms.get(Random.chances(chances[Dungeon.depth])));
 	}
 }

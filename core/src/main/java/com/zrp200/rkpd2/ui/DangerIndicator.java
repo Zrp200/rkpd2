@@ -21,14 +21,15 @@
 
 package com.zrp200.rkpd2.ui;
 
-import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.SPDAction;
-import com.zrp200.rkpd2.actors.mobs.Mob;
-import com.zrp200.rkpd2.scenes.PixelScene;
 import com.watabou.input.GameAction;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Image;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.SPDAction;
+import com.zrp200.rkpd2.actors.mobs.Mob;
+import com.zrp200.rkpd2.actors.mobs.Phantom;
+import com.zrp200.rkpd2.scenes.PixelScene;
 
 public class DangerIndicator extends Tag {
 	
@@ -102,7 +103,7 @@ public class DangerIndicator extends Tag {
 		
 		super.update();
 	}
-	
+
 	@Override
 	protected void onClick() {
 		if (Dungeon.hero.visibleEnemies() > 0) {
@@ -110,7 +111,7 @@ public class DangerIndicator extends Tag {
 			Mob target = Dungeon.hero.visibleEnemy(++enemyIndex);
 
 			QuickSlotButton.target(target);
-			if (Dungeon.hero.canAttack(target)) AttackIndicator.target(target);
+			if (Dungeon.hero.canAttack(target) && !(target instanceof Phantom)) AttackIndicator.target(target);
 
 			if (Dungeon.hero.curAction == null) Camera.main.panTo(target.sprite.center(), 5f);
 		}

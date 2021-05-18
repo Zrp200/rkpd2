@@ -21,6 +21,9 @@
 
 package com.zrp200.rkpd2;
 
+import com.watabou.utils.Bundlable;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.FileUtils;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.hero.Belongings;
@@ -30,15 +33,12 @@ import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.potions.Potion;
+import com.zrp200.rkpd2.items.quest.Chaosstone;
 import com.zrp200.rkpd2.items.rings.Ring;
 import com.zrp200.rkpd2.items.scrolls.Scroll;
 import com.zrp200.rkpd2.journal.Notes;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.QuickSlotButton;
-import com.watabou.noosa.Game;
-import com.watabou.utils.Bundlable;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.FileUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -114,6 +114,7 @@ public enum Rankings {
 	public static final String BADGES = "badges";
 	public static final String HANDLERS = "handlers";
 	public static final String CHALLENGES = "challenges";
+	public static final String CHAOSSTONES = "chaosstones";
 
 	public void saveGameData(Record rec){
 		rec.gameData = new Bundle();
@@ -122,6 +123,14 @@ public enum Rankings {
 
 		//save the hero and belongings
 		ArrayList<Item> allItems = (ArrayList<Item>) belongings.backpack.items.clone();
+		int chaosstones = 0;
+		for (Item item : allItems){
+			if (item instanceof Chaosstone){
+				chaosstones = item.quantity();
+			}
+		}
+		rec.gameData.put(CHAOSSTONES, chaosstones);
+
 		//remove items that won't show up in the rankings screen
 		for (Item item : belongings.backpack.items.toArray( new Item[0])) {
 			if (item instanceof Bag){
@@ -265,6 +274,7 @@ public enum Rankings {
 		public int armorTier;
 		public int herolevel;
 		public int depth;
+		public int chaosstones;
 		
 		public Bundle gameData;
 		public String gameID;
@@ -274,7 +284,13 @@ public enum Rankings {
 		public String desc(){
 			if (cause == null) {
 				return Messages.get(this, "something");
-			} else {
+			}
+
+			if (cause == Chaosstone.class){
+				return Messages.get(this, "chaosstone", gameData.getInt(CHAOSSTONES));
+			}
+
+			else {
 				String result = Messages.get(cause, "rankings_desc", (Messages.get(cause, "name")));
 				if (result.contains("!!!NO TEXT FOUND!!!")){
 					return Messages.get(this, "something");

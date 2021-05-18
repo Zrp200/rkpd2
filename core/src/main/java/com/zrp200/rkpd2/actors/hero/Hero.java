@@ -21,77 +21,34 @@
 
 package com.zrp200.rkpd2.actors.hero;
 
-import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.Badges;
-import com.zrp200.rkpd2.Bones;
-import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.GamesInProgress;
-import com.zrp200.rkpd2.ShatteredPixelDungeon;
-import com.zrp200.rkpd2.Statistics;
+import com.watabou.noosa.Camera;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.*;
+import com.zrp200.rkpd2.*;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.blobs.Alchemy;
-import com.zrp200.rkpd2.actors.buffs.AdrenalineSurge;
-import com.zrp200.rkpd2.actors.buffs.Amok;
-import com.zrp200.rkpd2.actors.buffs.Awareness;
-import com.zrp200.rkpd2.actors.buffs.Barkskin;
-import com.zrp200.rkpd2.actors.buffs.Berserk;
-import com.zrp200.rkpd2.actors.buffs.Bless;
-import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.Burning;
-import com.zrp200.rkpd2.actors.buffs.Combo;
-import com.zrp200.rkpd2.actors.buffs.Drowsy;
-import com.zrp200.rkpd2.actors.buffs.Foresight;
-import com.zrp200.rkpd2.actors.buffs.Fury;
-import com.zrp200.rkpd2.actors.buffs.HoldFast;
-import com.zrp200.rkpd2.actors.buffs.Hunger;
-import com.zrp200.rkpd2.actors.buffs.Invisibility;
-import com.zrp200.rkpd2.actors.buffs.MindVision;
-import com.zrp200.rkpd2.actors.buffs.Momentum;
-import com.zrp200.rkpd2.actors.buffs.Paralysis;
-import com.zrp200.rkpd2.actors.buffs.Regeneration;
-import com.zrp200.rkpd2.actors.buffs.SnipersMark;
-import com.zrp200.rkpd2.actors.buffs.SoulMark;
-import com.zrp200.rkpd2.actors.buffs.Vertigo;
+import com.zrp200.rkpd2.actors.buffs.*;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.Monk;
+import com.zrp200.rkpd2.actors.mobs.Phantom;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.CheckedCell;
 import com.zrp200.rkpd2.effects.Flare;
 import com.zrp200.rkpd2.effects.Speck;
-import com.zrp200.rkpd2.items.Amulet;
-import com.zrp200.rkpd2.items.Ankh;
-import com.zrp200.rkpd2.items.Dewdrop;
-import com.zrp200.rkpd2.items.Heap;
+import com.zrp200.rkpd2.items.*;
 import com.zrp200.rkpd2.items.Heap.Type;
-import com.zrp200.rkpd2.items.Item;
-import com.zrp200.rkpd2.items.KindOfWeapon;
 import com.zrp200.rkpd2.items.armor.glyphs.AntiMagic;
 import com.zrp200.rkpd2.items.armor.glyphs.Brimstone;
 import com.zrp200.rkpd2.items.armor.glyphs.Viscosity;
-import com.zrp200.rkpd2.items.artifacts.AlchemistsToolkit;
-import com.zrp200.rkpd2.items.artifacts.CapeOfThorns;
-import com.zrp200.rkpd2.items.artifacts.DriedRose;
-import com.zrp200.rkpd2.items.artifacts.EtherealChains;
-import com.zrp200.rkpd2.items.artifacts.HornOfPlenty;
-import com.zrp200.rkpd2.items.artifacts.TalismanOfForesight;
-import com.zrp200.rkpd2.items.artifacts.TimekeepersHourglass;
-import com.zrp200.rkpd2.items.keys.CrystalKey;
-import com.zrp200.rkpd2.items.keys.GoldenKey;
-import com.zrp200.rkpd2.items.keys.IronKey;
-import com.zrp200.rkpd2.items.keys.Key;
-import com.zrp200.rkpd2.items.keys.SkeletonKey;
+import com.zrp200.rkpd2.items.artifacts.*;
+import com.zrp200.rkpd2.items.keys.*;
 import com.zrp200.rkpd2.items.potions.Potion;
 import com.zrp200.rkpd2.items.potions.PotionOfExperience;
 import com.zrp200.rkpd2.items.potions.PotionOfHealing;
 import com.zrp200.rkpd2.items.potions.elixirs.ElixirOfMight;
-import com.zrp200.rkpd2.items.rings.RingOfAccuracy;
-import com.zrp200.rkpd2.items.rings.RingOfEvasion;
-import com.zrp200.rkpd2.items.rings.RingOfForce;
-import com.zrp200.rkpd2.items.rings.RingOfFuror;
-import com.zrp200.rkpd2.items.rings.RingOfHaste;
-import com.zrp200.rkpd2.items.rings.RingOfMight;
-import com.zrp200.rkpd2.items.rings.RingOfTenacity;
+import com.zrp200.rkpd2.items.rings.*;
 import com.zrp200.rkpd2.items.scrolls.Scroll;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfMagicMapping;
 import com.zrp200.rkpd2.items.wands.WandOfDisintegration;
@@ -127,14 +84,6 @@ import com.zrp200.rkpd2.windows.WndHero;
 import com.zrp200.rkpd2.windows.WndMessage;
 import com.zrp200.rkpd2.windows.WndResurrect;
 import com.zrp200.rkpd2.windows.WndTradeItem;
-import com.watabou.noosa.Camera;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.Callback;
-import com.watabou.utils.GameMath;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1264,7 +1213,7 @@ public class Hero extends Char {
 
 		Mob target = null;
 		for (Mob m : Dungeon.level.mobs.toArray(new Mob[0])) {
-			if (fieldOfView[ m.pos ] && m.alignment == Alignment.ENEMY) {
+			if (fieldOfView[m.pos] && m.alignment == Alignment.ENEMY && (!(m instanceof Phantom) || m.enemy == Dungeon.hero)) {
 				visible.add(m);
 				if (!visibleEnemies.contains( m )) {
 					newMob = true;
@@ -1282,9 +1231,9 @@ public class Hero extends Char {
 
 		Char lastTarget = QuickSlotButton.lastTarget;
 		if (target != null && (lastTarget == null ||
-							!lastTarget.isAlive() ||
-							lastTarget.alignment == Alignment.ALLY ||
-							!fieldOfView[lastTarget.pos])){
+				!lastTarget.isAlive() ||
+				lastTarget.alignment == Alignment.ALLY ||
+				!fieldOfView[lastTarget.pos]) && !(target instanceof Phantom)){
 			QuickSlotButton.target(target);
 		}
 		
@@ -1461,15 +1410,17 @@ public class Hero extends Char {
 			
 			curAction = new HeroAction.Unlock( cell );
 			
-		} else if ((cell == Dungeon.level.exit || Dungeon.level.map[cell] == Terrain.EXIT || Dungeon.level.map[cell] == Terrain.UNLOCKED_EXIT)
-				&& Dungeon.depth < 26) {
-			
-			curAction = new HeroAction.Descend( cell );
-			
-		} else if (cell == Dungeon.level.entrance || Dungeon.level.map[cell] == Terrain.ENTRANCE) {
-			
+		}  else if ((cell == Dungeon.level.exit || Dungeon.level.map[cell] == Terrain.EXIT || Dungeon.level.map[cell] == Terrain.UNLOCKED_EXIT)
+				&& Dungeon.depth != 26) {
+			boolean canDo = true;
+
+			if (canDo) curAction = new HeroAction.Descend(cell);
+			else GLog.w(Messages.get(Level.class, "seal"));
+
+		} else if (cell == Dungeon.level.entrance || Dungeon.level.map[cell] == Terrain.ENTRANCE && Dungeon.depth != 27) {
+
 			curAction = new HeroAction.Ascend( cell );
-			
+
 		} else  {
 			
 			if (!Dungeon.level.visited[cell] && !Dungeon.level.mapped[cell]

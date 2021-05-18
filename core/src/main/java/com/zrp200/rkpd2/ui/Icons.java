@@ -21,10 +21,10 @@
 
 package com.zrp200.rkpd2.ui;
 
+import com.watabou.noosa.Image;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.scenes.PixelScene;
-import com.watabou.noosa.Image;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
@@ -80,6 +80,7 @@ public enum Icons {
 	//misc icons
 	LIBGDX,
 	WATA,
+	TRASHBOXBOBYLEV,
 	WARNING,
 
 	//32x32 icons for credits
@@ -243,6 +244,9 @@ public enum Icons {
 		case CUBE_CODE:
 			icon.frame( icon.texture.uvRect( 101, 32, 128, 62 ) );
 			icon.scale.set(PixelScene.align(0.49f));
+			break;
+		case TRASHBOXBOBYLEV:
+			icon.frame( icon.texture.uvRect( 0, 127, 28, 147 ) );
 			break;
 
 		}

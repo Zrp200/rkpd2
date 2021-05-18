@@ -21,56 +21,64 @@
 
 package com.zrp200.rkpd2.scenes;
 
+import com.watabou.noosa.Camera;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.Image;
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.GamesInProgress;
 import com.zrp200.rkpd2.effects.Flare;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.Amulet;
+import com.zrp200.rkpd2.items.quest.Chaosstone;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.RedButton;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
-import com.watabou.noosa.Camera;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.Image;
-import com.watabou.utils.Random;
 
 public class AmuletScene extends PixelScene {
-	
+
 	private static final int WIDTH			= 120;
 	private static final int BTN_HEIGHT		= 18;
 	private static final float SMALL_GAP	= 2;
 	private static final float LARGE_GAP	= 8;
-	
+
 	public static boolean noText = false;
-	
+	public static boolean gauntlet = false;
+
 	private Image amulet;
-	
+
 	@Override
 	public void create() {
 		super.create();
-		
+
 		RenderedTextBlock text = null;
 		if (!noText) {
 			text = renderTextBlock( Messages.get(this, "text"), 8 );
 			text.maxWidth(WIDTH);
 			add( text );
 		}
-		
+
 		amulet = new Image( Assets.Sprites.AMULET );
 		add( amulet );
-		
+
 		RedButton btnExit = new RedButton( Messages.get(this, "exit") ) {
 			@Override
 			protected void onClick() {
-				Dungeon.win( Amulet.class );
-				Dungeon.deleteGame( GamesInProgress.curSlot, true );
-				Game.switchScene( RankingsScene.class );
+				if ((Dungeon.depth > 0)) {
+					Class clazz = Amulet.class;
+					if (Dungeon.hero.belongings.getSimilar(new Chaosstone()) != null) {
+						clazz = Chaosstone.class;
+					}
+					Dungeon.win(clazz);
+					Dungeon.deleteGame(GamesInProgress.curSlot, true);
+					Game.switchScene(RankingsScene.class);
+				}
 			}
 		};
 		btnExit.setSize( WIDTH, BTN_HEIGHT );
 		add( btnExit );
-		
+
 		RedButton btnStay = new RedButton( Messages.get(this, "stay") ) {
 			@Override
 			protected void onClick() {
@@ -79,52 +87,65 @@ public class AmuletScene extends PixelScene {
 		};
 		btnStay.setSize( WIDTH, BTN_HEIGHT );
 		add( btnStay );
-		
+
+		RedButton btnMastery = new RedButton( Messages.get(this, "mastery") ) {
+			@Override
+			protected void onClick() {
+				Dungeon.depth = 26;
+				InterlevelScene.mode = InterlevelScene.Mode.DESCEND;
+				Game.switchScene(InterlevelScene.class);
+			}
+		};
+		btnMastery.setSize( WIDTH, BTN_HEIGHT );
+		add( btnMastery );
+
 		float height;
 		if (noText) {
 			height = amulet.height + LARGE_GAP + btnExit.height() + SMALL_GAP + btnStay.height();
-			
+
 			amulet.x = (Camera.main.width - amulet.width) / 2;
 			amulet.y = (Camera.main.height - height) / 2;
 			align(amulet);
 
 			btnExit.setPos( (Camera.main.width - btnExit.width()) / 2, amulet.y + amulet.height + LARGE_GAP );
 			btnStay.setPos( btnExit.left(), btnExit.bottom() + SMALL_GAP );
-			
+			btnMastery.setPos(btnExit.left(), btnStay.bottom() + SMALL_GAP);
+
 		} else {
 			height = amulet.height + LARGE_GAP + text.height() + LARGE_GAP + btnExit.height() + SMALL_GAP + btnStay.height();
-			
+
 			amulet.x = (Camera.main.width - amulet.width) / 2;
 			amulet.y = (Camera.main.height - height) / 2;
 			align(amulet);
 
 			text.setPos((Camera.main.width - text.width()) / 2, amulet.y + amulet.height + LARGE_GAP);
 			align(text);
-			
+
 			btnExit.setPos( (Camera.main.width - btnExit.width()) / 2, text.top() + text.height() + LARGE_GAP );
 			btnStay.setPos( btnExit.left(), btnExit.bottom() + SMALL_GAP );
+			btnMastery.setPos(btnExit.left(), btnStay.bottom() + SMALL_GAP);
 		}
 
 		new Flare( 8, 48 ).color( 0xFFDDBB, true ).show( amulet, 0 ).angularSpeed = +30;
-		
+
 		fadeIn();
 	}
-	
+
 	@Override
 	protected void onBackPressed() {
 		InterlevelScene.mode = InterlevelScene.Mode.CONTINUE;
 		Game.switchScene( InterlevelScene.class );
 	}
-	
+
 	private float timer = 0;
-	
+
 	@Override
 	public void update() {
 		super.update();
-		
+
 		if ((timer -= Game.elapsed) < 0) {
 			timer = Random.Float( 0.5f, 5f );
-			
+
 			Speck star = (Speck)recycle( Speck.class );
 			star.reset( 0, amulet.x + 10.5f, amulet.y + 5.5f, Speck.DISCOVER );
 			add( star );

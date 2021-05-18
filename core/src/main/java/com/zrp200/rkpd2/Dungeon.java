@@ -21,13 +21,11 @@
 
 package com.zrp200.rkpd2;
 
+import com.watabou.noosa.Game;
+import com.watabou.utils.*;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.buffs.Amok;
-import com.zrp200.rkpd2.actors.buffs.Awareness;
-import com.zrp200.rkpd2.actors.buffs.Light;
-import com.zrp200.rkpd2.actors.buffs.MindVision;
-import com.zrp200.rkpd2.actors.buffs.RevealedArea;
+import com.zrp200.rkpd2.actors.buffs.*;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.mobs.Mob;
@@ -35,31 +33,16 @@ import com.zrp200.rkpd2.actors.mobs.npcs.Blacksmith;
 import com.zrp200.rkpd2.actors.mobs.npcs.Ghost;
 import com.zrp200.rkpd2.actors.mobs.npcs.Imp;
 import com.zrp200.rkpd2.actors.mobs.npcs.Wandmaker;
-import com.zrp200.rkpd2.items.Amulet;
 import com.zrp200.rkpd2.items.Ankh;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.artifacts.TalismanOfForesight;
 import com.zrp200.rkpd2.items.potions.Potion;
-import com.zrp200.rkpd2.items.potions.PotionOfMindVision;
 import com.zrp200.rkpd2.items.rings.Ring;
 import com.zrp200.rkpd2.items.scrolls.Scroll;
 import com.zrp200.rkpd2.journal.Notes;
-import com.zrp200.rkpd2.levels.CavesLevel;
-import com.zrp200.rkpd2.levels.CityLevel;
-import com.zrp200.rkpd2.levels.DeadEndLevel;
-import com.zrp200.rkpd2.levels.HallsLevel;
-import com.zrp200.rkpd2.levels.LastLevel;
-import com.zrp200.rkpd2.levels.LastShopLevel;
-import com.zrp200.rkpd2.levels.Level;
-import com.zrp200.rkpd2.levels.NewCavesBossLevel;
-import com.zrp200.rkpd2.levels.NewCityBossLevel;
-import com.zrp200.rkpd2.levels.NewHallsBossLevel;
-import com.zrp200.rkpd2.levels.NewPrisonBossLevel;
-import com.zrp200.rkpd2.levels.PrisonLevel;
-import com.zrp200.rkpd2.levels.SewerBossLevel;
-import com.zrp200.rkpd2.levels.SewerLevel;
+import com.zrp200.rkpd2.levels.*;
 import com.zrp200.rkpd2.levels.rooms.secret.SecretRoom;
 import com.zrp200.rkpd2.levels.rooms.special.SpecialRoom;
 import com.zrp200.rkpd2.messages.Messages;
@@ -67,13 +50,6 @@ import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.ui.QuickSlotButton;
 import com.zrp200.rkpd2.utils.BArray;
 import com.zrp200.rkpd2.utils.DungeonSeed;
-import com.watabou.noosa.Game;
-import com.watabou.utils.Bundlable;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.FileUtils;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Random;
-import com.watabou.utils.SparseArray;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -108,13 +84,14 @@ public class Dungeon {
 		SHAMAN_WAND,
 		DM200_EQUIP,
 		GOLEM_EQUIP,
+		PHANTOM_EQUIP,
 
 		//containers
 		DEW_VIAL,
 		VELVET_POUCH,
 		SCROLL_HOLDER,
 		POTION_BANDOLIER,
-		MAGICAL_HOLSTER;
+		MAGICAL_HOLSTER, SPECTRE_RAT;
 
 		public int count = 0;
 
@@ -308,8 +285,8 @@ public class Dungeon {
 			level = new LastLevel();
 			break;
 		default:
-			level = new DeadEndLevel();
-			Statistics.deepestFloor--;
+			level = new AbyssLevel();
+			break;
 		}
 		
 		level.create();

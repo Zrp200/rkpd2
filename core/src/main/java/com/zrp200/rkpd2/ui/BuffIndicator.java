@@ -21,12 +21,6 @@
 
 package com.zrp200.rkpd2.ui;
 
-import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.scenes.GameScene;
-import com.zrp200.rkpd2.windows.WndInfoBuff;
 import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.Image;
@@ -34,6 +28,12 @@ import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.tweeners.AlphaTweener;
 import com.watabou.noosa.ui.Button;
 import com.watabou.noosa.ui.Component;
+import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.windows.WndInfoBuff;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -99,8 +99,10 @@ public class BuffIndicator extends Component {
 	public static final int MOMENTUM    = 51;
 
 	public static final int SIZE	= 7;
-	
-	private static BuffIndicator heroInstance;
+	public static final int FROSTBURN = 52;
+	public static final int ERADICATION = 53;
+
+    private static BuffIndicator heroInstance;
 	
 	private SmartTexture texture;
 	private TextureFilm film;

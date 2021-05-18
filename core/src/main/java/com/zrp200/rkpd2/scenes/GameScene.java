@@ -21,12 +21,14 @@
 
 package com.zrp200.rkpd2.scenes;
 
-import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.Badges;
-import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.SPDSettings;
-import com.zrp200.rkpd2.ShatteredPixelDungeon;
-import com.zrp200.rkpd2.Statistics;
+import com.watabou.glwrap.Blending;
+import com.watabou.noosa.*;
+import com.watabou.noosa.audio.Music;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.noosa.particles.Emitter;
+import com.watabou.utils.GameMath;
+import com.watabou.utils.Random;
+import com.zrp200.rkpd2.*;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.blobs.Blob;
@@ -35,14 +37,7 @@ import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.mobs.DemonSpawner;
 import com.zrp200.rkpd2.actors.mobs.Mob;
-import com.zrp200.rkpd2.effects.BannerSprites;
-import com.zrp200.rkpd2.effects.BlobEmitter;
-import com.zrp200.rkpd2.effects.CircleArc;
-import com.zrp200.rkpd2.effects.EmoIcon;
-import com.zrp200.rkpd2.effects.Flare;
-import com.zrp200.rkpd2.effects.FloatingText;
-import com.zrp200.rkpd2.effects.Ripple;
-import com.zrp200.rkpd2.effects.SpellSprite;
+import com.zrp200.rkpd2.effects.*;
 import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.items.Honeypot;
 import com.zrp200.rkpd2.items.Item;
@@ -61,62 +56,12 @@ import com.zrp200.rkpd2.levels.rooms.secret.SecretRoom;
 import com.zrp200.rkpd2.levels.traps.Trap;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.plants.Plant;
-import com.zrp200.rkpd2.sprites.CharSprite;
-import com.zrp200.rkpd2.sprites.DiscardedItemSprite;
-import com.zrp200.rkpd2.sprites.HeroSprite;
-import com.zrp200.rkpd2.sprites.ItemSprite;
-import com.zrp200.rkpd2.sprites.RatKingHeroSprite;
-import com.zrp200.rkpd2.tiles.CustomTilemap;
-import com.zrp200.rkpd2.tiles.DungeonTerrainTilemap;
-import com.zrp200.rkpd2.tiles.DungeonTileSheet;
-import com.zrp200.rkpd2.tiles.DungeonTilemap;
-import com.zrp200.rkpd2.tiles.DungeonWallsTilemap;
-import com.zrp200.rkpd2.tiles.FogOfWar;
-import com.zrp200.rkpd2.tiles.GridTileMap;
-import com.zrp200.rkpd2.tiles.RaisedTerrainTilemap;
-import com.zrp200.rkpd2.tiles.TerrainFeaturesTilemap;
-import com.zrp200.rkpd2.tiles.WallBlockingTilemap;
-import com.zrp200.rkpd2.ui.ActionIndicator;
-import com.zrp200.rkpd2.ui.AttackIndicator;
-import com.zrp200.rkpd2.ui.Banner;
-import com.zrp200.rkpd2.ui.BusyIndicator;
-import com.zrp200.rkpd2.ui.CharHealthIndicator;
-import com.zrp200.rkpd2.ui.GameLog;
-import com.zrp200.rkpd2.ui.LootIndicator;
-import com.zrp200.rkpd2.ui.QuickSlotButton;
-import com.zrp200.rkpd2.ui.ResumeIndicator;
-import com.zrp200.rkpd2.ui.StatusPane;
-import com.zrp200.rkpd2.ui.TargetHealthIndicator;
-import com.zrp200.rkpd2.ui.Toast;
-import com.zrp200.rkpd2.ui.Toolbar;
-import com.zrp200.rkpd2.ui.Window;
+import com.zrp200.rkpd2.sprites.*;
+import com.zrp200.rkpd2.tiles.*;
+import com.zrp200.rkpd2.ui.*;
 import com.zrp200.rkpd2.utils.GLog;
-import com.zrp200.rkpd2.windows.WndBag;
+import com.zrp200.rkpd2.windows.*;
 import com.zrp200.rkpd2.windows.WndBag.Mode;
-import com.zrp200.rkpd2.windows.WndGame;
-import com.zrp200.rkpd2.windows.WndHero;
-import com.zrp200.rkpd2.windows.WndInfoCell;
-import com.zrp200.rkpd2.windows.WndInfoItem;
-import com.zrp200.rkpd2.windows.WndInfoMob;
-import com.zrp200.rkpd2.windows.WndInfoPlant;
-import com.zrp200.rkpd2.windows.WndInfoTrap;
-import com.zrp200.rkpd2.windows.WndMessage;
-import com.zrp200.rkpd2.windows.WndOptions;
-import com.zrp200.rkpd2.windows.WndStory;
-import com.watabou.glwrap.Blending;
-import com.watabou.noosa.Camera;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.Gizmo;
-import com.watabou.noosa.Group;
-import com.watabou.noosa.NoosaScript;
-import com.watabou.noosa.NoosaScriptNoLighting;
-import com.watabou.noosa.SkinnedBlock;
-import com.watabou.noosa.Visual;
-import com.watabou.noosa.audio.Music;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.noosa.particles.Emitter;
-import com.watabou.utils.GameMath;
-import com.watabou.utils.Random;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -260,10 +205,10 @@ public class GameScene extends PixelScene {
 		hero.place( Dungeon.hero.pos );
 		hero.updateArmor();
 		mobs.add( hero );
-		
+
 		for (Mob mob : Dungeon.level.mobs) {
 			addMobSprite( mob );
-			if (Statistics.amuletObtained) {
+			if (Statistics.amuletObtained && Dungeon.depth < 27) {
 				mob.beckon( Dungeon.hero.pos );
 			}
 		}
@@ -384,6 +329,9 @@ public class GameScene extends PixelScene {
 			case 21:
 				WndStory.showChapter( WndStory.ID_HALLS );
 				break;
+				case 27:
+					WndStory.showChapter(WndStory.ID_ABYSS);
+					break;
 			}
 			if (Dungeon.hero.isAlive()) {
 				Badges.validateNoKilling();

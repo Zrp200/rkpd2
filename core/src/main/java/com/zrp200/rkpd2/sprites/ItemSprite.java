@@ -21,7 +21,19 @@
 
 package com.zrp200.rkpd2.sprites;
 
+import com.badlogic.gdx.graphics.Color;
+import com.watabou.gltextures.SmartTexture;
+import com.watabou.gltextures.TextureCache;
+import com.watabou.glwrap.Matrix;
+import com.watabou.glwrap.Vertexbuffer;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.MovieClip;
+import com.watabou.noosa.NoosaScript;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.noosa.particles.Emitter;
+import com.watabou.utils.PointF;
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.effects.CellEmitter;
@@ -32,17 +44,6 @@ import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.tiles.DungeonTilemap;
-import com.watabou.gltextures.SmartTexture;
-import com.watabou.gltextures.TextureCache;
-import com.watabou.glwrap.Matrix;
-import com.watabou.glwrap.Vertexbuffer;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.MovieClip;
-import com.watabou.noosa.NoosaScript;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.noosa.particles.Emitter;
-import com.watabou.utils.PointF;
-import com.watabou.utils.Random;
 
 public class ItemSprite extends MovieClip {
 
@@ -355,19 +356,25 @@ public class ItemSprite extends MovieClip {
 
 		if (visible && glowing != null) {
 			if (glowUp && (phase += Game.elapsed) > glowing.period) {
-				
+
 				glowUp = false;
 				phase = glowing.period;
-				
+
 			} else if (!glowUp && (phase -= Game.elapsed) < 0) {
-				
+
 				glowUp = true;
 				phase = 0;
-				
+
 			}
-			
+
 			float value = phase / glowing.period * 0.6f;
-			
+			if (glowing.isRainbow) {
+				glowing.tempColor.fromHsv(Random.Float(360), Random.Float(0.15f, 0.5f), 0.9f);
+				glowing.red = glowing.tempColor.r;
+				glowing.blue = glowing.tempColor.b;
+				glowing.green = glowing.tempColor.g;
+			}
+
 			rm = gm = bm = 1 - value;
 			ra = glowing.red * value;
 			ga = glowing.green * value;
@@ -382,19 +389,21 @@ public class ItemSprite extends MovieClip {
 		int col = index % rows;
 		return tx.getPixel( col * SIZE + x, row * SIZE + y );
 	}
-	
+
 	public static class Glowing {
-		
+
 		public int color;
 		public float red;
 		public float green;
 		public float blue;
 		public float period;
-		
+		public boolean isRainbow = false;
+		public Color tempColor = new Color();
+
 		public Glowing( int color ) {
 			this( color, 1f );
 		}
-		
+
 		public Glowing( int color, float period ) {
 
 			this.color = color;
@@ -402,8 +411,18 @@ public class ItemSprite extends MovieClip {
 			red = (color >> 16) / 255f;
 			green = ((color >> 8) & 0xFF) / 255f;
 			blue = (color & 0xFF) / 255f;
-			
+
 			this.period = period;
+
+			this.isRainbow = false;
+		}
+
+		public Glowing(){
+			this.color = 0x000000;
+
+			period = 0.33f;
+
+			this.isRainbow = true;
 		}
 	}
 }

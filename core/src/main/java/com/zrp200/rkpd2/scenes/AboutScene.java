@@ -22,22 +22,14 @@
 package com.zrp200.rkpd2.scenes;
 
 import com.watabou.input.PointerEvent;
-import com.watabou.noosa.Camera;
-import com.watabou.noosa.ColorBlock;
-import com.watabou.noosa.Group;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.PointerArea;
+import com.watabou.noosa.*;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.DeviceCompat;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.ShatteredPixelDungeon;
 import com.zrp200.rkpd2.effects.Flare;
 import com.zrp200.rkpd2.sprites.RatKingSprite;
-import com.zrp200.rkpd2.ui.ExitButton;
-import com.zrp200.rkpd2.ui.Icons;
-import com.zrp200.rkpd2.ui.RenderedTextBlock;
-import com.zrp200.rkpd2.ui.ScrollPane;
-import com.zrp200.rkpd2.ui.Window;
+import com.zrp200.rkpd2.ui.*;
 
 public class AboutScene extends PixelScene {
 
@@ -58,7 +50,7 @@ public class AboutScene extends PixelScene {
 		content.clear();
 
 		// RKPD2 Credits
-		CreditsBlock rkpd2 = new CreditsBlock(true, Window.TITLE_COLOR, "RKPD2", new RatKingSprite(), "All Thanks To _Rat King_!\nInspired by Evan's Rat King Dungeon", "ratking.com","https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+		CreditsBlock rkpd2 = new CreditsBlock(true, Window.TITLE_COLOR, "RKPD2", new RatKingSprite(), "All Thanks To _Rat King_!\nInspired by Evan's Rat King Dungeon", "github.com/Zrp200/rkpd2","https://www.youtube.com/watch?v=TQzbeB_a34o");
 		rkpd2.setRect((w - fullWidth)/2f, 6, 120, 0);
 		content.add(rkpd2);
 
@@ -75,6 +67,15 @@ public class AboutScene extends PixelScene {
 		pa.setRect(zrp.right(), zrp.top(), colWidth/2f, 0);
 		content.add(pa);
 
+		CreditsBlock tb = new CreditsBlock(false, 0x3c9efa,
+				"Abyssal version creator:",
+				Icons.TRASHBOXBOBYLEV.get(),
+				"Trashbox Bobylev",
+				"trashboxbobylev.itch.io",
+				"https://trashboxbobylev.itch.io");
+		tb.setRect((w - fullWidth)/2f, rkpd2.bottom()+(landscape() ? 5 : 10 + pa.height()), 120, 0);
+		content.add(tb);
+
 		//*** Shattered Pixel Dungeon Credits ***
 
 		String shpxLink = "https://ShatteredPixel.com";
@@ -89,7 +90,7 @@ public class AboutScene extends PixelScene {
 				"Developed by: _Evan Debenham_\nBased on Pixel Dungeon's open source",
 				"ShatteredPixel.com",
 				shpxLink);
-		shpx.setRect(rkpd2.left(), (landscape() ? rkpd2 : pa).bottom()+8,120,0);
+		shpx.setRect(rkpd2.left(), tb.bottom()+8,120,0);
 		content.add(shpx);
 		addLine(shpx.top() - 4, content);
 

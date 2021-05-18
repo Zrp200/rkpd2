@@ -41,7 +41,7 @@ public class Bestiary {
 		switch(depth){
 			
 			// Sewers
-			case 1: default:
+			case 1:
 				//3x rat, 1x snake
 				return new ArrayList<>(Arrays.asList(
 						Rat.class, Rat.class, Rat.class,
@@ -176,6 +176,10 @@ public class Bestiary {
 						Succubus.class,
 						Eye.class, Eye.class,
 						Scorpio.class, Scorpio.class, Scorpio.class));
+			default:
+				return new ArrayList<>(Arrays.asList(
+						SpectreRat.class, DarkestElf.class, GhostChicken.class, Phantom.class, BlinkingMan.class
+				));
 		}
 		
 	}
@@ -228,6 +232,10 @@ public class Bestiary {
 					cl = Senior.class;
 				} else if (cl == Scorpio.class) {
 					cl = Acidic.class;
+				}  else if (cl == SpectreRat.class || cl == GhostChicken.class || cl == DarkestElf.class){
+					cl = AbyssalNightmare.class;
+				} else if (cl == BlinkingMan.class || cl == Phantom.class){
+					cl = Dragon.class;
 				}
 				rotation.set(i, cl);
 			}

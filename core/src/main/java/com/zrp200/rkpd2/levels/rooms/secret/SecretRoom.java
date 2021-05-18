@@ -21,11 +21,12 @@
 
 package com.zrp200.rkpd2.levels.rooms.secret;
 
-import com.zrp200.rkpd2.ShatteredPixelDungeon;
-import com.zrp200.rkpd2.levels.rooms.special.SpecialRoom;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.ShatteredPixelDungeon;
+import com.zrp200.rkpd2.levels.rooms.special.SpecialRoom;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -62,28 +63,33 @@ public abstract class SecretRoom extends SpecialRoom {
 		Random.shuffle(runSecrets);
 		
 	}
-	
+
 	public static int secretsForFloor(int depth){
+		int constant = 5;
 		if (depth == 1) return 0;
-		
-		int region = depth/5;
-		int floor = depth%5;
-		
-		int floorsLeft = 5 - floor;
-		
+		if (depth == 20) return 0;
+
+		int region = depth/constant;
+		int floor = depth%constant;
+
+		int floorsLeft = constant - floor;
+
 		float secrets;
 		if (floorsLeft == 0) {
 			secrets = regionSecretsThisRun[region];
 		} else {
-			secrets = regionSecretsThisRun[region] / (float)floorsLeft;
+			if (Dungeon.depth >= 25){
+				secrets = 1;
+			}
+			else secrets = regionSecretsThisRun[region] / (float)floorsLeft;
 			if (Random.Float() < secrets % 1f){
 				secrets = (float)Math.ceil(secrets);
 			} else {
 				secrets = (float)Math.floor(secrets);
 			}
 		}
-		
-		regionSecretsThisRun[region] -= (int)secrets;
+		if (Dungeon.depth < 25)
+			regionSecretsThisRun[region] -= (int)secrets;
 		return (int)secrets;
 	}
 	
