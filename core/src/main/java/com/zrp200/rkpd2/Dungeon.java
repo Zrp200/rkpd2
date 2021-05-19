@@ -704,7 +704,17 @@ public class Dungeon {
 		int dist = 8 + 2*Dungeon.hero.pointsInTalent(Talent.FARSIGHT,Talent.RK_SNIPER);
 		observe( dist+1 );
 	}
-	
+
+	private static void reveal(int pos, int radius) {
+		for(int i=-radius+1; i < radius; i++) {
+			int length = radius*2-1,offset = pos-radius+1 + i*level.width();
+			if(offset < 0) { length += offset; offset = 0; }
+			length -= Math.max(offset-level.visited.length,0);
+			BArray.or( level.visited, level.heroFOV, offset, length, level.visited );
+		}
+		GameScene.updateFog(pos,radius);
+	}
+
 	public static void observe( int dist ) {
 
 		if (level == null) {
@@ -736,20 +746,14 @@ public class Dungeon {
 		
 		if (hero.buff(MindVision.class) != null){
 			for (Mob m : level.mobs.toArray(new Mob[0])){
-				BArray.or( level.visited, level.heroFOV, m.pos - 1 - level.width(), 3, level.visited );
-				BArray.or( level.visited, level.heroFOV, m.pos, 3, level.visited );
-				BArray.or( level.visited, level.heroFOV, m.pos - 1 + level.width(), 3, level.visited );
 				//updates adjacent cells too
-				GameScene.updateFog(m.pos, 2);
+				reveal(m.pos, 2);
 			}
 		}
 		
 		if (hero.buff(Awareness.class) != null){
 			for (Heap h : level.heaps.valueList()){
-				BArray.or( level.visited, level.heroFOV, h.pos - 1 - level.width(), 3, level.visited );
-				BArray.or( level.visited, level.heroFOV, h.pos - 1, 3, level.visited );
-				BArray.or( level.visited, level.heroFOV, h.pos - 1 + level.width(), 3, level.visited );
-				GameScene.updateFog(h.pos, 2);
+				reveal(h.pos, 2);
 			}
 		}
 
@@ -757,26 +761,17 @@ public class Dungeon {
 			if (Dungeon.depth != c.depth) continue;
 			Char ch = (Char) Actor.findById(c.charID);
 			if (ch == null) continue;
-			BArray.or( level.visited, level.heroFOV, ch.pos - 1 - level.width(), 3, level.visited );
-			BArray.or( level.visited, level.heroFOV, ch.pos - 1, 3, level.visited );
-			BArray.or( level.visited, level.heroFOV, ch.pos - 1 + level.width(), 3, level.visited );
-			GameScene.updateFog(ch.pos, 2);
+			reveal(ch.pos, 2);
 		}
 
 		for (TalismanOfForesight.HeapAwareness h : hero.buffs(TalismanOfForesight.HeapAwareness.class)){
 			if (Dungeon.depth != h.depth) continue;
-			BArray.or( level.visited, level.heroFOV, h.pos - 1 - level.width(), 3, level.visited );
-			BArray.or( level.visited, level.heroFOV, h.pos - 1, 3, level.visited );
-			BArray.or( level.visited, level.heroFOV, h.pos - 1 + level.width(), 3, level.visited );
-			GameScene.updateFog(h.pos, 2);
+			reveal(h.pos, 2);
 		}
 
 		for (RevealedArea a : hero.buffs(RevealedArea.class)){
 			if (Dungeon.depth != a.depth) continue;
-			BArray.or( level.visited, level.heroFOV, a.pos - 1 - level.width(), 3, level.visited );
-			BArray.or( level.visited, level.heroFOV, a.pos - 1, 3, level.visited );
-			BArray.or( level.visited, level.heroFOV, a.pos - 1 + level.width(), 3, level.visited );
-			GameScene.updateFog(a.pos, 2);
+			reveal(a.pos, Dungeon.hero.hasTalent(Talent.SEER_SHOT) ? 3 : 2);
 		}
 
 		GameScene.afterObserve();

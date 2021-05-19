@@ -32,6 +32,7 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Doom;
 import com.zrp200.rkpd2.actors.buffs.LifeLink;
 import com.zrp200.rkpd2.actors.buffs.LockedFloor;
+import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.effects.Beam;
 import com.zrp200.rkpd2.effects.CellEmitter;
@@ -65,7 +66,11 @@ import com.watabou.utils.Reflection;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class DwarfKing extends Mob {
+public class DwarfKing extends Mob implements Hero.Doom {
+	@Override public void onDeath() {
+		if(Dungeon.hero.heroClass == HeroClass.RAT_KING) yell("I am truly the superior king...");
+		else yell("Let Rat King take this as a lesson...");
+	}
 
 	{
 		spriteClass = KingSprite.class;
@@ -81,8 +86,7 @@ public class DwarfKing extends Mob {
 			@Override
 			public boolean act(boolean enemyInFOV, boolean justAlerted) {
 				if(enemyInFOV && phase == 0) {
-					noticeEnemy();
-					return true;
+					return noticeEnemy();
 				}
 				return super.act(enemyInFOV, justAlerted);
 			}
@@ -225,9 +229,8 @@ public class DwarfKing extends Mob {
 					yell(Messages.get(this, "wave_1"));
 				}
 				summonSubject(3, DKGhoul.class);
-				spend(3*TICK);
+				spend(2*TICK); // extra two turns before summoning next one.
 				summonsMade++;
-				return true;
 			} else if (shielding() <= 200 && summonsMade < 8){
 				if (summonsMade == 4){
 					sprite.centerEmitter().start( Speck.factory( Speck.SCREAM ), 0.4f, 2 );
@@ -240,8 +243,6 @@ public class DwarfKing extends Mob {
 					summonSubject(3, DKGhoul.class);
 				}
 				summonsMade++;
-				spend(TICK);
-				return true;
 			} else if (shielding() <= 100 && summonsMade < 12) {
 				sprite.centerEmitter().start( Speck.factory( Speck.SCREAM ), 0.4f, 2 );
 				Sample.INSTANCE.play( Assets.Sounds.CHALLENGE );
@@ -251,12 +252,10 @@ public class DwarfKing extends Mob {
 				summonSubject(4, DKGhoul.class);
 				summonSubject(4, DKGhoul.class);
 				summonsMade = 12;
-				spend(TICK);
-				return true;
-			} else {
-				spend(TICK);
-				return true;
 			}
+			spend(TICK);
+			updateAlert(); // get rid of those stupid alert things.
+			return true;
 		} else if (phase == 3 && buffs(Summoning.class).size() < 4){
 			if (summonSubject(3)) summonsMade++;
 		}
@@ -551,7 +550,10 @@ public class DwarfKing extends Mob {
 		return super.isImmune(effect);
 	}
 
-	public interface Subject{} // used to identify DK minions
+	public interface Subject extends Hero.Doom {
+		@Override default void onDeath() { new DwarfKing().onDeath(); }
+	} // used to identify DK minions
+
 	public static class DKGhoul extends Ghoul implements Subject {
 		{
 			state = HUNTING;

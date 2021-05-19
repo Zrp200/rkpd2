@@ -165,21 +165,25 @@ public abstract class Mob extends Char {
 	public CharSprite sprite() {
 		return Reflection.newInstance(spriteClass);
 	}
-	
-	@Override
-	protected boolean act() {
-		
-		super.act();
-		
+
+	boolean updateAlert() {
 		boolean justAlerted = alerted;
 		alerted = false;
-		
 		if (justAlerted){
 			sprite.showAlert();
 		} else {
 			sprite.hideAlert();
 			sprite.hideLost();
 		}
+		return justAlerted;
+	}
+
+	@Override
+	protected boolean act() {
+		
+		super.act();
+		
+		boolean justAlerted = updateAlert();
 		
 		if (paralysed > 0) {
 			enemySeen = false;
