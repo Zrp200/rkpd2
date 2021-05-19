@@ -76,7 +76,7 @@ public class Corruption extends Buff {
 		Statistics.enemiesSlain++;
 		Badges.validateMonstersSlain();
 		Statistics.qualifiedForNoKilling = false;
-		if (ch instanceof Mob && ( (Mob)ch ).EXP > 0 && Dungeon.hero.lvl <= ( (Mob)ch ).maxLvl+1) {
+		if (ch instanceof Mob && ( (Mob)ch ).EXP > 0 && !((Mob)ch).isRewardSuppressed()) {
 			Dungeon.hero.sprite.showStatus(CharSprite.POSITIVE, Messages.get(ch, "exp", ( (Mob)ch ).EXP));
 			Dungeon.hero.earnExp(( (Mob)ch ).EXP, ch.getClass());
 		} else {

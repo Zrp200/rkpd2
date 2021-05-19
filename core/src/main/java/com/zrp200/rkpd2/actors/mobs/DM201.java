@@ -21,17 +21,13 @@
 
 package com.zrp200.rkpd2.actors.mobs;
 
-import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.blobs.Blob;
 import com.zrp200.rkpd2.actors.blobs.CorrosiveGas;
 import com.zrp200.rkpd2.items.quest.MetalShard;
-import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.DM201Sprite;
-import com.zrp200.rkpd2.utils.GLog;
-import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
@@ -117,7 +113,7 @@ public class DM201 extends DM200 {
 
 	@Override
 	public void rollToDropLoot() {
-		if (Dungeon.hero.lvl > maxLvl + 3) return;
+		if (isRewardSuppressed()) return;
 
 		super.rollToDropLoot();
 

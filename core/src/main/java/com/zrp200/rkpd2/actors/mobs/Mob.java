@@ -28,22 +28,18 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.buffs.Adrenaline;
 import com.zrp200.rkpd2.actors.buffs.Amok;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.ChampionEnemy;
 import com.zrp200.rkpd2.actors.buffs.Charm;
 import com.zrp200.rkpd2.actors.buffs.Corruption;
-import com.zrp200.rkpd2.actors.buffs.Hunger;
 import com.zrp200.rkpd2.actors.buffs.Preparation;
 import com.zrp200.rkpd2.actors.buffs.Sleep;
 import com.zrp200.rkpd2.actors.buffs.SoulMark;
 import com.zrp200.rkpd2.actors.buffs.Terror;
 import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.CellEmitter;
-import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.effects.Surprise;
 import com.zrp200.rkpd2.effects.Wound;
 import com.zrp200.rkpd2.effects.particles.ShadowParticle;
@@ -104,7 +100,7 @@ public abstract class Mob extends Char {
 	
 	public int EXP = 1;
 	public int maxLvl = Hero.MAX_LEVEL;
-	
+
 	protected Char enemy;
 	protected boolean enemySeen;
 	protected boolean alerted = false;
@@ -638,7 +634,7 @@ public abstract class Mob extends Char {
 				Badges.validateMonstersSlain();
 				Statistics.qualifiedForNoKilling = false;
 				
-				int exp = Dungeon.hero.lvl <= maxLvl+1 ? EXP : 0;
+				int exp = !isRewardSuppressed() ? EXP : 0;
 				if (exp > 0) {
 					Dungeon.hero.sprite.showStatus(CharSprite.POSITIVE, Messages.get(this, "exp", exp));
 				}
@@ -688,9 +684,10 @@ public abstract class Mob extends Char {
 			}
 		}
 	}
-	
+
+	public final boolean isRewardSuppressed() { return Dungeon.hero.lvl > maxLvl + 2; }
 	public void rollToDropLoot(){
-		if (Dungeon.hero.lvl > maxLvl + 3) return;
+		if (isRewardSuppressed()) return;
 		
 		float lootChance = this.lootChance;
 		lootChance *= RingOfWealth.dropChanceMultiplier( Dungeon.hero );
@@ -715,7 +712,7 @@ public abstract class Mob extends Char {
 		}
 		
 		//lucky enchant logic
-		if (Dungeon.hero.lvl <= maxLvl && buff(Lucky.LuckProc.class) != null){
+		if (!isRewardSuppressed() && buff(Lucky.LuckProc.class) != null){
 			Dungeon.level.drop(Lucky.genLoot(), pos).sprite.drop();
 			Lucky.showFlare(sprite);
 		}
