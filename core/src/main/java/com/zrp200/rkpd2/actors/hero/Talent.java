@@ -326,7 +326,7 @@ public enum Talent {
 				Char ch = Actor.findChar(cell);
 				if (ch != null){
 					int duration = 1+hero.pointsInTalent(RESTORED_NATURE,RESTORATION);
-					if(hero.heroClass == HeroClass.HUNTRESS) duration *= 1.5;
+					if(hero.heroClass == HeroClass.HUNTRESS) duration *= 2; // 4/6 root, for whatever it's worth.
 					Buff.affect(ch, Roots.class, duration);
 				}
 				if (Dungeon.level.map[cell] == Terrain.EMPTY ||
