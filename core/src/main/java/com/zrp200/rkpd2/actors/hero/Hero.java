@@ -51,7 +51,6 @@ import com.zrp200.rkpd2.actors.buffs.Momentum;
 import com.zrp200.rkpd2.actors.buffs.Paralysis;
 import com.zrp200.rkpd2.actors.buffs.Regeneration;
 import com.zrp200.rkpd2.actors.buffs.SnipersMark;
-import com.zrp200.rkpd2.actors.buffs.SoulMark;
 import com.zrp200.rkpd2.actors.buffs.Vertigo;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.Monk;
@@ -1154,7 +1153,7 @@ public class Hero extends Char {
 					
 					@Override
 					protected boolean act() {
-						if (enemy.isAlive() || hasTalent(Talent.RANGER)) {
+						if (enemy.isAlive() || hasTalent(Talent.MULTISHOT)) {
 							int level = hasTalent(Talent.SHARED_UPGRADES,Talent.RK_SNIPER) ? wep.buffedLvl() : 0;
 							SnipersMark mark = Buff.affect(Hero.this, SnipersMark.class);
 							mark.set(enemy.id(), level);

@@ -26,7 +26,6 @@ import com.badlogic.gdx.utils.ObjectIntMap;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.QuickSlot;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.Hero;
@@ -74,7 +73,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
 	// TODO should I allow the free shot to be used at the same time as the standard shot?
 	private static int maxObjects() {
-		return Math.max(1,1+Dungeon.hero.pointsInTalent(Talent.RANGER)-1);
+		return Math.max(1,1+Dungeon.hero.pointsInTalent(Talent.MULTISHOT)-1);
 	}
 	// this is basically a garbage collect. This may have weird behavior when you change floors, idk.
 	/*private boolean pruneObjects() {
@@ -90,7 +89,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
 	public float duration() { return duration(true); }
 	public float duration(boolean allowRanger) {
-		if(allowRanger && levels.isEmpty()) return (DURATION+level)*((Hero)target).pointsInTalent(Talent.RANGER);
+		if(allowRanger && levels.isEmpty()) return (DURATION+level)*((Hero)target).pointsInTalent(Talent.MULTISHOT);
 		int time=0; for(int level : levels.toArray()) time += DURATION+level;
 		return time;
 	}
@@ -194,7 +193,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		if (bow.knockArrow() == null) return; // this is just a test.
 
 		if (objects.isEmpty()) {
-			if(hero.hasTalent(Talent.RANGER)) GameScene.selectCell(new CellSelector.Listener() {
+			if(hero.hasTalent(Talent.MULTISHOT)) GameScene.selectCell(new CellSelector.Listener() {
 				@Override
 				public void onSelect(Integer cell) {
 					if(cell == null || cell == -1) return;
