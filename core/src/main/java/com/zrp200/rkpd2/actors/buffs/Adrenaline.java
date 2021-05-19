@@ -21,6 +21,8 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
+import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 
@@ -41,7 +43,8 @@ public class Adrenaline extends FlavourBuff {
 
 	@Override
 	public float iconFadePercent() {
-		return Math.max(0, (DURATION - visualcooldown()) / DURATION);
+		float duration = target instanceof Hero ? 2+2*((Hero)target).pointsInTalent(Talent.INVIGORATING_MEAL) : DURATION;
+		return Math.max(0, (duration - visualcooldown()) / duration);
 	}
 	
 	@Override
