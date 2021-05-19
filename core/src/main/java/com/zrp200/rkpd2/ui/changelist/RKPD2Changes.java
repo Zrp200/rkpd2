@@ -42,6 +42,14 @@ import java.util.ArrayList;
 
 public class RKPD2Changes {
 
+    // utility
+    private static ChangeButton bugFixes(String message) {
+        return new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), Messages.get(ChangesScene.class, "bugfixes"), message);
+    }
+    private static ChangeButton misc(String message) {
+        return new ChangeButton(Icons.get(Icons.PREFS),"Misc", message);
+    }
+
     public static void addAllChanges( ArrayList<ChangeInfo> changeInfos ){
         addChanges(changeInfos);
     }
