@@ -302,7 +302,7 @@ public enum Talent {
 		}
 		// 2x/instant for rogue (see onItemEqupped), also id's type on equip/on pickup
 		if (item instanceof Ring){
-			factor *= 1f + hero.pointsInTalent(THIEFS_INTUITION) + hero.pointsInTalent(ROYAL_INTUITION);
+			factor *= 1f + (Dungeon.hero.heroClass == HeroClass.ROGUE ? 1 : 0) + hero.pointsInTalent(THIEFS_INTUITION, ROYAL_INTUITION);
 		}
 		return factor;
 	}
