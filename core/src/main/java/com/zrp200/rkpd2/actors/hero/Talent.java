@@ -182,7 +182,7 @@ public enum Talent {
 				for(Item item : hero.belongings) {
 					if(item instanceof Scroll || item instanceof Potion) {
 						for(int i=0; i < item.quantity() && !item.isIdentified(); i++) {
-							if(Random.Int(3) == 0) item.identify(); // it increases by 33%, so we just reroll it with a 33% chance.
+							if(Random.Int(3*points) == 0) item.identify(); // adjusts for the difference in chance.
 						}
 					}
 				}
@@ -296,7 +296,7 @@ public enum Talent {
 			if(hero.hasTalent(ARMSMASTERS_INTUITION)) points++;
 			factor *= 1f + points;
 		}
-		// 3x/instant for mage (see Wand.wandUsed())
+		// 3x/instant for mage (see Wand.wandUsed()), 4.5x/instant for rk
 		if (item instanceof Wand){
 			factor *= 1f + 2*(hero.pointsInTalent(SCHOLARS_INTUITION) + hero.pointsInTalent(ROYAL_INTUITION));
 		}
@@ -445,7 +445,7 @@ public enum Talent {
 			id = true;
 		}
 		if( (item instanceof Scroll || item instanceof Potion) && !item.isIdentified() && hero.hasTalent(SCHOLARS_INTUITION) ) {
-			if(!item.collected && Random.Int(3) >= 3-hero.pointsInTalent(SCHOLARS_INTUITION)) {
+			if(!item.collected && Random.Int(4-hero.pointsInTalent(SCHOLARS_INTUITION)) == 0) {
 				item.identify();
 				id = true;
 			}

@@ -383,6 +383,10 @@ public abstract class Wand extends Item {
 				identify();
 				GLog.p( Messages.get(Wand.class, "identify") );
 				Badges.validateItemLevelAquired( this );
+			} else if(!levelKnown && Dungeon.hero.hasTalent(Talent.SCHOLARS_INTUITION)) {
+				levelKnown = true;
+				updateQuickslot();
+				Badges.validateItemLevelAquired( this );
 			}
 		}
 		
