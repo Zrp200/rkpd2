@@ -343,6 +343,7 @@ public class CellSelector extends ScrollArea {
 	}
 
 	public static abstract class TargetedListener implements Listener {
+		private boolean skippable = true;
 		private final List<SelectableCell> selectableCells = new ArrayList();
 		public final void highlightCells() {
 			for(CharSprite s : getTargets()) {
@@ -360,8 +361,7 @@ public class CellSelector extends ScrollArea {
 
 		// if there's only one target, this skips the actual selecting.
 		protected final boolean action() {
-			if(getTargets().size() != 1) return false;
-			// TODO could possibly skip the case where there's NO targets.
+			if(getTargets().size() != 1 || !skippable) return false;
 			action(getTargets().get(0).ch);
 			return true;
 		}
@@ -374,6 +374,9 @@ public class CellSelector extends ScrollArea {
 			Char c = Actor.findChar(cell);
 			if(c != null && getTargets().contains(c.sprite)) action(c);
 			else onInvalid(cell);
+		}
+		protected final void reject(Char ch) {
+			if(ch != null && ch.sprite != null && ch.sprite.isVisible()) skippable = false;
 		}
 		protected void onInvalid(int cell) {}
 	}

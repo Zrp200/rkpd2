@@ -272,6 +272,7 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 			PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.not(Dungeon.level.solid, null), lvl.blinkDistance());
 			for (Char enemy : Dungeon.level.mobs) {
 				if ( !canAttack(enemy) ){
+					reject(enemy);
 					//GLog.w(Messages.get(Preparation.class, "no_target"));
 					continue;
 				}
@@ -296,6 +297,7 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 					}
 				}
 				if (dest == -1 || PathFinder.distance[dest] == Integer.MAX_VALUE || Dungeon.hero.rooted){
+					reject(enemy);
 					//GLog.w(Messages.get(Preparation.class, "out_of_reach"));
 					continue;
 				}

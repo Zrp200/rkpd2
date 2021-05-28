@@ -203,6 +203,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 						ArrayList<CharSprite> targets = new ArrayList<>();
 						for (Char ch : Dungeon.level.mobs) {
 							if (canDoSniperSpecial(bow, ch)) targets.add(ch.sprite);
+							else reject(ch);
 						}
 						return targets;
 					}

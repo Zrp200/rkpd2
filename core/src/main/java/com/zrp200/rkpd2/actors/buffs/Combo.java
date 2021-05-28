@@ -503,6 +503,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 					}
 				}
 			}
+			reject(enemy);
 			return false;
 		}
 
