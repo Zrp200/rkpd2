@@ -33,6 +33,7 @@ import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.EarthGuardianSprite;
 import com.zrp200.rkpd2.sprites.GhostSprite;
+import com.zrp200.rkpd2.sprites.HeroSprite;
 import com.zrp200.rkpd2.sprites.RatSprite;
 import com.zrp200.rkpd2.sprites.WardSprite;
 import com.zrp200.rkpd2.ui.Archs;
@@ -134,12 +135,12 @@ public class SurfaceScene extends PixelScene {
 			patch.brightness( dayTime ? 0.7f : 0.4f );
 			window.add( patch );
 		}
-		
+
 		Avatar a = new Avatar( Dungeon.hero.heroClass );
 		// Removing semitransparent contour
 		a.am = 2; a.aa = -1;
-		a.x = (SKY_WIDTH - a.width) / 2;
-		a.y = SKY_HEIGHT - a.height;
+		a.x = (SKY_WIDTH - a.width()) / 2;
+		a.y = SKY_HEIGHT - a.height();
 		align(a);
 		
 		final Pet pet = new Pet();
@@ -371,8 +372,15 @@ public class SurfaceScene extends PixelScene {
 		private static final int HEIGHT	= 32;
 		
 		public Avatar( HeroClass cl ) {
-			super( Assets.Sprites.AVATARS );
-			frame( new TextureFilm( texture, WIDTH, HEIGHT ).get( cl.ordinal() ) );
+			if (cl == HeroClass.RAT_KING) {
+				// FIXME do I want this animated?
+				copy(HeroSprite.avatar(cl, 6));
+				scale.set(WIDTH/width(),HEIGHT/height());
+			}
+			else {
+				texture(Assets.Sprites.AVATARS);
+				frame( new TextureFilm( texture, WIDTH, HEIGHT ).get( cl.ordinal() ) );
+			}
 		}
 	}
 	
