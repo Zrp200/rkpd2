@@ -40,6 +40,7 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 public class WndHeroInfo extends WndTabbed {
@@ -165,10 +166,12 @@ public class WndHeroInfo extends WndTabbed {
 				case WARRIOR: default:
 					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.SEAL),
 							new ItemSprite(ItemSpriteSheet.WORN_SHORTSWORD),
+							new ItemSprite(ItemSpriteSheet.WEAPON_HOLDER),
 							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
 					break;
 				case MAGE:
 					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.MAGES_STAFF),
+							new ItemSprite(ItemSpriteSheet.WAND_MAGIC_MISSILE),
 							new ItemSprite(ItemSpriteSheet.WAND_MAGIC_MISSILE),
 							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
 					break;
@@ -176,17 +179,20 @@ public class WndHeroInfo extends WndTabbed {
 					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.ARTIFACT_CLOAK),
 							Icons.get(Icons.DEPTH),
 							new ItemSprite(ItemSpriteSheet.DAGGER),
+							new ItemSprite(ItemSpriteSheet.RING_RUBY),
 							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
 					break;
 				case HUNTRESS:
 					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.SPIRIT_BOW),
 							new Image(Assets.Environment.TILES_SEWERS, 112, 96, 16, 16),
+							new ItemSprite(ItemSpriteSheet.THROWING_CLUB),
+							new ItemSprite(ItemSpriteSheet.ARTIFACT_TALISMAN),
 							new ItemSprite(ItemSpriteSheet.GLOVES),
 							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
 					break;
 				case RAT_KING:
-					// TODO FIX
-					icons = new Image[4];
+					// placeholder, even if it is funny.
+					icons = new Image[info.length];
 					for(int i=0; i < icons.length; i++) icons[i] = new ItemSprite(ItemSpriteSheet.ARMOR_RAT_KING);
 			}
 			for (Image im : icons) {
@@ -207,6 +213,11 @@ public class WndHeroInfo extends WndTabbed {
 				info[i].maxWidth((int)width - 20);
 				info[i].setPos(20, pos);
 
+				if(i == icons.length) {
+					icons = Arrays.copyOf(icons, icons.length+1);
+					icons[i] = new ItemSprite(ItemSpriteSheet.SOMETHING);
+					add(icons[i]);
+				}
 				icons[i].x = (20-icons[i].width())/2;
 				icons[i].y = info[i].top() + (info[i].height() - icons[i].height())/2;
 
