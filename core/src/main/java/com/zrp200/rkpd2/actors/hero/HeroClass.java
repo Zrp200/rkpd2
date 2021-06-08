@@ -29,12 +29,14 @@ import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.QuickSlot;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
+import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
 import com.zrp200.rkpd2.actors.hero.abilities.huntress.NaturesPower;
 import com.zrp200.rkpd2.actors.hero.abilities.huntress.SpectralBlades;
 import com.zrp200.rkpd2.actors.hero.abilities.huntress.SpiritHawk;
 import com.zrp200.rkpd2.actors.hero.abilities.mage.ElementalBlast;
 import com.zrp200.rkpd2.actors.hero.abilities.mage.WarpBeacon;
 import com.zrp200.rkpd2.actors.hero.abilities.mage.WildMagic;
+import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath;
 import com.zrp200.rkpd2.actors.hero.abilities.rogue.DeathMark;
 import com.zrp200.rkpd2.actors.hero.abilities.rogue.ShadowClone;
 import com.zrp200.rkpd2.actors.hero.abilities.rogue.SmokeBomb;
@@ -266,6 +268,8 @@ public enum HeroClass {
 				return new ArmorAbility[]{new SmokeBomb(), new DeathMark(), new ShadowClone()};
 			case HUNTRESS:
 				return new ArmorAbility[]{new SpectralBlades(), new NaturesPower(), new SpiritHawk()};
+			case RAT_KING:
+				return new ArmorAbility[]{new Ratmogrify(), new Wrath()};
 		}
 	}
 

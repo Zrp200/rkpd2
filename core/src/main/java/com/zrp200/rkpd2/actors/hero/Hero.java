@@ -52,8 +52,10 @@ import com.zrp200.rkpd2.actors.buffs.Paralysis;
 import com.zrp200.rkpd2.actors.buffs.Regeneration;
 import com.zrp200.rkpd2.actors.buffs.SnipersMark;
 import com.zrp200.rkpd2.actors.buffs.Vertigo;
+import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.Monk;
+import com.zrp200.rkpd2.actors.mobs.Wraith;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.CheckedCell;
 import com.zrp200.rkpd2.effects.Flare;
@@ -361,10 +363,9 @@ public class Hero extends Char {
 			|| (tier == 3 && subClass == HeroSubClass.NONE)
 			|| (tier == 4 && armorAbility == null)){
 			return 0;
-		} else if (lvl >= Talent.tierLevelThresholds[tier+1]){
-			return Talent.tierLevelThresholds[tier+1] - Talent.tierLevelThresholds[tier] - talentPointsSpent(tier);
 		} else {
-			return 1 + lvl - Talent.tierLevelThresholds[tier] - talentPointsSpent(tier);
+			return Math.min(1 + lvl - Talent.tierLevelThresholds[tier], Talent.getMaxPoints(tier))
+					- talentPointsSpent(tier);
 		}
 	}
 	
@@ -1586,10 +1587,17 @@ public class Hero extends Char {
 				sprite.showStatus( CharSprite.POSITIVE, Messages.get(Hero.class, "level_up") );
 				Sample.INSTANCE.play( Assets.Sounds.LEVELUP );
 				if (lvl < Talent.tierLevelThresholds[Talent.MAX_TALENT_TIERS+1]){
-					GLog.newLine();
-					GLog.p( Messages.get(this, "new_talent") );
-					StatusPane.talentBlink = 10f;
-					WndHero.lastIdx = 1;
+					int points = 1;
+					if(lvl >= 21 && lvl < 25) points += 1;
+					if(lvl >= Talent.tierLevelThresholds[4] && armorAbility != null && armorAbility.talents().length == 0) points--;
+					if(points > 0) {
+						GLog.newLine();
+						String new_talent = "new_talent";
+						if(points > 1) new_talent += "s"; // double
+						GLog.p( Messages.get(this, new_talent) );
+						StatusPane.talentBlink = 10f;
+						WndHero.lastIdx = 1;
+					}
 				}
 			}
 			

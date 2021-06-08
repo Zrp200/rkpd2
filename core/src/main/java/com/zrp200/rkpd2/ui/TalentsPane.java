@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.PixelScene;
@@ -70,7 +71,7 @@ public class TalentsPane extends ScrollPane {
 			}
 			if (tiersAvailable > 2 && Dungeon.hero.subClass == HeroSubClass.NONE){
 				tiersAvailable = 2;
-			} else if (tiersAvailable > 3 && Dungeon.hero.armorAbility == null){
+			} else if (tiersAvailable > 3 && Dungeon.hero.armorAbility == null || tiersAvailable > 3 && Dungeon.hero.armorAbility instanceof Wrath){
 				tiersAvailable = 3;
 			}
 		}
@@ -101,7 +102,7 @@ public class TalentsPane extends ScrollPane {
 		} else if (tiersAvailable == 2) {
 			blockText = PixelScene.renderTextBlock(Messages.get(this, "unlock_tier3"), 6);
 			content.add(blockText);
-		} else if (tiersAvailable == 3) {
+		} else if (tiersAvailable == 3 && Dungeon.hero.armorAbility == null) {
 			blockText = PixelScene.renderTextBlock(Messages.get(this, "unlock_tier4"), 6);
 			content.add(blockText);
 		} else {
@@ -193,7 +194,7 @@ public class TalentsPane extends ScrollPane {
 				stars.clear();
 			}
 
-			int totStars = Talent.tierLevelThresholds[tier+1] - Talent.tierLevelThresholds[tier];
+			int totStars = Talent.getMaxPoints(tier);
 			int openStars = Dungeon.hero.talentPointsAvailable(tier);
 			int usedStars = Dungeon.hero.talentPointsSpent(tier);
 			for (int i = 0; i < totStars; i++){
