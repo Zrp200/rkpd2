@@ -31,6 +31,7 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Burning;
 import com.zrp200.rkpd2.actors.buffs.Cripple;
 import com.zrp200.rkpd2.actors.buffs.Paralysis;
+import com.zrp200.rkpd2.actors.hero.abilities.mage.WildMagic;
 import com.zrp200.rkpd2.effects.MagicMissile;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.enchantments.Blazing;
@@ -44,6 +45,7 @@ import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
+import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 
 import java.util.ArrayList;
@@ -53,7 +55,8 @@ public class WandOfFireblast extends DamageWand {
 	{
 		image = ItemSpriteSheet.WAND_FIREBOLT;
 
-		collisionProperties = Ballistica.STOP_SOLID | Ballistica.IGNORE_SOFT_SOLID;
+		//only used for targeting, actual projectile logic is Ballistica.STOP_SOLID | Ballistica.IGNORE_SOFT_SOLID
+		collisionProperties = Ballistica.WONT_STOP;
 	}
 
 	//1x/2x/3x damage
@@ -69,7 +72,7 @@ public class WandOfFireblast extends DamageWand {
 	ConeAOE cone;
 
 	@Override
-	protected void onZap( Ballistica bolt ) {
+	public void onZap(Ballistica bolt) {
 
 		ArrayList<Char> affectedChars = new ArrayList<>();
 		ArrayList<Integer> adjacentCells = new ArrayList<>();
@@ -113,7 +116,7 @@ public class WandOfFireblast extends DamageWand {
 
 		int damage;
 		for ( Char ch : affectedChars ){
-			processSoulMark(ch, chargesPerCast(), damage = damageRoll());
+			wandProc(ch, chargesPerCast(), damage = damageRoll());
 			ch.damage(damage, this);
 			if (ch.isAlive()) {
 				Buff.affect(ch, Burning.class).reignite(ch);
@@ -138,7 +141,7 @@ public class WandOfFireblast extends DamageWand {
 	}
 
 	@Override
-	protected void fx( Ballistica bolt, Callback callback ) {
+	public void fx(Ballistica bolt, Callback callback) {
 		//need to perform flame spread logic here so we can determine what cells to put flames in.
 
 		// 5/7/9 distance
@@ -148,10 +151,10 @@ public class WandOfFireblast extends DamageWand {
 		cone = new ConeAOE( bolt,
 				maxDist,
 				30 + 20*chargesPerCast(),
-				collisionProperties | Ballistica.STOP_TARGET);
+				Ballistica.STOP_TARGET | Ballistica.STOP_SOLID | Ballistica.IGNORE_SOFT_SOLID);
 
 		//cast to cells at the tip, rather than all cells, better performance.
-		for (Ballistica ray : cone.rays){
+		for (Ballistica ray : cone.outerRays){
 			((MagicMissile)curUser.sprite.parent.recycle( MagicMissile.class )).reset(
 					MagicMissile.FIRE_CONE,
 					curUser.sprite,
@@ -172,8 +175,11 @@ public class WandOfFireblast extends DamageWand {
 
 	@Override
 	protected int chargesPerCast() {
-		//consumes 30% of current charges, rounded up, with a minimum of one.
-		return Math.max(1, (int)Math.ceil(curCharges*0.3f));
+		if (charger != null && charger.target.buff(WildMagic.WildMagicTracker.class) != null){
+			return 1;
+		}
+		//consumes 30% of current charges, rounded up, with a min of 1 and a max of 3.
+		return (int) GameMath.gate(1, (int)Math.ceil(curCharges*0.3f), 3);
 	}
 
 	@Override

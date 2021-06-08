@@ -29,6 +29,7 @@ import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
@@ -46,12 +47,13 @@ public class Dewdrop extends Item {
 	@Override
 	public boolean doPickUp( Hero hero ) {
 		
-		DewVial vial = hero.belongings.getItem( DewVial.class );
+		Waterskin flask = hero.belongings.getItem( Waterskin.class );
 		
-		if (vial != null && !vial.isFull()){
-			
-			vial.collectDew( this );
-			
+		if (flask != null && !flask.isFull()){
+
+			flask.collectDew( this );
+			GameScene.pickUp( this, hero.pos );
+
 		} else {
 
 			if (!consumeDew(1, hero)){

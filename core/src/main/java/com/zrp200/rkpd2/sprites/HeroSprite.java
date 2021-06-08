@@ -25,9 +25,11 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
+import com.zrp200.rkpd2.scenes.GameScene;
 import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.Camera;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.Callback;
@@ -96,7 +98,7 @@ public class HeroSprite extends CharSprite {
 	@Override
 	public void place( int p ) {
 		super.place( p );
-		Camera.main.panTo(center(), 5f);
+		if (Game.scene() instanceof GameScene) Camera.main.panTo(center(), 5f);
 	}
 
 	@Override
@@ -168,7 +170,7 @@ public class HeroSprite extends CharSprite {
 		return new TextureFilm( texture, texture.width, frameHeight );
 	}
 
-	
+
 	public static Image avatar( HeroClass cl, int armorTier ) {
 		int frameHeight = FRAME_HEIGHT;
 		int frameWidth = FRAME_WIDTH;

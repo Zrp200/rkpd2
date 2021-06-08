@@ -85,7 +85,7 @@ public class Item implements Bundlable {
 	public boolean cursedKnown;
 
 	public boolean collected;
-	
+
 	// Unique items persist through revival
 	public boolean unique = false;
 
@@ -105,7 +105,11 @@ public class Item implements Bundlable {
 		actions.add( AC_THROW );
 		return actions;
 	}
-	
+
+	public String actionName(String action, Hero hero){
+		return Messages.get(this, "ac_" + action);
+	}
+
 	public boolean doPickUp( Hero hero ) {
 		if (collect( hero.belongings.backpack )) {
 			
@@ -464,9 +468,9 @@ public class Item implements Bundlable {
 	public String status() {
 		return quantity != 1 ? Integer.toString( quantity ) : null;
 	}
-	
+
 	public static void updateQuickslot() {
-			QuickSlotButton.refresh();
+		QuickSlotButton.refresh();
 	}
 	
 	private static final String QUANTITY		= "quantity";
@@ -476,7 +480,7 @@ public class Item implements Bundlable {
 	private static final String CURSED_KNOWN	= "cursedKnown";
 	private static final String QUICKSLOT		= "quickslotpos";
 	private static final String COLLECTED		= "collected";
-	
+
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		bundle.put( QUANTITY, quantity );
@@ -560,7 +564,7 @@ public class Item implements Bundlable {
 									float duration = 1f + curUser.pointsInTalent(Talent.IMPROVISED_PROJECTILES,Talent.KINGS_VISION);
 									if(curUser.hasTalent(Talent.IMPROVISED_PROJECTILES)) duration *= 1.5f;
 									Buff.affect(ch, Blindness.class, Math.round(duration));
-									Buff.affect(curUser, Talent.ImprovisedProjectileCooldown.class, curUser.hasTalent(Talent.IMPROVISED_PROJECTILES) ? 15f : 30f);
+									Buff.affect(curUser, Talent.ImprovisedProjectileCooldown.class, curUser.hasTalent(Talent.IMPROVISED_PROJECTILES) ? 15f : 50f);
 								}
 							}
 							if(!forceSkipDelay) {

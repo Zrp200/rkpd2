@@ -21,13 +21,14 @@
 
 package com.zrp200.rkpd2.items.scrolls;
 
+import com.watabou.noosa.audio.Sample;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.windows.WndBag;
 import com.zrp200.rkpd2.windows.WndOptions;
-import com.watabou.noosa.audio.Sample;
 
 public abstract class InventoryScroll extends Scroll {
 
@@ -48,8 +49,11 @@ public abstract class InventoryScroll extends Scroll {
 	}
 	
 	private void confirmCancelation() {
-		GameScene.show( new WndOptions( Messages.titleCase(name()), Messages.get(this, "warning"),
-				Messages.get(this, "yes"), Messages.get(this, "no") ) {
+		GameScene.show( new WndOptions(new ItemSprite(this),
+				Messages.titleCase(name()),
+				Messages.get(this, "warning"),
+				Messages.get(this, "yes"),
+				Messages.get(this, "no") ) {
 			@Override
 			protected void onSelect( int index ) {
 				switch (index) {

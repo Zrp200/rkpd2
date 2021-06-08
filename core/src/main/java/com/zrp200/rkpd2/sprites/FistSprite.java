@@ -21,9 +21,13 @@
 
 package com.zrp200.rkpd2.sprites;
 
+import com.watabou.noosa.Camera;
+import com.watabou.noosa.TextureFilm;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.noosa.particles.Emitter;
+import com.watabou.utils.Callback;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.mobs.Yog;
 import com.zrp200.rkpd2.actors.mobs.YogFist;
 import com.zrp200.rkpd2.effects.Beam;
 import com.zrp200.rkpd2.effects.MagicMissile;
@@ -34,11 +38,6 @@ import com.zrp200.rkpd2.effects.particles.LeafParticle;
 import com.zrp200.rkpd2.effects.particles.ShadowParticle;
 import com.zrp200.rkpd2.effects.particles.SparkParticle;
 import com.zrp200.rkpd2.tiles.DungeonTilemap;
-import com.watabou.noosa.Camera;
-import com.watabou.noosa.TextureFilm;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.noosa.particles.Emitter;
-import com.watabou.utils.Callback;
 
 public abstract class FistSprite extends MobSprite {
 
@@ -131,12 +130,7 @@ public abstract class FistSprite extends MobSprite {
 				new Callback() {
 					@Override
 					public void call() {
-						//pre-0.8.0 saves
-						if (ch instanceof Yog.BurningFist){
-							((Yog.BurningFist)ch).onZapComplete();
-						} else {
-							((YogFist)ch).onZapComplete();
-						}
+						((YogFist)ch).onZapComplete();
 					}
 				} );
 		Sample.INSTANCE.play( Assets.Sounds.ZAP );

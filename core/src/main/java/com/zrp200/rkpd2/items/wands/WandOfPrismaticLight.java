@@ -66,7 +66,7 @@ public class WandOfPrismaticLight extends DamageWand {
 	}
 
 	@Override
-	protected void onZap(Ballistica beam) {
+	public void onZap(Ballistica beam) {
 		affectMap(beam);
 		
 		if (Dungeon.level.viewDistance < 6 ){
@@ -100,7 +100,7 @@ public class WandOfPrismaticLight extends DamageWand {
 		} else {
 			ch.sprite.centerEmitter().burst( RainbowParticle.BURST, 10+buffedLvl() );
 		}
-		processSoulMark(ch, chargesPerCast(), dmg);
+		wandProc(ch, chargesPerCast(), dmg);
 		ch.damage(dmg, this);
 
 	}
@@ -138,7 +138,7 @@ public class WandOfPrismaticLight extends DamageWand {
 	}
 
 	@Override
-	protected void fx( Ballistica beam, Callback callback ) {
+	public void fx(Ballistica beam, Callback callback) {
 		curUser.sprite.parent.add(
 				new Beam.LightRay(curUser.sprite.center(), DungeonTilemap.raisedTileCenterToWorld(beam.collisionPos)));
 		callback.call();

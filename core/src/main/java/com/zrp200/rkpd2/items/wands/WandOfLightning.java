@@ -64,7 +64,7 @@ public class WandOfLightning extends DamageWand {
 	}
 	
 	@Override
-	protected void onZap( Ballistica bolt ) {
+	public void onZap(Ballistica bolt) {
 
 		//lightning deals less damage per-target, the more targets that are hit.
 		float multipler = 0.4f + (0.6f/affected.size());
@@ -80,7 +80,7 @@ public class WandOfLightning extends DamageWand {
 				continue;
 			}
 			int damage = Math.round(damageRoll() * multipler * (ch != curUser?1:.5f));
-			processSoulMark(ch, chargesPerCast(), damage);
+			wandProc(ch, chargesPerCast(), damage);
 			ch.damage(damage,this);
 		}
 
@@ -122,7 +122,7 @@ public class WandOfLightning extends DamageWand {
 	}
 	
 	@Override
-	protected void fx( Ballistica bolt, Callback callback ) {
+	public void fx(Ballistica bolt, Callback callback) {
 
 		affected.clear();
 		arcs.clear();

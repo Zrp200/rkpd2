@@ -30,6 +30,7 @@ import com.zrp200.rkpd2.actors.buffs.MindVision;
 import com.zrp200.rkpd2.actors.buffs.RevealedArea;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.actors.hero.abilities.huntress.SpiritHawk;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.npcs.Blacksmith;
 import com.zrp200.rkpd2.actors.mobs.npcs.Ghost;
@@ -45,6 +46,8 @@ import com.zrp200.rkpd2.items.potions.Potion;
 import com.zrp200.rkpd2.items.potions.PotionOfMindVision;
 import com.zrp200.rkpd2.items.rings.Ring;
 import com.zrp200.rkpd2.items.scrolls.Scroll;
+import com.zrp200.rkpd2.items.wands.WandOfRegrowth;
+import com.zrp200.rkpd2.items.wands.WandOfWarding;
 import com.zrp200.rkpd2.journal.Notes;
 import com.zrp200.rkpd2.levels.CavesLevel;
 import com.zrp200.rkpd2.levels.CityLevel;
@@ -53,10 +56,10 @@ import com.zrp200.rkpd2.levels.HallsLevel;
 import com.zrp200.rkpd2.levels.LastLevel;
 import com.zrp200.rkpd2.levels.LastShopLevel;
 import com.zrp200.rkpd2.levels.Level;
-import com.zrp200.rkpd2.levels.NewCavesBossLevel;
-import com.zrp200.rkpd2.levels.NewCityBossLevel;
-import com.zrp200.rkpd2.levels.NewHallsBossLevel;
-import com.zrp200.rkpd2.levels.NewPrisonBossLevel;
+import com.zrp200.rkpd2.levels.CavesBossLevel;
+import com.zrp200.rkpd2.levels.CityBossLevel;
+import com.zrp200.rkpd2.levels.HallsBossLevel;
+import com.zrp200.rkpd2.levels.PrisonBossLevel;
 import com.zrp200.rkpd2.levels.PrisonLevel;
 import com.zrp200.rkpd2.levels.SewerBossLevel;
 import com.zrp200.rkpd2.levels.SewerLevel;
@@ -110,7 +113,6 @@ public class Dungeon {
 		GOLEM_EQUIP,
 
 		//containers
-		DEW_VIAL,
 		VELVET_POUCH,
 		SCROLL_HOLDER,
 		POTION_BANDOLIER,
@@ -261,7 +263,7 @@ public class Dungeon {
 			level = new PrisonLevel();
 			break;
 		case 10:
-			level = new NewPrisonBossLevel();
+			level = new PrisonBossLevel();
 			break;
 		case 11:
 		case 12:
@@ -270,7 +272,7 @@ public class Dungeon {
 			level = new CavesLevel();
 			break;
 		case 15:
-			level = new NewCavesBossLevel();
+			level = new CavesBossLevel();
 			break;
 		case 16:
 		case 17:
@@ -279,30 +281,16 @@ public class Dungeon {
 			level = new CityLevel();
 			break;
 		case 20:
-			level = new NewCityBossLevel();
+			level = new CityBossLevel();
 			break;
 		case 21:
-			//logic for old city boss levels, need to spawn a shop on floor 21
-			try {
-				Bundle bundle = FileUtils.bundleFromFile(GamesInProgress.depthFile(GamesInProgress.curSlot, 20));
-				Class cls = bundle.getBundle(LEVEL).getClass("__className");
-				if (cls == NewCityBossLevel.class) {
-					level = new HallsLevel();
-				} else {
-					level = new LastShopLevel();
-				}
-			} catch (Exception e) {
-				ShatteredPixelDungeon.reportException(e);
-				level = new HallsLevel();
-			}
-			break;
 		case 22:
 		case 23:
 		case 24:
 			level = new HallsLevel();
 			break;
 		case 25:
-			level = new NewHallsBossLevel();
+			level = new HallsBossLevel();
 			break;
 		case 26:
 			level = new LastLevel();
@@ -562,6 +550,7 @@ public class Dungeon {
 
 		seed = bundle.contains( SEED ) ? bundle.getLong( SEED ) : DungeonSeed.randomSeed();
 
+		Actor.clear();
 		Actor.restoreNextID( bundle );
 
 		quickslot.reset();
@@ -700,8 +689,10 @@ public class Dungeon {
 		Rankings.INSTANCE.submit( true, cause );
 	}
 
+	//default to recomputing based on max hero vision, in case vision just shrank/grew
 	public static void observe(){
-		int dist = 8 + 2*Dungeon.hero.pointsInTalent(Talent.FARSIGHT,Talent.RK_SNIPER);
+		int dist = 8;
+		dist *= 1f + 0.25f*Dungeon.hero.pointsInTalent(Talent.FARSIGHT,Talent.RK_SNIPER);
 		observe( dist+1 );
 	}
 
@@ -758,7 +749,6 @@ public class Dungeon {
 		}
 
 		for (TalismanOfForesight.CharAwareness c : hero.buffs(TalismanOfForesight.CharAwareness.class)){
-			if (Dungeon.depth != c.depth) continue;
 			Char ch = (Char) Actor.findById(c.charID);
 			if (ch == null) continue;
 			reveal(ch.pos, 2);
@@ -772,6 +762,33 @@ public class Dungeon {
 		for (RevealedArea a : hero.buffs(RevealedArea.class)){
 			if (Dungeon.depth != a.depth) continue;
 			reveal(a.pos, Dungeon.hero.hasTalent(Talent.SEER_SHOT) ? 3 : 2);
+		}
+
+		for (Char ch : Actor.chars()){
+			if (ch instanceof WandOfWarding.Ward
+					|| ch instanceof WandOfRegrowth.Lotus
+					|| ch instanceof SpiritHawk.HawkAlly){
+				x = ch.pos % level.width();
+				y = ch.pos / level.width();
+
+				//left, right, top, bottom
+				dist = ch.viewDistance+1;
+				l = Math.max( 0, x - dist );
+				r = Math.min( x + dist, level.width() - 1 );
+				t = Math.max( 0, y - dist );
+				b = Math.min( y + dist, level.height() - 1 );
+
+				width = r - l + 1;
+				height = b - t + 1;
+
+				pos = l + t * level.width();
+
+				for (int i = t; i <= b; i++) {
+					BArray.or( level.visited, level.heroFOV, pos, width, level.visited );
+					pos+=level.width();
+				}
+				GameScene.updateFog(ch.pos, dist);
+			}
 		}
 
 		GameScene.afterObserve();

@@ -39,6 +39,7 @@ import com.zrp200.rkpd2.items.weapon.enchantments.Grim;
 import com.zrp200.rkpd2.items.weapon.enchantments.Lucky;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
 import com.zrp200.rkpd2.windows.WndBag;
@@ -69,7 +70,7 @@ public class ScrollOfEnchantment extends ExoticScroll {
 		return toIgnore;
 	}
 
-	public static void enchantWeapon(Weapon weapon) {
+	public void enchantWeapon(Weapon weapon) {
 		final Weapon.Enchantment enchants[] = new Weapon.Enchantment[3];
 
 		Class<? extends Weapon.Enchantment> existing = weapon.enchantment != null ? weapon.enchantment.getClass() : null;
@@ -85,7 +86,8 @@ public class ScrollOfEnchantment extends ExoticScroll {
 			if(enchants[2] instanceof Blocking || enchants[2] instanceof Lucky) enchants[2] = Random.Int(3) == 0 || enchants[1] instanceof Explosive ? new Grim() : new Explosive();
 		}
 
-		GameScene.show(new WndOptions(Messages.titleCase(new ScrollOfEnchantment().name()),
+				GameScene.show(new WndOptions(new ItemSprite(ScrollOfEnchantment.this),
+						Messages.titleCase(ScrollOfEnchantment.this.name()),
 				Messages.get(ScrollOfEnchantment.class, "weapon") +
 						"\n\n" +
 						Messages.get(ScrollOfEnchantment.class, "cancel_warn"),
@@ -99,7 +101,7 @@ public class ScrollOfEnchantment extends ExoticScroll {
 				if (index < 3) {
 					weapon.enchant(enchants[index]);
 					GLog.p(Messages.get(StoneOfEnchantment.class, "weapon"));
-					((Scroll)curItem).readAnimation();
+					((ScrollOfEnchantment)curItem).readAnimation();
 
 					Sample.INSTANCE.play( Assets.Sounds.READ );
 					Enchanting.show(curUser, weapon);
@@ -131,7 +133,8 @@ public class ScrollOfEnchantment extends ExoticScroll {
 				glyphs[1] = Armor.Glyph.randomUncommon( existing );
 				glyphs[2] = Armor.Glyph.random( existing, glyphs[0].getClass(), glyphs[1].getClass());
 				
-				GameScene.show(new WndOptions(Messages.titleCase(ScrollOfEnchantment.this.name()),
+				GameScene.show(new WndOptions( new ItemSprite(ScrollOfEnchantment.this),
+						Messages.titleCase(ScrollOfEnchantment.this.name()),
 						Messages.get(ScrollOfEnchantment.class, "armor") +
 						"\n\n" +
 						Messages.get(ScrollOfEnchantment.class, "cancel_warn"),

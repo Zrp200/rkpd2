@@ -42,7 +42,7 @@ public class WandOfFirebolt extends DamageWand {
     }
 
     @Override
-    protected void onZap(Ballistica attack) {
+    public void onZap(Ballistica attack) {
         Char ch = Actor.findChar(attack.collisionPos);
         boolean found = ch != null;
         for(int cell : attack.subPath(1,found ? attack.dist-1 : attack.dist)) {
@@ -52,7 +52,7 @@ public class WandOfFirebolt extends DamageWand {
         }
         if(found) {
             int dmg = damageRoll();
-            processSoulMark(ch,1,damageRoll());
+            wandProc(ch,1,dmg);
             ch.damage(dmg, this);
             if(ch.isAlive()) Buff.affect(ch, Burning.class).reignite(ch);
             ch.sprite.emitter().burst(FlameParticle.FACTORY, 5);
@@ -60,7 +60,7 @@ public class WandOfFirebolt extends DamageWand {
     }
 
     @Override
-    protected void fx(Ballistica bolt, Callback callback) {
+    public void fx(Ballistica bolt, Callback callback) {
         MagicMissile.boltFromChar( curUser.sprite.parent,
                 MagicMissile.FIRE,
                 curUser.sprite,

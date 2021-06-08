@@ -21,6 +21,9 @@
 
 package com.zrp200.rkpd2.actors.hero;
 
+import com.zrp200.rkpd2.items.armor.ClassArmor;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.GamesInProgress;
 import com.zrp200.rkpd2.items.EquipableItem;
@@ -29,15 +32,11 @@ import com.zrp200.rkpd2.items.KindOfWeapon;
 import com.zrp200.rkpd2.items.KindofMisc;
 import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.artifacts.Artifact;
-import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
 import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.keys.Key;
 import com.zrp200.rkpd2.items.rings.Ring;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRemoveCurse;
 import com.zrp200.rkpd2.items.wands.Wand;
-import com.zrp200.rkpd2.messages.Messages;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -141,7 +140,12 @@ public class Belongings implements Iterable<Item> {
 	
 	public static void preview( GamesInProgress.Info info, Bundle bundle ) {
 		if (bundle.contains( ARMOR )){
-			info.armorTier = ((Armor)bundle.get( ARMOR )).tier;
+			Armor armor = ((Armor)bundle.get( ARMOR ));
+			if (armor instanceof ClassArmor){
+				info.armorTier = 6;
+			} else {
+				info.armorTier = armor.tier;
+			}
 		} else {
 			info.armorTier = 0;
 		}
@@ -158,7 +162,19 @@ public class Belongings implements Iterable<Item> {
 		
 		return null;
 	}
-	
+
+	public<T extends Item> ArrayList<T> getAllItems( Class<T> itemClass ) {
+		ArrayList<T> result = new ArrayList<>();
+
+		for (Item item : this) {
+			if (itemClass.isInstance( item )) {
+				result.add((T) item);
+			}
+		}
+
+		return result;
+	}
+
 	public boolean contains( Item contains ){
 		
 		for (Item item : this) {

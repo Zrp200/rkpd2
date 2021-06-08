@@ -125,7 +125,9 @@ abstract public class MissileWeapon extends Weapon {
 				Item similar = Dungeon.hero.belongings.getSimilar(this);
 				if (similar != null){
 					detach(Dungeon.hero.belongings.backpack);
-					return similar.merge(this);
+					Item result = similar.merge(this);
+					updateQuickslot();
+					return result;
 				}
 				updateQuickslot();
 				return this;
@@ -240,7 +242,7 @@ abstract public class MissileWeapon extends Weapon {
 			Buff.detach(user, Talent.LethalMomentumTracker.class);
 			return 0;
 		}
-		float speedFactor = speedFactor( user );
+		float speedFactor = delayFactor( user );
 		if(user instanceof Hero && ((Hero)user).hasTalent(Talent.ONE_MAN_ARMY)) {
 			Hero hero = (Hero)user;
 			int targets = 0;

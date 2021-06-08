@@ -35,6 +35,7 @@ import com.zrp200.rkpd2.actors.buffs.Cripple;
 import com.zrp200.rkpd2.actors.buffs.Light;
 import com.zrp200.rkpd2.actors.buffs.Ooze;
 import com.zrp200.rkpd2.actors.buffs.Roots;
+import com.zrp200.rkpd2.actors.buffs.Sleep;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.effects.particles.LeafParticle;
@@ -80,6 +81,13 @@ public abstract class YogFist extends Mob {
 	@Override
 	protected boolean act() {
 		if (paralysed <= 0 && rangedCooldown > 0) rangedCooldown--;
+
+		if (Dungeon.hero.invisible <= 0 && state == WANDERING){
+			beckon(Dungeon.hero.pos);
+			state = HUNTING;
+			enemy = Dungeon.hero;
+		}
+
 		return super.act();
 	}
 
@@ -150,6 +158,10 @@ public abstract class YogFist extends Mob {
 		return Random.NormalIntRange(0, 15);
 	}
 
+	{
+		immunities.add( Sleep.class );
+	}
+
 	@Override
 	public String description() {
 		return Messages.get(YogFist.class, "desc") + "\n\n" + Messages.get(this, "desc");
@@ -188,8 +200,8 @@ public abstract class YogFist extends Mob {
 				CellEmitter.get( pos ).burst( Speck.factory( Speck.STEAM ), 10 );
 			}
 
-			//1.33 evaporated tiles on average
-			int evaporatedTiles = Random.chances(new float[]{0, 2, 1});
+			//1.67 evaporated tiles on average
+			int evaporatedTiles = Random.chances(new float[]{0, 1, 2});
 
 			for (int i = 0; i < evaporatedTiles; i++) {
 				int cell = pos + PathFinder.NEIGHBOURS8[Random.Int(8)];
@@ -360,7 +372,7 @@ public abstract class YogFist extends Mob {
 					b = new Bleeding();
 				}
 				b.announced = false;
-				b.set(dmg*.67f);
+				b.set(dmg*.6f);
 				b.attachTo(this);
 				sprite.showStatus(CharSprite.WARNING, b.toString() + " " + (int)b.level());
 			} else{

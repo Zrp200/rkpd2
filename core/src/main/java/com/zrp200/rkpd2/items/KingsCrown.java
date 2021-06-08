@@ -21,8 +21,13 @@
 
 package com.zrp200.rkpd2.items;
 
+import com.watabou.noosa.audio.Sample;
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
+import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
@@ -31,21 +36,16 @@ import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.HeroSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
-import com.zrp200.rkpd2.windows.WndBag;
-import com.watabou.noosa.audio.Sample;
+import com.zrp200.rkpd2.windows.WndChooseAbility;
 
 import java.util.ArrayList;
 
-public class ArmorKit extends Item {
-
-	private static final String TXT_UPGRADED		= "you applied the armor kit to upgrade your %s";
+public class KingsCrown extends Item {
 	
-	private static final float TIME_TO_UPGRADE = 2;
-	
-	private static final String AC_APPLY = "APPLY";
+	private static final String AC_WEAR = "WEAR";
 	
 	{
-		image = ItemSpriteSheet.KIT;
+		image = ItemSpriteSheet.CROWN;
 		
 		unique = true;
 	}
@@ -53,7 +53,7 @@ public class ArmorKit extends Item {
 	@Override
 	public ArrayList<String> actions( Hero hero ) {
 		ArrayList<String> actions = super.actions( hero );
-		actions.add( AC_APPLY );
+		actions.add( AC_WEAR );
 		return actions;
 	}
 	
@@ -62,10 +62,14 @@ public class ArmorKit extends Item {
 
 		super.execute( hero, action );
 
-		if (action.equals(AC_APPLY)) {
+		if (action.equals(AC_WEAR)) {
 
 			curUser = hero;
-			GameScene.selectItem( itemSelector, WndBag.Mode.ARMOR, Messages.get(this, "prompt") );
+			if (hero.belongings.armor != null){
+				GameScene.show( new WndChooseAbility(this, hero.belongings.armor, hero));
+			} else {
+				GLog.w( Messages.get(this, "naked"));
+			}
 			
 		}
 	}
@@ -80,40 +84,41 @@ public class ArmorKit extends Item {
 		return true;
 	}
 	
-	private void upgrade( Armor armor ) {
-		
-		detach( curUser.belongings.backpack );
-		
-		curUser.sprite.centerEmitter().start( Speck.factory( Speck.KIT ), 0.05f, 10 );
-		curUser.spend( TIME_TO_UPGRADE );
-		curUser.busy();
-		
-		GLog.w( Messages.get(this, "upgraded", armor.name()) );
-		
-		ClassArmor classArmor = ClassArmor.upgrade( curUser, armor );
-		if (curUser.belongings.armor == armor) {
-			
-			curUser.belongings.armor = classArmor;
-			((HeroSprite)curUser.sprite).updateArmor();
-			classArmor.activate(curUser);
-			
-		} else {
-			
-			armor.detach( curUser.belongings.backpack );
-			classArmor.collect( curUser.belongings.backpack );
-			
-		}
-		
-		curUser.sprite.operate( curUser.pos );
-		Sample.INSTANCE.play( Assets.Sounds.EVOKE );
-	}
-	
-	private final WndBag.Listener itemSelector = new WndBag.Listener() {
-		@Override
-		public void onSelect( Item item ) {
-			if (item != null) {
-				ArmorKit.this.upgrade( (Armor)item );
+	public void upgradeArmor(Hero hero, Armor armor, ArmorAbility ability) {
+
+		detach(hero.belongings.backpack);
+
+		hero.sprite.emitter().burst( Speck.factory( Speck.CROWN), 12 );
+		hero.spend(Actor.TICK);
+		hero.busy();
+
+		if (armor != null){
+
+			if (ability instanceof Ratmogrify){
+				GLog.p(Messages.get(this, "ratgraded"));
+			} else {
+				GLog.p(Messages.get(this, "upgraded"));
+			}
+
+			ClassArmor classArmor = ClassArmor.upgrade(hero, armor);
+			if (hero.belongings.armor == armor) {
+
+				hero.belongings.armor = classArmor;
+				((HeroSprite) hero.sprite).updateArmor();
+				classArmor.activate(hero);
+
+			} else {
+
+				armor.detach(hero.belongings.backpack);
+				classArmor.collect(hero.belongings.backpack);
+
 			}
 		}
-	};
+
+		hero.armorAbility = ability;
+		Talent.initArmorTalents(hero);
+
+		hero.sprite.operate( hero.pos );
+		Sample.INSTANCE.play( Assets.Sounds.MASTERY );
+	}
 }

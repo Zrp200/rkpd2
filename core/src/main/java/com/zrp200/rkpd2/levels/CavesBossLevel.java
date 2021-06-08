@@ -21,16 +21,27 @@
 
 package com.zrp200.rkpd2.levels;
 
+import com.watabou.noosa.Camera;
+import com.watabou.noosa.Group;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.Tilemap;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.noosa.particles.Emitter;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Point;
+import com.watabou.utils.Random;
+import com.watabou.utils.Rect;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Bones;
+import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.blobs.Blob;
 import com.zrp200.rkpd2.actors.blobs.Electricity;
+import com.zrp200.rkpd2.actors.mobs.DM300;
 import com.zrp200.rkpd2.actors.mobs.Mob;
-import com.zrp200.rkpd2.actors.mobs.NewDM300;
-import com.zrp200.rkpd2.actors.mobs.OldDM300;
 import com.zrp200.rkpd2.actors.mobs.Pylon;
 import com.zrp200.rkpd2.effects.BlobEmitter;
 import com.zrp200.rkpd2.effects.CellEmitter;
@@ -47,21 +58,10 @@ import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.tiles.CustomTilemap;
 import com.zrp200.rkpd2.tiles.DungeonTilemap;
 import com.zrp200.rkpd2.utils.GLog;
-import com.watabou.noosa.Camera;
-import com.watabou.noosa.Group;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.Tilemap;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.noosa.particles.Emitter;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Point;
-import com.watabou.utils.Random;
-import com.watabou.utils.Rect;
 
 import java.util.ArrayList;
 
-public class NewCavesBossLevel extends Level {
+public class CavesBossLevel extends Level {
 
 	{
 		color1 = 0x534f3e;
@@ -104,7 +104,7 @@ public class NewCavesBossLevel extends Level {
 			if (map[i] == Terrain.EMPTY) {
 				if (patch[i - 14*width()]){
 					map[i] = Terrain.WATER;
-				} else if (Random.Int(8) == 0){
+				} else if (Random.Int(Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 4 : 8) == 0){
 					map[i] = Terrain.INACTIVE_TRAP;
 				}
 			}
@@ -271,7 +271,7 @@ public class NewCavesBossLevel extends Level {
 		Camera.main.shake( 3, 0.7f );
 		Sample.INSTANCE.play( Assets.Sounds.ROCKS );
 
-		NewDM300 boss = new NewDM300();
+		DM300 boss = new DM300();
 		boss.state = boss.WANDERING;
 		do {
 			boss.pos = pointToCell(Random.element(mainArena.getPoints()));
@@ -296,7 +296,7 @@ public class NewCavesBossLevel extends Level {
 		}
 		GameScene.updateMap();
 
-		customArenaVisuals.updateState();
+		if (customArenaVisuals != null) customArenaVisuals.updateState();
 
 		Dungeon.observe();
 
@@ -332,17 +332,18 @@ public class NewCavesBossLevel extends Level {
 	}
 
 	public void eliminatePylon(){
-		customArenaVisuals.updateState();
+		if (customArenaVisuals != null) customArenaVisuals.updateState();
 		int pylonsRemaining = 0;
 		for (Mob m : mobs){
-			if (m instanceof NewDM300){
-				((NewDM300) m).loseSupercharge();
+			if (m instanceof DM300){
+				((DM300) m).loseSupercharge();
 				PylonEnergy.energySourceSprite = m.sprite;
 			} else if (m instanceof Pylon){
 				pylonsRemaining++;
 			}
 		}
-		if (pylonsRemaining > 2) {
+		int finalPylonsRemaining = Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 1 : 2;
+		if (pylonsRemaining > finalPylonsRemaining) {
 			blobs.get(PylonEnergy.class).fullyClear();
 		}
 	}
@@ -368,7 +369,7 @@ public class NewCavesBossLevel extends Level {
 	public String tileDesc( int tile ) {
 		switch (tile) {
 			case Terrain.WATER:
-				return super.tileDesc( tile ) + "\n\n" + Messages.get(NewCavesBossLevel.class, "water_desc");
+				return super.tileDesc( tile ) + "\n\n" + Messages.get(CavesBossLevel.class, "water_desc");
 			case Terrain.ENTRANCE:
 				return Messages.get(CavesLevel.class, "entrance_desc");
 			case Terrain.EXIT:
@@ -713,9 +714,9 @@ public class NewCavesBossLevel extends Level {
 		public String name(int tileX, int tileY) {
 			int i = tileX + tileW*(tileY + this.tileY);
 			if (Dungeon.level.map[i] == Terrain.INACTIVE_TRAP){
-				return Messages.get(NewCavesBossLevel.class, "wires_name");
+				return Messages.get(CavesBossLevel.class, "wires_name");
 			} else if (gate.inside(Dungeon.level.cellToPoint(i))){
-				return Messages.get(NewCavesBossLevel.class, "gate_name");
+				return Messages.get(CavesBossLevel.class, "gate_name");
 			}
 
 			return super.name(tileX, tileY);
@@ -725,12 +726,12 @@ public class NewCavesBossLevel extends Level {
 		public String desc(int tileX, int tileY) {
 			int i = tileX + tileW*(tileY + this.tileY);
 			if (Dungeon.level.map[i] == Terrain.INACTIVE_TRAP){
-				return Messages.get(NewCavesBossLevel.class, "wires_desc");
+				return Messages.get(CavesBossLevel.class, "wires_desc");
 			} else if (gate.inside(Dungeon.level.cellToPoint(i))){
 				if (Dungeon.level.solid[i]){
-					return Messages.get(NewCavesBossLevel.class, "gate_desc");
+					return Messages.get(CavesBossLevel.class, "gate_desc");
 				} else {
-					return Messages.get(NewCavesBossLevel.class, "gate_desc_broken");
+					return Messages.get(CavesBossLevel.class, "gate_desc_broken");
 				}
 			}
 			return super.desc(tileX, tileY);
@@ -768,13 +769,13 @@ public class NewCavesBossLevel extends Level {
 					if (off[cell] > 0){
 
 						Char ch = Actor.findChar(cell);
-						if (ch != null && !(ch instanceof NewDM300)) {
+						if (ch != null && !(ch instanceof DM300)) {
 							Sample.INSTANCE.play( Assets.Sounds.LIGHTNING );
 							ch.damage( Random.NormalIntRange(6, 12), Electricity.class);
 							ch.sprite.flash();
 
 							if (ch == Dungeon.hero && !ch.isAlive()) {
-								Dungeon.fail(NewDM300.class);
+								Dungeon.fail(DM300.class);
 								GLog.n( Messages.get(Electricity.class, "ondeath") );
 							}
 						}
@@ -799,7 +800,7 @@ public class NewCavesBossLevel extends Level {
 						if (c instanceof Pylon && c.alignment != Char.Alignment.NEUTRAL){
 							energySourceSprite = c.sprite;
 							break;
-						} else if (c instanceof OldDM300){
+						} else if (c instanceof DM300){
 							energySourceSprite = c.sprite;
 						}
 					}
@@ -827,7 +828,7 @@ public class NewCavesBossLevel extends Level {
 
 		@Override
 		public String tileDesc() {
-			return Messages.get(NewCavesBossLevel.class, "energy_desc");
+			return Messages.get(CavesBossLevel.class, "energy_desc");
 		}
 
 		@Override

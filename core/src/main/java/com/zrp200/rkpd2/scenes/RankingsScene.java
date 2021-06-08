@@ -188,7 +188,7 @@ public class RankingsScene extends PixelScene {
 			int odd = pos % 2;
 			
 			if (rec.win) {
-				shield.view( rec.cause == RatKing.class ? ItemSpriteSheet.CROWN : ItemSpriteSheet.AMULET, null );
+				shield.view( rec.cause == RatKing.class ? ItemSpriteSheet.ARMOR_RAT_KING : ItemSpriteSheet.AMULET, null );
 				position.hardlight( TEXT_WIN[odd] );
 				desc.hardlight( TEXT_WIN[odd] );
 				depth.hardlight( TEXT_WIN[odd] );

@@ -21,6 +21,15 @@
 
 package com.zrp200.rkpd2.items.wands;
 
+import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.Group;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Callback;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.PointF;
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
@@ -31,23 +40,12 @@ import com.zrp200.rkpd2.effects.MagicMissile;
 import com.zrp200.rkpd2.effects.Pushing;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.enchantments.Elastic;
-import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.levels.features.Door;
 import com.zrp200.rkpd2.levels.traps.TenguDartTrap;
 import com.zrp200.rkpd2.mechanics.Ballistica;
-import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.tiles.DungeonTilemap;
-import com.zrp200.rkpd2.utils.GLog;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.Group;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Callback;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.PointF;
-import com.watabou.utils.Random;
 
 public class WandOfBlastWave extends DamageWand {
 
@@ -66,7 +64,7 @@ public class WandOfBlastWave extends DamageWand {
 	}
 
 	@Override
-	protected void onZap(Ballistica bolt) {
+	public void onZap(Ballistica bolt) {
 		Sample.INSTANCE.play( Assets.Sounds.BLAST );
 		BlastWave.blast(bolt.collisionPos);
 
@@ -83,27 +81,25 @@ public class WandOfBlastWave extends DamageWand {
 
 			if (ch != null){
 				int damage = damageRoll();
-				processSoulMark(ch, chargesPerCast(), damage);
+				wandProc(ch, chargesPerCast(), damage);
 				if (ch.alignment != Char.Alignment.ALLY) ch.damage(damage, this);
 
-				if (ch.isAlive() && ch.pos == bolt.collisionPos + i) {
+				if (ch.pos == bolt.collisionPos + i) {
 					Ballistica trajectory = new Ballistica(ch.pos, ch.pos + i, Ballistica.MAGIC_BOLT);
 					int strength = 1 + Math.round(buffedLvl() / 2f);
 					throwChar(ch, trajectory, strength, false);
-				} else if (ch == Dungeon.hero){
-					Dungeon.fail( getClass() );
-					GLog.n( Messages.get( this, "ondeath") );
 				}
+
 			}
 		}
 
 		//throws the char at the center of the blast
 		Char ch = Actor.findChar(bolt.collisionPos);
 		if (ch != null){
-			processSoulMark(ch, chargesPerCast());
+			wandProc(ch, chargesPerCast());
 			ch.damage(damageRoll(), this);
 
-			if (ch.isAlive() && bolt.path.size() > bolt.dist+1 && ch.pos == bolt.collisionPos) {
+			if (bolt.path.size() > bolt.dist+1 && ch.pos == bolt.collisionPos) {
 				Ballistica trajectory = new Ballistica(ch.pos, bolt.path.get(bolt.dist + 1), Ballistica.MAGIC_BOLT);
 				int strength = buffedLvl() + 3;
 				throwChar(ch, trajectory, strength, false);
@@ -190,7 +186,7 @@ public class WandOfBlastWave extends DamageWand {
 	}
 
 	@Override
-	protected void fx(Ballistica bolt, Callback callback) {
+	public void fx(Ballistica bolt, Callback callback) {
 		MagicMissile.boltFromChar( curUser.sprite.parent,
 				MagicMissile.FORCE,
 				curUser.sprite,

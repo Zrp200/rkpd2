@@ -32,6 +32,7 @@ import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.plants.Plant;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.windows.WndBag;
 import com.zrp200.rkpd2.windows.WndOptions;
@@ -200,7 +201,8 @@ public class Dart extends MissileWeapon {
 			
 			TippedDart tipResult = TippedDart.getTipped((Plant.Seed) item, 1);
 			
-			GameScene.show(new WndOptions(Messages.get(Dart.class, "tip_title"),
+			GameScene.show(new WndOptions( new ItemSprite(item),
+					Messages.titleCase(item.name()),
 					Messages.get(Dart.class, "tip_desc", tipResult.name()) + "\n\n" + tipResult.desc(),
 					options){
 				

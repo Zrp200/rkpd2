@@ -21,7 +21,9 @@
 
 package com.zrp200.rkpd2.actors.mobs;
 
+import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
 import com.zrp200.rkpd2.sprites.RatSprite;
 import com.watabou.utils.Random;
 
@@ -35,7 +37,16 @@ public class Rat extends Mob {
 		
 		maxLvl = 5;
 	}
-	
+
+	@Override
+	protected boolean act() {
+		if (Dungeon.level.heroFOV[pos] && Dungeon.hero.armorAbility instanceof Ratmogrify){
+			alignment = Alignment.ALLY;
+			if (state == SLEEPING) state = WANDERING;
+		}
+		return super.act();
+	}
+
 	@Override
 	public int damageRoll() {
 		return Random.NormalIntRange( 1, 4 );

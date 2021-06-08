@@ -21,11 +21,18 @@
 
 package com.zrp200.rkpd2.levels;
 
+import com.zrp200.rkpd2.scenes.GameScene;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.Group;
+import com.watabou.noosa.particles.Emitter;
+import com.watabou.noosa.particles.PixelParticle;
+import com.watabou.utils.ColorMath;
+import com.watabou.utils.PointF;
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.mobs.npcs.Ghost;
 import com.zrp200.rkpd2.effects.Ripple;
-import com.zrp200.rkpd2.items.DewVial;
 import com.zrp200.rkpd2.levels.painters.Painter;
 import com.zrp200.rkpd2.levels.painters.SewerPainter;
 import com.zrp200.rkpd2.levels.traps.AlarmTrap;
@@ -39,15 +46,7 @@ import com.zrp200.rkpd2.levels.traps.TeleportationTrap;
 import com.zrp200.rkpd2.levels.traps.ToxicTrap;
 import com.zrp200.rkpd2.levels.traps.WornDartTrap;
 import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.tiles.DungeonTilemap;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.Group;
-import com.watabou.noosa.particles.Emitter;
-import com.watabou.noosa.particles.PixelParticle;
-import com.watabou.utils.ColorMath;
-import com.watabou.utils.PointF;
-import com.watabou.utils.Random;
 
 public class SewerLevel extends RegularLevel {
 
@@ -58,16 +57,16 @@ public class SewerLevel extends RegularLevel {
 	
 	@Override
 	protected int standardRooms(boolean forceMax) {
-		if (forceMax) return 7;
-		//5 to 7, average 5.57
-		return 5+Random.chances(new float[]{4, 2, 1});
+		if (forceMax) return 6;
+		//4 to 6, average 5
+		return 4+Random.chances(new float[]{1, 3, 1});
 	}
 	
 	@Override
 	protected int specialRooms(boolean forceMax) {
-		if (forceMax) return 3;
-		//1 to 3, average 1.8
-		return 1+Random.chances(new float[]{4, 4, 2});
+		if (forceMax) return 2;
+		//1 to 2, average 1.8
+		return 1+Random.chances(new float[]{1, 4});
 	}
 	
 	@Override
@@ -110,11 +109,6 @@ public class SewerLevel extends RegularLevel {
 	
 	@Override
 	protected void createItems() {
-		if (!Dungeon.LimitedDrops.DEW_VIAL.dropped()) {
-			addItemToSpawn( new DewVial() );
-			Dungeon.LimitedDrops.DEW_VIAL.drop();
-		}
-
 		Ghost.Quest.spawn( this );
 		
 		super.createItems();

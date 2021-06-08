@@ -21,11 +21,21 @@
 
 package com.zrp200.rkpd2.windows;
 
+import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.items.artifacts.UnstableSpellbook;
+import com.zrp200.rkpd2.items.wands.Wand;
+import com.watabou.gltextures.TextureCache;
+import com.watabou.input.KeyBindings;
+import com.watabou.input.KeyEvent;
+import com.watabou.noosa.BitmapText;
+import com.watabou.noosa.ColorBlock;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.audio.Sample;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.SPDAction;
 import com.zrp200.rkpd2.actors.hero.Belongings;
-import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.mobs.npcs.Shopkeeper;
 import com.zrp200.rkpd2.items.EquipableItem;
 import com.zrp200.rkpd2.items.Gold;
@@ -40,12 +50,10 @@ import com.zrp200.rkpd2.items.bags.ScrollHolder;
 import com.zrp200.rkpd2.items.bags.VelvetPouch;
 import com.zrp200.rkpd2.items.food.Food;
 import com.zrp200.rkpd2.items.potions.Potion;
-import com.zrp200.rkpd2.items.scrolls.Scroll;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRemoveCurse;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfTransmutation;
 import com.zrp200.rkpd2.items.spells.Recycle;
 import com.zrp200.rkpd2.items.stones.StoneOfIntuition;
-import com.zrp200.rkpd2.items.wands.Wand;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.melee.MeleeWeapon;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
@@ -57,14 +65,6 @@ import com.zrp200.rkpd2.ui.Icons;
 import com.zrp200.rkpd2.ui.ItemSlot;
 import com.zrp200.rkpd2.ui.QuickSlotButton;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
-import com.watabou.gltextures.TextureCache;
-import com.watabou.input.KeyBindings;
-import com.watabou.input.KeyEvent;
-import com.watabou.noosa.BitmapText;
-import com.watabou.noosa.ColorBlock;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.audio.Sample;
 
 public class WndBag extends WndTabbed {
 	
@@ -443,7 +443,7 @@ public class WndBag extends WndTabbed {
 						mode == Mode.SEED && SandalsOfNature.canUseSeed(item) ||
 						mode == Mode.FOOD && (item instanceof Food) ||
 						mode == Mode.POTION && (item instanceof Potion) ||
-						mode == Mode.SCROLL && (item instanceof Scroll) ||
+						mode == Mode.SCROLL && UnstableSpellbook.canUseScroll(item) ||
 						mode == Mode.INTUITIONABLE && StoneOfIntuition.isIntuitionable(item) ||
 						mode == Mode.EQUIPMENT && (item instanceof EquipableItem || item instanceof Wand) ||
 						mode == Mode.ALCHEMY && Recipe.usableInRecipe(item) ||

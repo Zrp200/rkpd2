@@ -43,7 +43,6 @@ import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.noosa.tweeners.AlphaTweener;
 import com.watabou.utils.Bundle;
 
 import java.util.ArrayList;
@@ -97,18 +96,15 @@ public class CloakOfShadows extends Artifact {
 					Sample.INSTANCE.play(Assets.Sounds.MELD);
 					activeBuff = activeBuff();
 					activeBuff.attachTo(hero);
-					if (hero.sprite.parent != null) {
-						hero.sprite.parent.add(new AlphaTweener(hero.sprite, 0.4f, 0.4f));
-					} else {
-						hero.sprite.alpha(0.4f);
-					}
 					Talent.onArtifactUsed(Dungeon.hero);
 					hero.sprite.operate(hero.pos);
 				}
 			} else {
 				activeBuff.detach();
 				activeBuff = null;
-				hero.spend( 1f );
+				if (hero.buff(Preparation.class) != null){
+					hero.buff(Preparation.class).detach();
+				}
 				hero.sprite.operate( hero.pos );
 			}
 
@@ -233,7 +229,7 @@ public class CloakOfShadows extends Artifact {
 					turnsToCharge /= RingOfEnergy.artifactChargeMultiplier(target);
 					float chargeToGain = (1f / turnsToCharge);
 					if (!isEquipped(Dungeon.hero)){
-						chargeToGain *= (Dungeon.hero.hasTalent(Talent.LIGHT_CLOAK) ? .25f : 0.1f) *
+						chargeToGain *= (Dungeon.hero.hasTalent(Talent.LIGHT_CLOAK) ? 1/3f : 0.1f) *
 								Dungeon.hero.pointsInTalent(Talent.LIGHT_CLOAK,Talent.RK_FREERUNNER);
 					}
 					partialCharge += chargeToGain;

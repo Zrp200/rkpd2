@@ -35,7 +35,7 @@ import com.zrp200.rkpd2.actors.blobs.StenchGas;
 import com.zrp200.rkpd2.actors.blobs.StormCloud;
 import com.zrp200.rkpd2.actors.blobs.ToxicGas;
 import com.zrp200.rkpd2.actors.blobs.Web;
-import com.zrp200.rkpd2.actors.mobs.NewTengu;
+import com.zrp200.rkpd2.actors.mobs.Tengu;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 
@@ -79,8 +79,8 @@ public class BlobImmunity extends FlavourBuff {
 		immunities.add( ToxicGas.class );
 		immunities.add( Web.class );
 
-		immunities.add(NewTengu.FireAbility.FireBlob.class);
-		immunities.add(NewTengu.BombAbility.BombBlob.class);
+		immunities.add(Tengu.FireAbility.FireBlob.class);
+		immunities.add(Tengu.BombAbility.BombBlob.class);
 	}
 
 	@Override

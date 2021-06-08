@@ -28,7 +28,7 @@ import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 
-public class ScrollEmpower extends FlavourBuff {
+public class ScrollEmpower extends Buff {
 
 	{
 		type = buffType.POSITIVE;
@@ -51,19 +51,13 @@ public class ScrollEmpower extends FlavourBuff {
 	}
 
 	@Override
-	public float iconFadePercent() {
-		int duration = Dungeon.hero != null && Dungeon.hero.hasTalent(Talent.EMPOWERING_SCROLLS) ? 40 : 20;
-		return Math.max(0, (duration-visualcooldown()) / duration);
-	}
-
-	@Override
 	public String toString() {
 		return Messages.get(this, "name");
 	}
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", Dungeon.hero.heroClass.title(), (int)visualcooldown(), Dungeon.hero.pointsInTalent(Talent.EMPOWERING_SCROLLS,Talent.RK_BATTLEMAGE));
+		return Messages.get(this, "desc", Dungeon.hero.pointsInTalent(Talent.EMPOWERING_SCROLLS,Talent.RK_BATTLEMAGE));
 	}
 
 }

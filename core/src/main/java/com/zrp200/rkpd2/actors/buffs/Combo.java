@@ -28,7 +28,6 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
-import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.items.BrokenSeal;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.wands.WandOfBlastWave;
@@ -36,12 +35,12 @@ import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
-import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.ActionIndicator;
 import com.zrp200.rkpd2.ui.AttackIndicator;
 import com.zrp200.rkpd2.ui.BuffIndicator;
+import com.zrp200.rkpd2.utils.BArray;
 import com.zrp200.rkpd2.utils.GLog;
 import com.zrp200.rkpd2.windows.WndCombo;
 import com.watabou.noosa.Image;
@@ -93,7 +92,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 
 		if (!enemy.isAlive() || (enemy.buff(Corruption.class) != null && enemy.HP == enemy.HT)){
 			Hero hero = (Hero)target;
-			int multiplier = hero.hasTalent(Talent.CLEAVE) ? 10 : 15;
+			int multiplier = hero.hasTalent(Talent.CLEAVE) ? 15 : 10;
 			comboTime = Math.max(comboTime, multiplier*hero.pointsInTalent(Talent.CLEAVE,Talent.RK_GLADIATOR));
 		}
 		incCombo();
@@ -122,6 +121,10 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		}
 	}
 
+	public void addTime( float time ){
+		comboTime += time;
+	}
+
 	@Override
 	public void detach() {
 		super.detach();
@@ -140,7 +143,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc",((Hero)target).subClass.title());
+		return Messages.get(this, "desc",((Hero)target).subClass.title(),count, dispTurns(comboTime));
 	}
 
 	private static final String COUNT = "count";
@@ -214,8 +217,16 @@ public class Combo extends Buff implements ActionIndicator.Action {
 			this.tintColor = tintColor;
 		}
 
-		public String desc(){
-			return Messages.get(this, name()+"_desc");
+		public String desc(int count){
+			switch (this){
+				default:
+					return Messages.get(this, name()+"_desc");
+				case SLAM:
+					return Messages.get(this, name()+"_desc", count*20);
+				case CRUSH:
+					return Messages.get(this, name()+"_desc", count*25);
+			}
+
 		}
 
 	}
@@ -295,94 +306,75 @@ public class Combo extends Buff implements ActionIndicator.Action {
 
 	private static ComboMove moveBeingUsed;
 
-	private void doAttack(final Char enemy){
+	private void doAttack(final Char enemy) {
 
 		AttackIndicator.target(enemy);
 		Buff.detach(target, Preparation.class); // not the point, otherwise this would be all that's done.
 
 		boolean wasAlly = enemy.alignment == target.alignment;
-		Hero hero = (Hero)target;
+		Hero hero = (Hero) target;
 
-		if (enemy.defenseSkill(target) >= Char.INFINITE_EVASION){
-			enemy.sprite.showStatus( CharSprite.NEUTRAL, enemy.defenseVerb() );
-			Sample.INSTANCE.play(Assets.Sounds.MISS);
+		float dmgMulti = 1f;
+		int dmgBonus = 0;
+		// todo reimplement this, v0.9.3 changes broke this code.
+		// if(hero.hasTalent(Talent.SKILL)) dmg = Math.max(target.damageRoll(), dmg); // free reroll. This will be rather...noticable on fury.
 
-			} else if (enemy.isInvulnerable(target.getClass())){
-			enemy.sprite.showStatus( CharSprite.POSITIVE, Messages.get(Char.class, "invulnerable") );
-			Sample.INSTANCE.play(Assets.Sounds.MISS);
-
-			} else {
-
-			int dmg = target.damageRoll();
-			if(hero.hasTalent(Talent.SKILL)) dmg = Math.max(target.damageRoll(), dmg); // free reroll. This will be rather...noticable on fury.
-
-			//variance in damage dealt
-			switch (moveBeingUsed) {
-				case CLOBBER:
-					dmg = 0;
-					break;
-				case SLAM:
+		//variance in damage dealt
+		switch (moveBeingUsed) {
+			case CLOBBER:
+				dmgMulti = 0;
+				break;
+			case SLAM:
 					// reroll armor for gladiator
-					int drRoll = target.drRoll();
-					if(hero.hasTalent(Talent.SKILL)) drRoll = Math.max(drRoll, target.drRoll());
-					dmg += Math.round(drRoll * count/5f);
-					break;
-				case CRUSH:
-					dmg = Math.round(dmg * 0.25f*count);
-					break;
-				case FURY:
-					dmg = Math.round(dmg * 0.6f);
-					break;
-			}
+					dmgBonus = target.drRoll();
+					if(hero.hasTalent(Talent.SKILL)) dmgBonus = Math.max(dmgBonus, target.drRoll());
+					dmgBonus = Math.round(dmgBonus * count / 5f);
+				break;
+			case CRUSH:
+				dmgMulti = 1f + (0.25f * count);
+				break;
+			case FURY:
+				dmgMulti = 0.6f;
+				break;
+		}
 
-			dmg = enemy.defenseProc(target, dmg);
-			dmg -= enemy.drRoll();
-
-			if (enemy.buff(Vulnerable.class) != null) {
-				dmg *= 1.33f;
-			}
-
-			dmg = target.attackProc(enemy, dmg);
-			enemy.damage(dmg, target);
-
-			//special effects
+		if (hero.attack(enemy, dmgMulti, dmgBonus, Char.INFINITE_ACCURACY)){
+			//special on-hit effects
 			switch (moveBeingUsed) {
 				case CLOBBER:
-					hit( enemy );
-					if (enemy.isAlive()) {
-						//trace a ballistica to our target (which will also extend past them
-						Ballistica trajectory = new Ballistica(target.pos, enemy.pos, Ballistica.STOP_TARGET);
-						//trim it to just be the part that goes past them
-						trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);
-						//knock them back along that ballistica, ensuring they don't fall into a pit
-						int dist = 2;
-						if (hero.pointsInTalent(Talent.ENHANCED_COMBO) >= 1 && count >= 4 || count >= 7 && hero.pointsInTalent(Talent.RK_GLADIATOR) >= 1){
-							dist ++;
-							Buff.prolong(enemy, Vertigo.class, 3);
-						} else if (!enemy.flying) {
-							while (dist > trajectory.dist ||
-									(dist > 0 && Dungeon.level.pit[trajectory.path.get(dist)])) {
-								dist--;
-							}
+					hit(enemy);
+					//trace a ballistica to our target (which will also extend past them
+					Ballistica trajectory = new Ballistica(target.pos, enemy.pos, Ballistica.STOP_TARGET);
+					//trim it to just be the part that goes past them
+					trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);
+					//knock them back along that ballistica, ensuring they don't fall into a pit
+					int dist = 2;
+					if (enemy.isAlive() && (hero.pointsInTalent(Talent.ENHANCED_COMBO) >= 1 && count >= 4 || count >= 7 && hero.pointsInTalent(Talent.RK_GLADIATOR) >= 1)){
+						dist++;
+						Buff.prolong(enemy, Vertigo.class, 3);
+					} else if (!enemy.flying) {
+						while (dist > trajectory.dist ||
+								(dist > 0 && Dungeon.level.pit[trajectory.path.get(dist)])) {
+							dist--;
 						}
-						WandOfBlastWave.throwChar(enemy, trajectory, dist, true, false);
 					}
+					WandOfBlastWave.throwChar(enemy, trajectory, dist, true, false);
 					break;
 				case PARRY:
-					hit( enemy );
+					hit(enemy);
 					break;
 				case CRUSH:
 					WandOfBlastWave.BlastWave.blast(enemy.pos);
-					PathFinder.buildDistanceMap(target.pos, Dungeon.level.passable, 3);
-					for (Char ch : Actor.chars()){
+					PathFinder.buildDistanceMap(target.pos, BArray.not(Dungeon.level.solid, null), 3);
+					for (Char ch : Actor.chars()) {
 						if (ch != enemy && ch.alignment == Char.Alignment.ENEMY
-								&& PathFinder.distance[ch.pos] < Integer.MAX_VALUE){
-							int aoeHit = Math.round(target.damageRoll() * 0.25f*count);
+								&& PathFinder.distance[ch.pos] < Integer.MAX_VALUE) {
+							int aoeHit = Math.round(target.damageRoll() * 0.25f * count);
 							aoeHit /= 2;
 							aoeHit -= ch.drRoll();
 							if (ch.buff(Vulnerable.class) != null) aoeHit *= 1.33f;
 							ch.damage(aoeHit, target);
-							ch.sprite.bloodBurstA(target.sprite.center(), dmg);
+							ch.sprite.bloodBurstA(target.sprite.center(), aoeHit);
 							ch.sprite.flash();
 
 							if (!ch.isAlive()) {
@@ -399,19 +391,6 @@ public class Combo extends Buff implements ActionIndicator.Action {
 					//nothing
 					break;
 			}
-
-				if (target.buff(FireImbue.class) != null)   target.buff(FireImbue.class).proc(enemy);
-				if (target.buff(FrostImbue.class) != null)  target.buff(FrostImbue.class).proc(enemy);
-
-			target.hitSound(Random.Float(0.87f, 1.15f));
-			if (moveBeingUsed != ComboMove.FURY) Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);
-			enemy.sprite.bloodBurstA(target.sprite.center(), dmg);
-			enemy.sprite.flash();
-
-			if (!enemy.isAlive()) {
-				GLog.i(Messages.capitalize(Messages.get(Char.class, "defeat", enemy.name())));
-			}
-
 		}
 
 		Invisibility.dispel();

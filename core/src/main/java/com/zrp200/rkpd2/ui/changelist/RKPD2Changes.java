@@ -23,7 +23,7 @@ package com.zrp200.rkpd2.ui.changelist;
 
 import com.watabou.noosa.Image;
 import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.items.ArmorKit;
+import com.zrp200.rkpd2.items.TengusMask;
 import com.zrp200.rkpd2.items.armor.WarriorArmor;
 import com.zrp200.rkpd2.items.bags.VelvetPouch;
 import com.zrp200.rkpd2.items.wands.WandOfFirebolt;
@@ -87,7 +87,7 @@ public class RKPD2Changes {
                             + "\n\n_-_ Changed Rat King's hero description in Hero Select and the descriptions of many of his t3 talents." 
                             + "\n\n_-_ Added a note about how to toggle special actions for Rat King's subclass, and added a hotkey for toggling special action for desktop users." 
                             + "\n\n_-_ Added unique dialog for Ambitious Imp."));
-                    addButton(new ChangeButton(new ItemSprite(new ArmorKit()), "Epic Armor", ""
+                    addButton(new ChangeButton(new ItemSprite(new TengusMask()), "Epic Armor", ""
                             + "_-_ Overcharging is now standardized to +100% per overcharge, down from 200% for everyone but Rat King."
                             + "\n\n_-_ Rogue Garb now has no limit on the distance it can jump."
                             + "\n\n_-_ Huntress Spectral Blades now has no distance limit."

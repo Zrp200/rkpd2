@@ -49,7 +49,7 @@ import com.watabou.utils.Rect;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class NewCityBossLevel extends Level {
+public class CityBossLevel extends Level {
 
 	{
 		color1 = 0x4b6636;
@@ -270,14 +270,10 @@ public class NewCityBossLevel extends Level {
 	public void seal() {
 		super.seal();
 
-		for (Mob m : mobs){
-			//bring the first ally with you
-			if (m.alignment == Char.Alignment.ALLY && !m.properties().contains(Char.Property.IMMOVABLE)){
-				m.pos = Dungeon.hero.pos + (Random.Int(2) == 0 ? +1 : -1);
-				m.sprite.place(m.pos);
-				break;
-			}
-		}
+		//moves intelligent allies with the hero, preferring closer pos to entrance door
+		int doorPos = pointToCell(new Point(arena.left + arena.width()/2, arena.bottom));
+		Mob.holdAllies(this, doorPos);
+		Mob.restoreAllies(this, Dungeon.hero.pos, doorPos);
 
 		DwarfKing boss = new DwarfKing();
 		boss.state = boss.WANDERING;
@@ -509,9 +505,9 @@ public class NewCityBossLevel extends Level {
 				//DK arena tiles
 			} else {
 				if (Dungeon.level.map[cell] == Terrain.STATUE_SP){
-					return Messages.get(NewCityBossLevel.class, "throne_name");
+					return Messages.get(CityBossLevel.class, "throne_name");
 				} else if (Dungeon.level.map[cell] == Terrain.PEDESTAL){
-					return Messages.get(NewCityBossLevel.class, "summoning_name");
+					return Messages.get(CityBossLevel.class, "summoning_name");
 				}
 			}
 
@@ -535,9 +531,9 @@ public class NewCityBossLevel extends Level {
 			//DK arena tiles
 			} else {
 				if (Dungeon.level.map[cell] == Terrain.STATUE_SP){
-					return Messages.get(NewCityBossLevel.class, "throne_desc");
+					return Messages.get(CityBossLevel.class, "throne_desc");
 				} else if (Dungeon.level.map[cell] == Terrain.PEDESTAL){
-					return Messages.get(NewCityBossLevel.class, "summoning_desc");
+					return Messages.get(CityBossLevel.class, "summoning_desc");
 				}
 			}
 

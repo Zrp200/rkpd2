@@ -21,83 +21,12 @@
 
 package com.zrp200.rkpd2.items.armor;
 
-import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.actors.Actor;
-import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.Invisibility;
-import com.zrp200.rkpd2.actors.buffs.Paralysis;
-import com.zrp200.rkpd2.effects.CellEmitter;
-import com.zrp200.rkpd2.effects.Speck;
-import com.zrp200.rkpd2.mechanics.Ballistica;
-import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.scenes.CellSelector;
-import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
-import com.watabou.noosa.Camera;
-import com.watabou.utils.Callback;
-import com.watabou.utils.PathFinder;
 
 public class WarriorArmor extends ClassArmor {
-	
-	private static int LEAP_TIME	= 1;
-	private static int SHOCK_TIME	= 5;
 
 	{
 		image = ItemSpriteSheet.ARMOR_WARRIOR;
 	}
 
-	@Override
-	public void doSpecial() {
-		GameScene.selectCell( leaper );
-	}
-	
-	protected CellSelector.Listener leaper = new  CellSelector.Listener() {
-		
-		@Override
-		public void onSelect( Integer target ) {
-			if (target != null && target != curUser.pos) {
-				
-				Ballistica route = new Ballistica(curUser.pos, target, Ballistica.PROJECTILE);
-				int cell = route.collisionPos;
-
-				//can't occupy the same cell as another char, so move back one.
-				if (Actor.findChar( cell ) != null && cell != curUser.pos)
-					cell = route.path.get(route.dist-1);
-
-				charge -= 35;
-				updateQuickslot();
-
-				final int dest = cell;
-				curUser.busy();
-				curUser.sprite.jump(curUser.pos, cell, new Callback() {
-					@Override
-					public void call() {
-						curUser.move(dest);
-						Dungeon.level.occupyCell(curUser);
-						Dungeon.observe();
-						GameScene.updateFog();
-
-						for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
-							Char mob = Actor.findChar(curUser.pos + PathFinder.NEIGHBOURS8[i]);
-							if (mob != null && mob != curUser && mob.alignment != Char.Alignment.ALLY) {
-								Buff.prolong(mob, Paralysis.class, SHOCK_TIME);
-							}
-						}
-
-						CellEmitter.center(dest).burst(Speck.factory(Speck.DUST), 10);
-						Camera.main.shake(2, 0.5f);
-
-						Invisibility.dispel();
-						curUser.spendAndNext(LEAP_TIME);
-					}
-				});
-			}
-		}
-		
-		@Override
-		public String prompt() {
-			return Messages.get(WarriorArmor.class, "prompt");
-		}
-	};
 }

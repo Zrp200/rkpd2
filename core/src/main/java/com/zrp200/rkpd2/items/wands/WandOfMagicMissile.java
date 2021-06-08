@@ -21,6 +21,10 @@
 
 package com.zrp200.rkpd2.items.wands;
 
+import com.watabou.noosa.Image;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
@@ -29,16 +33,10 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.effects.SpellSprite;
 import com.zrp200.rkpd2.items.weapon.Weapon;
-import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.BuffIndicator;
-import com.zrp200.rkpd2.ui.QuickSlotButton;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.Random;
 
 public class WandOfMagicMissile extends DamageWand {
 
@@ -55,13 +53,13 @@ public class WandOfMagicMissile extends DamageWand {
 	}
 	
 	@Override
-	protected void onZap( Ballistica bolt ) {
+	public void onZap(Ballistica bolt) {
 				
 		Char ch = Actor.findChar( bolt.collisionPos );
 		if (ch != null) {
 
 			int damage = damageRoll();
-			processSoulMark(ch, chargesPerCast(), damage);
+			wandProc(ch, chargesPerCast(), damage);
 			ch.damage(damage, this);
 			Sample.INSTANCE.play( Assets.Sounds.HIT_MAGIC, 1, Random.Float(0.87f, 1.15f) );
 
@@ -116,7 +114,7 @@ public class WandOfMagicMissile extends DamageWand {
 		@Override
 		public void detach() {
 			super.detach();
-			QuickSlotButton.refresh();
+			updateQuickslot();
 		}
 
 		public int level(){

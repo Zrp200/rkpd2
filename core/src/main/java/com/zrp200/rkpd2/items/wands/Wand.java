@@ -39,6 +39,7 @@ import com.zrp200.rkpd2.actors.buffs.SoulMark;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.actors.hero.abilities.mage.WildMagic;
 import com.zrp200.rkpd2.effects.MagicMissile;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.artifacts.TalismanOfForesight;
@@ -119,7 +120,7 @@ public abstract class Wand extends Item {
 		return new Ballistica( user.pos, dst, collisionProperties ).collisionPos;
 	}
 
-	protected abstract void onZap(Ballistica attack );
+	public abstract void onZap(Ballistica attack);
 
 	public abstract void onHit(Weapon staff, Char attacker, Char defender, int damage);
 
@@ -177,17 +178,17 @@ public abstract class Wand extends Item {
 		charger.setScaleFactor( chargeScaleFactor );
 	}
 
-	protected void processSoulMark(Char target, int chargesUsed) {
-		processSoulMark(target, chargesUsed, 0);
+	protected void wandProc(Char target, int chargesUsed) {
+		wandProc(target, chargesUsed, 0);
 	}
-	protected void processSoulMark(Char target, int chargesUsed, int damage){
+	protected void wandProc(Char target, int chargesUsed, int damage){
 		// staff logic is handled here actually.
 		MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
-		processSoulMark(target, buffedLvl(), chargesUsed, this instanceof DamageWand, damage, staff != null && staff.wand() == this);
+		wandProc(target, buffedLvl(), chargesUsed, this instanceof DamageWand, damage, staff != null && staff.wand() == this);
 	}
 
-	//TODO some naming issues here. Consider renaming this method and externalizing char awareness buff
-	protected static void processSoulMark(Char target, int wandLevel, int chargesUsed, boolean delay, int damage, boolean isStaff){
+	//TODO Consider externalizing char awareness buff
+	public static void wandProc(Char target, int wandLevel, int chargesUsed, boolean delay, int damage, boolean isStaff){
 		if (Dungeon.hero.hasTalent(Talent.ARCANE_VISION,Talent.KINGS_VISION)) {
 			int dur = 5 + 5*Dungeon.hero.pointsInTalent(Talent.ARCANE_VISION,Talent.KINGS_VISION);
 			if(Dungeon.hero.hasTalent(Talent.ARCANE_VISION)) dur *= 2;
@@ -327,6 +328,12 @@ public abstract class Wand extends Item {
 				lvl += 1+Dungeon.hero.pointsInTalent(Talent.PROJECTILE_MOMENTUM);
 			}
 
+			if (charger.target.buff(WildMagic.WildMagicTracker.class) != null){
+				int level = 2 + ((Hero)charger.target).pointsInTalent(Talent.WILD_POWER);
+				if (Random.Int(2) == 0) level++;
+				return level/2; // +1/+1.5/+2/+2.5/+3 at 0/1/2/3/4 talent points
+			}
+
 			if (charger.target.buff(ScrollEmpower.class) != null){
 				lvl += Dungeon.hero.pointsInTalent(Talent.EMPOWERING_SCROLLS,Talent.RK_BATTLEMAGE);
 			}
@@ -357,7 +364,7 @@ public abstract class Wand extends Item {
 		return 1;
 	}
 	
-	protected void fx( Ballistica bolt, Callback callback ) {
+	public void fx(Ballistica bolt, Callback callback) {
 		MagicMissile.boltFromChar( curUser.sprite.parent,
 				MagicMissile.MAGIC_MISSILE,
 				curUser.sprite,
@@ -407,13 +414,13 @@ public abstract class Wand extends Item {
 				&& charger.target == Dungeon.hero
 				&& !Dungeon.hero.belongings.contains(this)) {
 			if (curCharges == 0 && Dungeon.hero.hasTalent(Talent.BACKUP_BARRIER,Talent.NOBLE_CAUSE)) {
-				//grants 4/6 shielding
-			int shielding = 2*(1+Dungeon.hero.pointsInTalent(Talent.BACKUP_BARRIER,Talent.NOBLE_CAUSE));
+				//grants 3/5 shielding
+			int shielding = 1+Dungeon.hero.pointsInTalent(Talent.BACKUP_BARRIER,Talent.NOBLE_CAUSE);
 			if(Dungeon.hero.hasTalent(Talent.BACKUP_BARRIER)) shielding = (int)Math.ceil(shielding*1.5f);
 			Buff.affect(Dungeon.hero, Barrier.class).setShield(shielding);
 			}
 			if (Dungeon.hero.hasTalent(Talent.EMPOWERED_STRIKE,Talent.RK_BATTLEMAGE)){
-				Buff.prolong(Dungeon.hero, Talent.EmpoweredStrikeTracker.class, 5f);
+				Buff.prolong(Dungeon.hero, Talent.EmpoweredStrikeTracker.class, 10f);
 			}
 		}
 
@@ -502,7 +509,7 @@ public abstract class Wand extends Item {
 		availableUsesToID = USES_TO_ID/2f;
 	}
 
-	protected int collisionProperties( int target ){
+	public int collisionProperties(int target){
 		return collisionProperties;
 	}
 	

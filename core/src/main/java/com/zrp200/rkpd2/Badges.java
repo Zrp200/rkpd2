@@ -51,6 +51,7 @@ public class Badges {
 		MASTERY_ROGUE,
 		MASTERY_HUNTRESS,
 		MASTERY_RAT_KING,
+		FOUND_RATMOGRIFY,
 
 		//bronze
 		UNLOCK_MAGE                 ( 1 ),
@@ -683,7 +684,14 @@ public class Badges {
 			saveNeeded = true;
 		}
 	}
-	
+
+	public static void validateRatmogrify(){
+		if (!global.contains( Badge.FOUND_RATMOGRIFY )) {
+			global.add( Badge.FOUND_RATMOGRIFY );
+			saveNeeded = true;
+		}
+	}
+
 	public static void validateMageUnlock(){
 		if (Statistics.upgradesUsed >= 1 && !global.contains(Badge.UNLOCK_MAGE)){
 			displayBadge( Badge.UNLOCK_MAGE );
@@ -704,7 +712,7 @@ public class Badges {
 	public static void validateRatKingUnlock() {
 		if(!global.contains(Badge.UNLOCK_RAT_KING)) displayBadge(Badge.UNLOCK_RAT_KING);
 	}
-	
+
 	public static void validateMasteryCombo( int n ) {
 		if (!local.contains( Badge.MASTERY_COMBO ) && n == 10) {
 			Badge badge = Badge.MASTERY_COMBO;

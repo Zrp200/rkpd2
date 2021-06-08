@@ -259,7 +259,7 @@ public enum Icons {
 			return get( ROGUE );
 		case HUNTRESS:
 			return get( HUNTRESS );
-		case RAT_KING: return new ItemSprite(ItemSpriteSheet.CROWN);
+		case RAT_KING: return new ItemSprite(ItemSpriteSheet.ARMOR_RAT_KING);
 		}
 	}
 }

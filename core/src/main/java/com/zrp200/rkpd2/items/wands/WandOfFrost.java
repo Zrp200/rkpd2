@@ -55,7 +55,7 @@ public class WandOfFrost extends DamageWand {
 	}
 
 	@Override
-	protected void onZap(Ballistica bolt) {
+	public void onZap(Ballistica bolt) {
 
 		Heap heap = Dungeon.level.heaps.get(bolt.collisionPos);
 		if (heap != null) {
@@ -78,7 +78,7 @@ public class WandOfFrost extends DamageWand {
 				ch.sprite.burst( 0xFF99CCFF, buffedLvl() / 2 + 2 );
 			}
 
-			processSoulMark(ch, chargesPerCast(), damage);
+			wandProc(ch, chargesPerCast(), damage);
 			ch.damage(damage, this);
 			Sample.INSTANCE.play( Assets.Sounds.HIT_MAGIC, 1, 1.1f * Random.Float(0.87f, 1.15f) );
 
@@ -94,7 +94,7 @@ public class WandOfFrost extends DamageWand {
 	}
 
 	@Override
-	protected void fx(Ballistica bolt, Callback callback) {
+	public void fx(Ballistica bolt, Callback callback) {
 		MagicMissile.boltFromChar(curUser.sprite.parent,
 				MagicMissile.FROST,
 				curUser.sprite,

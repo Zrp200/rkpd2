@@ -47,6 +47,7 @@ import com.zrp200.rkpd2.items.wands.WandOfRegrowth;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
 import com.zrp200.rkpd2.windows.WndBag;
@@ -151,7 +152,10 @@ public class MagesStaff extends MeleeWeapon {
 	}
 
 	public void procBM() {
-
+		/*if (attacker.buff(Talent.EmpoweredStrikeTracker.class) != null){
+			attacker.buff(Talent.EmpoweredStrikeTracker.class).detach();
+			damage = Math.round( damage * (1f + Dungeon.hero.pointsInTalent(Talent.EMPOWERED_STRIKE)/4f));
+		}*/
 		if ((wand.curCharges >= wand.maxCharges || Dungeon.hero.hasTalent(Talent.EXCESS_CHARGE)) && Random.Int(Dungeon.hero.hasTalent(Talent.EXCESS_CHARGE)?4:5) < Dungeon.hero.pointsInTalent(Talent.EXCESS_CHARGE,Talent.RK_BATTLEMAGE)){
 			Buff.affect(Dungeon.hero, Barrier.class).setShield(buffedLvl()*2*wand.curCharges/wand.maxCharges);
 		}
@@ -421,7 +425,8 @@ public class MagesStaff extends MeleeWeapon {
 					}
 
 					GameScene.show(
-							new WndOptions("",
+							new WndOptions(new ItemSprite(item),
+									Messages.titleCase(item.name()),
 									bodyText,
 									Messages.get(MagesStaff.class, "yes"),
 									Messages.get(MagesStaff.class, "no")) {

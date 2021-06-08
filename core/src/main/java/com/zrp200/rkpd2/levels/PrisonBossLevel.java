@@ -21,8 +21,20 @@
 
 package com.zrp200.rkpd2.levels;
 
+import com.watabou.noosa.Camera;
+import com.watabou.noosa.Group;
+import com.watabou.noosa.Tilemap;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.noosa.tweeners.AlphaTweener;
+import com.watabou.utils.Bundlable;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Point;
+import com.watabou.utils.Random;
+import com.watabou.utils.Rect;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Bones;
+import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
@@ -31,7 +43,7 @@ import com.zrp200.rkpd2.actors.blobs.Regrowth;
 import com.zrp200.rkpd2.actors.blobs.StormCloud;
 import com.zrp200.rkpd2.actors.buffs.Doom;
 import com.zrp200.rkpd2.actors.mobs.Mob;
-import com.zrp200.rkpd2.actors.mobs.NewTengu;
+import com.zrp200.rkpd2.actors.mobs.Tengu;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.Heap;
@@ -47,21 +59,10 @@ import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.tiles.CustomTilemap;
 import com.zrp200.rkpd2.ui.TargetHealthIndicator;
 import com.zrp200.rkpd2.utils.BArray;
-import com.watabou.noosa.Camera;
-import com.watabou.noosa.Group;
-import com.watabou.noosa.Tilemap;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.noosa.tweeners.AlphaTweener;
-import com.watabou.utils.Bundlable;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Point;
-import com.watabou.utils.Random;
-import com.watabou.utils.Rect;
 
 import java.util.ArrayList;
 
-public class NewPrisonBossLevel extends Level {
+public class PrisonBossLevel extends Level {
 	
 	{
 		color1 = 0x6a723d;
@@ -81,7 +82,7 @@ public class NewPrisonBossLevel extends Level {
 	}
 	
 	private State state;
-	private NewTengu tengu;
+	private Tengu tengu;
 	
 	public State state(){
 		return state;
@@ -118,11 +119,11 @@ public class NewPrisonBossLevel extends Level {
 		
 		//in some states tengu won't be in the world, in others he will be.
 		if (state == State.START || state == State.TRAP_MAZES || state == State.FIGHT_PAUSE) {
-			tengu = (NewTengu)bundle.get( TENGU );
+			tengu = (Tengu)bundle.get( TENGU );
 		} else {
 			for (Mob mob : mobs){
-				if (mob instanceof NewTengu) {
-					tengu = (NewTengu) mob;
+				if (mob instanceof Tengu) {
+					tengu = (Tengu) mob;
 					break;
 				}
 			}
@@ -272,12 +273,12 @@ public class NewPrisonBossLevel extends Level {
 			}
 		}
 		
-		CustomTilemap vis = new exitVisual();
+		CustomTilemap vis = new ExitVisual();
 		vis.pos(11, 10);
 		customTiles.add(vis);
 		GameScene.add(vis, false);
 		
-		vis = new exitVisualWalls();
+		vis = new ExitVisualWalls();
 		vis.pos(11, 10);
 		customWalls.add(vis);
 		GameScene.add(vis, true);
@@ -376,15 +377,11 @@ public class NewPrisonBossLevel extends Level {
 				seal();
 				set(pointToCell(tenguCellDoor), Terrain.LOCKED_DOOR);
 				GameScene.updateMap(pointToCell(tenguCellDoor));
-				
-				for (Mob m : mobs){
-					//bring the first ally with you
-					if (m.alignment == Char.Alignment.ALLY && !m.properties().contains(Char.Property.IMMOVABLE)){
-						m.pos = pointToCell(tenguCellDoor); //they should immediately walk out of the door
-						m.sprite.place(m.pos);
-						break;
-					}
-				}
+
+				//moves intelligent allies with the hero, preferring closer pos to cell door
+				int doorPos = pointToCell(tenguCellDoor);
+				Mob.holdAllies(this, doorPos);
+				Mob.restoreAllies(this, Dungeon.hero.pos, doorPos);
 				
 				tengu.state = tengu.HUNTING;
 				tengu.pos = tenguPos;
@@ -473,8 +470,8 @@ public class NewPrisonBossLevel extends Level {
 				cleanMapState();
 				
 				for (Item item : storedItems) {
-					if (!(item instanceof NewTengu.BombAbility.BombItem)
-						&& !(item instanceof NewTengu.ShockerAbility.ShockerItem)) {
+					if (!(item instanceof Tengu.BombAbility.BombItem)
+						&& !(item instanceof Tengu.ShockerAbility.ShockerItem)) {
 						drop(item, randomTenguCellPos());
 					}
 				}
@@ -513,7 +510,7 @@ public class NewPrisonBossLevel extends Level {
 	
 	@Override
 	protected void createMobs() {
-		tengu = new NewTengu(); //We want to keep track of tengu independently of other mobs, he's not always in the level.
+		tengu = new Tengu(); //We want to keep track of tengu independently of other mobs, he's not always in the level.
 	}
 	
 	public Actor addRespawner() {
@@ -566,15 +563,23 @@ public class NewPrisonBossLevel extends Level {
 		int heroPos = heroPoint.x-(tenguCell.left+1) + (heroPoint.y-(tenguCell.top+1))*7;
 		
 		boolean[] trapsPatch;
-		
+
+		//fill ramps up much faster during challenge, effectively 78%-90%
+		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)){
+			fill = 0.675f + fill/4f;
+		}
+
+		int tries = 0;
 		do {
+			tries++;
 			trapsPatch = Patch.generate(7, 7, fill, 0, false);
-			
+
 			PathFinder.buildDistanceMap(tenguPos, BArray.not(trapsPatch, null));
 			//note that the effective range of fill is 40%-90%
 			//so distance to tengu starts at 3-6 tiles and scales up to 7-8 as fill increases
 		} while (((PathFinder.distance[heroPos] < Math.ceil(7*fill))
 				|| (PathFinder.distance[heroPos] > Math.ceil(4 + 4*fill))));
+		System.out.println(tries);
 
 		PathFinder.setMapSize(width(), height());
 		
@@ -745,7 +750,7 @@ public class NewPrisonBossLevel extends Level {
 		
 	}
 	
-	public static class exitVisual extends CustomTilemap {
+	public static class ExitVisual extends CustomTilemap {
 		
 		{
 			texture = Assets.Environment.PRISON_EXIT_NEW;
@@ -791,7 +796,7 @@ public class NewPrisonBossLevel extends Level {
 		}
 	}
 	
-	public static class exitVisualWalls extends CustomTilemap {
+	public static class ExitVisualWalls extends CustomTilemap {
 		
 		{
 			texture = Assets.Environment.PRISON_EXIT_NEW;

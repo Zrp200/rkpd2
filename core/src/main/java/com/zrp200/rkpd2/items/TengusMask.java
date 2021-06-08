@@ -21,31 +21,30 @@
 
 package com.zrp200.rkpd2.items;
 
+import com.watabou.noosa.audio.Sample;
+import com.watabou.noosa.particles.Emitter;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
+import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.Speck;
-import com.zrp200.rkpd2.effects.SpellSprite;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
-import com.zrp200.rkpd2.windows.WndChooseWay;
-import com.watabou.noosa.audio.Sample;
+import com.zrp200.rkpd2.windows.WndChooseSubclass;
 
 import java.util.ArrayList;
 
-public class TomeOfMastery extends Item {
+public class TengusMask extends Item {
 	
-	public static final float TIME_TO_READ = 10;
-	
-	public static final String AC_READ	= "READ";
+	public static final String AC_WEAR	= "WEAR";
 	
 	{
 		stackable = false;
-		image = ItemSpriteSheet.MASTERY;
+		image = ItemSpriteSheet.MASK;
 		
 		unique = true;
 	}
@@ -53,7 +52,7 @@ public class TomeOfMastery extends Item {
 	@Override
 	public ArrayList<String> actions( Hero hero ) {
 		ArrayList<String> actions = super.actions( hero );
-		actions.add( AC_READ );
+		actions.add( AC_WEAR );
 		return actions;
 	}
 	
@@ -62,33 +61,10 @@ public class TomeOfMastery extends Item {
 
 		super.execute( hero, action );
 
-		if (action.equals( AC_READ )) {
+		if (action.equals( AC_WEAR )) {
 			
 			curUser = hero;
-			
-			HeroSubClass way1 = null;
-			HeroSubClass way2 = null;
-			switch (hero.heroClass) {
-			case WARRIOR:
-				way1 = HeroSubClass.GLADIATOR;
-				way2 = HeroSubClass.BERSERKER;
-				break;
-			case MAGE:
-				way1 = HeroSubClass.BATTLEMAGE;
-				way2 = HeroSubClass.WARLOCK;
-				break;
-			case ROGUE:
-				way1 = HeroSubClass.FREERUNNER;
-				way2 = HeroSubClass.ASSASSIN;
-				break;
-			case HUNTRESS:
-				way1 = HeroSubClass.SNIPER;
-				way2 = HeroSubClass.WARDEN;
-				break;
-			case RAT_KING:
-				way1 = way2 = HeroSubClass.KING;
-			}
-			GameScene.show( new WndChooseWay( this, way1, way2 ) );
+			GameScene.show( new WndChooseSubclass( this, hero ) );
 			
 		}
 	}
@@ -113,7 +89,7 @@ public class TomeOfMastery extends Item {
 		
 		detach( curUser.belongings.backpack );
 		
-		curUser.spend( TomeOfMastery.TIME_TO_READ );
+		curUser.spend( Actor.TICK );
 		curUser.busy();
 		
 		curUser.subClass = way;
@@ -122,9 +98,10 @@ public class TomeOfMastery extends Item {
 		curUser.sprite.operate( curUser.pos );
 		Sample.INSTANCE.play( Assets.Sounds.MASTERY );
 		
-		SpellSprite.show( curUser, SpellSprite.MASTERY );
-		curUser.sprite.emitter().burst( Speck.factory( Speck.MASTERY ), 12 );
-		GLog.w( Messages.get(this, "way", way.title()) );
+		Emitter e = curUser.sprite.centerEmitter();
+		e.pos(e.x-2, e.y-6, 4, 4);
+		e.start(Speck.factory(Speck.MASK), 0.05f, 20);
+		GLog.p( Messages.get(this, "used"));
 		
 	}
 }

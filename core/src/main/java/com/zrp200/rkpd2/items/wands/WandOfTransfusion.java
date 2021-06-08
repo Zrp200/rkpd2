@@ -59,7 +59,7 @@ public class WandOfTransfusion extends Wand {
 	private boolean freeCharge = false;
 
 	@Override
-	protected void onZap(Ballistica beam) {
+	public void onZap(Ballistica beam) {
 
 		for (int c : beam.subPath(0, beam.dist))
 			CellEmitter.center(c).burst( BloodParticle.BURST, 1 );
@@ -70,7 +70,7 @@ public class WandOfTransfusion extends Wand {
 
 		if (ch instanceof Mob){
 			
-			processSoulMark(ch, chargesPerCast());
+			wandProc(ch, chargesPerCast());
 			
 			//this wand does different things depending on the target.
 			
@@ -149,7 +149,7 @@ public class WandOfTransfusion extends Wand {
 	}
 
 	@Override
-	protected void fx(Ballistica beam, Callback callback) {
+	public void fx(Ballistica beam, Callback callback) {
 		curUser.sprite.parent.add(
 				new Beam.HealthRay(curUser.sprite.center(), DungeonTilemap.raisedTileCenterToWorld(beam.collisionPos)));
 		callback.call();

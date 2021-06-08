@@ -21,8 +21,10 @@
 
 package com.zrp200.rkpd2.levels.traps;
 
+import com.zrp200.rkpd2.Challenges;
+import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.mobs.NewTengu;
+import com.zrp200.rkpd2.actors.mobs.Tengu;
 
 public class TenguDartTrap extends PoisonDartTrap {
 	
@@ -33,11 +35,15 @@ public class TenguDartTrap extends PoisonDartTrap {
 	
 	@Override
 	protected int poisonAmount() {
-		return 8; //17 damage total
+		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)){
+			return 15; //50 damage total, equal to poison dart traps on floor 10
+		} else {
+			return 8; //17 damage total
+		}
 	}
-	
+
 	@Override
 	protected boolean canTarget(Char ch) {
-		return !(ch instanceof NewTengu);
+		return !(ch instanceof Tengu);
 	}
 }
