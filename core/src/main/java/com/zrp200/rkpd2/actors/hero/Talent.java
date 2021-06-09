@@ -152,7 +152,7 @@ public enum Talent {
 	HEROIC_ENERGY(26, 4), //See icon() and title() for special logic for this one
 	//Ratmogrify T4
 	RATSISTANCE(124, 4), RATLOMACY(125, 4), RATFORCEMENTS(126, 4),
-	// TODO add unique icons
+	// TODO add unique icons, really bad now.
 	ROYAL_PRIVILEGE(32), // food related talents, uses empowering icon
 	ROYAL_INTUITION(97), // intuition-related talents, uses survivalist's icon
 	KINGS_WISDOM(34), // on-id + combat talents, uses tested hypothesis
@@ -221,7 +221,7 @@ public enum Talent {
 
 	public int icon(){
 		if (this == HEROIC_ENERGY){
-			if (Dungeon.hero != null && Dungeon.hero.armorAbility instanceof Ratmogrify){
+			if (Dungeon.hero != null && (Dungeon.hero.heroClass == HeroClass.RAT_KING || Dungeon.hero.armorAbility instanceof Ratmogrify)){
 				return 127;
 			}
 			HeroClass cls = Dungeon.hero != null ? Dungeon.hero.heroClass : GamesInProgress.selectedClass;
@@ -234,6 +234,7 @@ public enum Talent {
 					return 90;
 				case HUNTRESS:
 					return 122;
+				// Rat King handled on line 224
 			}
 		} else {
 		return icon;
@@ -249,7 +250,7 @@ public enum Talent {
 		if (this == HEROIC_ENERGY &&
 				Messages.lang() == Languages.ENGLISH
 				&& Dungeon.hero != null
-				&& Dungeon.hero.armorAbility instanceof Ratmogrify){
+				&& (Dungeon.hero.armorAbility instanceof Ratmogrify || Dungeon.hero.heroClass == HeroClass.RAT_KING)){
 			return "ratroic energy";
 		}
 		return Messages.get(this, name() + ".title");

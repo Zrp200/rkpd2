@@ -232,7 +232,8 @@ public class Hero extends Char {
 			STR += buff.boost();
 		}
 
-		if (hasTalent(Talent.STRONGMAN)){
+		// TODO buff for warrior
+		if (hasTalent(Talent.STRONGMAN,Talent.RK_GLADIATOR)){
 			STR = (int)Math.floor(STR * (1f + 0.03f + 0.05f*pointsInTalent(Talent.STRONGMAN)));
 		}
 
@@ -731,7 +732,9 @@ public class Hero extends Char {
 		}
 		
 		if(hasTalent(Talent.BARKSKIN,Talent.RK_WARDEN) && Dungeon.level.map[pos] == Terrain.FURROWED_GRASS){
-			Buff.affect(this, Barkskin.class).set( (lvl*pointsInTalent(Talent.BARKSKIN,Talent.RK_WARDEN))/2, 1 );
+			Buff.affect(this, Barkskin.class).set(
+					(lvl*pointsInTalent(Talent.BARKSKIN,Talent.RK_WARDEN))/2,
+					Dungeon.hero.hasTalent(Talent.BARKSKIN) ? 2 : 1);
 		}
 		
 		return actResult;
@@ -1162,7 +1165,7 @@ public class Hero extends Char {
 					if(staff == wep || Random.Int(3) < pointsInTalent())
 						if (buff(Talent.EmpoweredStrikeTracker.class) != null) {
 							buff(Talent.EmpoweredStrikeTracker.class).detach();
-							damage = Math.round(damage * (1f + pointsInTalent(Talent.EMPOWERED_STRIKE, Talent.RK_BATTLEMAGE) / 6f / (hasTalent(Talent.EMPOWERED_STRIKE) ? 1.5f : 1)));
+							damage = Math.round(damage * (1f + pointsInTalent(Talent.EMPOWERED_STRIKE, Talent.RK_BATTLEMAGE) / 4f / (hasTalent(Talent.EMPOWERED_STRIKE) ? 1.5f : 1)));
 						}
 						staff.procWand(enemy, damage);
 					}

@@ -85,7 +85,7 @@ public class SoulMark extends FlavourBuff {
 			restoration = Math.round(restoration * (
 					Dungeon.hero.hasTalent(Talent.SOUL_SIPHON) ?
 							src instanceof Char ? points*.2f : .1f*(1+points)
-							: points * .15f));
+							: points / 7.5f ));
 		}
 		if(restoration > 0)
 		{
