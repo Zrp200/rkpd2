@@ -210,8 +210,8 @@ public class Goo extends Mob {
 	}
 
 	@Override
-	public boolean attack( Char enemy, float dmgMulti, float dmgBonus, float accMulti ) {
-		boolean result = super.attack( enemy, dmgMulti, dmgBonus, accMulti );
+	public boolean attack( Char enemy, float dmgMulti, float dmgBonus, float accMulti, int rolls ) {
+		boolean result = super.attack( enemy, dmgMulti, dmgBonus, accMulti, rolls );
 		pumpedUp = 0;
 		return result;
 	}

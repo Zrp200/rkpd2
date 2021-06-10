@@ -339,7 +339,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 				break;
 		}
 
-		if (hero.attack(enemy, dmgMulti, dmgBonus, Char.INFINITE_ACCURACY)){
+		if (hero.attack(enemy, dmgMulti, dmgBonus, Char.INFINITE_ACCURACY, hero.hasTalent(Talent.SKILL)?2:1)){
 			//special on-hit effects
 			switch (moveBeingUsed) {
 				case CLOBBER:
