@@ -1137,6 +1137,7 @@ public abstract class Level implements Bundlable {
 
 		//Currently only the hero can get mind vision or awareness
 		if (c.isAlive() && c == Dungeon.hero) {
+			Hero hero = (Hero)c;
 
 			if (heroMindFov == null || heroMindFov.length != length()){
 				heroMindFov = new boolean[length];
@@ -1151,10 +1152,9 @@ public abstract class Level implements Bundlable {
 						heroMindFov[mob.pos + i] = true;
 					}
 				}
-			} else if (((Hero) c).hasTalent(Talent.HEIGHTENED_SENSES, Talent.KINGS_VISION)) {
-				Hero h = (Hero) c;
-				int points = h.pointsInTalent(Talent.HEIGHTENED_SENSES,Talent.KINGS_VISION);
-				if(h.heroClass == HeroClass.HUNTRESS) points++; // yup.
+			} else if (hero.hasTalent(Talent.HEIGHTENED_SENSES, Talent.KINGS_VISION) || hero.heroClass == HeroClass.HUNTRESS) {
+				int points = hero.pointsInTalent(Talent.HEIGHTENED_SENSES,Talent.KINGS_VISION);
+				if(hero.heroClass == HeroClass.HUNTRESS) points++; // yup.
 				for (Mob mob : mobs) {
 					int p = mob.pos;
 					if (!fieldOfView[p] && distance(c.pos, p) <= 1+points) {
