@@ -1193,7 +1193,7 @@ public class Hero extends Char {
 					@Override
 					protected boolean act() {
 						if (enemy.isAlive() || hasTalent(Talent.MULTISHOT)) {
-							int level = hasTalent(Talent.SHARED_UPGRADES,Talent.RK_SNIPER) ? wep.buffedLvl() : 0;
+							int level = hasTalent(Talent.RK_SNIPER) || canHaveTalent(Talent.SHARED_UPGRADES) ? wep.buffedLvl() : 0;
 							SnipersMark mark = Buff.affect(Hero.this, SnipersMark.class);
 							mark.set(enemy.id(), level);
 							if(!enemy.isAlive()) mark.remove(enemy.id()); // this lets it trigger ranger

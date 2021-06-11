@@ -89,8 +89,10 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
 	public float duration() { return duration(true); }
 	public float duration(boolean allowRanger) {
-		if(allowRanger && levels.isEmpty()) return (DURATION+level)*((Hero)target).pointsInTalent(Talent.MULTISHOT);
-		int time=0; for(int level : levels.toArray()) time += DURATION+level;
+		int durationMod = ((Hero)target).canHaveTalent(Talent.SHARED_UPGRADES) ? 2 : 1;
+		if(allowRanger && levels.isEmpty())
+			return (DURATION + level * durationMod) * ((Hero)target).pointsInTalent(Talent.MULTISHOT);
+		int time=0; for(int level : levels.toArray()) time += DURATION + level * durationMod;
 		return time;
 	}
 
@@ -243,7 +245,9 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
 		int cell = QuickSlotButton.autoAim(ch, arrow);
 
-		arrow.sniperSpecialBonusDamage = level*Dungeon.hero.pointsInTalent(Talent.SHARED_UPGRADES,Talent.RK_SNIPER)/15f;
+		int points = hero.pointsInTalent(Talent.SHARED_UPGRADES, Talent.RK_SNIPER);
+		if(hero.canHaveTalent(Talent.SHARED_UPGRADES)) points++; // free +1.
+		arrow.sniperSpecialBonusDamage = level*points/10f;
 
 		Buff.detach(hero, Preparation.class); // nope!
 
