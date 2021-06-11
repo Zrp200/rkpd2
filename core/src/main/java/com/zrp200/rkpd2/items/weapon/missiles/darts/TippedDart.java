@@ -131,8 +131,10 @@ public abstract class TippedDart extends Dart {
 	@Override
 	protected float durabilityPerUse() {
 		float use = super.durabilityPerUse();
-		
-		use /= (1 + Dungeon.hero.pointsInTalent(Talent.DURABLE_TIPS,Talent.RK_WARDEN));
+
+		int points = Dungeon.hero.pointsInTalent(Talent.DURABLE_TIPS, Talent.RK_WARDEN);
+		if(Dungeon.hero.canHaveTalent(Talent.DURABLE_TIPS)) points++;
+		use /= (1 + points);
 
 		//checks both destination and source position
 		float lotusPreserve = 0f;
