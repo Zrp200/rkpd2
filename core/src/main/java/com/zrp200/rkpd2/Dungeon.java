@@ -692,7 +692,7 @@ public class Dungeon {
 	//default to recomputing based on max hero vision, in case vision just shrank/grew
 	public static void observe(){
 		int dist = 8;
-		dist *= 1f + 0.25f*Dungeon.hero.pointsInTalent(Talent.FARSIGHT,Talent.RK_SNIPER);
+		dist *= hero.getViewDistanceModifier();
 		observe( dist+1 );
 	}
 

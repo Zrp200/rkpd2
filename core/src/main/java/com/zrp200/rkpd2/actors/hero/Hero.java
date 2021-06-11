@@ -194,6 +194,12 @@ public class Hero extends Char {
 	// for enemies we know we aren't seeing normally, resultign in better performance
 	public ArrayList<Mob> mindVisionEnemies = new ArrayList<>();
 
+	public double getViewDistanceModifier() {
+		int points = pointsInTalent(Talent.FARSIGHT, Talent.RK_SNIPER);
+		if(canHaveTalent(Talent.FARSIGHT)) points++;
+		return 1 + 0.25*points;
+	}
+
 	public Hero() {
 		super();
 
