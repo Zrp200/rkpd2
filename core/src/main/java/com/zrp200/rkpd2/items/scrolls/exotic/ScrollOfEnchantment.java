@@ -101,7 +101,7 @@ public class ScrollOfEnchantment extends ExoticScroll {
 				if (index < 3) {
 					weapon.enchant(enchants[index]);
 					GLog.p(Messages.get(StoneOfEnchantment.class, "weapon"));
-					((ScrollOfEnchantment)curItem).readAnimation();
+					((Scroll)curItem).readAnimation();
 
 					Sample.INSTANCE.play( Assets.Sounds.READ );
 					Enchanting.show(curUser, weapon);
