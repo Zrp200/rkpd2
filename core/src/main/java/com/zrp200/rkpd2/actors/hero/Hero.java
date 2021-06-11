@@ -733,7 +733,7 @@ public class Hero extends Char {
 		
 		if(hasTalent(Talent.BARKSKIN,Talent.RK_WARDEN) && Dungeon.level.map[pos] == Terrain.FURROWED_GRASS){
 			Buff.affect(this, Barkskin.class).set(
-					(lvl*pointsInTalent(Talent.BARKSKIN,Talent.RK_WARDEN))/2,
+					Barkskin.getGrassDuration(this),
 					Dungeon.hero.hasTalent(Talent.BARKSKIN) ? 2 : 1);
 		}
 		

@@ -72,11 +72,17 @@ public class Barkskin extends Buff {
 		return BuffIndicator.BARKSKIN;
 	}
 
+	public static int getGrassDuration(Hero hero) {
+		int points = hero.pointsInTalent(Talent.BARKSKIN, Talent.RK_WARDEN);
+		if(hero.canHaveTalent(Talent.BARKSKIN)) points++;
+		return hero.lvl*points/2;
+	}
+
 	@Override
 	public float iconFadePercent() {
 		if (target instanceof Hero){
-			float max = ((Hero) target).lvl*((Hero) target).pointsInTalent(Talent.BARKSKIN, Talent.RK_WARDEN)/2;
-			max = Math.max(max, 2+((Hero) target).lvl/3);
+			Hero hero = (Hero)target;
+			int max = Math.max(getGrassDuration(hero), 2+hero.lvl/3);
 			return Math.max(0, (max-level)/max);
 		}
 		return 0;
