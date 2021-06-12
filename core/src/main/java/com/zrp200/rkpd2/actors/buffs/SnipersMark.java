@@ -89,10 +89,9 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
 	public float duration() { return duration(true); }
 	public float duration(boolean allowRanger) {
-		int durationMod = ((Hero)target).canHaveTalent(Talent.SHARED_UPGRADES) ? 2 : 1;
 		if(allowRanger && levels.isEmpty())
-			return (DURATION + level * durationMod) * ((Hero)target).pointsInTalent(Talent.MULTISHOT);
-		int time=0; for(int level : levels.toArray()) time += DURATION + level * durationMod;
+			return (DURATION + level) * ((Hero)target).pointsInTalent(Talent.MULTISHOT);
+		int time=0; for(int level : levels.toArray()) time += DURATION + level;
 		return time;
 	}
 
