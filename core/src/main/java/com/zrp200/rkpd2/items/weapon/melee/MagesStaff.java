@@ -156,12 +156,14 @@ public class MagesStaff extends MeleeWeapon {
 			attacker.buff(Talent.EmpoweredStrikeTracker.class).detach();
 			damage = Math.round( damage * (1f + Dungeon.hero.pointsInTalent(Talent.EMPOWERED_STRIKE)/4f));
 		}*/
-		if ((wand.curCharges >= wand.maxCharges || Dungeon.hero.hasTalent(Talent.EXCESS_CHARGE)) && Random.Int(Dungeon.hero.hasTalent(Talent.EXCESS_CHARGE)?4:5) < Dungeon.hero.pointsInTalent(Talent.EXCESS_CHARGE,Talent.RK_BATTLEMAGE)){
+		int points = Dungeon.hero.shiftedPoints(Talent.EXCESS_CHARGE, Talent.RK_BATTLEMAGE);
+		if ((wand.curCharges >= wand.maxCharges || Dungeon.hero.canHaveTalent(Talent.EXCESS_CHARGE)) && Random.Int(5) < points){
 			Buff.affect(Dungeon.hero, Barrier.class).setShield(buffedLvl()*2*wand.curCharges/wand.maxCharges);
 		}
-		if (Dungeon.hero.hasTalent(Talent.MYSTICAL_CHARGE,Talent.RK_BATTLEMAGE)){
+		points = Dungeon.hero.shiftedPoints(Talent.MYSTICAL_CHARGE, Talent.RK_BATTLEMAGE);
+		if (points > 0){
 			for (Buff b : Dungeon.hero.buffs()){
-				if (b instanceof Artifact.ArtifactBuff) ((Artifact.ArtifactBuff) b).charge(Dungeon.hero, Dungeon.hero.pointsInTalent(Talent.MYSTICAL_CHARGE,Talent.RK_BATTLEMAGE)/2f/(Dungeon.hero.hasTalent(Talent.MYSTICAL_CHARGE)?1.5f:1f));
+				if (b instanceof Artifact.ArtifactBuff) ((Artifact.ArtifactBuff) b).charge(Dungeon.hero, points/2f);
 			}
 		}
 

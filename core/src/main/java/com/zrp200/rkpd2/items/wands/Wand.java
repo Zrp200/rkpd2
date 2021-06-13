@@ -335,7 +335,7 @@ public abstract class Wand extends Item {
 			}
 
 			if (charger.target.buff(ScrollEmpower.class) != null){
-				lvl += Dungeon.hero.pointsInTalent(Talent.EMPOWERING_SCROLLS,Talent.RK_BATTLEMAGE);
+				lvl += ScrollEmpower.boost();
 			}
 
 			WandOfMagicMissile.MagicCharge buff = charger.target.buff(WandOfMagicMissile.MagicCharge.class);

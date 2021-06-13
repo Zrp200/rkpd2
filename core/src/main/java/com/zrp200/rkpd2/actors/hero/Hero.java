@@ -1185,7 +1185,7 @@ public class Hero extends Char {
 					if(staff == wep || Random.Int(3) < pointsInTalent())
 						if (buff(Talent.EmpoweredStrikeTracker.class) != null) {
 							buff(Talent.EmpoweredStrikeTracker.class).detach();
-							damage = Math.round(damage * (1f + pointsInTalent(Talent.EMPOWERED_STRIKE, Talent.RK_BATTLEMAGE) / 4f / (hasTalent(Talent.EMPOWERED_STRIKE) ? 1.5f : 1)));
+							damage = Math.round(damage * (1f + shiftedPoints(Talent.EMPOWERED_STRIKE, Talent.RK_BATTLEMAGE) / 4f));
 						}
 						staff.procWand(enemy, damage);
 					}
