@@ -144,7 +144,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc",((Hero)target).subClass.title(),count, dispTurns(comboTime));
+		return Messages.get(this, "desc",((Hero)target).subClass.title(), count, dispTurns(comboTime));
 	}
 
 	private static final String COUNT = "count";

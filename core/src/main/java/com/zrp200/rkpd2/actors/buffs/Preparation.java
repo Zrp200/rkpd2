@@ -221,7 +221,7 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 			desc += "\n\n" + Messages.get(this, "desc_blink", lvl.blinkDistance());
 		}
 		
-		desc += "\n\n" + Messages.get(this, "desc_invis_time", cls, turnsInvis);
+		desc += "\n\n" + Messages.get(this, "desc_invis_time", turnsInvis);
 		
 		if (lvl.ordinal() != AttackLevel.values().length-1){
 			AttackLevel next = AttackLevel.values()[lvl.ordinal()+1];
