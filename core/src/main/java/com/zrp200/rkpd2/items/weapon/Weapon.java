@@ -373,11 +373,9 @@ abstract public class Weapon extends KindOfWeapon {
 
 		public static float procChanceMultiplier( Char attacker ){
 			float multi = 1f;
-			if (attacker instanceof Hero && ((Hero) attacker).hasTalent(Talent.ENRAGED_CATALYST,Talent.RK_BERSERKER)){
-				Berserk rage = attacker.buff(Berserk.class);
-				if (rage != null) {
-					multi += (rage.rageAmount() / 6f) * ((Hero) attacker).pointsInTalent(Talent.ENRAGED_CATALYST,Talent.RK_BERSERKER);
-				}
+			Berserk rage = attacker.buff(Berserk.class);
+			if (attacker instanceof Hero && rage != null) {
+				multi += (rage.rageAmount() / 6f) * ((Hero) attacker).shiftedPoints(Talent.ENRAGED_CATALYST,Talent.RK_BERSERKER);
 			}
 			return multi;
 		}

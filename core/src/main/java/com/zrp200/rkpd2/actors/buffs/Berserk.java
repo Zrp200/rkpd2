@@ -131,7 +131,7 @@ public class Berserk extends Buff {
 			if (shield != null){
 				state = State.BERSERK;
 				int shieldAmount = shield.maxShield() * 8;
-				shieldAmount = Math.round(shieldAmount * (1f + Dungeon.hero.pointsInTalent(Talent.BERSERKING_STAMINA)/(Dungeon.hero.hasTalent(Talent.BERSERKING_STAMINA)?3f:4f)));
+				shieldAmount = Math.round(shieldAmount * (1f + Dungeon.hero.shiftedPoints(Talent.BERSERKING_STAMINA, Talent.RK_BERSERKER)/4f));
 				shield.supercharge(shieldAmount);
 
 				SpellSprite.show(target, SpellSprite.BERSERK);
@@ -156,7 +156,7 @@ public class Berserk extends Buff {
 
 	public void damage(int damage){
 		if (state == State.RECOVERING && !berserker()) return;
-		float maxPower = 1f + 0.15f*((Hero)target).pointsInTalent(Talent.ENDLESS_RAGE,Talent.RK_BERSERKER);
+		float maxPower = 1f + 0.15f*((Hero)target).shiftedPoints(Talent.ENDLESS_RAGE,Talent.RK_BERSERKER);
 		power = Math.min(maxPower*recovered(), power + rageFactor(damage)*recovered() );
 		BuffIndicator.refreshHero(); //show new power immediately
 	}
