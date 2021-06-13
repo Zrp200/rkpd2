@@ -348,6 +348,20 @@ public class Hero extends Char {
 		return sum;
 	}
 
+	/** shifts [shifted] so that +0 becomes +1, or returns the points in [standard] */
+	public int shiftedPoints( Talent shifted, Talent standard ) {
+		int points = pointsInTalent(shifted, standard);
+		if(canHaveTalent(shifted)) points++;
+		return points;
+	}
+	/** gives a free +1 when the heroclass matches [cls] */
+	public int pointsInTalentWithInnate( HeroClass cls, Talent... talents) {
+		int points = pointsInTalent(talents);
+		if(heroClass == cls) points++;
+		return points;
+
+	}
+
 	public void upgradeTalent( Talent talent ){
 		for (LinkedHashMap<Talent, Integer> tier : talents){
 			for (Talent f : tier.keySet()){
