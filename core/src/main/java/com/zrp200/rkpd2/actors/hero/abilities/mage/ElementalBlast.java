@@ -58,6 +58,7 @@ import com.zrp200.rkpd2.items.wands.WandOfCorrosion;
 import com.zrp200.rkpd2.items.wands.WandOfCorruption;
 import com.zrp200.rkpd2.items.wands.WandOfDisintegration;
 import com.zrp200.rkpd2.items.wands.WandOfFireblast;
+import com.zrp200.rkpd2.items.wands.WandOfFirebolt;
 import com.zrp200.rkpd2.items.wands.WandOfFrost;
 import com.zrp200.rkpd2.items.wands.WandOfLightning;
 import com.zrp200.rkpd2.items.wands.WandOfLivingEarth;
@@ -91,6 +92,7 @@ public class ElementalBlast extends ArmorAbility {
 		effectTypes.put(WandOfLightning.class,      MagicMissile.SPARK_CONE);
 		effectTypes.put(WandOfDisintegration.class, MagicMissile.PURPLE_CONE);
 		effectTypes.put(WandOfFireblast.class,      MagicMissile.FIRE_CONE);
+		effectTypes.put(WandOfFirebolt.class,       MagicMissile.FIRE_CONE); // duplicate of fireblast
 		effectTypes.put(WandOfCorrosion.class,      MagicMissile.CORROSION_CONE);
 		effectTypes.put(WandOfBlastWave.class,      MagicMissile.FORCE_CONE);
 		effectTypes.put(WandOfLivingEarth.class,    MagicMissile.EARTH_CONE);
@@ -108,6 +110,7 @@ public class ElementalBlast extends ArmorAbility {
 		damageFactors.put(WandOfLightning.class,        1f);
 		damageFactors.put(WandOfDisintegration.class,   1f);
 		damageFactors.put(WandOfFireblast.class,        1f);
+		damageFactors.put(WandOfFirebolt.class,			1f); // duplicate of fireblast
 		damageFactors.put(WandOfCorrosion.class,        0f);
 		damageFactors.put(WandOfBlastWave.class,        0.67f);
 		damageFactors.put(WandOfLivingEarth.class,      0.5f);
@@ -176,7 +179,7 @@ public class ElementalBlast extends ArmorAbility {
 		final float effectMulti = 1f + 0.15f*hero.pointsInTalent(Talent.ELEMENTAL_POWER);
 
 		//cast a ray 2/3 the way, and do effects
-		Class<? extends Wand> finalWandCls = wandCls;
+		Class<? extends Wand> finalWandCls = wandCls == WandOfFirebolt.class ? WandOfFireblast.class : wandCls;
 		((MagicMissile)hero.sprite.parent.recycle( MagicMissile.class )).reset(
 				effectTypes.get(wandCls),
 				hero.sprite,
