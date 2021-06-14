@@ -114,7 +114,7 @@ public class CloakOfShadows extends Artifact {
 	@Override
 	public void activate(Char ch){
 		super.activate(ch);
-		if (activeBuff != null){
+		if (activeBuff != null && activeBuff.target == null){
 			activeBuff.attachTo(ch);
 		}
 	}
@@ -122,8 +122,11 @@ public class CloakOfShadows extends Artifact {
 	@Override
 	public boolean doUnequip(Hero hero, boolean collect, boolean single) {
 		if (super.doUnequip(hero, collect, single)){
-			if (hero.hasTalent(Talent.LIGHT_CLOAK,Talent.RK_FREERUNNER)){
-				activate(hero);
+			if (!collect || !hero.hasTalent(Talent.LIGHT_CLOAK,Talent.RK_FREERUNNER)){
+				if (activeBuff != null){
+					activeBuff.detach();
+					activeBuff = null;
+				}
 			}
 
 			return true;
@@ -151,7 +154,7 @@ public class CloakOfShadows extends Artifact {
 			passiveBuff.detach();
 			passiveBuff = null;
 		}
-		if (activeBuff != null){
+		if (activeBuff != null && !isEquipped((Hero) activeBuff.target)){
 			activeBuff.detach();
 			activeBuff = null;
 		}
@@ -170,8 +173,8 @@ public class CloakOfShadows extends Artifact {
 	@Override
 	public void charge(Hero target, float amount) {
 		if (charge < chargeCap) {
-			if (!isEquipped(target)) amount *= target.pointsInTalent(Talent.LIGHT_CLOAK,Talent.RK_FREERUNNER)/
-					(target.hasTalent(Talent.LIGHT_CLOAK)?4f:10f); // moved previous "equip for free" mechanic to light cloak.
+			if (!isEquipped(target)) amount *= target.pointsInTalent(Talent.LIGHT_CLOAK,Talent.RK_FREERUNNER)*
+					(target.hasTalent(Talent.LIGHT_CLOAK)?.25f:0.4f/3f); // moved previous "equip for free" mechanic to light cloak.
 			if(target.heroClass == HeroClass.ROGUE) amount *= ROGUE_BOOST;
 			partialCharge += 0.25f*amount;
 			if (partialCharge >= 1){
