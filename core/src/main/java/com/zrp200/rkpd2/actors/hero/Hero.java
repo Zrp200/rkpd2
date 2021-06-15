@@ -348,11 +348,15 @@ public class Hero extends Char {
 		return sum;
 	}
 
-	/** shifts [shifted] so that +0 becomes +1, or returns the points in [standard] */
-	public int shiftedPoints( Talent shifted, Talent standard ) {
-		int points = pointsInTalent(shifted, standard);
+	/** shifts [shifted] so that +0 becomes +1 */
+	public int shiftedPoints( Talent shifted ) {
+		int points = pointsInTalent(shifted);
 		if(canHaveTalent(shifted)) points++;
 		return points;
+	}
+	/** shifts [shifted] so that +0 becomes +1, or returns the points in standard */
+	public int shiftedPoints( Talent shifted, Talent standard ) {
+		return Math.max(shiftedPoints(shifted), pointsInTalent(standard));
 	}
 	/** gives a free +1 when the heroclass matches [cls] */
 	public int pointsInTalentWithInnate( HeroClass cls, Talent... talents) {

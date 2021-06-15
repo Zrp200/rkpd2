@@ -56,6 +56,7 @@ import com.zrp200.rkpd2.items.armor.glyphs.Stone;
 import com.zrp200.rkpd2.items.armor.glyphs.Swiftness;
 import com.zrp200.rkpd2.items.armor.glyphs.Thorns;
 import com.zrp200.rkpd2.items.armor.glyphs.Viscosity;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfUpgrade;
 import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.HeroSprite;
@@ -172,6 +173,14 @@ public class Armor extends EquipableItem {
 
 			BrokenSeal detaching = seal;
 			degrade(seal.level());
+
+			if(seal.level() > 1) {
+				int excess = seal.level() - 1;
+				Item sous = new ScrollOfUpgrade().quantity(excess);
+				Dungeon.level.drop(sous, Dungeon.hero.pos);
+				seal.level(1);
+			}
+
 			seal = null;
 
 			if (detaching.getGlyph() != null){
