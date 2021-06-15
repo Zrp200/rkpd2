@@ -21,6 +21,12 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
+import com.watabou.noosa.Image;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Callback;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
@@ -35,6 +41,7 @@ import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.ActionIndicator;
@@ -43,12 +50,10 @@ import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.utils.BArray;
 import com.zrp200.rkpd2.utils.GLog;
 import com.zrp200.rkpd2.windows.WndCombo;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.Callback;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Random;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class Combo extends Buff implements ActionIndicator.Action {
 	
@@ -264,7 +269,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 			Dungeon.hero.busy();
 		} else {
 			moveBeingUsed = move;
-			GameScene.selectCell(listener);
+			GameScene.selectCell(new Selector());
 		}
 	}
 
@@ -444,59 +449,64 @@ public class Combo extends Buff implements ActionIndicator.Action {
 
 	}
 
-	private CellSelector.Listener listener = new CellSelector.Listener() {
+	// more than just a selector
+	private class Selector extends CellSelector.TargetedListener {
+		private int getLeapDistance() {
+			return 1 + count/(((Hero)target).hasTalent(Talent.ENHANCED_COMBO)?2:3);
+		}
 
+		private HashMap<Char, Integer> targets = new HashMap<>();
 		@Override
-		public void onSelect(Integer cell) {
-			if (cell == null) return;
-			final Char enemy = Actor.findChar( cell );
-			if (enemy == null
-					|| enemy == target
-					|| !Dungeon.level.heroFOV[cell]
-					|| target.isCharmedBy( enemy )) {
-				GLog.w(Messages.get(Combo.class, "bad_target"));
+		protected List<CharSprite> findTargets() {
+			ArrayList<CharSprite> sprites = new ArrayList<>();
+			for(Char ch : Dungeon.level.mobs.toArray(new Char[0])) {
+				if(evalTarget(ch)) sprites.add(ch.sprite);
+			}
+			return sprites;
+		}
 
-			} else if (!((Hero)target).canAttack(enemy)){
-				if (((Hero) target).pointsInTalent(Talent.ENHANCED_COMBO,Talent.RK_GLADIATOR) < 3
-					|| Dungeon.level.distance(target.pos, enemy.pos) > 1 + target.buff(Combo.class).count/(((Hero)target).hasTalent(Talent.ENHANCED_COMBO)?2:3)){
-					GLog.w(Messages.get(Combo.class, "bad_target"));
-				} else {
-					Ballistica c = new Ballistica(target.pos, enemy.pos, Ballistica.PROJECTILE);
-					if (c.collisionPos == enemy.pos){
-						final int leapPos = c.path.get(c.dist-1);
-						if (!Dungeon.level.passable[leapPos]){
-							GLog.w(Messages.get(Combo.class, "bad_target"));
-						} else {
-							Dungeon.hero.busy();
-							target.sprite.jump(target.pos, leapPos, new Callback() {
-								@Override
-								public void call() {
-									target.move(leapPos);
-									Dungeon.level.occupyCell(target);
-									Dungeon.observe();
-									GameScene.updateFog();
-									target.sprite.attack(cell, new Callback() {
-										@Override
-										public void call() {
-											doAttack(enemy);
-										}
-									});
-								}
-							});
-						}
-					} else {
-						GLog.w(Messages.get(Combo.class, "bad_target"));
+		private boolean evalTarget(Char enemy) {
+			if (enemy != null
+					&& enemy.alignment != Char.Alignment.ALLY
+					&& enemy != target
+					&& Dungeon.level.heroFOV[enemy.pos]
+					&& !target.isCharmedBy(enemy)) {
+				if (target.canAttack(enemy)) {
+					targets.put(enemy, target.pos); // no need to generate a ballistica.
+					return true;
+				} else if (((Hero) target).pointsInTalent(Talent.ENHANCED_COMBO, Talent.RK_GLADIATOR) == 3
+						&& Dungeon.level.distance(target.pos, enemy.pos) <= getLeapDistance()) {
+					Ballistica b = new Ballistica(target.pos, enemy.pos, Ballistica.PROJECTILE);
+					int leapPos = b.path.get(b.dist - 1);
+					if (b.collisionPos == enemy.pos && Dungeon.level.passable[leapPos]) {
+						targets.put(enemy, leapPos);
+						return true;
 					}
 				}
+			}
+			reject(enemy);
+			return false;
+		}
 
-			} else {
-				Dungeon.hero.busy();
-				target.sprite.attack(cell, new Callback() {
-					@Override
-					public void call() {
-						doAttack(enemy);
-					}
+		@Override
+		protected void onInvalid(int cell) {
+			GLog.w(Messages.get(Combo.class, "bad_target"));
+		}
+
+		@Override
+		protected void action(Char enemy) {
+			int leapPos = targets.get(enemy);
+			((Hero)target).busy();
+			if(leapPos != target.pos) {
+				target.sprite.jump(target.pos, leapPos, () -> {
+					target.move(leapPos);
+					Dungeon.level.occupyCell(target);
+					Dungeon.observe();
+					GameScene.updateFog();
+					target.sprite.attack(enemy.pos, () -> doAttack(enemy));
 				});
+			} else {
+				target.sprite.attack(enemy.pos, ()->doAttack(enemy));
 			}
 		}
 
@@ -504,5 +514,5 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		public String prompt() {
 			return Messages.get(Combo.class, "prompt");
 		}
-	};
+	}
 }

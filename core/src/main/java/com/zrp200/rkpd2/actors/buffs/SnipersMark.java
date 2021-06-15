@@ -35,11 +35,15 @@ import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.ActionIndicator;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.ui.QuickSlotButton;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
@@ -194,24 +198,30 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		if (bow.knockArrow() == null) return; // this is just a test.
 
 		if (objects.isEmpty()) {
-			if(hero.hasTalent(Talent.MULTISHOT)) GameScene.selectCell(new CellSelector.Listener() {
-				@Override
-				public void onSelect(Integer cell) {
-					if(cell == null || cell == -1) return;
-					Char ch = Actor.findChar(cell);
-					if(ch != null && ch != hero && canDoSniperSpecial(bow,ch)) {
+			if(hero.hasTalent(Talent.MULTISHOT)) {
+				GameScene.selectCell(new CellSelector.TargetedListener() {
+					@Override protected List<CharSprite> findTargets() {
+						ArrayList<CharSprite> targets = new ArrayList<>();
+						for (Char ch : Dungeon.level.mobs) {
+							if (canDoSniperSpecial(bow, ch)) targets.add(ch.sprite);
+							else reject(ch);
+						}
+						return targets;
+					}
+
+					@Override protected void action(Char ch) {
 						// there's no need to update the shot count if there's just 1 guy.
 						hero.busy();
 						doSniperSpecial(hero,bow,ch,level);
 						detach();
 					}
-				}
 
-				@Override
-				public String prompt() {
-					return Messages.get(SpiritBow.class, "prompt");
-				}
-			});
+					@Override
+					public String prompt() {
+						return Messages.get(SpiritBow.class, "prompt");
+					}
+				});
+			}
 		} else {
 			// populate list of targets.
 			ObjectIntMap<Char> targets = new ObjectIntMap();

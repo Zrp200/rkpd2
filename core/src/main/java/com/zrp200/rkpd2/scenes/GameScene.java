@@ -573,7 +573,7 @@ public class GameScene extends PixelScene {
 			return !Actor.processing();
 		}
 	}
-	
+
 	@Override
 	public synchronized void onPause() {
 		try {
@@ -1036,7 +1036,13 @@ public class GameScene extends PixelScene {
 	public static void handleCell( int cell ) {
 		cellSelector.select( cell );
 	}
-	
+
+	public static void selectCell( CellSelector.TargetedListener listener) {
+		if(!listener.action()) {
+			listener.highlightCells();
+			selectCell((CellSelector.Listener)listener); // default logic
+		}
+	}
 	public static void selectCell( CellSelector.Listener listener ) {
 		if (cellSelector.listener != null && cellSelector.listener != defaultCellListener){
 			cellSelector.listener.onSelect(null);

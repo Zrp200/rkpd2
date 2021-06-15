@@ -27,6 +27,7 @@ import com.zrp200.rkpd2.SPDSettings;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.mobs.Mob;
+import com.zrp200.rkpd2.effects.SelectableCell;
 import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.tiles.DungeonTilemap;
@@ -40,6 +41,9 @@ import com.watabou.noosa.ScrollArea;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Signal;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CellSelector extends ScrollArea {
 
@@ -338,9 +342,48 @@ public class CellSelector extends ScrollArea {
 		super.destroy();
 		KeyEvent.removeKeyListener( keyListener );
 	}
-	
+
 	public interface Listener {
 		void onSelect( Integer cell );
 		String prompt();
+	}
+
+	public static abstract class TargetedListener implements Listener {
+		private boolean skippable = true;
+		private final List<SelectableCell> selectableCells = new ArrayList();
+		public final void highlightCells() {
+			for(CharSprite s : getTargets()) {
+				selectableCells.add(new SelectableCell(s));
+			}
+		}
+		private List<CharSprite> targets;
+		protected abstract List<CharSprite> findTargets();
+		public final List<CharSprite> getTargets() { // lazily evaluated
+			if(targets == null) targets = findTargets();
+			return targets;
+		}
+
+		protected abstract void action(Char ch);
+
+		// if there's only one target, this skips the actual selecting.
+		protected final boolean action() {
+			if(getTargets().size() != 1 || !skippable) return false;
+			action(getTargets().get(0).ch);
+			return true;
+		}
+		@Override final public void onSelect(Integer cell) {
+			for(SelectableCell c : selectableCells) c.killAndErase();
+			selectableCells.clear();
+
+			if(cell == null) return;
+
+			Char c = Actor.findChar(cell);
+			if(c != null && getTargets().contains(c.sprite)) action(c);
+			else onInvalid(cell);
+		}
+		protected final void reject(Char ch) {
+			if(ch != null && ch.sprite != null && ch.sprite.isVisible()) skippable = false;
+		}
+		protected void onInvalid(int cell) {}
 	}
 }
