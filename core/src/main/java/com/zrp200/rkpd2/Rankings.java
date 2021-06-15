@@ -277,7 +277,7 @@ public enum Rankings {
 				return Messages.get(this, "something");
 			} else {
 				String result = Messages.get(cause, "rankings_desc", (Messages.get(cause, "name")));
-				if (result.contains("!!!NO TEXT FOUND!!!")){
+				if (result.contains(Messages.NULL)){
 					return Messages.get(this, "something");
 				} else {
 					return result;
