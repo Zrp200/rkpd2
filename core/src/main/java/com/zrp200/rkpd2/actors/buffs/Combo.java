@@ -97,8 +97,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 
 		if (!enemy.isAlive() || (enemy.buff(Corruption.class) != null && enemy.HP == enemy.HT)){
 			Hero hero = (Hero)target;
-			int time = 15 * hero.pointsInTalent(Talent.CLEAVE,Talent.RK_GLADIATOR);
-			if(Dungeon.hero.hasTalent(Talent.CLEAVE)) time *= 2;
+			int time = 15 * hero.shiftedPoints(Talent.CLEAVE,Talent.RK_GLADIATOR);
 			comboTime = Math.max(comboTime, time);
 		}
 		incCombo();
