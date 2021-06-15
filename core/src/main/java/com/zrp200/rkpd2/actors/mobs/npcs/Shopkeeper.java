@@ -97,7 +97,8 @@ public class Shopkeeper extends NPC {
 	//shopkeepers are greedy! they're not super on the ball about how good the items they're selling are, though.
 	// TODO really what should have been done is define a "base value" method so I don't have to duplicate things over and over.
 	public static int sellPrice(Item item){
-		return (int)Math.ceil((Reflection.newInstance(item.getClass()).quantity(item.quantity()).value()+item.value())/2f * 5 * (Dungeon.depth / 5 + 1));
+		int basePrice = Reflection.newInstance(item.getClass()).quantity(item.quantity()).value();
+		return (int)Math.ceil((basePrice*2+item.value())/3f * 5 * (Dungeon.depth / 5 + 1));
 	}
 	
 	public static WndBag sell() {
