@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.actors.mobs;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
+import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.RatSprite;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -37,6 +38,18 @@ public class Rat extends Mob {
 		defenseSkill = 2;
 		
 		maxLvl = 5;
+	}
+
+	@Override
+	public String name() {
+		if(this instanceof FetidRat) return super.name();
+		return Messages.get( this,"name_"+alignment.toString().toLowerCase());
+	}
+
+	@Override
+	public String description() {
+		if(this instanceof FetidRat) return super.description();
+		return super.description()+"\n\n"+Messages.get(this,"desc_"+alignment.toString().toLowerCase());
 	}
 
 	@Override
