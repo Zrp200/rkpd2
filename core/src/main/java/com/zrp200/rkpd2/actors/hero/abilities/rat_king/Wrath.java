@@ -42,7 +42,7 @@ import java.util.Map;
 public class Wrath extends ArmorAbility {
 
     {
-        baseChargeUse = 50; // up from 35.
+        baseChargeUse = 35;
     }
 
     @Override
