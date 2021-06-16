@@ -464,7 +464,8 @@ public class Hero extends Char {
 		
 		float accuracy = 1;
 		accuracy *= RingOfAccuracy.accuracyMultiplier( this );
-		
+		if(subClass == HeroSubClass.SNIPER) accuracy *= 4/3d; // sniper innate boost
+
 		if (wep instanceof MissileWeapon){
 			if (Dungeon.level.adjacent( pos, target.pos )) {
 				int points = pointsInTalent(Talent.POINT_BLANK,Talent.RK_SNIPER);
