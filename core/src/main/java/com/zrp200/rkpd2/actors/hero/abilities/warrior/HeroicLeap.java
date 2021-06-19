@@ -57,8 +57,8 @@ public class HeroicLeap extends ArmorAbility {
 	public float chargeUse( Hero hero ) {
 		float chargeUse = super.chargeUse(hero);
 		if (hero.buff(DoubleJumpTracker.class) != null){
-			//reduced charge use by 24%/42%/56%/67%
-			chargeUse *= Math.pow(0.76, hero.pointsInTalent(Talent.DOUBLE_JUMP));
+			//reduced charge use by 24%/42%/56%/67%/75%
+			chargeUse *= Math.pow(0.76, hero.shiftedPoints(Talent.DOUBLE_JUMP));
 		}
 		return chargeUse;
 	}
@@ -93,17 +93,19 @@ public class HeroicLeap extends ArmorAbility {
 					for (int i : PathFinder.NEIGHBOURS8) {
 						Char mob = Actor.findChar(hero.pos + i);
 						if (mob != null && mob != hero && mob.alignment != Char.Alignment.ALLY) {
-							if (hero.hasTalent(Talent.BODY_SLAM)){
+							if (hero.canHaveTalent(Talent.BODY_SLAM)){
 								int damage = hero.drRoll();
-								damage = Math.round(damage*0.25f*hero.pointsInTalent(Talent.BODY_SLAM));
+								damage = Math.round(damage*0.25f*hero.shiftedPoints(Talent.BODY_SLAM));
 								mob.damage(damage, hero);
 							}
 							if (mob.pos == hero.pos + i && hero.hasTalent(Talent.IMPACT_WAVE)){
 								Ballistica trajectory = new Ballistica(mob.pos, mob.pos + i, Ballistica.MAGIC_BOLT);
 								int strength = 1+hero.pointsInTalent(Talent.IMPACT_WAVE);
+								strength *= 1.5; // 3/4/6 instead of 2/3/4
 								WandOfBlastWave.throwChar(mob, trajectory, strength, true);
-								if (Random.Int(4) < hero.pointsInTalent(Talent.IMPACT_WAVE)){
-									Buff.prolong(mob, Vulnerable.class, 3f);
+								// 40/60/80/100
+								if (Random.Int(5) < 1+hero.pointsInTalent(Talent.IMPACT_WAVE)){
+									Buff.prolong(mob, Vulnerable.class, 5f); // 3 -> 5
 								}
 							}
 						}
@@ -118,7 +120,7 @@ public class HeroicLeap extends ArmorAbility {
 					if (hero.buff(DoubleJumpTracker.class) != null){
 						hero.buff(DoubleJumpTracker.class).detach();
 					} else {
-						if (hero.hasTalent(Talent.DOUBLE_JUMP)) {
+						if (hero.canHaveTalent(Talent.DOUBLE_JUMP)) {
 							Buff.affect(hero, DoubleJumpTracker.class, 5);
 						}
 					}
