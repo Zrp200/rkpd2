@@ -94,7 +94,7 @@ public abstract class AbstractMirrorImage extends NPC {
 
     @Override
     public int attackSkill( Char target ) {
-        return hero.attackSkill(target);
+        return hero != null ? hero.attackSkill(target) : super.attackSkill(target);
     }
 
     @Override

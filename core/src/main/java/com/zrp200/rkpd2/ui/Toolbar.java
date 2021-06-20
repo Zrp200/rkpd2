@@ -32,7 +32,7 @@ import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.tiles.DungeonTerrainTilemap;
 import com.zrp200.rkpd2.windows.WndBag;
-import com.zrp200.rkpd2.windows.WndJournal;
+import com.zrp200.rkpd2.windows.WndQuickBag;
 import com.watabou.input.GameAction;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
@@ -153,8 +153,7 @@ public class Toolbar extends Component {
 			
 			@Override
 			protected boolean onLongClick() {
-				WndJournal.last_index = 3; //catalog page
-				GameScene.show(new WndJournal());
+				GameScene.show(new WndQuickBag(null));
 				return true;
 			}
 

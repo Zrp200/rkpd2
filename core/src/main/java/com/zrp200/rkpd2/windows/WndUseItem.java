@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.windows;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.ui.RedButton;
+import com.zrp200.rkpd2.ui.Window;
 
 import java.util.ArrayList;
 
@@ -36,7 +37,7 @@ public class WndUseItem extends WndInfoItem {
 	
 	private static final float GAP	= 2;
 	
-	public WndUseItem(final WndBag owner, final Item item ) {
+	public WndUseItem( final Window owner, final Item item ) {
 		
 		super(item);
 		
