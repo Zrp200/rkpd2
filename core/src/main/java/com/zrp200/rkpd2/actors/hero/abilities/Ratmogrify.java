@@ -9,6 +9,7 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.actors.mobs.Albino;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.Rat;
 import com.zrp200.rkpd2.effects.CellEmitter;
@@ -69,7 +70,7 @@ public class Ratmogrify extends ArmorAbility {
 				while (ratsToSpawn > 0 && spawnPoints.size() > 0) {
 					int index = Random.index( spawnPoints );
 
-					Rat rat = new Rat();
+					Rat rat = Random.Int(25) == 0 ? new SummonedAlbino() : new SummonedRat();
 					rat.alignment = Char.Alignment.ALLY;
 					rat.state = rat.HUNTING;
 					GameScene.add( rat );
@@ -92,7 +93,7 @@ public class Ratmogrify extends ArmorAbility {
 				ch.sprite.emitter().start(Speck.factory(Speck.HEART), 0.2f, 5);
 				Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 				if (hero.pointsInTalent(Talent.RATLOMACY) > 1){
-					Buff.affect(ch, Adrenaline.class, 2*(hero.pointsInTalent(Talent.RATLOMACY)-1));
+					Buff.affect(ch, Adrenaline.class, /*2*/4*(hero.pointsInTalent(Talent.RATLOMACY)-1));
 				}
 			}
 		} else if (Char.hasProp(ch, Char.Property.MINIBOSS) || Char.hasProp(ch, Char.Property.BOSS)){
@@ -176,7 +177,7 @@ public class Ratmogrify extends ArmorAbility {
 		public int damageRoll() {
 			int damage = original.damageRoll();
 			if (!allied && Dungeon.hero.hasTalent(Talent.RATSISTANCE)){
-				damage = Math.round(damage * (1f - .1f*Dungeon.hero.pointsInTalent(Talent.RATSISTANCE)));
+				damage = Math.round(damage * (1f - .15f*Dungeon.hero.pointsInTalent(Talent.RATSISTANCE)));
 			}
 			return damage;
 		}
@@ -213,4 +214,17 @@ public class Ratmogrify extends ArmorAbility {
 			if (allied) alignment = Alignment.ALLY;
 		}
 	}
+
+	// summons.
+	private static double getModifier() { return 5; }
+	public static class SummonedRat extends Rat {{
+		HP = HT *= getModifier();
+		damageRange[0] *= getModifier();
+		damageRange[1] *= getModifier();
+	}}
+	public static class SummonedAlbino extends Albino {{
+		HP = HT *= getModifier();
+		damageRange[0] *= getModifier();
+		damageRange[1] *= getModifier();
+	}}
 }

@@ -64,9 +64,11 @@ public class Rat extends Mob {
 		return super.act();
 	}
 
+	// technically this behavior could be generalized to all mobs, but this is not the mod to do that.
+	protected int[] damageRange = {1,4};
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 1, 4 );
+		return Random.NormalIntRange( damageRange[0], damageRange[1] );
 	}
 	
 	@Override
