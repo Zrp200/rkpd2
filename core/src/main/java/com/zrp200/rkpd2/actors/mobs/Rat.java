@@ -29,7 +29,6 @@ import com.zrp200.rkpd2.sprites.RatSprite;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
-@SuppressWarnings("StringEquality") // Messages.NULL is a constant.
 public class Rat extends Mob {
 
 	{
@@ -43,15 +42,16 @@ public class Rat extends Mob {
 
 	@Override
 	public String name() {
-		String name = Messages.get( this,"name_"+alignment.toString().toLowerCase());
-		return name == Messages.NULL ? super.name() : name;
+		String name = super.name();
+		String prefixed = Messages.get(this, alignment.toString().toLowerCase(), name);
+		return prefixed.isEmpty() ? name : prefixed;
 	}
 
 	@Override
 	public String description() {
-		String bonus_desc = Messages.get(this,"desc_"+alignment.toString().toLowerCase());
+		String bonus_desc = Messages.get(this,"desc_"+alignment.toString().toLowerCase(), false);
 		String desc = super.description();
-		if(bonus_desc != Messages.NULL) desc += "\n\n" + bonus_desc;
+		if(!bonus_desc.isEmpty()) desc += "\n\n" + bonus_desc;
 		return desc;
 	}
 
