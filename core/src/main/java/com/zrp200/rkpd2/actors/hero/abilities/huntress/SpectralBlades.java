@@ -66,7 +66,7 @@ public class SpectralBlades extends ArmorAbility {
 		Ballistica b = new Ballistica(hero.pos, target, Ballistica.WONT_STOP);
 		final HashSet<Char> targets = new HashSet<>();
 
-		Char enemy = findChar(b, hero, 2*hero.pointsInTalent(Talent.PROJECTING_BLADES), targets);
+		Char enemy = findChar(b, hero, 2*hero.shiftedPoints(Talent.PROJECTING_BLADES), targets);
 
 		if (enemy == null){
 			GLog.w(Messages.get(this, "no_target"));
@@ -75,15 +75,15 @@ public class SpectralBlades extends ArmorAbility {
 
 		targets.add(enemy);
 
-		if (hero.hasTalent(Talent.FAN_OF_BLADES)){
-			ConeAOE cone = new ConeAOE(b, 30*hero.pointsInTalent(Talent.FAN_OF_BLADES));
+		if (hero.canHaveTalent(Talent.FAN_OF_BLADES)){
+			ConeAOE cone = new ConeAOE(b, 30*hero.shiftedPoints(Talent.FAN_OF_BLADES));
 			for (Ballistica ray : cone.rays){
-				Char toAdd = findChar(ray, hero, 2*hero.pointsInTalent(Talent.PROJECTING_BLADES), targets);
+				Char toAdd = findChar(ray, hero, 2*hero.shiftedPoints(Talent.PROJECTING_BLADES), targets);
 				if (toAdd != null && hero.fieldOfView[toAdd.pos]){
 					targets.add(toAdd);
 				}
 			}
-			while (targets.size() > 1 + hero.pointsInTalent(Talent.FAN_OF_BLADES)){
+			while (targets.size() > 1 + hero.shiftedPoints(Talent.FAN_OF_BLADES)){
 				Char furthest = null;
 				for (Char ch : targets){
 					if (furthest == null){
@@ -108,9 +108,9 @@ public class SpectralBlades extends ArmorAbility {
 			Callback callback = new Callback() {
 				@Override
 				public void call() {
-					float dmgMulti = ch == enemy ? 1f : 0.5f;
-					float accmulti = 1f + 0.25f*hero.pointsInTalent(Talent.PROJECTING_BLADES);
-					if (hero.hasTalent(Talent.SPIRIT_BLADES)){
+					float dmgMulti = ch == enemy ? 1f : 0.75f;
+					float accmulti = 1f + 0.25f*hero.shiftedPoints(Talent.PROJECTING_BLADES);
+					if (hero.canHaveTalent(Talent.SPIRIT_BLADES)){
 						Buff.affect(hero, Talent.SpiritBladesTracker.class, 0f);
 					}
 					hero.attack( ch, dmgMulti, 0, accmulti );
