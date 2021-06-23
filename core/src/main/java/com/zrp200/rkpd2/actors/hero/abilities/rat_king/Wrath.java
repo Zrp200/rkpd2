@@ -73,82 +73,82 @@ public class Wrath extends ArmorAbility {
                 Ballistica route = new Ballistica(hero.pos, target, Ballistica.STOP_TARGET);
                 //can't occupy the same cell as another char, so move back one until it is valid.
                 int i = 0;
-                while (Actor.findChar(target) != null && target != hero.pos)  {
+                while (Actor.findChar(target) != null && target != hero.pos) {
                     target = route.path.get(route.dist - ++i);
                 }
+            }
 
-                for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
-                    if (Dungeon.level.adjacent(mob.pos, hero.pos) && mob.alignment != Char.Alignment.ALLY) {
-                        Buff.prolong(mob, Blindness.class, Blindness.DURATION / 2f);
-                        if (mob.state == mob.HUNTING) mob.state = mob.WANDERING;
-                        mob.sprite.emitter().burst(Speck.factory(Speck.LIGHT), 4);
-                    }
+            for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
+                if (Dungeon.level.adjacent(mob.pos, hero.pos) && mob.alignment != Char.Alignment.ALLY) {
+                    Buff.prolong(mob, Blindness.class, Blindness.DURATION / 2f);
+                    if (mob.state == mob.HUNTING) mob.state = mob.WANDERING;
+                    mob.sprite.emitter().burst(Speck.factory(Speck.LIGHT), 4);
                 }
+            }
 
-                CellEmitter.get(hero.pos).burst(Speck.factory(Speck.WOOL), 10);
-                hero.sprite.turnTo(hero.pos, target); // jump from warrior leap
-                ScrollOfTeleportation.appear(hero, target);
-                hero.move(target); // impact from warrior leap.
-                Sample.INSTANCE.play(Assets.Sounds.PUFF);
-                Dungeon.level.occupyCell(hero);
-                // at least do warrior vfx now.
-                Dungeon.observe();
-                GameScene.updateFog();
-                CellEmitter.center(hero.pos).burst(Speck.factory(Speck.DUST), 10);
-                Camera.main.shake(2, 0.5f);
-            }
-            // now do mage
-            if(stages[1] = MageArmor.doMoltenEarth()) {
-                Dungeon.observe();
-                hero.sprite.remove(CharSprite.State.INVISIBLE); // you still benefit from initial invisibiilty, even if you can't see it visually.
-                hero.sprite.operate(hero.pos,()->{}); // handled.
-                MageArmor.playMoltenEarthFX();
-            }
-            // warrior. this is delayed so the burst burning damage doesn't cancel this out instantly.
-            if(stages[0]) for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
-                Char mob = Actor.findChar(hero.pos + PathFinder.NEIGHBOURS8[i]);
-                if (mob != null && mob != hero && mob.alignment != Char.Alignment.ALLY) {
-                    Buff.prolong(mob, Paralysis.class, 5);
-                }
-            }
-            // huntress
-            HashMap<Callback, Mob> targets = new HashMap<>();
-            for (Mob mob : Dungeon.level.mobs) {
-                if (Dungeon.level.distance(hero.pos, mob.pos) <= 12
-                        && Dungeon.level.heroFOV[mob.pos]
-                        && mob.alignment == Char.Alignment.ENEMY) {
-                    Callback callback = new Callback() {
-                        @Override
-                        public void call() {
-                            hero.attack( targets.get( this ) );
-                            Invisibility.dispel();
-                            targets.remove( this );
-                            if (targets.isEmpty()) finish(armor, hero, stages);
-                        }
-                    };
-                    targets.put( callback, mob );
-                }
-            }
-            // this guarentees proper sequence of events for spectral blades
-            if ( stages[2] = targets.size() > 0 ) {
-                // turn towards the average point of all enemies being shot at.
-                Point sum = new Point(); for(Mob mob : targets.values()) sum.offset(Dungeon.level.cellToPoint(mob.pos));
-                sum.scale(1f/targets.size());
-                // wait for user sprite to finish doing what it's doing, then start shooting.
-                hero.sprite.doAfterAnim( () -> hero.sprite.zap(Dungeon.level.pointToCell(sum), ()->{
-                    Shuriken proto = new Shuriken();
-                    for(Map.Entry<Callback, Mob> entry : targets.entrySet())
-                        ( (MissileSprite)hero.sprite.parent.recycle( MissileSprite.class ) )
-                                .reset( hero.sprite, entry.getValue().pos, proto, entry.getKey() );
-                }));
-                hero.busy();
-            } else { // still need to finish, but also need to indicate that there was no enemies to shoot at.
-                if( stages[1] ) Invisibility.dispel();
-                else GLog.w( Messages.get(HuntressArmor.class, "no_enemies") );
-                finish(armor, hero, stages);
+            CellEmitter.get(hero.pos).burst(Speck.factory(Speck.WOOL), 10);
+            hero.sprite.turnTo(hero.pos, target); // jump from warrior leap
+            ScrollOfTeleportation.appear(hero, target);
+            hero.move(target); // impact from warrior leap.
+            Sample.INSTANCE.play(Assets.Sounds.PUFF);
+            Dungeon.level.occupyCell(hero);
+            // at least do warrior vfx now.
+            Dungeon.observe();
+            GameScene.updateFog();
+            CellEmitter.center(hero.pos).burst(Speck.factory(Speck.DUST), 10);
+            Camera.main.shake(2, 0.5f);
+        }
+        // now do mage
+        if(stages[1] = MageArmor.doMoltenEarth()) {
+            Dungeon.observe();
+            hero.sprite.remove(CharSprite.State.INVISIBLE); // you still benefit from initial invisibiilty, even if you can't see it visually.
+            hero.sprite.operate(hero.pos,()->{}); // handled.
+            MageArmor.playMoltenEarthFX();
+        }
+        // warrior. this is delayed so the burst burning damage doesn't cancel this out instantly.
+        if(stages[0]) for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
+            Char mob = Actor.findChar(hero.pos + PathFinder.NEIGHBOURS8[i]);
+            if (mob != null && mob != hero && mob.alignment != Char.Alignment.ALLY) {
+                Buff.prolong(mob, Paralysis.class, 5);
             }
         }
-    };
+        // huntress
+        HashMap<Callback, Mob> targets = new HashMap<>();
+        for (Mob mob : Dungeon.level.mobs) {
+            if (Dungeon.level.distance(hero.pos, mob.pos) <= 12
+                    && Dungeon.level.heroFOV[mob.pos]
+                    && mob.alignment == Char.Alignment.ENEMY) {
+                Callback callback = new Callback() {
+                    @Override
+                    public void call() {
+                        hero.attack( targets.get( this ) );
+                        Invisibility.dispel();
+                        targets.remove( this );
+                        if (targets.isEmpty()) finish(armor, hero, stages);
+                    }
+                };
+                targets.put( callback, mob );
+            }
+        }
+        // this guarentees proper sequence of events for spectral blades
+        if ( stages[2] = targets.size() > 0 ) {
+            // turn towards the average point of all enemies being shot at.
+            Point sum = new Point(); for(Mob mob : targets.values()) sum.offset(Dungeon.level.cellToPoint(mob.pos));
+            sum.scale(1f/targets.size());
+            // wait for user sprite to finish doing what it's doing, then start shooting.
+            hero.sprite.doAfterAnim( () -> hero.sprite.zap(Dungeon.level.pointToCell(sum), ()->{
+                Shuriken proto = new Shuriken();
+                for(Map.Entry<Callback, Mob> entry : targets.entrySet())
+                    ( (MissileSprite)hero.sprite.parent.recycle( MissileSprite.class ) )
+                            .reset( hero.sprite, entry.getValue().pos, proto, entry.getKey() );
+            }));
+            hero.busy();
+        } else { // still need to finish, but also need to indicate that there was no enemies to shoot at.
+            if( stages[1] ) Invisibility.dispel();
+            else GLog.w( Messages.get(HuntressArmor.class, "no_enemies") );
+            finish(armor, hero, stages);
+        }
+    }
 
     private void finish(ClassArmor armor, Hero hero, boolean[] stages) {
         hero.sprite.doAfterAnim(hero.sprite::idle); // because I overrode the default behavior I need to do this.
