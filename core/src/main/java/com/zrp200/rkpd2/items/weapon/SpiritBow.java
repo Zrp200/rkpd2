@@ -272,7 +272,7 @@ public class SpiritBow extends Weapon {
 					@Override
 					protected boolean act() {
 
-						if (Random.Int(12) < ((Hero)attacker).pointsInTalent(Talent.NATURES_WRATH)){
+						if (Random.Int(/*12*/8) < ((Hero)attacker).pointsInTalent(Talent.NATURES_WRATH)){
 							Plant plant = (Plant) Reflection.newInstance(Random.element(harmfulPlants));
 							plant.pos = defender.pos;
 							plant.activate( defender.isAlive() ? defender : null );
@@ -281,7 +281,7 @@ public class SpiritBow extends Weapon {
 						if (!defender.isAlive()){
 							NaturesPower.naturesPowerTracker tracker = attacker.buff(NaturesPower.naturesPowerTracker.class);
 							if (tracker != null){
-								tracker.extend(((Hero) attacker).pointsInTalent(Talent.WILD_MOMENTUM));
+								tracker.extend(((Hero) attacker).shiftedPoints(Talent.WILD_MOMENTUM));
 							}
 						}
 
@@ -317,7 +317,7 @@ public class SpiritBow extends Weapon {
 			float speed = SpiritBow.this.speedMultiplier(owner);
 			if (owner.buff(NaturesPower.naturesPowerTracker.class) != null){
 				// +33% speed to +50% speed, depending on talent points
-				speed += ((8 + ((Hero)owner).pointsInTalent(Talent.GROWING_POWER)) / 24f);
+				speed += ((8 + ((Hero)owner).shiftedPoints(Talent.GROWING_POWER)) / 24f);
 			}
 			return speed;
 		}

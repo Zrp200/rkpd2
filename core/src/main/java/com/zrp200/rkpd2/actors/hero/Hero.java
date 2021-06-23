@@ -593,7 +593,7 @@ public class Hero extends Char {
 
 		NaturesPower.naturesPowerTracker natStrength = buff(NaturesPower.naturesPowerTracker.class);
 		if (natStrength != null){
-			speed *= (2f + 0.25f*pointsInTalent(Talent.GROWING_POWER));
+			speed *= (2f + 0.25f*shiftedPoints(Talent.GROWING_POWER));
 		}
 
 		return speed;
