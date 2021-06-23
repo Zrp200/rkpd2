@@ -59,8 +59,17 @@ public class WndChooseSubclass extends Window {
 
 		for (HeroSubClass subCls : hero.heroClass.subClasses()){
 			RedButton btnCls = new RedButton( subCls.shortDesc(), 6 ) {
+				private void resolve() {
+					WndChooseSubclass.this.hide();
+					tome.choose(subCls);
+				}
 				@Override
 				protected void onClick() {
+					if(hero.heroClass.subClasses().length == 1) {
+						// Oh no what a decision!!!
+						resolve();
+						return;
+					}
 					GameScene.show(new WndOptions(subCls.icon(),
 							Messages.titleCase(subCls.title()),
 							Messages.get(WndChooseSubclass.this, "are_you_sure"),
@@ -70,8 +79,7 @@ public class WndChooseSubclass extends Window {
 						protected void onSelect(int index) {
 							hide();
 							if (index == 0 && WndChooseSubclass.this.parent != null){
-								WndChooseSubclass.this.hide();
-								tome.choose( subCls );
+								resolve();
 							}
 						}
 					});
