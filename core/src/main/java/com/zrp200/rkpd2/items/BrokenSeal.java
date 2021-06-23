@@ -43,10 +43,6 @@ import java.util.ArrayList;
 
 public class BrokenSeal extends Item {
 
-	{
-		upgrade(3);
-	}
-
 	public static final String AC_AFFIX = "AFFIX";
 
 	//only to be used from the quickslot, for tutorial purposes mostly.
