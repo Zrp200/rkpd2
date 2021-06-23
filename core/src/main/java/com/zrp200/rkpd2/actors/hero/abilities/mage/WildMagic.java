@@ -73,7 +73,7 @@ public class WildMagic extends ArmorAbility {
 			}
 		}
 
-		int maxWands = 4 + Dungeon.hero.pointsInTalent(Talent.FIRE_EVERYTHING);
+		int maxWands = 4 + Dungeon.hero.shiftedPoints(Talent.FIRE_EVERYTHING);
 
 		if (wands.size() < maxWands){
 			ArrayList<Wand> dupes = new ArrayList<>(wands);
