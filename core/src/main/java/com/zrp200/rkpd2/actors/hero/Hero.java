@@ -238,7 +238,9 @@ public class Hero extends Char {
 
 		// TODO buff for warrior
 		if (hasTalent(Talent.STRONGMAN,Talent.RK_GLADIATOR)){
-			STR = (int)Math.floor(STR * (1f + 0.03f + 0.05f*pointsInTalent(Talent.STRONGMAN)));
+			float boost = 0.03f + 0.05f*pointsInTalent(Talent.STRONGMAN, Talent.RK_GLADIATOR);
+			if(hasTalent(Talent.STRONGMAN)) boost *= 2;
+			STR = (int)Math.floor(STR * (1 + boost));
 		}
 
 		return STR;
