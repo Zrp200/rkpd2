@@ -103,7 +103,7 @@ public class TengusMask extends Item {
 		Emitter e = curUser.sprite.centerEmitter();
 		e.pos(e.x-2, e.y-6, 4, 4);
 		e.start(Speck.factory(Speck.MASK), 0.05f, 20);
-		GLog.p( Messages.get(this, "used"));
+		GLog.p( Messages.get(this, way != HeroSubClass.KING ? "used" : "used_rk") );
 		
 	}
 }

@@ -32,6 +32,8 @@ import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.sprites.ItemSprite;
+import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
 public enum HeroSubClass {
 
@@ -99,6 +101,7 @@ public enum HeroSubClass {
 	}
 
 	//FIXME shouldn't hardcode these, probably want to just have a BuffIcon class
+	// TO EVAN: please do this, thanks.
 	public Image icon(){
 		switch (this){
 			case GLADIATOR: default:
@@ -126,6 +129,10 @@ public enum HeroSubClass {
 				return new Image(Assets.Interfaces.BUFFS_LARGE, 176, 16, 16, 16);
 			case WARDEN:
 				return new Image(Assets.Interfaces.BUFFS_LARGE, 208, 0, 16, 16);
+
+			case KING:
+				im = new ItemSprite(ItemSpriteSheet.ARMOR_RAT_KING);
+				return im;
 		}
 	}
 
