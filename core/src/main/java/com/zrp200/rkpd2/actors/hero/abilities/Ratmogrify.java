@@ -216,7 +216,7 @@ public class Ratmogrify extends ArmorAbility {
 	}
 
 	// summons.
-	private static double getModifier() { return 5; }
+	private static double getModifier() { return Math.max(1, Dungeon.depth/5d * 4/5d); }
 	public static class SummonedRat extends Rat {{
 		HP = HT *= getModifier();
 		damageRange[0] *= getModifier();
