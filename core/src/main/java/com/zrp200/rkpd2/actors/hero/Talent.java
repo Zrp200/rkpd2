@@ -149,7 +149,36 @@ public enum Talent {
 	//Spirit Hawk T4
 	EAGLE_EYE(119, 4), GO_FOR_THE_EYES(120, 4), SWIFT_SPIRIT(121, 4),
 	//universal T4
-	HEROIC_ENERGY(26, 4), //See icon() and title() for special logic for this one
+	HEROIC_ENERGY(26, 4) {
+		// this is why wrath doesn't have any talents...
+		private boolean ratmogrify() {
+			// FIXME this is really brittle, will be an issue if/when I add OmniAbility
+			return GamesInProgress.selectedClass == HeroClass.RAT_KING
+					|| Dungeon.hero != null
+						&& (Dungeon.hero.heroClass == HeroClass.RAT_KING
+							|| Dungeon.hero.armorAbility instanceof Ratmogrify);
+		}
+		@Override public int icon() {
+			if ( ratmogrify() ) return 127;
+			switch (Dungeon.hero != null ? Dungeon.hero.heroClass : GamesInProgress.selectedClass){
+				case WARRIOR: default: return 26;
+				case MAGE: return 58;
+				case ROGUE: return 90;
+				case HUNTRESS: return 122;
+				// Rat King handled on line 164
+			}
+		}
+
+		@Override public String title() {
+			//TODO translate this
+			if (Messages.lang() == Languages.ENGLISH
+					&& ratmogrify()) {
+				return "ratroic energy";
+			}
+			return super.title();
+		}
+	},
+
 	//Ratmogrify T4
 	RATSISTANCE(124, 4), RATLOMACY(125, 4), RATFORCEMENTS(126, 4),
 	// TODO add unique icons, really bad now.
@@ -220,25 +249,7 @@ public enum Talent {
 	}
 
 	public int icon(){
-		if (this == HEROIC_ENERGY){
-			if (Dungeon.hero != null && (Dungeon.hero.heroClass == HeroClass.RAT_KING || Dungeon.hero.armorAbility instanceof Ratmogrify)){
-				return 127;
-			}
-			HeroClass cls = Dungeon.hero != null ? Dungeon.hero.heroClass : GamesInProgress.selectedClass;
-			switch (cls){
-				case WARRIOR: default:
-					return 26;
-				case MAGE:
-					return 58;
-				case ROGUE:
-					return 90;
-				case HUNTRESS:
-					return 122;
-				// Rat King handled on line 224
-			}
-		} else {
 		return icon;
-		}
 	}
 
 	public int maxPoints(){
@@ -246,13 +257,6 @@ public enum Talent {
 	}
 
 	public String title(){
-		//TODO translate this
-		if (this == HEROIC_ENERGY &&
-				Messages.lang() == Languages.ENGLISH
-				&& Dungeon.hero != null
-				&& (Dungeon.hero.armorAbility instanceof Ratmogrify || Dungeon.hero.heroClass == HeroClass.RAT_KING)){
-			return "ratroic energy";
-		}
 		return Messages.get(this, name() + ".title");
 	}
 
