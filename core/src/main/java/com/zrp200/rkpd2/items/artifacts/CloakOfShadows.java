@@ -127,6 +127,8 @@ public class CloakOfShadows extends Artifact {
 					activeBuff.detach();
 					activeBuff = null;
 				}
+			} else {
+				activate(hero);
 			}
 
 			return true;

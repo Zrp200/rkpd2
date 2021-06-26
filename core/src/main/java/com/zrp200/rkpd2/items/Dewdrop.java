@@ -23,11 +23,14 @@ package com.zrp200.rkpd2.items;
 
 import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.buffs.Barrier;
 import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.Terror;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.Speck;
+import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.CharSprite;
@@ -56,7 +59,8 @@ public class Dewdrop extends Item {
 
 		} else {
 
-			if (!consumeDew(1, hero)){
+			int terr = Dungeon.level.map[hero.pos];
+			if (!consumeDew(1, hero, terr == Terrain.ENTRANCE|| terr == Terrain.EXIT || terr == Terrain.UNLOCKED_EXIT)){
 				return false;
 			}
 			
@@ -68,7 +72,7 @@ public class Dewdrop extends Item {
 		return true;
 	}
 
-	public static boolean consumeDew(int quantity, Hero hero){
+	public static boolean consumeDew(int quantity, Hero hero, boolean force){
 		//20 drops for a full heal
 		float rawHeal = hero.HT * 0.05f * quantity;
 		int shield = Random.round(rawHeal * hero.pointsInTalent(Talent.SHIELDING_DEW)/4f); // I have a random rounding obsession I guess.
@@ -93,7 +97,7 @@ public class Dewdrop extends Item {
 				hero.sprite.showStatus( CharSprite.POSITIVE, Messages.get(Dewdrop.class, "shield", shield) );
 			}
 
-		} else {
+		} else if (!force) {
 			GLog.i( Messages.get(Dewdrop.class, "already_full") );
 			return false;
 		}

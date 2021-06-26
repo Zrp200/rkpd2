@@ -307,9 +307,9 @@ public enum Talent {
 				float mod = points == 1 ? 0 : 1f/(points-1);
 				for(RevealedArea buff : hero.buffs(RevealedArea.class)) buff.postpone(buff.cooldown() * mod);
 				break;
-		}
-		if (talent == FARSIGHT || talent == RK_SNIPER){
-			Dungeon.observe();
+			case FARSIGHT: case RK_SNIPER: case HEIGHTENED_SENSES:
+				Dungeon.observe();
+				break;
 		}
 
 	}

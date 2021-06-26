@@ -58,6 +58,7 @@ import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.KingSprite;
 import com.zrp200.rkpd2.ui.BossHealthBar;
 import com.zrp200.rkpd2.ui.BuffIndicator;
+import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundle;
@@ -747,6 +748,9 @@ public class DwarfKing extends Mob implements Hero.Doom {
 						} else {
 							target.damage(target.HT/12, new KingDamager());
 						}
+					}
+					if (!ch.isAlive() && ch == Dungeon.hero) {
+						Dungeon.fail(DwarfKing.class);
 					}
 				}
 
