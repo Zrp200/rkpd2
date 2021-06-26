@@ -90,17 +90,19 @@ public class WarpBeacon extends ArmorAbility {
 				protected void onSelect(int index) {
 					if (index == 0){
 
-						if (tracker.depth != Dungeon.depth && !hero.hasTalent(Talent.LONGRANGE_WARP)){
+						/*if (tracker.depth != Dungeon.depth && !hero.hasTalent(Talent.LONGRANGE_WARP)){
 							GLog.w( Messages.get(WarpBeacon.class, "depths") );
 							return;
-						}
+						}*/
 
 						float chargeNeeded = chargeUse(hero);
 
 						if (tracker.depth != Dungeon.depth){
-							chargeNeeded *= 1.833f - 0.333f*Dungeon.hero.pointsInTalent(Talent.LONGRANGE_WARP);
+							// changed from shattered
+							chargeNeeded *= 1.75f - 0.25*Dungeon.hero.pointsInTalent(Talent.LONGRANGE_WARP);
 						}
 
+						// TODO fix for supercharge
 						if (armor.charge < chargeNeeded){
 							GLog.w( Messages.get(ClassArmor.class, "low_charge") );
 							return;
@@ -113,19 +115,19 @@ public class WarpBeacon extends ArmorAbility {
 							Char existing = Actor.findChar(tracker.pos);
 
 							if (existing != null && existing != hero){
-								if (hero.hasTalent(Talent.TELEFRAG)){
+								//if (hero.hasTalent(Talent.TELEFRAG)){
 									int heroHP = hero.HP + hero.shielding();
-									int heroDmg = Math.round(1.666f + 3.333f*hero.pointsInTalent(Talent.TELEFRAG));
+									int heroDmg = Math.round(1.666f + 3.333f*hero.shiftedPoints(Talent.TELEFRAG));
 									hero.damage(Math.min(heroDmg, heroHP-1), WarpBeacon.this);
 
-									int damage = Random.NormalIntRange(10*hero.pointsInTalent(Talent.TELEFRAG), 15*hero.pointsInTalent(Talent.TELEFRAG));
+									int damage = Random.NormalIntRange(10*hero.shiftedPoints(Talent.TELEFRAG), 15*hero.shiftedPoints(Talent.TELEFRAG));
 									existing.sprite.flash();
 									existing.sprite.bloodBurstA(existing.sprite.center(), damage);
 									existing.damage(damage, WarpBeacon.this);
 
 									Sample.INSTANCE.play(Assets.Sounds.HIT_CRUSH);
 									Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);
-								}
+								//}
 
 								if (existing.isAlive()){
 									ArrayList<Integer> candidates = new ArrayList<>();
