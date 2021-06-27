@@ -415,7 +415,7 @@ public abstract class Wand extends Item {
 				&& !Dungeon.hero.belongings.contains(this)) {
 			if (curCharges == 0 && Dungeon.hero.hasTalent(Talent.BACKUP_BARRIER,Talent.NOBLE_CAUSE)) {
 				//grants 3/5 shielding
-			int shielding = 1+Dungeon.hero.pointsInTalent(Talent.BACKUP_BARRIER,Talent.NOBLE_CAUSE);
+			int shielding = 1+2*Dungeon.hero.pointsInTalent(Talent.BACKUP_BARRIER, Talent.NOBLE_CAUSE);
 			if(Dungeon.hero.hasTalent(Talent.BACKUP_BARRIER)) shielding = (int)Math.ceil(shielding*1.5f);
 			Buff.affect(Dungeon.hero, Barrier.class).setShield(shielding);
 			}
