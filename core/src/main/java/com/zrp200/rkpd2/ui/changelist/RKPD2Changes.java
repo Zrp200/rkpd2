@@ -59,6 +59,19 @@ public class RKPD2Changes {
         return new ChangeButton(get(Icons.PREFS), get(ChangesScene.class,"misc"), message);
     }
 
+    /** makes a list in the standard PD style.
+     * [lineSpace] determines the number of spaces between each list item.
+     * If you want to append extra spaces, you should do it at the end of the previous item, rather than at the start of that item.*/
+    private static String list(int lineSpace, String... items) {
+        StringBuilder builder = new StringBuilder("_-_ ");
+        for(int i = 0; i < items.length-1; i++) {
+            builder.append(items[i]);
+            for(int j=0; j < lineSpace; j++) builder.append('\n');
+            builder.append("_-_ ");
+        }
+        return builder.append(items[items.length-1]).toString();
+    }
+
     public static void addAllChanges( ArrayList<ChangeInfo> changeInfos ){
         for(ChangeInfo[] section : new RKPD2Changes().changes) changeInfos.addAll(asList(section));
     }
