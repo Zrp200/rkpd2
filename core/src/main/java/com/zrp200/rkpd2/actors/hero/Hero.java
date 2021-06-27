@@ -237,9 +237,11 @@ public class Hero extends Char {
 		}
 
 		// TODO buff for warrior
-		if (hasTalent(Talent.STRONGMAN,Talent.RK_GLADIATOR)){
-			float boost = 0.03f + 0.05f*pointsInTalent(Talent.STRONGMAN, Talent.RK_GLADIATOR);
-			if(hasTalent(Talent.STRONGMAN)) boost *= 2;
+		if (hasTalent(Talent.STRONGMAN,Talent.RK_GLADIATOR)){ // note that you need to have points in this.
+			float boost = Math.max(
+					0.05f + 0.08f*pointsInTalent(Talent.STRONGMAN), // get it? ~1.5x. Very, very slightly worse than v0.0.1
+					0.03f + 0.05f*pointsInTalent(Talent.RK_GLADIATOR)
+			);
 			STR = (int)Math.floor(STR * (1 + boost));
 		}
 
