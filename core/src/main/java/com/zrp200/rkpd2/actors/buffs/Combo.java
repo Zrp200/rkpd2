@@ -476,10 +476,12 @@ public class Combo extends Buff implements ActionIndicator.Action {
 				} else if (((Hero) target).pointsInTalent(Talent.ENHANCED_COMBO, Talent.RK_GLADIATOR) == 3
 						&& Dungeon.level.distance(target.pos, enemy.pos) <= getLeapDistance()) {
 					Ballistica b = new Ballistica(target.pos, enemy.pos, Ballistica.PROJECTILE);
-					int leapPos = b.path.get(b.dist - 1);
-					if (b.collisionPos == enemy.pos && Dungeon.level.passable[leapPos]) {
-						targets.put(enemy, leapPos);
-						return true;
+					if(b.collisionPos == enemy.pos) {
+						int leapPos = b.path.get(b.dist-1);
+						if(Dungeon.level.passable[leapPos]) {
+							targets.put(enemy, leapPos);
+							return true;
+						}
 					}
 				}
 			}
