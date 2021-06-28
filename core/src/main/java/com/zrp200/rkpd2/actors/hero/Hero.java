@@ -1804,8 +1804,8 @@ public class Hero extends Char {
 		}
 
 		for (Char c : Actor.chars()){
-			if (c instanceof DriedRose.GhostHero){
-				((DriedRose.GhostHero) c).sayHeroKilled();
+			if (c instanceof DeathCommentator){
+				((DeathCommentator) c).sayHeroKilled();
 			}
 		}
 
@@ -2099,5 +2099,10 @@ public class Hero extends Char {
 
 	public static interface Doom {
 		public void onDeath();
+	}
+
+	/* says something when the hero dies.*/
+	public interface DeathCommentator {
+		void sayHeroKilled();
 	}
 }

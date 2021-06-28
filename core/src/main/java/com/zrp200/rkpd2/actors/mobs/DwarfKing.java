@@ -69,10 +69,11 @@ import com.watabou.utils.Reflection;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class DwarfKing extends Mob implements Hero.Doom {
-	@Override public void onDeath() {
+public class DwarfKing extends Mob implements Hero.DeathCommentator {
+	@Override public void sayHeroKilled() {
 		if(Dungeon.hero.heroClass == HeroClass.RAT_KING) yell("I am truly the superior king...");
 		else yell("Let Rat King take this as a lesson...");
+		Sample.INSTANCE.play(Assets.Sounds.CHALLENGE);
 	}
 
 	{
@@ -629,9 +630,7 @@ public class DwarfKing extends Mob implements Hero.Doom {
 		return super.isImmune(effect);
 	}
 
-	public interface Subject extends Hero.Doom {
-		@Override default void onDeath() { new DwarfKing().onDeath(); }
-	} // used to identify DK minions
+	public interface Subject {} // used to identify DK minions
 
 	public static class DKGhoul extends Ghoul implements Subject {
 		{

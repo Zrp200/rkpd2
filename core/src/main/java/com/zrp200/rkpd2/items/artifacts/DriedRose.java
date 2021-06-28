@@ -481,7 +481,7 @@ public class DriedRose extends Artifact {
 
 	}
 
-	public static class GhostHero extends DirectableAlly {
+	public static class GhostHero extends DirectableAlly implements Hero.DeathCommentator {
 
 		{
 			spriteClass = GhostSprite.class;
@@ -779,8 +779,8 @@ public class DriedRose extends Artifact {
 			}
 			Sample.INSTANCE.play( Assets.Sounds.GHOST );
 		}
-		
-		public void sayHeroKilled(){
+
+		@Override public void sayHeroKilled(){
 			yell( Messages.get( this, "player_killed_" + Random.IntRange(1, 3) ));
 			GLog.newLine();
 			Sample.INSTANCE.play( Assets.Sounds.GHOST );
