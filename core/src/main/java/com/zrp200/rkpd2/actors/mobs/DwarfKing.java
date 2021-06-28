@@ -67,13 +67,14 @@ import com.watabou.utils.Reflection;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import static com.zrp200.rkpd2.Assets.Sounds.CHALLENGE;
 import static com.zrp200.rkpd2.actors.hero.HeroClass.RAT_KING;
 
 public class DwarfKing extends Mob implements Hero.DeathCommentator {
 	@Override public void sayHeroKilled() {
 		if(Dungeon.hero.heroClass == RAT_KING) yell("I am truly the superior king...");
 		else yell("Let Rat King take this as a lesson...");
-		Sample.INSTANCE.play(Assets.Sounds.CHALLENGE);
+		Sample.INSTANCE.play(CHALLENGE);
 	}
 
 	{
@@ -187,6 +188,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 		if(state == HUNTING && yellSpecialNotice && paralysed == 0) { // takes him a hot second to realize who he's fighting.
 			yell(Messages.get(this, "notice_" + (Dungeon.hero.heroClass == RAT_KING ? "ratking" : "default")));
 			yellSpecialNotice = false;
+			Sample.INSTANCE.play(CHALLENGE);
 		}
 		if (phase == 1) {
 
@@ -237,7 +239,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 				if (summonsMade < 6){
 					if (summonsMade == 0) {
 						sprite.centerEmitter().start(Speck.factory(Speck.SCREAM), 0.4f, 2);
-						Sample.INSTANCE.play(Assets.Sounds.CHALLENGE);
+						Sample.INSTANCE.play(CHALLENGE);
 						yell(Messages.get(this, "wave_1"));
 					}
 					summonSubject(3, DKGhoul.class);
@@ -248,7 +250,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 				} else if (shielding() <= 300 && summonsMade < 12){
 					if (summonsMade == 6) {
 						sprite.centerEmitter().start(Speck.factory(Speck.SCREAM), 0.4f, 2);
-						Sample.INSTANCE.play(Assets.Sounds.CHALLENGE);
+						Sample.INSTANCE.play(CHALLENGE);
 						yell(Messages.get(this, "wave_2"));
 					}
 					summonSubject(3, DKGhoul.class);
@@ -264,7 +266,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 				} else if (shielding() <= 150 && summonsMade < 18) {
 					if (summonsMade == 12) {
 						sprite.centerEmitter().start(Speck.factory(Speck.SCREAM), 0.4f, 2);
-						Sample.INSTANCE.play(Assets.Sounds.CHALLENGE);
+						Sample.INSTANCE.play(CHALLENGE);
 						yell(Messages.get(this, "wave_3"));
 						summonSubject(3, DKWarlock.class);
 						summonSubject(3, DKMonk.class);
@@ -288,7 +290,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 				if (summonsMade < 4) {
 					if (summonsMade == 0) {
 						sprite.centerEmitter().start(Speck.factory(Speck.SCREAM), 0.4f, 2);
-						Sample.INSTANCE.play(Assets.Sounds.CHALLENGE);
+						Sample.INSTANCE.play(CHALLENGE);
 						yell(Messages.get(this, "wave_1"));
 					}
 					summonSubject(3, DKGhoul.class);
@@ -297,7 +299,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 				} else if (shielding() <= 200 && summonsMade < 8) {
 					if (summonsMade == 4) {
 						sprite.centerEmitter().start(Speck.factory(Speck.SCREAM), 0.4f, 2);
-						Sample.INSTANCE.play(Assets.Sounds.CHALLENGE);
+						Sample.INSTANCE.play(CHALLENGE);
 						yell(Messages.get(this, "wave_2"));
 					}
 					if (summonsMade == 7) {
@@ -308,7 +310,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 					summonsMade++;
 				} else if (shielding() <= 100 && summonsMade < 12) {
 					sprite.centerEmitter().start(Speck.factory(Speck.SCREAM), 0.4f, 2);
-					Sample.INSTANCE.play(Assets.Sounds.CHALLENGE);
+					Sample.INSTANCE.play(CHALLENGE);
 					yell(Messages.get(this, "wave_3"));
 					summonSubject(4, DKWarlock.class);
 					summonSubject(4, DKMonk.class);
@@ -507,6 +509,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 			HP = HP - dmg + shielding();
 			// adjust HP to match phase if necessary.
 			int HP3 = getPhaseHP();
+			// FIXME this is a terrible way of handling it.
 			if (HP <= HP3 && !(src instanceof Grim)) { // grim will never actually break the shield.
 				HP += HT;
 				// TODO is 3f still correct???
@@ -578,7 +581,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 			phase = 3;
 			summonsMade = 1; //monk/warlock on 3rd summon
 			sprite.centerEmitter().start( Speck.factory( Speck.SCREAM ), 0.4f, 2 );
-			Sample.INSTANCE.play( Assets.Sounds.CHALLENGE );
+			Sample.INSTANCE.play( CHALLENGE );
 		}
 
 	@Override
@@ -741,6 +744,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 						king.yellStrong = false;
 					}
 					if(m instanceof Golem && king.phase < 3 && !king.golemSpawned) {
+						king.golemSpawned = true;
 						String k = "golem";
 						if(Dungeon.hero.heroClass == RAT_KING) k += "_rk";
 						king.yell(Messages.get(king, k));
