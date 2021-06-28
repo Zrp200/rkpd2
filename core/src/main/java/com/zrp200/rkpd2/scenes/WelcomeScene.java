@@ -39,11 +39,9 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.utils.FileUtils;
 
-import java.util.ArrayList;
-
 public class WelcomeScene extends PixelScene {
 
-	private static final int LATEST_UPDATE = ShatteredPixelDungeon.v0_0_1;
+	private static final int LATEST_UPDATE = ShatteredPixelDungeon.v010;
 
 	@Override
 	public void create() {

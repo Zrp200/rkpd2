@@ -23,27 +23,30 @@ package com.zrp200.rkpd2.ui.changelist;
 
 import com.watabou.noosa.Image;
 import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.items.TengusMask;
 import com.zrp200.rkpd2.items.armor.WarriorArmor;
 import com.zrp200.rkpd2.items.bags.VelvetPouch;
 import com.zrp200.rkpd2.items.wands.WandOfFirebolt;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.enchantments.Explosive;
+import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.ChangesScene;
 import com.zrp200.rkpd2.sprites.HeroSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
-import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.sprites.KingSprite;
 import com.zrp200.rkpd2.ui.Icons;
 
 import java.util.ArrayList;
 
+import static com.zrp200.rkpd2.Assets.Interfaces.TALENT_ICONS;
 import static com.zrp200.rkpd2.actors.hero.HeroClass.*;
 import static com.zrp200.rkpd2.messages.Messages.get;
+import static com.zrp200.rkpd2.sprites.CharSprite.NEGATIVE;
+import static com.zrp200.rkpd2.sprites.CharSprite.POSITIVE;
+import static com.zrp200.rkpd2.sprites.CharSprite.WARNING;
 import static com.zrp200.rkpd2.sprites.HeroSprite.avatar;
 import static com.zrp200.rkpd2.sprites.ItemSpriteSheet.*;
-import static com.zrp200.rkpd2.ui.Icons.ALERT;
 import static com.zrp200.rkpd2.ui.Icons.INFO;
+import static com.zrp200.rkpd2.ui.Icons.TARGET;
 import static com.zrp200.rkpd2.ui.Icons.get;
 import static com.zrp200.rkpd2.ui.Window.TITLE_COLOR;
 import static java.util.Arrays.asList;
@@ -80,71 +83,135 @@ public class RKPD2Changes {
     // in this case I made it so you could add buttons in the ChangeInfo constructor; this is 'lustrous' style
 
     final ChangeInfo[]
-        INDEV = {
-            new ChangeInfo("INDEV", true, TITLE_COLOR, "",
+        v010 = {
+            new ChangeInfo("v0.1.0-BETA", true, TITLE_COLOR, ""),
+
+            new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, TITLE_COLOR, "",
                 new ChangeButton(Icons.get(INFO), "Developer Commentary",
-                    "RKPD2 is now based off of Shattered v0.9.3."
+                    "I regret the extremely long turnover, but RKPD2 is now updated to Shattered v0.9.3c!"
+                    + "\n\nI'm currently messing with a new method with which to buff talents and heroes: _point shifting_. Point shifting means that I make +1 effects +0 effects, +2 effects +1 effects, and so on. This results in an immediate power bump when the particular talents are obtained, though it can be slightly confusing on the first time (or with tier 2 talents)."
+                    + "\n\nThere's probably going to be a v0.1.1 that will add more thematic changes that I can make building off of this update."
+                    + "I'm still deciding if level-shifting is more annoying than it's worth, so if you don't like the changes, please let me know so I can get a clearer picture of what I am doing."
+                    + "\n\nIn general, though, I'd love to hear any feedback about the game! _You can reach me on discord under Zrp200#0484, my email (zrp200@gmail.com), or on the Pixel Dungeon server!_"
                 ),
                 new ChangeButton(new ItemSprite(CROWN), "T4 Talents Implemented!", ""
                     +"Now bringing you a RKPD2 with FULL talents!!!"
-                    +"\n\n_-_ The 12 points for t3 talents remain, which causes the hero to gain two talent points per level for levels 21-24."
-                    +"\n\n_-_ Epic armors and T4 talents have been directly implemented without changes at this time."
-                    +"\n\n_TODO_ Do I want to actually shift them? Would need to find a new value for '+4' Heroic Energy."
-                    +"\n\n_-_ You can still supercharge your armor if you have too low charge, don't worry."
-                    +"\n\n_-_ Rat King has two \"special\" abilities to choose from, currently."
-                ),
-                new ChangeButton(Icons.get(ALERT), "TODO",
-                    "These changes are planned at the moment, but are not in the game yet and may be subject to be changed or scrapped at any time."
-                    +"\n\n_-_ Make another pass over warrior talents in general, esp. iron will and stuff I nerfed in v0.0.1"
-                    +"\n\n_-_ Make a decision on iron will, or defer it."
-                    +"\n\n_-_ Expand rat king npc role, potential cameo after you defeat DK with a standard class to make it easier to get ratmogrify."
-                    +"\n\n_-_ Buff some t4 talents and abilities, they are currently 100% unchanged from shattered outside of the supercharge."
-                    +"\n\n_?_ Update heroclass descriptions to reflect \"innate\" (+0) talent effects."
-                    +"\n\n_?_ Swap Rat King's access to Hold Fast and Strongman in a buff to Imperial and a nerf to Tactics. Makes more sense thematically than gameplay-wise."
+                    +"\n\n"+list(2,
+                        "Epic armors and T4 talents have been directly implemented.",
+                        "The 12 points for t3 talents remain, causing the hero to uniquely gain two talent points per level for levels 21-24.",
+                        "You can still supercharge your armor if you have too low charge, don't worry, though I doubt it'll be as notable as before with the charging mechanic changes and Heroic Energy.",
+                        "Rat King has two \"special\" abilities to choose from, currently, and one more will hopefully be added in future updates."
+                    )
+                    +"\n\n_Ability Buffs_:"
+                    +'\n'+list(1,
+                        "Heroic Energy, Elemental Power, Reactive Barrier, and Nature's Wrath are now more potent.",
+                        "Ratforcements spawns scaled rats that are much stronger than standard rats. It can also summon scaled loyal albinos now.",
+                        "Ratlomancy now gives 50% more adrenaline for 50% more fun.",
+                        "Death Mark has been buffed heavily.",
+                        "Fire Everything, Growing Power, Blast Radius, Long Range Warp, and Telefrag have been level-shifted",
+                        "Shadow Clone and Spectral Blades have their talents level-shifted.")
                 ),
                 new ChangeButton(Icons.get(Icons.CHALLENGE_ON), "New Challenge!", "Badder bosses has been implemented into RKPD2, enjoy teaching those bosses that no matter what they do, they will still lose."),
-                new ChangeButton(new ItemSprite(new TengusMask()), "Buffs", "I'm also leaning harder on giving subclasses access to talents without upgrading them:"
-                    +"\n"
-                    +"\n_-_ v0.9.3 warden implemented, but barkskin now degrades every two turns instead of one and gets barkskin equal to 50/100/150/200% of her level at +0/1/2/3 respectively."
-                    +"\n_-_ Tipped Darts shifted, now gives 2x/3x/4x/5x durability."
-                    +"\n"
-                    +"\n_-_ Sniper farsight shifted down one level each, now gives 25/50/75/100% bonus sight."
-                    +"\n_-_ Shared Upgrades shifted (now 10/20/30/40), and the increasing duration effect is now part of the +0 effect."
-                    +"\n_-_ Assassin's Enhanced Lethality is buffed to be in line with SHPD"
-                    +"\n"
-                    +"\n_DEFERRED_ Multishot shifted, +3 now is 4x duration+4x target"
-                    +"\n_TODO_ Multishot free shot can stack with standard marking."
-                    +"\n"
-                    +"\n_-_ Empowering scrolls now gives a more potent boost."
-                    //+"\n_-_ Battlemage gains 3/4 charge on hit, up from 1/2 charge."
-                ),
-                new ChangeButton(HeroSprite.avatar(WARRIOR,3), "Warrior Subclasses",
-                        "Berserker has an issue currently where it can feel pretty weak especially directly after you subclass."
-                                +"\n\n_-_ Endless Rage, Berserking Stamina, and Enraged Catalysts buffed, and now have a +0 effect."
-                ),
-                new ChangeButton(HeroSprite.avatar(MAGE, 3), "Battlemage", "Battlemage is currently a lot weaker than warlock, and thus it's getting ALL of its unique talents (minus Sorcery) up-front for a better caves experience."
-                        +"\n\n_-_ Empowered Strike now 25/50/75/100 at +0/1/2/3"
-                        +"\n\n_-_ Mystical Charge recharging now .5/1/1.5/2 instead of 0/.75/1.5/2.25 at +0/1/2/3 respectively."
-                        +"\n\n_-_ Excess Charge proc chance is now 20/40/60/80 at +0/1/2/3, up from 0/25/50/75."
-                        //+"\n\n_-_ Battlemage gains 3/4 charge on hit, up from 1/2 charge."
-                ),
-                new ChangeButton(HeroSprite.avatar(RAT_KING, 6), "Rat King", ""
-                    +"Shattered balance changes have been directly implemented:"
-                    +"\n"
-                    +"\n_-_ Noble Cause gives less shielding when the staff runs out of charge."
-                    +"\n_-_ Tactics's strongman now uses the v0.9.3 version and its description has been updated to indicate that cleave makes combo last for 15/30/45 turns."
-                    +"\n_-_ Ranged Terror now gives a greater damage boost to specials when using thrown weapons."
-                    +"\n_-_ Royal Presence has an increased chance to spawn wraiths but decreased indirect damage soul mark effectiveness and warp range"
-                    +"\n_-_ Natural Dominance now gives 50/100/150% Rat King's level in barkskin that fades every turn"
-                    //+"\n\nThe following balance changes have been made:"
-                    //+"\n_TODO_ Strongman talent effect moved from Tactics to Imperial Wrath, uses new 0.9.3 implementation."
-                    //+"\n_TODO_ Hold fast talent effect moved from Imperial Wrath to Tactics."
-                    //+"\n\nTactics is already one of the safest investments you can have, it really doesn't need a strongman buff right now, and strongman fits IW better thematically."
-                ),
-               misc("_-_ Studded gloves now do 1-6, up from 1-5."
-                   +"\n_TODO_ Sorcery moved from 3rd slot to 6th slot for consistency."
-                   +"\n_TODO_ Shops sell upgraded items for cheaper."
+                new ChangeButton(Icons.get(TARGET), "Special Action Targeting", "Added smart targeting for Combo, Preparation, and Sniper's Mark's free shot via Multishot."
+                    +"\n\n"+list(2,
+                        "When there is only one target for the action, the action will skip the prompt and simply execute.",
+                        "When there is more than one possible target (or no targets), the valid targets will be highlighted.")
+                    +"\n\nThis should make using these abilities much more smooth when fighting a single enemy as well as making them more intuitive in general."
                 )
+            ),
+
+            new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, WARNING, "",
+                new ChangeButton(HeroSprite.avatar(RAT_KING, 6), "Rat King", ""
+                        +"Shattered balance changes have been directly implemented to Rat King's mechanics, for better or for worse:"
+                        +"\n\n"+list(2,
+                            "Noble Cause nerfed, gives less shielding when the staff runs out of charge.",
+                            "Tactics buffed, its strongman now uses the v0.9.3 version and its description has been updated to indicate that cleave makes combo last for 15/30/45 turns. This talent is probably the biggest winner of this update.",
+                            "Ranged Terror buffed, now gives a greater damage boost to specials when using thrown weapons.",
+                            "Royal Presence changed, now has an increased chance to spawn wraiths but decreased indirect damage soul mark effectiveness and ally warp range",
+                            "Natural Dominance nerfed, now gives 50/100/150% Rat King's level in barkskin that fades every turn instead of previous barkskin effect.")
+                        //+"\n\nThe following balance changes have been made:"
+                        //+"\n_TODO_ Strongman talent effect moved from Tactics to Imperial Wrath, uses new 0.9.3 implementation."
+                        //+"\n_TODO_ Hold fast talent effect moved from Imperial Wrath to Tactics."
+                        //+"\n\nTactics is already one of the safest investments you can have, it really doesn't need a strongman buff right now, and strongman fits IW better thematically."
+                ),
+                //new ChangeButton(new ItemSprite(new SpiritBow().enchant(new Unstable())), "Unstable Spirit Bow", "_TODO_ Fix double turn usage for upgrading spirit bow."),
+                misc(list(2,
+                        "Implemented virtually all misc changes up to SHPD v0.9.3c, including the addition of quick-use bags, stone behavior, etc.",
+                        "New levelgen from SHPD v0.9.3 should result in shorter hallways and thus notably smaller levels.",
+                        "Sorcery talent moved from 3rd slot to 6th slot for consistency with other RKPD2-exclusive talents.",
+                        "Updated some talent descriptions to be clearer or otherwise add commentary.",
+                        "Added unique dialogue for Rat King-Wandmaker interactions",
+                        "Dwarf King has a new snide comment for you in badder bosses!",
+                        "Added differing descriptions for loyal rats and hostile rats, might wanna look at their descriptions when you get the chance."
+                )),
+                bugFixes("Bugfixes up to SHPD v0.9.3c have been implemented.")
+            ),
+
+            new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, POSITIVE, "",
+                new ChangeButton(HeroSprite.avatar(HUNTRESS, 6), "Huntress Subclasses and T3",
+                    "I'm leaning harder on giving subclasses access to talents without upgrading them, and _Warden_ is an excellent place to start:"
+                    +"\n"+list(1,
+                        "Tipped Darts shifted, now gives 2x/3x/4x/5x durability.",
+                        "v0.9.3 Barkskin implemented, but Barkskin now degrades every two turns instead of one and gets barkskin equal to 50/100/150/200% of her level at +0/1/2/3 respectively. Thus instead of nerfing it, I have buffed it ;)")
+                    +"\n\nIt's also clear that _Sniper needs buffs._"
+                    +"\n"+list(1,
+                        "Farsight shifted, now gives 25/50/75/100% bonus sight.",
+                        "Shared Upgrades shifted (now 10/20/30/40), and the increasing duration aspect is given at +0.",
+                        "New Sniper perk: +33 accuracy.")
+                    //+"\n"
+                    //+"\n_DEFERRED_ Multishot shifted, +3 now is 4x duration+4x target"
+                    // TODO see if I can make the new targeting make this a smooth addition for future
+                    //+"\n_TODO_ Multishot free shot can stack with standard marking."
+                    //+"\n"
+                ),
+                new ChangeButton(HeroSprite.avatar(WARRIOR,6), "Warrior T2 and T3",
+                    "Berserker and (to a smaller extent) Gladiator have an issue where they can kinda feel sorta weak directly after you subclass... so I've decided to nip the issue in the bud (even if it means buffing already powerful subclasses...)"
+                        +"\n\n_-_ Endless Rage, Berserking Stamina, and Enraged Catalyst unique effects level-shifted."
+                        +"\n_-_ Cleave buffed from 0/10/20/30 (was bugged) to 15/30/45/60"
+                        +"\n\n\nFor more general buffs:"
+                        +"\n"+list(1,
+                            //"Hold Fast buffed from 3/6/9 to 4/8/12",
+                            "Runic Transference now has a +0 effect equivalent to Shattered's +1 effect, unlocked at level 6.",
+                            "Improvised projectiles nerf not implemented.")
+                ),
+                new ChangeButton(HeroSprite.avatar(MAGE, 6), "Battlemage", "Battlemage is currently a bit 'weaker' than warlock, and thus it's getting its unique talents (minus Sorcery) up-front for a power spike after subclassing."
+                    +"\n\n_-_ Empowered Strike now 25/50/75/100 at +0/1/2/3"
+                    +"\n\n_-_ Mystical Charge recharging now .5/1/1.5/2 instead of 0/.75/1.5/2.25 at +0/1/2/3 respectively."
+                    +"\n\n_-_ Excess Charge proc chance is now 20/40/60/80 at +0/1/2/3, up from 0/25/50/75."
+                ),
+                misc(list(2,
+                        "Assassin's Enhanced Lethality is buffed to be in line with SHPD",
+                        "Studded gloves damage now 1-6, up from 1-5.",
+                        "Empowering scrolls talent no longer is time-limited, boost increased to +2/+4/+6.",
+                        "Shops sell upgraded items for cheaper."
+                ))
+            ),
+            new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, NEGATIVE, "",
+                new ChangeButton(new Image(TALENT_ICONS, 16*3,0,16,16), "Iron Will",
+                    "I've decided to take the opportunity to yank Iron Will's bonus upgrade mechanics. It's really unfun to use and it kinda warps the game to a large extent."
+                            +"\n\n_-_ Iron Will no longer gives bonus upgrades to the seal."
+                            +"\n\n_-_ Iron Will now increases the seal's maximum shield by 1/3/5 and reduces the time it takes to fully recharge all shield by 30/60/90 turns."
+                            +"\n\nThis change makes iron will recharge the seal super fast, even when not upgraded. At the very start of the game, the time to fully recharge two shield is halved!"
+                ),
+                new ChangeButton(new Image(TALENT_ICONS, 16*10, 0, 16,16), "Strongman", "I've implemented and (obviously) buffed Shattered's Strongman (13%/21%/29% up from 8%/13%/18%), now that Evan has finally gotten his act together and realized that I was right all along."
+                        +"\n\n_+3:_\n"+list(1,
+                            ":14-:17 strength -> +4 -> 18/19/20/21 down from 19/20/21/22",
+                            "12-13 strength -> +3 -> 15/16 down from 17/18",
+                            "10-11 strength -> +2 -> 12/13 down from 15/16",
+                            "It is effectively around the same starting around 15 strength (16 if you were using a greataxe), but is increasingly worse prior to that."
+                        )
+                        +"\n\n_+2_:\n"+list(1,
+                            "Gives a worse boost (2 down from 3) before the hero naturally attains 15 strength.",
+                            "Gives a better boost once the hero has natural 20 strength"
+                        )
+                        +"\n\n_+1_:\n"+list(1,
+                            "Gives +2 strength, up from its effective previous value of +1, once the hero naturally attains 16 strength."
+                        )
+                        +"\n\nOverall Strongman is a bit worse at +3 and a bit better at +2 and +1. Its ability to be exploited is down due to now being reliant on having strength, but in return it also gives true strength bonuses (thus opening up synergies with rings of force and might...)"
+                ),
+                new ChangeButton(HeroSprite.avatar(MAGE, 1), "Mage", "These nerfs are bit more 'nerfy' than Warrior's, considering I'm not replacing them with anything."
+                    + "\n\n_-_ Backup barrier now generates 5/8 shield, down from 6/9, to reflect the Shattered nerf to Backup Barrier."
+                    + "\n\n_TODO_ Energizing Meal I now gives 4/6 turns of recharging, down from 5/8.")
             )
         },
         v001 = {
@@ -313,5 +380,5 @@ public class RKPD2Changes {
         };
 
     // this affects what is displayed.
-    final ChangeInfo[][] changes = {INDEV, v001, v000, foot};
+    final ChangeInfo[][] changes = {v010, v001, v000, foot};
 }
