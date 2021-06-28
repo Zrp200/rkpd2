@@ -184,7 +184,7 @@ public class Armor extends EquipableItem {
 			seal = null;
 
 			if (detaching.getGlyph() != null){
-				if (hero.shiftedPoints(Talent.RUNIC_TRANSFERENCE, Talent.POWER_WITHIN) >= 1
+				if (hero.hasTalent(Talent.POWER_WITHIN)
 						&& (Arrays.asList(Glyph.common).contains(detaching.getGlyph().getClass())
 							|| Arrays.asList(Glyph.uncommon).contains(detaching.getGlyph().getClass()))){
 					inscribe(null);
