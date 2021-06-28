@@ -27,6 +27,7 @@ import com.zrp200.rkpd2.SPDSettings;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.mobs.Mob;
+import com.zrp200.rkpd2.actors.mobs.npcs.NPC;
 import com.zrp200.rkpd2.effects.SelectableCell;
 import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.sprites.CharSprite;
@@ -363,12 +364,28 @@ public class CellSelector extends ScrollArea {
 			return targets;
 		}
 
+		/** if a character can be highlighted by this selector at all. This affects auto-target as well. */
+		protected boolean canTarget(Char ch) {
+			return !(ch instanceof NPC || ch.alignment == Char.Alignment.ALLY);
+		}
+
 		protected abstract void action(Char ch);
 
 		// if there's only one target, this skips the actual selecting.
 		protected final boolean action() {
-			if(getTargets().size() != 1 || !skippable) return false;
-			action(getTargets().get(0).ch);
+			if(!skippable) return false;
+			Char target = null;
+			for(CharSprite s : getTargets()) {
+				Char ch = s.ch;
+				// filter out anything
+				if(canTarget(ch)) {
+					if(target != null) return false; // more than one possible target, force manual targeting
+					target = ch;
+				}
+			}
+			if(target == null) return false; // no targets
+
+			action(target);
 			return true;
 		}
 		@Override final public void onSelect(Integer cell) {
@@ -381,8 +398,10 @@ public class CellSelector extends ScrollArea {
 			if(c != null && getTargets().contains(c.sprite)) action(c);
 			else onInvalid(cell);
 		}
+
+		/** toggles the autoskip when applicable. Considers whether the target can be auto-targeted. */
 		protected final void reject(Char ch) {
-			if(ch != null && ch.sprite != null && ch.sprite.isVisible()) skippable = false;
+			if(ch != null && ch.sprite != null && canTarget(ch) && ch.sprite.isVisible()) skippable = false;
 		}
 		protected void onInvalid(int cell) {}
 	}
