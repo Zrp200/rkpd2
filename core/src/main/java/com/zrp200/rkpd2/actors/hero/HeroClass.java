@@ -21,8 +21,6 @@
 
 package com.zrp200.rkpd2.actors.hero;
 
-import com.watabou.utils.Bundle;
-import com.watabou.utils.DeviceCompat;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Challenges;
@@ -73,26 +71,26 @@ import com.zrp200.rkpd2.items.weapon.missiles.ThrowingKnife;
 import com.zrp200.rkpd2.items.weapon.missiles.ThrowingStone;
 import com.zrp200.rkpd2.messages.Messages;
 
+import java.util.Locale;
+
 public enum HeroClass {
 
-	WARRIOR( "warrior", HeroSubClass.BERSERKER, HeroSubClass.GLADIATOR ),
-	MAGE( "mage", HeroSubClass.BATTLEMAGE, HeroSubClass.WARLOCK ) {
+	WARRIOR(HeroSubClass.BERSERKER, HeroSubClass.GLADIATOR),
+	MAGE(HeroSubClass.BATTLEMAGE, HeroSubClass.WARLOCK) {
 		@Override public int getBonus(Item item) { return item instanceof Wand ? 2 : 0; }
 	},
-	ROGUE( "rogue", HeroSubClass.ASSASSIN, HeroSubClass.FREERUNNER ) {
+	ROGUE(HeroSubClass.ASSASSIN, HeroSubClass.FREERUNNER) {
 		//@Override public int getBonus(Item item) { return item instanceof Weapon ? 1 : 0; }
 	},
-	HUNTRESS( "huntress", HeroSubClass.SNIPER, HeroSubClass.WARDEN ),
-	RAT_KING ("rat_king",HeroSubClass.KING);
+	HUNTRESS(HeroSubClass.SNIPER, HeroSubClass.WARDEN),
+	RAT_KING (HeroSubClass.KING);
 
-	private String title;
 	private HeroSubClass[] subClasses;
 
 	public static final int MAGE_WAND_BOOST = 2;
 	public int getBonus(Item item) { return 0; }
 
-	HeroClass( String title, HeroSubClass...subClasses ) {
-		this.title = title;
+	HeroClass( HeroSubClass...subClasses ) {
 		this.subClasses = subClasses;
 	}
 
@@ -289,7 +287,7 @@ public enum HeroClass {
 	}
 
 	public String splashArt(){
-		return "splashes/" + title + ".jpg";
+		return "splashes/" + name().toLowerCase(Locale.ENGLISH) + ".jpg";
 		/*switch (this) {
 			case WARRIOR: default:
 				return Assets.Splashes.WARRIOR;
@@ -304,7 +302,7 @@ public enum HeroClass {
 	
 	public String[] perks() {
 		String[] perks = new String[5];
-		for(int i=0; i < perks.length; i++) perks[i] = Messages.get(HeroClass.class, title + "_perk" + (i+1));
+		for(int i=0; i < perks.length; i++) perks[i] = Messages.get(HeroClass.class, name() + "_perk" + (i+1));
 		return perks;
 	}
 	
@@ -326,7 +324,7 @@ public enum HeroClass {
 	}
 	
 	public String unlockMsg() {
-		return Messages.get(HeroClass.class, title + "_unlock");
+		return Messages.get(HeroClass.class, name() + "_unlock");
 	}
 
 }
