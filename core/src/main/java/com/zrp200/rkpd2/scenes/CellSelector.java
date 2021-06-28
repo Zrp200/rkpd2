@@ -373,11 +373,10 @@ public class CellSelector extends ScrollArea {
 
 		// if there's only one target, this skips the actual selecting.
 		protected final boolean action() {
-			if(!skippable) return false;
+			getTargets(); if(!skippable) return false;
 			Char target = null;
 			for(CharSprite s : getTargets()) {
 				Char ch = s.ch;
-				// filter out anything
 				if(canTarget(ch)) {
 					if(target != null) return false; // more than one possible target, force manual targeting
 					target = ch;
