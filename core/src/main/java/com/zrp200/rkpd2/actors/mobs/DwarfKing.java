@@ -34,7 +34,6 @@ import com.zrp200.rkpd2.actors.buffs.Doom;
 import com.zrp200.rkpd2.actors.buffs.LifeLink;
 import com.zrp200.rkpd2.actors.buffs.LockedFloor;
 import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.effects.Beam;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.Pushing;
@@ -58,7 +57,6 @@ import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.KingSprite;
 import com.zrp200.rkpd2.ui.BossHealthBar;
 import com.zrp200.rkpd2.ui.BuffIndicator;
-import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundle;
@@ -69,9 +67,11 @@ import com.watabou.utils.Reflection;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import static com.zrp200.rkpd2.actors.hero.HeroClass.RAT_KING;
+
 public class DwarfKing extends Mob implements Hero.DeathCommentator {
 	@Override public void sayHeroKilled() {
-		if(Dungeon.hero.heroClass == HeroClass.RAT_KING) yell("I am truly the superior king...");
+		if(Dungeon.hero.heroClass == RAT_KING) yell("I am truly the superior king...");
 		else yell("Let Rat King take this as a lesson...");
 		Sample.INSTANCE.play(Assets.Sounds.CHALLENGE);
 	}
@@ -159,6 +159,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 		bundle.put( "yell", yellSpecialNotice);
 		bundle.put( "abilityUsed", abilityUsed );
 		bundle.put( "strong", yellStrong );
+		bundle.put( "golemSpawned", golemSpawned );
 	}
 
 	@Override
@@ -174,17 +175,17 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 		yellSpecialNotice = bundle.getBoolean("yell");
 		yellStrong = bundle.contains("strong")
 				? bundle.getBoolean("strong")
-				: Dungeon.hero.heroClass == HeroClass.RAT_KING && phase == 1 && summonsMade < 5;
-
+				: Dungeon.hero.heroClass == RAT_KING && phase == 1 && summonsMade < 5;
+		golemSpawned = bundle.getBoolean("golemSpawned");
 		if (phase == 2) properties.add(Property.IMMOVABLE);
 	}
 	// for dialogues when he shows a new power.
-	boolean yellSpecialNotice, yellStrong;
+	private boolean yellSpecialNotice, yellStrong, golemSpawned;
 
 	@Override
 	protected boolean act() {
 		if(state == HUNTING && yellSpecialNotice && paralysed == 0) { // takes him a hot second to realize who he's fighting.
-			yell(Messages.get(this, "notice_" + (Dungeon.hero.heroClass == HeroClass.RAT_KING ? "ratking" : "default")));
+			yell(Messages.get(this, "notice_" + (Dungeon.hero.heroClass == RAT_KING ? "ratking" : "default")));
 			yellSpecialNotice = false;
 		}
 		if (phase == 1) {
@@ -461,7 +462,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 			BossHealthBar.assignBoss(this);
 			yell(Messages.get(this, "notice"));
 			yellSpecialNotice = true;
-			yellStrong = Dungeon.hero.heroClass == HeroClass.RAT_KING;
+			yellStrong = Dungeon.hero.heroClass == RAT_KING;
 			for (Char ch : Actor.chars()){
 				if (ch instanceof DriedRose.GhostHero){
 					((DriedRose.GhostHero) ch).sayBoss();
@@ -618,7 +619,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 			beacon.upgrade();
 		}
 
-		yell( Messages.get(this, "defeated_" + (Random.Int(2)+(Dungeon.hero.heroClass == HeroClass.RAT_KING?0:1)) ) );
+		yell( Messages.get(this, "defeated_" + (Random.Int(2)+(Dungeon.hero.heroClass == RAT_KING?0:1)) ) );
 	}
 
 	@Override
@@ -682,7 +683,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 			boolean result = super.attachTo(target);
 			if(result && !firstSummon) firstSummon = king().phase == 1
 					&& king().summonsMade == 0
-					&& Dungeon.hero.heroClass == HeroClass.RAT_KING;
+					&& Dungeon.hero.heroClass == RAT_KING;
 			return result;
 		}
 
@@ -720,6 +721,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 					}
 				}
 
+				DwarfKing king = king();
 				if (Actor.findChar(pos) == null) {
 					Mob m = Reflection.newInstance(summon);
 					m.pos = pos;
@@ -727,21 +729,26 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 					GameScene.add(m);
 					Dungeon.level.occupyCell(m);
 					m.state = m.HUNTING;
-					if (king().phase == 2){
+					if (king.phase == 2){
 						Buff.affect(m, KingDamager.class);
 					}
 					if(firstSummon) {
-						king().yell(Messages.get(king(), "first_summon"));
-						if(Dungeon.hero.heroClass == HeroClass.RAT_KING) king().yell(Messages.get(king(), "summon_rk"));
+						king.yell(Messages.get(king(), "first_summon"));
+						if(Dungeon.hero.heroClass == RAT_KING) king.yell(Messages.get(king, "summon_rk"));
 					}
-					if(strong && king().yellStrong) {
-						king().yell(Messages.get(king(), "strong"));
-						king().yellStrong = false;
+					if(strong && king.yellStrong) {
+						king.yell(Messages.get(king, "strong"));
+						king.yellStrong = false;
+					}
+					if(m instanceof Golem && king.phase < 3 && !king.golemSpawned) {
+						String k = "golem";
+						if(Dungeon.hero.heroClass == RAT_KING) k += "_rk";
+						king.yell(Messages.get(king, k));
 					}
 				} else {
 					Char ch = Actor.findChar(pos);
 					ch.damage(Random.NormalIntRange(20, 40), summon);
-					if (king().phase == 2){
+					if (king.phase == 2){
 						if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)){
 							target.damage(target.HT/18, new KingDamager());
 						} else {
