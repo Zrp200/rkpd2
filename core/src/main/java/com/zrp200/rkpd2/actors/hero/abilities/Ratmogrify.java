@@ -216,15 +216,37 @@ public class Ratmogrify extends ArmorAbility {
 	}
 
 	// summons.
-	private static double getModifier() { return Math.max(1, Dungeon.depth/5d * 4/5d); }
-	public static class SummonedRat extends Rat {{
-		HP = HT *= getModifier();
-		damageRange[0] *= getModifier();
-		damageRange[1] *= getModifier();
-	}}
-	public static class SummonedAlbino extends Albino {{
-		HP = HT *= getModifier();
-		damageRange[0] *= getModifier();
-		damageRange[1] *= getModifier();
-	}}
+	private static double getModifier() { return Math.max(1, Dungeon.depth/5d); }
+	public static class SummonedRat extends Rat {
+		{
+			HP = HT *= getModifier();
+
+			damageRange[0] *= getModifier();
+			damageRange[1] *= getModifier();
+			armorRange[0] *= getModifier();
+			armorRange[1] *= getModifier();
+
+			defenseSkill *= getModifier();
+		}
+
+		@Override public int attackSkill(Char target) {
+			return (int)( super.attackSkill(target) * getModifier() );
+		}
+	}
+	public static class SummonedAlbino extends Albino {
+		{
+			HP = HT *= getModifier();
+
+			damageRange[0] *= getModifier();
+			damageRange[1] *= getModifier();
+			armorRange[0] *= getModifier();
+			armorRange[1] *= getModifier();
+
+			defenseSkill *= getModifier();
+		}
+
+		@Override public int attackSkill(Char target) {
+			return (int)( super.attackSkill(target) * getModifier() );
+		}
+	}
 }

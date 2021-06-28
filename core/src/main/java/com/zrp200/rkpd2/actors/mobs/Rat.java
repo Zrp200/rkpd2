@@ -65,10 +65,13 @@ public class Rat extends Mob {
 	}
 
 	// technically this behavior could be generalized to all mobs, but this is not the mod to do that.
-	protected int[] damageRange = {1,4};
+	protected float[] // this change lets me use fractional values....
+			damageRange = {1,4},
+			armorRange  = {0,1};
+
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( damageRange[0], damageRange[1] );
+		return Math.round( Random.NormalFloat( damageRange[0], damageRange[1] ) );
 	}
 	
 	@Override
@@ -78,7 +81,7 @@ public class Rat extends Mob {
 	
 	@Override
 	public int drRoll() {
-		return Random.NormalIntRange(0, 1);
+		return Math.round(Random.NormalFloat(armorRange[0], armorRange[1]));
 	}
 
 	private static final String RAT_ALLY = "rat_ally";
