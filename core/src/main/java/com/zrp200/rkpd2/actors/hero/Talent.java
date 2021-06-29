@@ -307,7 +307,7 @@ public enum Talent {
 				float mod = points == 1 ? 0 : 1f/(points-1);
 				for(RevealedArea buff : hero.buffs(RevealedArea.class)) buff.postpone(buff.cooldown() * mod);
 				break;
-			case FARSIGHT: case RK_SNIPER: case HEIGHTENED_SENSES:
+			case FARSIGHT: case RK_SNIPER: case HEIGHTENED_SENSES: case KINGS_VISION:
 				Dungeon.observe();
 				break;
 		}
