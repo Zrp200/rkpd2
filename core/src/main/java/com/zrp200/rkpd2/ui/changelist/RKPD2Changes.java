@@ -45,7 +45,9 @@ import static com.zrp200.rkpd2.sprites.CharSprite.POSITIVE;
 import static com.zrp200.rkpd2.sprites.CharSprite.WARNING;
 import static com.zrp200.rkpd2.sprites.HeroSprite.avatar;
 import static com.zrp200.rkpd2.sprites.ItemSpriteSheet.*;
+import static com.zrp200.rkpd2.ui.Icons.DEPTH;
 import static com.zrp200.rkpd2.ui.Icons.INFO;
+import static com.zrp200.rkpd2.ui.Icons.TALENT;
 import static com.zrp200.rkpd2.ui.Icons.TARGET;
 import static com.zrp200.rkpd2.ui.Icons.get;
 import static com.zrp200.rkpd2.ui.Window.TITLE_COLOR;
@@ -86,6 +88,21 @@ public class RKPD2Changes {
         v010 = {
             new ChangeInfo("v0.1.0-BETA", true, TITLE_COLOR, ""),
 
+            new ChangeInfo("BETA-1", false, TITLE_COLOR, "",
+                    new ChangeButton(Icons.get(TALENT), "Talent Adjustments", list(2,
+                            "Ratforcements rats now have their accuracy, evasion, and armor scaled in addition to HP and damage.",
+                            "Reverted Runic Transference +0 effect, it invalidated the whole talent",
+                            "Reverted Fire Everything buff."
+                    )),
+                    new ChangeButton(Icons.get(TARGET), "Smart Targeting", "Smart Targeting can no longer autotarget or highlight NPCs and allies."),
+                    bugFixes(list(2,
+                            "Forgot to mention that Imperial Wrath was buffed... description updated and changelog changed to reflect this",
+                            "Crash when trying to use Combo while a visible target is blocked by a solid tile.",
+                            "Wandmaker's text for Rat King being !!!NO TEXT FOUND!!!",
+                            "King's Vision now correctly updates field of view on the turn it is upgraded.",
+                            "Some text mistakes in talent descriptions and character dialogue"))
+            ),
+
             new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, TITLE_COLOR, "",
                 new ChangeButton(Icons.get(INFO), "Developer Commentary",
                     "I regret the extremely long turnover, but RKPD2 is now updated to Shattered v0.9.3c!"
@@ -108,7 +125,7 @@ public class RKPD2Changes {
                         "Ratforcements spawns scaled rats that are much stronger than standard rats. It can also summon scaled loyal albinos now.",
                         "Ratlomancy now gives 50% more adrenaline for 50% more fun.",
                         "Death Mark has been buffed heavily.",
-                        "Fire Everything, Growing Power, Blast Radius, Long Range Warp, and Telefrag have been level-shifted",
+                        "Growing Power, Blast Radius, Long Range Warp, and Telefrag have been level-shifted",
                         "Shadow Clone and Spectral Blades have their talents level-shifted.")
                 ),
                 new ChangeButton(Icons.get(Icons.CHALLENGE_ON), "New Challenge!", "Badder bosses has been implemented into RKPD2, enjoy teaching those bosses that no matter what they do, they will still lose."),
@@ -125,6 +142,7 @@ public class RKPD2Changes {
                         +"Shattered balance changes have been directly implemented to Rat King's mechanics, for better or for worse:"
                         +"\n\n"+list(2,
                             "Noble Cause nerfed, gives less shielding when the staff runs out of charge.",
+                            "Imperial Wrath buffed, now gives more shielding on berserk (yay?)",
                             "Tactics buffed, its strongman now uses the v0.9.3 version and its description has been updated to indicate that cleave makes combo last for 15/30/45 turns. This talent is probably the biggest winner of this update.",
                             "Ranged Terror buffed, now gives a greater damage boost to specials when using thrown weapons.",
                             "Royal Presence changed, now has an increased chance to spawn wraiths but decreased indirect damage soul mark effectiveness and ally warp range",
@@ -134,10 +152,17 @@ public class RKPD2Changes {
                         //+"\n_TODO_ Hold fast talent effect moved from Imperial Wrath to Tactics."
                         //+"\n\nTactics is already one of the safest investments you can have, it really doesn't need a strongman buff right now, and strongman fits IW better thematically."
                 ),
-                //new ChangeButton(new ItemSprite(new SpiritBow().enchant(new Unstable())), "Unstable Spirit Bow", "_TODO_ Fix double turn usage for upgrading spirit bow."),
+                new ChangeButton(Icons.get(DEPTH), "Levelgen", "Implementing SHPD v0.9.3's levelgen changes has resulted in the following changes:"
+                        + "\n\n"
+                        +list(2,
+                            "Levels should be slightly smaller than before in terms of room amounts",
+                            "There also should be less tunnels, which should significantly cut down further on level sizes. Up until now RKPD2 was plagued by very long connection room generation. No longer!",
+                            "Entrance and Exits can no longer connect to each other.",
+                            "Pit room size minimum increased.",
+                            "Hordes are somewhat less likely to spawn on floor 1 despite the smaller size.")
+                ),
                 misc(list(2,
                         "Implemented virtually all misc changes up to SHPD v0.9.3c, including the addition of quick-use bags, stone behavior, etc.",
-                        "New levelgen from SHPD v0.9.3 should result in shorter hallways and thus notably smaller levels.",
                         "Sorcery talent moved from 3rd slot to 6th slot for consistency with other RKPD2-exclusive talents.",
                         "Updated some talent descriptions to be clearer or otherwise add commentary.",
                         "Added unique dialogue for Rat King-Wandmaker interactions",
@@ -168,17 +193,12 @@ public class RKPD2Changes {
                     "Berserker and (to a smaller extent) Gladiator have an issue where they can kinda feel sorta weak directly after you subclass... so I've decided to nip the issue in the bud (even if it means buffing already powerful subclasses...)"
                         +"\n\n_-_ Endless Rage, Berserking Stamina, and Enraged Catalyst unique effects level-shifted."
                         +"\n_-_ Cleave buffed from 0/10/20/30 (was bugged) to 15/30/45/60"
-                        +"\n\n\nFor more general buffs:"
-                        +"\n"+list(1,
-                            //"Hold Fast buffed from 3/6/9 to 4/8/12",
-                            "Runic Transference now has a +0 effect equivalent to Shattered's +1 effect, unlocked at level 6.",
-                            "Improvised projectiles nerf not implemented.")
+                        +"\n\nI have also declined to nerf Improvised Projectiles."
                 ),
                 new ChangeButton(HeroSprite.avatar(MAGE, 6), "Battlemage", "Battlemage is currently a bit 'weaker' than warlock, and thus it's getting its unique talents (minus Sorcery) up-front for a power spike after subclassing."
                     +"\n\n_-_ Empowered Strike now 25/50/75/100 at +0/1/2/3"
                     +"\n\n_-_ Mystical Charge recharging now .5/1/1.5/2 instead of 0/.75/1.5/2.25 at +0/1/2/3 respectively."
-                    +"\n\n_-_ Excess Charge proc chance is now 20/40/60/80 at +0/1/2/3, up from 0/25/50/75."
-                ),
+                    +"\n\n_-_ Excess Charge proc chance is now 20/40/60/80 at +0/1/2/3, up from 0/25/50/75."),
                 misc(list(2,
                         "Assassin's Enhanced Lethality is buffed to be in line with SHPD",
                         "Studded gloves damage now 1-6, up from 1-5.",
@@ -209,10 +229,7 @@ public class RKPD2Changes {
                         )
                         +"\n\nOverall Strongman is a bit worse at +3 and a bit better at +2 and +1. Its ability to be exploited is down due to now being reliant on having strength, but in return it also gives true strength bonuses (thus opening up synergies with rings of force and might...)"
                 ),
-                new ChangeButton(HeroSprite.avatar(MAGE, 1), "Mage", "These nerfs are bit more 'nerfy' than Warrior's, considering I'm not replacing them with anything."
-                    + "\n\n_-_ Backup barrier now generates 5/8 shield, down from 6/9, to reflect the Shattered nerf to Backup Barrier."
-                    + "\n\n_TODO_ Energizing Meal I now gives 4/6 turns of recharging, down from 5/8.")
-            )
+                new ChangeButton(new Image(TALENT_ICONS,16*3,16,16,16), "Backup Barrier", "Backup barrier now generates 5/8 shield, down from 6/9, to reflect the Shattered nerf to Backup Barrier."))
         },
         v001 = {
             new ChangeInfo("v0.0.1", true, TITLE_COLOR, "") {{
