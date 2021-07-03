@@ -47,7 +47,6 @@ import static com.zrp200.rkpd2.sprites.HeroSprite.avatar;
 import static com.zrp200.rkpd2.sprites.ItemSpriteSheet.*;
 import static com.zrp200.rkpd2.ui.Icons.DEPTH;
 import static com.zrp200.rkpd2.ui.Icons.INFO;
-import static com.zrp200.rkpd2.ui.Icons.TALENT;
 import static com.zrp200.rkpd2.ui.Icons.TARGET;
 import static com.zrp200.rkpd2.ui.Icons.get;
 import static com.zrp200.rkpd2.ui.Window.TITLE_COLOR;
@@ -86,30 +85,13 @@ public class RKPD2Changes {
 
     final ChangeInfo[]
         v010 = {
-            new ChangeInfo("v0.1.0-BETA", true, TITLE_COLOR, ""),
-
-            new ChangeInfo("BETA-1", false, TITLE_COLOR, "",
-                    new ChangeButton(Icons.get(TALENT), "Talent Adjustments", list(2,
-                            "Ratforcements rats now have their accuracy, evasion, and armor scaled in addition to HP and damage.",
-                            "Reverted Runic Transference +0 effect, it invalidated the whole talent",
-                            "Reverted Fire Everything buff."
-                    )),
-                    new ChangeButton(Icons.get(TARGET), "Smart Targeting", "Smart Targeting can no longer autotarget or highlight NPCs and allies."),
-                    bugFixes(list(2,
-                            "Forgot to mention that Imperial Wrath was buffed... description updated and changelog changed to reflect this",
-                            "Crash when trying to use Combo while a visible target is blocked by a solid tile.",
-                            "Wandmaker's text for Rat King being !!!NO TEXT FOUND!!!",
-                            "King's Vision now correctly updates field of view on the turn it is upgraded.",
-                            "Some text mistakes in talent descriptions and character dialogue"))
-            ),
+            new ChangeInfo("v0.1.0", true, TITLE_COLOR, ""),
 
             new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, TITLE_COLOR, "",
                 new ChangeButton(Icons.get(INFO), "Developer Commentary",
-                    "I regret the extremely long turnover, but RKPD2 is now updated to Shattered v0.9.3c!"
+                    "I regret the relatively long wait for a v0.9.3 implementation, but RKPD2 is now updated to Shattered v0.9.3c! Enjoy smaller levels, some quality of life improvements, and even more buffs to your favorite heroes."
                     + "\n\nI'm currently messing with a new method with which to buff talents and heroes: _point shifting_. Point shifting means that I make +1 effects +0 effects, +2 effects +1 effects, and so on. This results in an immediate power bump when the particular talents are obtained, though it can be slightly confusing on the first time (or with tier 2 talents)."
                     + "\n\nThere's probably going to be a v0.1.1 that will add more thematic changes that I can make building off of this update."
-                    + "I'm still deciding if level-shifting is more annoying than it's worth, so if you don't like the changes, please let me know so I can get a clearer picture of what I am doing."
-                    + "\n\nIn general, though, I'd love to hear any feedback about the game! _You can reach me on discord under Zrp200#0484, my email (zrp200@gmail.com), or on the Pixel Dungeon server!_"
                 ),
                 new ChangeButton(new ItemSprite(CROWN), "T4 Talents Implemented!", ""
                     +"Now bringing you a RKPD2 with FULL talents!!!"
@@ -152,7 +134,7 @@ public class RKPD2Changes {
                         //+"\n_TODO_ Hold fast talent effect moved from Imperial Wrath to Tactics."
                         //+"\n\nTactics is already one of the safest investments you can have, it really doesn't need a strongman buff right now, and strongman fits IW better thematically."
                 ),
-                new ChangeButton(Icons.get(DEPTH), "Levelgen", "Implementing SHPD v0.9.3's levelgen changes has resulted in the following changes:"
+                new ChangeButton(Icons.get(DEPTH), "Levelgen", "Implementing SHPD v0.9.3's levelgen changes has resulted in an even smaller RKPD2!"
                         + "\n\n"
                         +list(2,
                             "Levels should be slightly smaller than before in terms of room amounts",
@@ -167,9 +149,13 @@ public class RKPD2Changes {
                         "Updated some talent descriptions to be clearer or otherwise add commentary.",
                         "Added unique dialogue for Rat King-Wandmaker interactions",
                         "Dwarf King has a new snide comment for you in badder bosses!",
+                        "Dwarf King now bellows on certain quotes",
                         "Added differing descriptions for loyal rats and hostile rats, might wanna look at their descriptions when you get the chance."
                 )),
-                bugFixes("Bugfixes up to SHPD v0.9.3c have been implemented.")
+                bugFixes(list(2,
+                        "Bugfixes up to SHPD v0.9.3c have been implemented.",
+                        "King's Vision now correctly updates Rat King's field of view on the turn it is upgraded.",
+                        "Fixed some talent description typos."))
             ),
 
             new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, POSITIVE, "",
@@ -195,15 +181,14 @@ public class RKPD2Changes {
                         +"\n_-_ Cleave buffed from 0/10/20/30 (was bugged) to 15/30/45/60"
                         +"\n\nI have also declined to nerf Improvised Projectiles."
                 ),
-                new ChangeButton(HeroSprite.avatar(MAGE, 6), "Battlemage", "Battlemage is currently a bit 'weaker' than warlock, and thus it's getting its unique talents (minus Sorcery) up-front for a power spike after subclassing."
-                    +"\n\n_-_ Empowered Strike now 25/50/75/100 at +0/1/2/3"
+                new ChangeButton(HeroSprite.avatar(MAGE, 6), "Battlemage", "Battlemage is currently a bit 'weaker' than warlock, and thus it's getting a power spike after subclassing."
                     +"\n\n_-_ Mystical Charge recharging now .5/1/1.5/2 instead of 0/.75/1.5/2.25 at +0/1/2/3 respectively."
                     +"\n\n_-_ Excess Charge proc chance is now 20/40/60/80 at +0/1/2/3, up from 0/25/50/75."),
                 misc(list(2,
                         "Assassin's Enhanced Lethality is buffed to be in line with SHPD",
                         "Studded gloves damage now 1-6, up from 1-5.",
                         "Empowering scrolls talent no longer is time-limited, boost increased to +2/+4/+6.",
-                        "Shops sell upgraded items for cheaper."
+                        "Shops sell upgraded items for cheaper (again)."
                 ))
             ),
             new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, NEGATIVE, "",
