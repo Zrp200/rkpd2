@@ -1192,7 +1192,9 @@ public class Hero extends Char {
 					if(staff == wep || Random.Int(3) < pointsInTalent())
 						if (buff(Talent.EmpoweredStrikeTracker.class) != null) {
 							buff(Talent.EmpoweredStrikeTracker.class).detach();
-							damage = Math.round(damage * (1f + shiftedPoints(Talent.EMPOWERED_STRIKE, Talent.RK_BATTLEMAGE) / 4f));
+							damage = Math.round(damage * (1f + Math.max(
+									Dungeon.hero.pointsInTalent(Talent.EMPOWERED_STRIKE)/3f,
+									Dungeon.hero.pointsInTalent(Talent.RK_BATTLEMAGE)/4f)));
 						}
 						staff.procWand(enemy, damage);
 					}
