@@ -32,7 +32,6 @@ import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.huntress.NaturesPower;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.effects.Splash;
-import com.zrp200.rkpd2.effects.particles.LeafParticle;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.bombs.Bomb;
 import com.zrp200.rkpd2.items.rings.RingOfFuror;
@@ -56,7 +55,6 @@ import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.sprites.MissileSprite;
 import com.zrp200.rkpd2.ui.QuickSlotButton;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
@@ -421,7 +419,7 @@ public class SpiritBow extends Weapon {
 						RevealedArea a = Buff.append(user, RevealedArea.class, 5 * user.pointsInTalent(Talent.SEER_SHOT,Talent.RK_WARDEN));
 						a.depth = Dungeon.depth;
 						a.pos = shotPos;
-						Buff.affect(user, Talent.SeerShotCooldown.class, user.hasTalent(Talent.SEER_SHOT) ? 5f : 20f);
+						Talent.Cooldown.affectHero(Talent.SeerShotCooldown.class);
 					}
 				}
 				forceSkipDelay = sniperSpecial && --shotCount > 0;

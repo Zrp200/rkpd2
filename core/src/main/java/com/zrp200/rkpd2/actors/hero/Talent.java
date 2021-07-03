@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.actors.hero;
 
 import com.watabou.noosa.Image;
+import com.watabou.utils.Reflection;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.GamesInProgress;
@@ -78,6 +79,8 @@ import com.zrp200.rkpd2.utils.GLog;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+
+import static com.watabou.utils.Reflection.newInstance;
 
 public enum Talent {
 
@@ -194,35 +197,47 @@ public enum Talent {
 	// Rat King T3
 	RK_BERSERKER(11,3), RK_GLADIATOR(16,3), RK_BATTLEMAGE(43,3), RK_WARLOCK(47,3), RK_ASSASSIN(75,3), RK_FREERUNNER(78,3), RK_SNIPER(109,3), RK_WARDEN(102,3);
 
-	// TODO is splitting up t2s arbitrarily really a good idea?
-	public static class ImprovisedProjectileCooldown extends FlavourBuff{
-		public int icon() { return BuffIndicator.TIME; }
-		public void tintIcon(Image icon) { icon.hardlight(0.15f, 0.2f, 0.5f); }
-		public float iconFadePercent() { return Math.max(0, visualcooldown() / 50); }
+	public static abstract class Cooldown extends FlavourBuff {
+		public static <T extends Cooldown> void affectHero(Class<T> cls) {
+			if(cls == Cooldown.class) return;
+			T buff = Buff.affect(Dungeon.hero, cls);
+			buff.spend( buff.duration() );
+		}
+		public abstract float duration();
+		public float iconFadePercent() { return Math.max(0, visualcooldown() / duration()); }
 		public String toString() { return Messages.get(this, "name"); }
 		public String desc() { return Messages.get(this, "desc", dispTurns(visualcooldown())); }
+	}
+
+	// TODO is splitting up t2s arbitrarily really a good idea?
+	public static class ImprovisedProjectileCooldown extends Cooldown {
+		public float duration() { return Dungeon.hero.hasTalent(IMPROVISED_PROJECTILES) ? 15 : 50; }
+		public int icon() { return BuffIndicator.TIME; }
+		public void tintIcon(Image icon) { icon.hardlight(0.15f, 0.2f, 0.5f); }
 	};
 	public static class LethalMomentumTracker extends FlavourBuff{};
 	public static class WandPreservationCounter extends CounterBuff{};
 	public static class EmpoweredStrikeTracker extends FlavourBuff{};
 	public static class BountyHunterTracker extends FlavourBuff{};
-	public static class RejuvenatingStepsCooldown extends FlavourBuff{
+	public static class RejuvenatingStepsCooldown extends Cooldown{
+		@Override public float duration() {
+			int points = Dungeon.hero.pointsInTalent(REJUVENATING_STEPS, POWER_WITHIN);
+			if(Dungeon.hero.pointsInTalent(Talent.REJUVENATING_STEPS) > 0) points++;
+			return 10*(float)Math.pow(2,1-points);
+		}
 		public int icon() { return BuffIndicator.TIME; }
 		public void tintIcon(Image icon) { icon.hardlight(0f, 0.35f, 0.15f); }
-		public float iconFadePercent() { return Math.max(0, visualcooldown() / (15 - 5*Dungeon.hero.pointsInTalent(REJUVENATING_STEPS))); }
-		public String toString() { return Messages.get(this, "name"); }
-		public String desc() { return Messages.get(this, "desc", dispTurns(visualcooldown())); }
 	};
 	public static class RejuvenatingStepsFurrow extends CounterBuff{};
-	public static class SeerShotCooldown extends FlavourBuff{
-		public static int getCooldown() {
+	public static class SeerShotCooldown extends Cooldown{
+		@Override public float duration() {
 			return Dungeon.hero.hasTalent(SEER_SHOT) ? 5 : 20;
 		}
-		public int icon() { return target.buff(RevealedArea.class) != null ? BuffIndicator.NONE : BuffIndicator.TIME; }
+		public int icon() {
+			// changed cooldown behavior to be more stacking-friendly.
+			return target.buff(RevealedArea.class) != null && !Dungeon.hero.hasTalent(SEER_SHOT) ? BuffIndicator.NONE : BuffIndicator.TIME;
+		}
 		public void tintIcon(Image icon) { icon.hardlight(0.7f, 0.4f, 0.7f); }
-		public float iconFadePercent() { return Math.max(0, visualcooldown() / getCooldown()); }
-		public String toString() { return Messages.get(this, "name"); }
-		public String desc() { return Messages.get(this, "desc", dispTurns(visualcooldown())); }
 	};
 	public static class SpiritBladesTracker extends FlavourBuff{};
 

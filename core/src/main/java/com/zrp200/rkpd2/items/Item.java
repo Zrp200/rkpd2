@@ -564,7 +564,7 @@ public class Item implements Bundlable {
 									float duration = 1f + curUser.pointsInTalent(Talent.IMPROVISED_PROJECTILES,Talent.KINGS_VISION);
 									if(curUser.hasTalent(Talent.IMPROVISED_PROJECTILES)) duration *= 1.5f;
 									Buff.affect(ch, Blindness.class, Math.round(duration));
-									Buff.affect(curUser, Talent.ImprovisedProjectileCooldown.class, curUser.hasTalent(Talent.IMPROVISED_PROJECTILES) ? 15f : 50f);
+									Talent.Cooldown.affectHero(Talent.ImprovisedProjectileCooldown.class);
 								}
 							}
 							if(!forceSkipDelay) {
@@ -594,7 +594,7 @@ public class Item implements Bundlable {
 								if (ch != null && ch.alignment != curUser.alignment){
 									Sample.INSTANCE.play(Assets.Sounds.HIT);
 									Buff.affect(ch, Blindness.class, 1f + curUser.pointsInTalent(Talent.IMPROVISED_PROJECTILES,Talent.KINGS_VISION));
-									Buff.affect(curUser, Talent.ImprovisedProjectileCooldown.class, curUser.hasTalent(Talent.IMPROVISED_PROJECTILES)?15f:30f);
+									Talent.Cooldown.affectHero(Talent.ImprovisedProjectileCooldown.class);
 								}
 							}
 							if(!forceSkipDelay) user.spendAndNext(delay);
