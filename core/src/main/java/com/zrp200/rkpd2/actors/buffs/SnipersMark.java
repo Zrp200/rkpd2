@@ -48,7 +48,7 @@ import java.util.List;
 public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
 	private final IntArray objects = new IntArray(),
-							levels = new IntArray(); // I fucking hate how this is done, but so be it.
+							levels = new IntArray(); // I hate how this is done, but so be it.
 	public int level = 0;
 
 	// helper methods to make sure these are synced up.

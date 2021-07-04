@@ -48,6 +48,19 @@ public enum HeroSubClass {
 			// mage boost now also applies to staff...
 			return item instanceof MagesStaff ? 2 : 0;
 		}
+
+		@Override public String desc() {
+			//Include the staff effect description in the battlemage's desc if possible
+			String desc = super.desc();
+			if (Game.scene() instanceof GameScene){
+				MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
+				if (staff != null && staff.wandClass() != null){
+					desc += "\n\n" + Messages.get(staff.wandClass(), "bmage_desc", Messages.titleCase(title()));
+					desc = desc.replaceAll("_", "");
+				}
+			}
+			return desc;
+		}
 	},
 
 	ASSASSIN {
@@ -84,20 +97,7 @@ public enum HeroSubClass {
 	}
 
 	public String desc() {
-		//Include the staff effect description in the battlemage's desc if possible
-		if (this == BATTLEMAGE){
-			String desc = Messages.get(this, name() + "_desc");
-			if (Game.scene() instanceof GameScene){
-				MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
-				if (staff != null && staff.wandClass() != null){
-					desc += "\n\n" + Messages.get(staff.wandClass(), "bmage_desc");
-					desc = desc.replaceAll("_", "");
-				}
-			}
-			return desc;
-		} else {
-			return Messages.get(this, name() + "_desc");
-		}
+		return Messages.get(this, name() + "_desc");
 	}
 
 	//FIXME shouldn't hardcode these, probably want to just have a BuffIcon class
