@@ -48,7 +48,7 @@ public class MageArmor extends ClassArmor {
 		boolean success = false;
 		for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
 			if (Dungeon.level.heroFOV[mob.pos]
-					&& mob.alignment != Char.Alignment.ALLY) {
+					&& mob.alignment != Char.Alignment.ALLY && Dungeon.level.distance(Dungeon.hero.pos, mob.pos) <= 6 + Dungeon.hero.pointsInTalent(Talent.QUANTUM_POSITION)*3) {
 				success = true;
 				if (Dungeon.hero.canHaveTalent(Talent.AURIC_TESLA) &&
 						Random.Int(4) < (Dungeon.hero.pointsInTalent(Talent.AURIC_TESLA) - 1)){

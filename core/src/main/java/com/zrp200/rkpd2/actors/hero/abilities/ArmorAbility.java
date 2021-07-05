@@ -21,14 +21,15 @@
 
 package com.zrp200.rkpd2.actors.hero.abilities;
 
+import com.watabou.utils.Bundlable;
+import com.watabou.utils.Bundle;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
-import com.watabou.utils.Bundlable;
-import com.watabou.utils.Bundle;
 
 public abstract class ArmorAbility implements Bundlable {
 
@@ -83,6 +84,9 @@ public abstract class ArmorAbility implements Bundlable {
 	}
 
 	public String desc(){
+		if (this instanceof Wrath){
+			return Messages.get(this, "desc");
+		}
 		return Messages.get(this, "desc") + "\n\n" + Messages.get(this, "cost", (int)baseChargeUse);
 	}
 

@@ -60,7 +60,7 @@ public class Wrath extends ArmorAbility {
         boolean[] stages = new boolean[3]; // jump/molten/blades
 
         if( stages[0] = target != hero.pos ) {
-            PathFinder.buildDistanceMap(hero.pos, BArray.not(Dungeon.level.solid, null), 8);
+            PathFinder.buildDistanceMap(hero.pos, BArray.not(Dungeon.level.solid, null), 6 + hero.pointsInTalent(Talent.QUANTUM_POSITION)*3);
             if (PathFinder.distance[target] == Integer.MAX_VALUE ||
                     !Dungeon.level.heroFOV[target]) {
                 GLog.w(Messages.get(RogueArmor.class, "fov"));
@@ -107,7 +107,7 @@ public class Wrath extends ArmorAbility {
         if(stages[0]) for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
             Char mob = Actor.findChar(hero.pos + PathFinder.NEIGHBOURS8[i]);
             if (mob != null && mob != hero && mob.alignment != Char.Alignment.ALLY) {
-                if (hero.canHaveTalent(Talent.AURIC_TESLA)) {
+                if (hero.hasTalent(Talent.AURIC_TESLA)) {
                     int damage = hero.drRoll();
                     damage = Math.round(damage*0.25f*hero.pointsInTalent(Talent.AURIC_TESLA));
                     mob.damage(damage, hero);
@@ -118,7 +118,7 @@ public class Wrath extends ArmorAbility {
         // huntress
         HashMap<Callback, Mob> targets = new HashMap<>();
         for (Mob mob : Dungeon.level.mobs) {
-            if (Dungeon.level.distance(hero.pos, mob.pos) <= 12
+            if (Dungeon.level.distance(hero.pos, mob.pos) <= 6 + hero.pointsInTalent(Talent.QUANTUM_POSITION)*3
                     && Dungeon.level.heroFOV[mob.pos]
                     && mob.alignment == Char.Alignment.ENEMY) {
                 Callback callback = new Callback() {
