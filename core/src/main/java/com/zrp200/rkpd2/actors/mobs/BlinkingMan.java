@@ -44,14 +44,14 @@ import com.zrp200.rkpd2.mechanics.Ballistica;
 
 import java.util.ArrayList;
 
-public class BlinkingMan extends Mob {
+public class BlinkingMan extends AbyssalMob {
 
 	private int blinkCooldown = 0;
 
 	{
 		spriteClass = BlinkingManSprite.class;
 
-		HP = HT = 35;
+		HP = HT = 80;
 		defenseSkill = 60;
 		viewDistance = Light.DISTANCE;
 		baseSpeed = 0.75f;
@@ -69,13 +69,20 @@ public class BlinkingMan extends Mob {
 
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 5, 16 );
+		return Random.NormalIntRange( 5 + abyssLevel()*2, 16 + abyssLevel()*7 );
 	}
-	
+
+	@Override
+	public boolean canSee(int pos) {
+		if (enemy != null)
+			return new Ballistica( pos, enemy.pos, Ballistica.PROJECTILE).collisionPos == pos;
+		else return new Ballistica( pos, Dungeon.hero.pos, Ballistica.PROJECTILE).collisionPos == pos;
+	}
+
 	@Override
 	public int attackProc( Char enemy, int damage ) {
 		damage = super.attackProc( enemy, damage );
-		
+
 		if (Random.Int( 2 ) == 0) {
 			Ballistica trajectory = new Ballistica(pos, enemy.pos, Ballistica.STOP_TARGET);
 			//trim it to just be the part that goes past them
@@ -83,7 +90,7 @@ public class BlinkingMan extends Mob {
 			//knock them back along that ballistica
 			WandOfBlastWave.throwChar(enemy, trajectory, Random.Int(1, 2), false);
 		}
-		
+
 		return damage;
 	}
 
@@ -92,20 +99,20 @@ public class BlinkingMan extends Mob {
 		Ballistica attack = new Ballistica( pos, enemy.pos, Ballistica.PROJECTILE);
 		return !Dungeon.level.adjacent( pos, enemy.pos ) && attack.collisionPos == enemy.pos;
 	}
-	
+
 	@Override
 	protected boolean getCloser( int target ) {
 		if (fieldOfView[target] && Dungeon.level.distance( pos, target ) <= 3 && blinkCooldown <= 0) {
-			
+
 			blink( );
 			spend( -1 / speed() );
 			return true;
-			
+
 		} else {
 
 			blinkCooldown--;
 			return super.getFurther( target );
-			
+
 		}
 	}
 
@@ -117,7 +124,7 @@ public class BlinkingMan extends Mob {
 	private void blink( ) {
 
 		int direction = PathFinder.NEIGHBOURS8[Random.Int(8)];
-		
+
 		Ballistica route = new Ballistica( pos+direction, target, Ballistica.PROJECTILE);
 		if (route.dist == 0){
 			blink();
@@ -144,20 +151,20 @@ public class BlinkingMan extends Mob {
 				return;
 			}
 		}
-		
+
 		ScrollOfTeleportation.appear( this, cell );
 
 		blinkCooldown = Random.IntRange(1, 6);
 	}
-	
+
 	@Override
 	public int attackSkill( Char target ) {
-		return 45;
+		return 45 + abyssLevel()*3;
 	}
-	
+
 	@Override
 	public int drRoll() {
-		return Random.NormalIntRange(0, 9);
+		return Random.NormalIntRange(0 + abyssLevel()*4, 9 + abyssLevel()*6);
 	}
 
 	@Override

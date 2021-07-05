@@ -21,20 +21,27 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
+import com.watabou.noosa.Image;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Random;
+import com.watabou.utils.Reflection;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.blobs.Blob;
 import com.zrp200.rkpd2.actors.blobs.Fire;
+import com.zrp200.rkpd2.actors.mobs.Bestiary;
 import com.zrp200.rkpd2.actors.mobs.Mob;
+import com.zrp200.rkpd2.effects.Pushing;
+import com.zrp200.rkpd2.items.bombs.Bomb;
+import com.zrp200.rkpd2.items.wands.CursedWand;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.utils.BArray;
-import com.watabou.noosa.Image;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Random;
+
+import java.util.ArrayList;
 
 public abstract class ChampionEnemy extends Buff {
 
@@ -42,7 +49,7 @@ public abstract class ChampionEnemy extends Buff {
 		type = buffType.POSITIVE;
 	}
 
-	protected int color;
+	public int color;
 
 	@Override
 	public int icon() {
@@ -100,16 +107,90 @@ public abstract class ChampionEnemy extends Buff {
 		Dungeon.mobsToChampion--;
 
 		if (Dungeon.mobsToChampion <= 0){
-			switch (Random.Int(6)){
-				case 0: default:    Buff.affect(m, Blazing.class);      break;
-				case 1:             Buff.affect(m, Projecting.class);   break;
-				case 2:             Buff.affect(m, AntiMagic.class);    break;
-				case 3:             Buff.affect(m, Giant.class);        break;
-				case 4:             Buff.affect(m, Blessed.class);      break;
-				case 5:             Buff.affect(m, Growing.class);      break;
+			switch (Random.Int(12)) {
+				case 0:
+				default:
+					Buff.affect(m, Blazing.class);
+					break;
+				case 1:
+					Buff.affect(m, Projecting.class);
+					break;
+				case 2:
+					Buff.affect(m, AntiMagic.class);
+					break;
+				case 3:
+					Buff.affect(m, Giant.class);
+					break;
+				case 4:
+					Buff.affect(m, Blessed.class);
+					break;
+				case 5:
+					Buff.affect(m, Growing.class);
+					break;
+				case 6:
+					Buff.affect(m, Cursed.class);
+					break;
+				case 7:
+					Buff.affect(m, Splintering.class);
+					break;
+				case 8:
+					Buff.affect(m, Stone.class);
+					break;
+				case 9:
+					Buff.affect(m, Flowing.class);
+					break;
+				case 10:
+					Buff.affect(m, Voodoo.class);
+					break;
+				case 11:
+					Buff.affect(m, Explosive.class);
+					break;
 			}
 			m.state = m.WANDERING;
 		}
+	}
+
+	public static void rollForChampionInstantly(Mob m){
+		switch (Random.Int(12)) {
+			case 0:
+			default:
+				Buff.affect(m, Blazing.class);
+				break;
+			case 1:
+				Buff.affect(m, Projecting.class);
+				break;
+			case 2:
+				Buff.affect(m, AntiMagic.class);
+				break;
+			case 3:
+				Buff.affect(m, Giant.class);
+				break;
+			case 4:
+				Buff.affect(m, Blessed.class);
+				break;
+			case 5:
+				Buff.affect(m, Growing.class);
+				break;
+			case 6:
+				Buff.affect(m, Cursed.class);
+				break;
+			case 7:
+				Buff.affect(m, Splintering.class);
+				break;
+			case 8:
+				Buff.affect(m, Stone.class);
+				break;
+			case 9:
+				Buff.affect(m, Flowing.class);
+				break;
+			case 10:
+				Buff.affect(m, Voodoo.class);
+				break;
+			case 11:
+				Buff.affect(m, Explosive.class);
+				break;
+		}
+			m.state = m.WANDERING;
 	}
 
 	public static class Blazing extends ChampionEnemy {
@@ -143,6 +224,18 @@ public abstract class ChampionEnemy extends Buff {
 		}
 	}
 
+	public static class Cursed extends ChampionEnemy {
+
+		{
+			color = 0x181212;
+		}
+
+		@Override
+		public void onAttackProc(Char enemy) {
+			CursedWand.cursedEffect(null, target, enemy);
+		}
+	}
+
 	public static class Projecting extends ChampionEnemy {
 
 		{
@@ -160,6 +253,45 @@ public abstract class ChampionEnemy extends Buff {
 		}
 	}
 
+	public static class Splintering extends ChampionEnemy {
+
+		{
+			color = 0xbfba72;
+		}
+
+		@Override
+		public float damageTakenFactor() {
+			if (target.HP >= 2) {
+				ArrayList<Integer> candidates = new ArrayList<>();
+				boolean[] solid = Dungeon.level.solid;
+
+				int[] neighbours = {target.pos + 1, target.pos - 1, target.pos + Dungeon.level.width(), target.pos - Dungeon.level.width()};
+				for (int n : neighbours) {
+					if (!solid[n] && Actor.findChar( n ) == null) {
+						candidates.add( n );
+					}
+				}
+
+				if (candidates.size() > 0) {
+
+					Mob clone = (Mob) Reflection.newInstance(target.getClass());
+					clone.HP = target.HP/ 2;
+					clone.pos = Random.element( candidates );
+					clone.state = clone.HUNTING;
+
+					Dungeon.level.occupyCell(clone);
+
+					GameScene.add( clone, 1f );
+					Actor.addDelayed( new Pushing( clone, target.pos, clone.pos ), -1 );
+
+					target.HP -= clone.HP;
+				}
+			}
+			return 1f;
+		}
+
+	}
+
 	public static class AntiMagic extends ChampionEnemy {
 
 		{
@@ -175,6 +307,69 @@ public abstract class ChampionEnemy extends Buff {
 			immunities.addAll(com.zrp200.rkpd2.items.armor.glyphs.AntiMagic.RESISTS);
 		}
 
+	}
+
+	public static class Explosive extends ChampionEnemy {
+
+		{
+			color = 0xff4400;
+		}
+
+		@Override
+		public void detach() {
+			for (int i : PathFinder.NEIGHBOURS4){
+				if (!Dungeon.level.solid[target.pos+i]){
+					new Bomb().explode(target.pos+i);
+				}
+			}
+			super.detach();
+		}
+	}
+
+	public static class Voodoo extends ChampionEnemy {
+
+		{
+			color = 0x3d0082;
+		}
+
+		@Override
+		public float damageTakenFactor() {
+			return 1.25f;
+		}
+
+		@Override
+		public void detach() {
+			ArrayList<Class<?extends Mob>> mobsToSpawn;
+
+			mobsToSpawn = Bestiary.getMobRotation(Dungeon.depth);
+
+			Mob clone = Reflection.newInstance(mobsToSpawn.remove(0));
+			ChampionEnemy.rollForChampion(clone);
+			clone.HP = clone.HT = Math.round(clone.HT * 2.5f);
+			clone.pos = target.pos;
+			clone.state = clone.HUNTING;
+
+			Dungeon.level.occupyCell(clone);
+			GameScene.add( clone );
+			super.detach();
+		}
+	}
+
+	public static class Stone extends ChampionEnemy {
+		{
+			color = 0x727272;
+		}
+
+		@Override
+		public float damageTakenFactor() {
+			return Math.max(0.1f, (target.HP * 1f /target.HT));
+		}
+	}
+
+	public static class Flowing extends ChampionEnemy {
+		{
+			color = 0xb7f5ff;
+		}
 	}
 
 	//Also makes target large, see Char.properties()

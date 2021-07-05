@@ -38,6 +38,7 @@ import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.ChampionEnemy;
 import com.zrp200.rkpd2.actors.mobs.Phantom;
 import com.zrp200.rkpd2.effects.*;
 import com.zrp200.rkpd2.effects.particles.FlameParticle;
@@ -585,6 +586,11 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		synchronized (EmoIcon.class) {
 			if (emo != null && emo.alive) {
 				emo.visible = visible;
+			}
+		}
+		if (ch != null){
+			for (ChampionEnemy buff : ch.buffs(ChampionEnemy.class)) {
+				hardlight(buff.color);
 			}
 		}
 	}

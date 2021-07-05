@@ -29,15 +29,6 @@ import com.watabou.utils.Reflection;
 import com.zrp200.rkpd2.*;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.buffs.Amok;
-import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.ChampionEnemy;
-import com.zrp200.rkpd2.actors.buffs.Charm;
-import com.zrp200.rkpd2.actors.buffs.Corruption;
-import com.zrp200.rkpd2.actors.buffs.Preparation;
-import com.zrp200.rkpd2.actors.buffs.Sleep;
-import com.zrp200.rkpd2.actors.buffs.SoulMark;
-import com.zrp200.rkpd2.actors.buffs.Terror;
 import com.zrp200.rkpd2.actors.buffs.*;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -918,7 +909,10 @@ public abstract class Mob extends Char {
 			
 			int oldPos = pos;
 			if (target != -1 && getCloser( target )) {
-				spend( 1 / speed() );
+				if (Dungeon.level.water[pos] && buff(ChampionEnemy.Flowing.class) != null){
+					spend(0.01f / speed());
+				}
+				else spend( 1 / speed() );
 				return moveSprite( oldPos, pos );
 			} else {
 				target = Dungeon.level.randomDestination( Mob.this );
@@ -959,8 +953,11 @@ public abstract class Mob extends Char {
 				
 				int oldPos = pos;
 				if (target != -1 && getCloser( target )) {
-					
-					spend( 1 / speed() );
+
+					if (Dungeon.level.water[pos] && buff(ChampionEnemy.Flowing.class) != null){
+						spend(0.01f / speed());
+					}
+					else spend( 1 / speed() );
 					return moveSprite( oldPos,  pos );
 
 				} else {
@@ -1011,7 +1008,10 @@ public abstract class Mob extends Char {
 			int oldPos = pos;
 			if (target != -1 && getFurther( target )) {
 
-				spend( 1 / speed() );
+				if (Dungeon.level.water[pos] && buff(ChampionEnemy.Flowing.class) != null){
+					spend(0.01f / speed());
+				}
+				else spend( 1 / speed() );
 				return moveSprite( oldPos, pos );
 
 			} else {

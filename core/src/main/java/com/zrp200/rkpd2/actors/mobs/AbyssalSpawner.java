@@ -8,13 +8,12 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.buffs.*;
 import com.zrp200.rkpd2.effects.Pushing;
 import com.zrp200.rkpd2.effects.Splash;
-import com.zrp200.rkpd2.items.scrolls.ScrollOfUpgrade;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.SpawnerSprite;
 
 import java.util.ArrayList;
 
-public class AbyssalSpawner extends Mob {
+public class AbyssalSpawner extends AbyssalMob {
 
     {
         spriteClass = AbyssalSpawnerSprite.class;
@@ -26,9 +25,6 @@ public class AbyssalSpawner extends Mob {
         maxLvl = 30;
 
         state = PASSIVE;
-
-        loot = ScrollOfUpgrade.class;
-        lootChance = 1f;
 
         properties.add(Property.IMMOVABLE);
         properties.add(Property.MINIBOSS);
@@ -89,7 +85,7 @@ public class AbyssalSpawner extends Mob {
                     Actor.addDelayed(new Pushing(spawn, pos, spawn.pos), -1);
                 }
 
-                spawnCooldown = Math.max(4, 100 - Dungeon.depth);
+                spawnCooldown = Math.max(4, 50 - Dungeon.depth);
             }
         }
         return super.act();

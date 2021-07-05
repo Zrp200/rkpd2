@@ -42,7 +42,7 @@ import com.zrp200.rkpd2.utils.GLog;
 
 import java.util.Arrays;
 
-public class SpectreRat extends Mob implements Callback {
+public class SpectreRat extends AbyssalMob implements Callback {
 
 	private static final float TIME_TO_ZAP	= 1f;
 
@@ -61,22 +61,22 @@ public class SpectreRat extends Mob implements Callback {
 
 		properties.add(Property.DEMONIC);
 	}
-	
+
 	@Override
 	public int attackSkill( Char target ) {
-		return 36;
+		return 36 + abyssLevel();
 	}
-	
+
 	@Override
 	public int drRoll() {
-		return Random.NormalIntRange(0, 10);
+		return Random.NormalIntRange(0 + abyssLevel()*5, 10 + abyssLevel()*10);
 	}
-	
+
 	@Override
 	public boolean canAttack(Char enemy) {
 		return new Ballistica( pos, enemy.pos, Ballistica.MAGIC_BOLT).collisionPos == enemy.pos;
 	}
-	
+
 	protected boolean doAttack( Char enemy ) {
 		if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
 			sprite.zap( enemy.pos );
@@ -86,13 +86,13 @@ public class SpectreRat extends Mob implements Callback {
 			return true;
 		}
 	}
-	
+
 	//used so resistances can differentiate between melee and magical attacks
 	public static class DarkBolt{}
-	
+
 	private void zap() {
 		spend( TIME_TO_ZAP );
-		
+
 		if (hit( this, enemy, true )) {
 			//TODO would be nice for this to work on ghost/statues too
 			if (enemy == Dungeon.hero && Random.Int( 2 ) == 0) {
@@ -102,11 +102,11 @@ public class SpectreRat extends Mob implements Callback {
 				)), Degrade.DURATION );
 				Sample.INSTANCE.play( Assets.Sounds.DEBUFF );
 			}
-			
-			int dmg = Random.NormalIntRange( 19, 25 );
-            if (buff(Shrink.class) != null || enemy.buff(TimedShrink.class) != null) dmg *= 0.6f;
+
+			int dmg = Random.NormalIntRange( 19 + abyssLevel()*6, 25 + abyssLevel()*9 );
+			if (buff(Shrink.class) != null || enemy.buff(TimedShrink.class) != null) dmg *= 0.6f;
 			enemy.damage( dmg, new DarkBolt() );
-			
+
 			if (enemy == Dungeon.hero && !enemy.isAlive()) {
 				Dungeon.fail( getClass() );
 				GLog.n( Messages.get(this, "bolt_kill") );
@@ -115,12 +115,12 @@ public class SpectreRat extends Mob implements Callback {
 			enemy.sprite.showStatus( CharSprite.NEUTRAL,  enemy.defenseVerb() );
 		}
 	}
-	
+
 	public void onZapComplete() {
 		zap();
 		next();
 	}
-	
+
 	@Override
 	public void call() {
 		next();

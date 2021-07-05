@@ -35,6 +35,7 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Adrenaline;
 import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.ChampionEnemy;
 import com.zrp200.rkpd2.actors.buffs.Corruption;
 import com.zrp200.rkpd2.effects.Beam;
 import com.zrp200.rkpd2.effects.CellEmitter;
@@ -46,7 +47,7 @@ import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.DarkestElfSprite;
 
-public class DarkestElf extends Mob {
+public class DarkestElf extends AbyssalMob {
 
 	{
 		spriteClass = DarkestElfSprite.class;
@@ -65,13 +66,12 @@ public class DarkestElf extends Mob {
 		HUNTING = new Hunting();
 	}
 
-
 	public boolean summoning = false;
 	private Emitter summoningEmitter = null;
 	private int summoningPos = -1;
-	
+
 	private boolean firstSummon = true;
-	
+
 	private NecroSlime mySkeleton;
 	private int storedSkeletonID = -1;
 
@@ -87,7 +87,7 @@ public class DarkestElf extends Mob {
 	@Override
 	public void updateSpriteState() {
 		super.updateSpriteState();
-		
+
 		if (summoning && summoningEmitter == null){
 			summoningEmitter = CellEmitter.get( summoningPos );
 			summoningEmitter.pour(Speck.factory(Speck.RATTLE), 0.2f);
@@ -97,12 +97,12 @@ public class DarkestElf extends Mob {
 			summoningEmitter = null;
 		}
 	}
-	
+
 	@Override
 	public int drRoll() {
-		return Random.NormalIntRange(0, 5);
+		return Random.NormalIntRange(0 + abyssLevel()*4, 5 + abyssLevel()*7);
 	}
-	
+
 	@Override
 	public void rollToDropLoot() {
 		lootChance *= ((6f - Dungeon.LimitedDrops.NECRO_HP.count) / 6f);
@@ -110,8 +110,8 @@ public class DarkestElf extends Mob {
 	}
 
 	@Override
-    public void spend(float time) {
-		super.spend(time / 2f);
+	public void spend(float time) {
+		super.spend(time / (2f + abyssLevel()*0.5f));
 	}
 
 	@Override
@@ -119,7 +119,7 @@ public class DarkestElf extends Mob {
 		Dungeon.LimitedDrops.NECRO_HP.count++;
 		return super.createLoot();
 	}
-	
+
 	@Override
 	public void die(Object cause) {
 		if (storedSkeletonID != -1){
@@ -129,24 +129,24 @@ public class DarkestElf extends Mob {
 				mySkeleton = (NecroSlime) ch;
 			}
 		}
-		
+
 		if (mySkeleton != null && mySkeleton.isAlive()){
 			mySkeleton.die(null);
 		}
-		
+
 		if (summoningEmitter != null){
 			summoningEmitter.on = false;
 			summoningEmitter = null;
 		}
-		
+
 		super.die(cause);
 	}
-	
+
 	private static final String SUMMONING = "summoning";
 	private static final String FIRST_SUMMON = "first_summon";
 	private static final String SUMMONING_POS = "summoning_pos";
 	private static final String MY_SKELETON = "my_skeleton";
-	
+
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
@@ -159,7 +159,7 @@ public class DarkestElf extends Mob {
 			bundle.put( MY_SKELETON, mySkeleton.id() );
 		}
 	}
-	
+
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
@@ -172,41 +172,41 @@ public class DarkestElf extends Mob {
 			storedSkeletonID = bundle.getInt( MY_SKELETON );
 		}
 	}
-	
+
 	public void onZapComplete(){
 		if (mySkeleton == null || mySkeleton.sprite == null || !mySkeleton.isAlive()){
 			return;
 		}
-		
+
 		//heal skeleton first
 		if (mySkeleton.HP < mySkeleton.HT){
 
 			if (sprite.visible || mySkeleton.sprite.visible) {
 				sprite.parent.add(new Beam.HealthRay(sprite.center(), mySkeleton.sprite.center()));
 			}
-			
-			mySkeleton.HP = Math.min(mySkeleton.HP + 20, mySkeleton.HT);
+
+			mySkeleton.HP = Math.min(mySkeleton.HP + 20 + abyssLevel()*10, mySkeleton.HT);
 			mySkeleton.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
-			
+
 			//otherwise give it adrenaline
 		} else if (mySkeleton.buff(Adrenaline.class) == null) {
 
 			if (sprite.visible || mySkeleton.sprite.visible) {
 				sprite.parent.add(new Beam.HealthRay(sprite.center(), mySkeleton.sprite.center()));
 			}
-			
-			Buff.affect(mySkeleton, Adrenaline.class, 3f);
+
+			Buff.affect(mySkeleton, Adrenaline.class, 3f + abyssLevel()*3f);
 		}
-		
+
 		next();
 	}
-	
+
 	private class Hunting extends Mob.Hunting{
-		
+
 		@Override
 		public boolean act(boolean enemyInFOV, boolean justAlerted) {
 			enemySeen = enemyInFOV;
-			
+
 			if (storedSkeletonID != -1){
 				Actor ch = Actor.findById(storedSkeletonID);
 				storedSkeletonID = -1;
@@ -214,9 +214,9 @@ public class DarkestElf extends Mob {
 					mySkeleton = (NecroSlime) ch;
 				}
 			}
-			
+
 			if (summoning){
-				
+
 				//push anything on summoning spot away, to the furthest valid cell
 				if (Actor.findChar(summoningPos) != null) {
 					int pushPos = pos;
@@ -227,15 +227,15 @@ public class DarkestElf extends Mob {
 							pushPos = summoningPos + c;
 						}
 					}
-					
+
 					//push enemy, or wait a turn if there is no valid pushing position
 					if (pushPos != pos) {
 						Char ch = Actor.findChar(summoningPos);
 						Actor.addDelayed( new Pushing( ch, ch.pos, pushPos ), -1 );
-						
+
 						ch.pos = pushPos;
 						Dungeon.level.occupyCell(ch );
-						
+
 					} else {
 
 						Char blocker = Actor.findChar(summoningPos);
@@ -247,35 +247,38 @@ public class DarkestElf extends Mob {
 						return true;
 					}
 				}
-				
+
 				summoning = firstSummon = false;
-				
+
 				mySkeleton = new NecroSlime();
 				mySkeleton.pos = summoningPos;
 				GameScene.add( mySkeleton );
 				Dungeon.level.occupyCell( mySkeleton );
+				for (Buff b : buffs(ChampionEnemy.class)){
+					Buff.affect( mySkeleton, b.getClass());
+				}
 				Sample.INSTANCE.play(Assets.Sounds.BONES);
 				summoningEmitter.burst( Speck.factory( Speck.RATTLE ), 5 );
 				sprite.idle();
-				
+
 				if (buff(Corruption.class) != null){
 					Buff.affect(mySkeleton, Corruption.class);
 				}
-				
+
 				spend(TICK);
 				return true;
 			}
-			
+
 			if (mySkeleton != null &&
 					(!mySkeleton.isAlive()
-					|| !Dungeon.level.mobs.contains(mySkeleton)
-					|| mySkeleton.alignment != alignment)){
+							|| !Dungeon.level.mobs.contains(mySkeleton)
+							|| mySkeleton.alignment != alignment)){
 				mySkeleton = null;
 			}
-			
+
 			//if enemy is seen, and enemy is within range, and we haven no skeleton, summon a skeleton!
 			if (enemySeen && Dungeon.level.distance(pos, enemy.pos) <= 4 && mySkeleton == null){
-				
+
 				summoningPos = -1;
 				for (int c : PathFinder.NEIGHBOURS8){
 					if (Actor.findChar(enemy.pos+c) == null
@@ -285,30 +288,30 @@ public class DarkestElf extends Mob {
 						summoningPos = enemy.pos+c;
 					}
 				}
-				
+
 				if (summoningPos != -1){
-					
+
 					summoning = true;
 					summoningEmitter = CellEmitter.get(summoningPos);
 					summoningEmitter.pour(Speck.factory(Speck.RATTLE), 0.2f);
-					
+
 					sprite.zap( summoningPos );
-					
+
 					spend( firstSummon ? TICK : 2*TICK );
 				} else {
 					//wait for a turn
 					spend(TICK);
 				}
-				
+
 				return true;
-			//otherwise, if enemy is seen, and we have a skeleton...
+				//otherwise, if enemy is seen, and we have a skeleton...
 			} else if (enemySeen && mySkeleton != null){
-				
+
 				target = enemy.pos;
 				spend(TICK);
-				
+
 				if (!fieldOfView[mySkeleton.pos]){
-					
+
 					//if the skeleton is not next to the enemy
 					//teleport them to the closest spot next to the enemy that can be seen
 					if (!Dungeon.level.adjacent(mySkeleton.pos, enemy.pos)){
@@ -321,12 +324,12 @@ public class DarkestElf extends Mob {
 								telePos = enemy.pos+c;
 							}
 						}
-						
+
 						if (telePos != -1){
-							
+
 							ScrollOfTeleportation.appear(mySkeleton, telePos);
 							mySkeleton.teleportSpend();
-							
+
 							if (sprite != null && sprite.visible){
 								sprite.zap(telePos);
 								return false;
@@ -335,11 +338,11 @@ public class DarkestElf extends Mob {
 							}
 						}
 					}
-					
+
 					return true;
-					
+
 				} else {
-					
+
 					//zap skeleton
 					if (mySkeleton.HP < mySkeleton.HT || mySkeleton.buff(Adrenaline.class) == null) {
 						if (sprite != null && sprite.visible){
@@ -349,23 +352,25 @@ public class DarkestElf extends Mob {
 							onZapComplete();
 						}
 					}
-					
+
 				}
-				
+
 				return true;
-				
-			//otherwise, default to regular hunting behaviour
+
+				//otherwise, default to regular hunting behaviour
 			} else {
 				return super.act(enemyInFOV, justAlerted);
 			}
 		}
 	}
-	
-	public static class NecroSlime extends DarkSlime {
-		
+
+	public static class NecroSlime extends Slime {
+
 		{
 			state = HUNTING;
 		}
+
+
 
 		@Override
 		public float spawningWeight() {
@@ -375,6 +380,6 @@ public class DarkestElf extends Mob {
 		private void teleportSpend(){
 			spend(TICK);
 		}
-		
+
 	}
 }

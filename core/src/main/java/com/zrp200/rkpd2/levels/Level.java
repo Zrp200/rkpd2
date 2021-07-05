@@ -21,52 +21,29 @@
 
 package com.zrp200.rkpd2.levels;
 
-import com.zrp200.rkpd2.actors.hero.abilities.huntress.SpiritHawk;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundlable;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Point;
 import com.watabou.utils.Random;
-import com.watabou.utils.Reflection;
-import com.watabou.utils.SparseArray;
-import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.Challenges;
-import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.ShatteredPixelDungeon;
-import com.zrp200.rkpd2.Statistics;
+import com.watabou.utils.*;
+import com.zrp200.rkpd2.*;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.blobs.Blob;
 import com.zrp200.rkpd2.actors.blobs.SmokeScreen;
 import com.zrp200.rkpd2.actors.blobs.Web;
 import com.zrp200.rkpd2.actors.blobs.WellWater;
-import com.zrp200.rkpd2.actors.buffs.Awareness;
-import com.zrp200.rkpd2.actors.buffs.Blindness;
-import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.ChampionEnemy;
-import com.zrp200.rkpd2.actors.buffs.LockedFloor;
-import com.zrp200.rkpd2.actors.buffs.MagicalSight;
-import com.zrp200.rkpd2.actors.buffs.MindVision;
-import com.zrp200.rkpd2.actors.buffs.RevealedArea;
-import com.zrp200.rkpd2.actors.buffs.Shadows;
+import com.zrp200.rkpd2.actors.buffs.*;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
-import com.zrp200.rkpd2.actors.mobs.Bestiary;
-import com.zrp200.rkpd2.actors.mobs.Mob;
-import com.zrp200.rkpd2.actors.mobs.YogFist;
+import com.zrp200.rkpd2.actors.hero.abilities.huntress.SpiritHawk;
+import com.zrp200.rkpd2.actors.mobs.*;
 import com.zrp200.rkpd2.actors.mobs.npcs.Sheep;
 import com.zrp200.rkpd2.effects.particles.FlowParticle;
 import com.zrp200.rkpd2.effects.particles.WindParticle;
-import com.zrp200.rkpd2.items.Generator;
-import com.zrp200.rkpd2.items.Heap;
-import com.zrp200.rkpd2.items.Item;
-import com.zrp200.rkpd2.items.Stylus;
-import com.zrp200.rkpd2.items.Torch;
+import com.zrp200.rkpd2.items.*;
 import com.zrp200.rkpd2.items.artifacts.TalismanOfForesight;
 import com.zrp200.rkpd2.items.artifacts.TimekeepersHourglass;
 import com.zrp200.rkpd2.items.potions.PotionOfStrength;
@@ -90,15 +67,26 @@ import com.zrp200.rkpd2.tiles.CustomTilemap;
 import com.zrp200.rkpd2.utils.BArray;
 import com.zrp200.rkpd2.utils.GLog;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 public abstract class Level implements Bundlable {
-	
-	public static enum Feeling {
+
+	public static ArrayList<Integer> getSpawningPoints(int pos) {
+		ArrayList<Integer> respawnPoints = new ArrayList<Integer>();
+
+		for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
+			int p = pos + PathFinder.NEIGHBOURS8[i];
+			if (Actor.findChar(p) == null && Dungeon.level.passable[p] && Dungeon.hero.pos != p) {
+				respawnPoints.add(p);
+			}
+		}
+
+		return respawnPoints;
+	}
+
+
+
+		public static enum Feeling {
 		NONE,
 		CHASM,
 		WATER,
@@ -458,6 +446,13 @@ public abstract class Level implements Bundlable {
 		Mob m = Reflection.newInstance(mobsToSpawn.remove(0));
 		if (Dungeon.isChallenged(Challenges.CHAMPION_ENEMIES)){
 			ChampionEnemy.rollForChampion(m);
+		}
+		if (Dungeon.depth > 25 && Dungeon.bossLevel()){
+			int bossAmount = Random.Int(2, 3 + 2*(Dungeon.depth - 25)/5);
+			Class[] bosses = new Class[]{AbyssalNightmare.class, Dragon.class, LostSpirit.class};
+			for (int i = 0; i < bossAmount; i++){
+				mobsToSpawn.add(Random.element(bosses));
+			}
 		}
 		return m;
 	}

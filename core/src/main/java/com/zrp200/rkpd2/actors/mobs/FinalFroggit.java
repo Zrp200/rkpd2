@@ -39,19 +39,19 @@ import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.utils.GLog;
 
-public class FinalFroggit extends Mob implements Callback {
-	
+public class FinalFroggit extends AbyssalMob implements Callback {
+
 	private static final float TIME_TO_ZAP	= 1f;
-	
+
 	{
 		spriteClass = FinalFroggitSprite.class;
-		
+
 		HP = HT = 90;
 		defenseSkill = 20;
-		
+
 		EXP = 20;
 		maxLvl = 30;
-		
+
 		loot = Generator.random();
 		lootChance = 1f;
 
@@ -63,57 +63,57 @@ public class FinalFroggit extends Mob implements Callback {
 	public int damageRoll() {
 		return Random.NormalIntRange( 18, 25 );
 	}
-	
+
 	@Override
 	public int attackSkill( Char target ) {
-		return 30;
+		return 30 + abyssLevel()*10;
 	}
-	
+
 	@Override
 	public int drRoll() {
-		return Random.NormalIntRange(0, 8);
+		return Random.NormalIntRange(0 + abyssLevel()*10, 8 + abyssLevel()*15);
 	}
-	
+
 	@Override
 	public boolean canAttack(Char enemy) {
 		return new Ballistica( pos, enemy.pos, Ballistica.MAGIC_BOLT).collisionPos == enemy.pos;
 	}
-	
+
 	protected boolean doAttack( Char enemy ) {
-			
-			boolean visible = fieldOfView[pos] || fieldOfView[enemy.pos];
-			if (visible) {
-				sprite.zap( enemy.pos );
-			} else {
-				zap();
-			}
-			
-			return !visible;
+
+		boolean visible = fieldOfView[pos] || fieldOfView[enemy.pos];
+		if (visible) {
+			sprite.zap( enemy.pos );
+		} else {
+			zap();
+		}
+
+		return !visible;
 	}
-	
+
 	//used so resistances can differentiate between melee and magical attacks
 	public static class Bolt{}
-	
+
 	private void zap() {
 		spend( TIME_TO_ZAP );
-		
+
 		if (hit( this, enemy, true )) {
 
 			Eradication eradication = enemy.buff(Eradication.class);
 			float multiplier = 1f;
 			if (eradication != null){
-			    multiplier = (float) (Math.pow(1.15f, eradication.combo));
-            }
-			int damage = Random.Int( 4, 10 );
+				multiplier = (float) (Math.pow(1.2f, eradication.combo));
+			}
+			int damage = Random.Int( 4 + abyssLevel()*4, 10 + abyssLevel()*8 );
 			if (buff(Shrink.class) != null|| enemy.buff(TimedShrink.class) != null) damage *= 0.6f;
-			
+
 			int dmg = Math.round(damage * multiplier);
 
 
 			Buff.prolong( enemy, Eradication.class, Eradication.DURATION ).combo++;
 
 			enemy.damage( dmg, new Bolt() );
-			
+
 			if (!enemy.isAlive() && enemy == Dungeon.hero) {
 				Dungeon.fail( getClass() );
 				GLog.n( Messages.get(this, "bolt_kill") );
@@ -122,12 +122,12 @@ public class FinalFroggit extends Mob implements Callback {
 			enemy.sprite.showStatus( CharSprite.NEUTRAL,  enemy.defenseVerb() );
 		}
 	}
-	
+
 	public void onZapComplete() {
 		zap();
 		next();
 	}
-	
+
 	@Override
 	public void call() {
 		next();
@@ -140,42 +140,42 @@ public class FinalFroggit extends Mob implements Callback {
 		immunities.add(Vertigo.class);
 	}
 
-    public static class Eradication extends FlavourBuff {
+	public static class Eradication extends FlavourBuff {
 
-        public static final float DURATION = 4f;
+		public static final float DURATION = 4f;
 
-        {
-            type = buffType.NEGATIVE;
-            announced = true;
-        }
+		{
+			type = buffType.NEGATIVE;
+			announced = true;
+		}
 
-        public int combo;
+		public int combo;
 
-        @Override
-        public void storeInBundle(Bundle bundle) {
-            super.storeInBundle(bundle);
-            bundle.put("combo", combo);
-        }
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put("combo", combo);
+		}
 
-        @Override
-        public void restoreFromBundle(Bundle bundle) {
-            super.restoreFromBundle(bundle);
-            combo = bundle.getInt("combo");
-        }
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			combo = bundle.getInt("combo");
+		}
 
-        @Override
-        public int icon() {
-            return BuffIndicator.ERADICATION;
-        }
+		@Override
+		public int icon() {
+			return BuffIndicator.ERADICATION;
+		}
 
-        @Override
-        public String toString() {
-            return Messages.get(this, "name");
-        }
+		@Override
+		public String toString() {
+			return Messages.get(this, "name");
+		}
 
-        @Override
-        public String desc() {
-            return Messages.get(this, "desc", dispTurns(), (float)Math.pow(1.2f, combo));
-        }
-    }
+		@Override
+		public String desc() {
+			return Messages.get(this, "desc", dispTurns(), (float)Math.pow(1.2f, combo));
+		}
+	}
 }

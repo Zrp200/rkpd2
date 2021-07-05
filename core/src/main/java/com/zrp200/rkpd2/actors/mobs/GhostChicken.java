@@ -33,7 +33,7 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.TimedShrink;
 import com.zrp200.rkpd2.items.Generator;
 
-public class GhostChicken extends Mob {
+public class GhostChicken extends AbyssalMob {
 
 	{
 		spriteClass = GhostChickenSprite.class;
@@ -52,16 +52,15 @@ public class GhostChicken extends Mob {
 		properties.add(Property.UNDEAD);
 	}
 
-
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 1, 4 );
+		return Random.NormalIntRange( 1 + abyssLevel()*2, 4 + abyssLevel()*4 );
 	}
 
 	@Override
 	public int attackProc(Char enemy, int damage) {
 		damage += enemy.drRoll()/2;
-		Buff.prolong(enemy, TimedShrink.class, 2.5f);
+		Buff.prolong(enemy, TimedShrink.class, 2.5f + abyssLevel()*2.5f);
 		return super.attackProc(enemy, damage);
 	}
 
@@ -74,6 +73,7 @@ public class GhostChicken extends Mob {
 	public boolean isInvulnerable(Class effect) {
 		HP--;
 		if (HP <= 0) die(Dungeon.hero);
+		aggro(Dungeon.hero);
 		return true;
 	}
 
@@ -84,6 +84,6 @@ public class GhostChicken extends Mob {
 
 	@Override
 	public float attackDelay() {
-        return super.attackDelay()*0.25f;
-    }
+		return super.attackDelay()*0.25f;
+	}
 }

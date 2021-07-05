@@ -50,13 +50,13 @@ import com.zrp200.rkpd2.utils.BArray;
 
 import java.util.ArrayList;
 
-public class AbyssalNightmare extends Mob {
+public class AbyssalNightmare extends AbyssalMob {
 
 	{
 		spriteClass = AbyssalSprite.class;
 
-		HP = HT = 250;
-		defenseSkill = 30;
+		HP = HT = 620;
+		defenseSkill = 0;
 
 		EXP = 40;
 		maxLvl = 30;
@@ -75,27 +75,22 @@ public class AbyssalNightmare extends Mob {
 	}
 
 	private static final float SPLIT_DELAY	= 1f;
-	
+
 	int generation	= 0;
-	
+
 	private static final String GENERATION	= "generation";
-	
+
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put( GENERATION, generation );
 	}
-	
+
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 		generation = bundle.getInt( GENERATION );
 		if (generation > 0) EXP = 0;
-	}
-
-	@Override
-	public float attackDelay() {
-		return super.attackDelay()*1.6f;
 	}
 
 	@Override
@@ -105,7 +100,7 @@ public class AbyssalNightmare extends Mob {
 		}
 		Dungeon.level.updateFieldOfView( this, fieldOfView );
 
-		HP = Math.min(HP+6, HT);
+		HP = Math.min(HP+10, HT);
 
 		boolean justAlerted = alerted;
 		alerted = false;
@@ -137,17 +132,22 @@ public class AbyssalNightmare extends Mob {
 
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 25, 60 );
+		return Random.NormalIntRange( 20 + abyssLevel()*6, 36 + abyssLevel()*14 );
 	}
 
 	@Override
 	public int drRoll() {
-		return Random.NormalIntRange(0, 16);
+		return 0;
 	}
-	
+
 	@Override
 	public int attackSkill( Char target ) {
-		return 60;
+		return 70 + abyssLevel()*3;
+	}
+
+	@Override
+	public void die(Object cause) {
+		super.die(cause);
 	}
 
 	@Override
@@ -209,9 +209,6 @@ public class AbyssalNightmare extends Mob {
 			if (target == pos || Dungeon.level.adjacent(pos, target)) {
 				return false;
 			}
-
-
-
 
 			int bestpos = pos;
 			for (int i : PathFinder.NEIGHBOURS8){
