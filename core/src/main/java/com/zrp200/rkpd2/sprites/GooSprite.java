@@ -26,13 +26,12 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.particles.ElmoParticle;
-import com.zrp200.rkpd2.utils.BArray;
+import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.particles.Emitter.Factory;
 import com.watabou.noosa.particles.PixelParticle;
-import com.watabou.utils.PathFinder;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
 
@@ -92,9 +91,11 @@ public class GooSprite extends MobSprite {
 		} else {
 			play(pump);
 			Sample.INSTANCE.play( Assets.Sounds.CHARGEUP, 1f, warnDist == 1 ? 0.8f : 1f );
-			PathFinder.buildDistanceMap(ch.pos, BArray.not(Dungeon.level.solid, null), 2);
-			for (int i = 0; i < PathFinder.distance.length; i++) {
-				if (PathFinder.distance[i] <= warnDist) {
+			for (int i = 0; i < Dungeon.level.length(); i++){
+				if (ch.fieldOfView != null && ch.fieldOfView[i]
+						&& Dungeon.level.distance(i, ch.pos) <= warnDist
+						&& new Ballistica( ch.pos, i, Ballistica.STOP_TARGET | Ballistica.STOP_SOLID | Ballistica.IGNORE_SOFT_SOLID).collisionPos == i
+						&& new Ballistica( i, ch.pos, Ballistica.STOP_TARGET | Ballistica.STOP_SOLID | Ballistica.IGNORE_SOFT_SOLID).collisionPos == ch.pos){
 					Emitter e = CellEmitter.get(i);
 					e.pour(GooParticle.FACTORY, 0.04f);
 					pumpUpEmitters.add(e);

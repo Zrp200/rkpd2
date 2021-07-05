@@ -49,6 +49,7 @@ public class Messages {
 		return lang;
 	}
 
+	public static final String NULL = "!!!NO TEXT FOUND!!!";
 
 
 	/**
@@ -117,7 +118,7 @@ public class Messages {
 			if (c != null && c.getSuperclass() != null){
 				return get(c.getSuperclass(), k, args);
 			} else {
-				return "!!!NO TEXT FOUND!!!";
+				return NULL;
 			}
 		}
 	}

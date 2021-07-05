@@ -33,6 +33,7 @@ import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.Recipe;
 import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.artifacts.SandalsOfNature;
+import com.zrp200.rkpd2.items.artifacts.UnstableSpellbook;
 import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.bags.MagicalHolster;
 import com.zrp200.rkpd2.items.bags.PotionBandolier;
@@ -40,7 +41,6 @@ import com.zrp200.rkpd2.items.bags.ScrollHolder;
 import com.zrp200.rkpd2.items.bags.VelvetPouch;
 import com.zrp200.rkpd2.items.food.Food;
 import com.zrp200.rkpd2.items.potions.Potion;
-import com.zrp200.rkpd2.items.scrolls.Scroll;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRemoveCurse;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfTransmutation;
 import com.zrp200.rkpd2.items.spells.Recycle;
@@ -57,6 +57,7 @@ import com.zrp200.rkpd2.ui.Icons;
 import com.zrp200.rkpd2.ui.ItemSlot;
 import com.zrp200.rkpd2.ui.QuickSlotButton;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
+import com.zrp200.rkpd2.ui.Window;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
@@ -68,8 +69,8 @@ import com.watabou.noosa.audio.Sample;
 
 public class WndBag extends WndTabbed {
 	
-	//only one wnditem can appear at a time
-	private static WndBag INSTANCE;
+	//only one bag window can appear at a time
+	public static Window INSTANCE;
 	
 	//FIXME this is getting cumbersome, there should be a better way to manage this
 	public static enum Mode {
@@ -443,7 +444,7 @@ public class WndBag extends WndTabbed {
 						mode == Mode.SEED && SandalsOfNature.canUseSeed(item) ||
 						mode == Mode.FOOD && (item instanceof Food) ||
 						mode == Mode.POTION && (item instanceof Potion) ||
-						mode == Mode.SCROLL && (item instanceof Scroll) ||
+						mode == Mode.SCROLL && UnstableSpellbook.canUseScroll(item) ||
 						mode == Mode.INTUITIONABLE && StoneOfIntuition.isIntuitionable(item) ||
 						mode == Mode.EQUIPMENT && (item instanceof EquipableItem || item instanceof Wand) ||
 						mode == Mode.ALCHEMY && Recipe.usableInRecipe(item) ||

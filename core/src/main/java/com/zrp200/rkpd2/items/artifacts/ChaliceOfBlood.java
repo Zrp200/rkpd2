@@ -30,6 +30,7 @@ import com.zrp200.rkpd2.items.wands.WandOfLivingEarth;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.plants.Earthroot;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
 import com.zrp200.rkpd2.windows.WndOptions;
@@ -67,7 +68,8 @@ public class ChaliceOfBlood extends Artifact {
 			if (damage > hero.HP*0.75) {
 
 				GameScene.show(
-					new WndOptions(Messages.titleCase(Messages.get(this, "name")),
+					new WndOptions(new ItemSprite(this),
+							Messages.titleCase(name()),
 							Messages.get(this, "prick_warn"),
 							Messages.get(this, "yes"),
 							Messages.get(this, "no")) {

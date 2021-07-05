@@ -21,10 +21,13 @@
 
 package com.zrp200.rkpd2.items.wands;
 
+import com.zrp200.rkpd2.actors.mobs.Mob;
+import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Callback;
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Amok;
@@ -45,7 +48,6 @@ import com.zrp200.rkpd2.actors.buffs.Hex;
 import com.zrp200.rkpd2.actors.buffs.MagicalSleep;
 import com.zrp200.rkpd2.actors.buffs.Ooze;
 import com.zrp200.rkpd2.actors.buffs.Paralysis;
-import com.zrp200.rkpd2.actors.buffs.PinCushion;
 import com.zrp200.rkpd2.actors.buffs.Poison;
 import com.zrp200.rkpd2.actors.buffs.Roots;
 import com.zrp200.rkpd2.actors.buffs.Slow;
@@ -55,25 +57,17 @@ import com.zrp200.rkpd2.actors.buffs.Vertigo;
 import com.zrp200.rkpd2.actors.buffs.Vulnerable;
 import com.zrp200.rkpd2.actors.buffs.Weakness;
 import com.zrp200.rkpd2.actors.mobs.Bee;
-import com.zrp200.rkpd2.actors.mobs.King;
 import com.zrp200.rkpd2.actors.mobs.Mimic;
-import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.Piranha;
 import com.zrp200.rkpd2.actors.mobs.Statue;
 import com.zrp200.rkpd2.actors.mobs.Swarm;
 import com.zrp200.rkpd2.actors.mobs.Wraith;
-import com.zrp200.rkpd2.actors.mobs.Yog;
 import com.zrp200.rkpd2.effects.MagicMissile;
 import com.zrp200.rkpd2.items.weapon.Weapon;
-import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Callback;
-import com.watabou.utils.Random;
 
 import java.util.HashMap;
 
@@ -123,7 +117,7 @@ public class WandOfCorruption extends Wand {
 	}
 	
 	@Override
-	protected void onZap(Ballistica bolt) {
+	public void onZap(Ballistica bolt) {
 		Char ch = Actor.findChar(bolt.collisionPos);
 
 		if (ch != null){
@@ -145,10 +139,6 @@ public class WandOfCorruption extends Wand {
 			} else if (ch instanceof Wraith) {
 				//divide by 5 as wraiths are always at full HP and are therefore ~5x harder to corrupt
 				enemyResist = (1f + Dungeon.depth/3f) / 5f;
-			} else if (ch instanceof Yog.BurningFist || ch instanceof Yog.RottingFist) {
-				enemyResist = 1 + 30;
-			} else if (ch instanceof Yog.Larva || ch instanceof King.Undead){
-				enemyResist = 1 + 5;
 			} else if (ch instanceof Swarm){
 				//child swarms don't give exp, so we force this here.
 				enemyResist = 1 + 3;
@@ -157,7 +147,7 @@ public class WandOfCorruption extends Wand {
 			//100% health: 5x resist   75%: 3.25x resist   50%: 2x resist   25%: 1.25x resist
 			enemyResist *= 1 + 4*Math.pow(enemy.HP/(float)enemy.HT, 2);
 
-			processSoulMark(ch, chargesPerCast());
+			wandProc(ch, chargesPerCast());
 			Sample.INSTANCE.play( Assets.Sounds.HIT_MAGIC, 1, 0.8f * Random.Float(0.87f, 1.15f) );
 
 			//debuffs placed on the enemy reduce their resistance
@@ -183,6 +173,9 @@ public class WandOfCorruption extends Wand {
 				}
 			}
 
+			wandProc(ch, chargesPerCast());
+			Sample.INSTANCE.play( Assets.Sounds.HIT_MAGIC, 1, 0.8f * Random.Float(0.87f, 1.15f) );
+			
 		} else {
 			Dungeon.level.pressCell(bolt.collisionPos);
 		}
@@ -222,35 +215,7 @@ public class WandOfCorruption extends Wand {
 			return;
 		}
 		
-		if (!enemy.isImmune(Corruption.class)){
-			enemy.HP = enemy.HT;
-			for (Buff buff : enemy.buffs()) {
-				if (buff.type == Buff.buffType.NEGATIVE
-						&& !(buff instanceof SoulMark)) {
-					buff.detach();
-				} else if (buff instanceof PinCushion){
-					buff.detach();
-				}
-			}
-
-			boolean droppingLoot = enemy.alignment != Char.Alignment.ALLY;
-			Buff.affect(enemy, Corruption.class);
-
-			if (enemy.buff(Corruption.class) != null){
-				if (droppingLoot) enemy.rollToDropLoot();
-				Statistics.enemiesSlain++;
-				Badges.validateMonstersSlain();
-				Statistics.qualifiedForNoKilling = false;
-				if (enemy.EXP > 0 && curUser.lvl <= enemy.maxLvl+1) {
-					curUser.sprite.showStatus(CharSprite.POSITIVE, Messages.get(enemy, "exp", enemy.EXP));
-					curUser.earnExp(enemy.EXP, enemy.getClass());
-				} else {
-					curUser.earnExp(0, enemy.getClass());
-				}
-			}
-		} else {
-			Buff.affect(enemy, Doom.class);
-		}
+		if( !Corruption.corrupt(enemy) ) Buff.affect(enemy, Doom.class);
 	}
 
 	@Override
@@ -264,7 +229,7 @@ public class WandOfCorruption extends Wand {
 	}
 
 	@Override
-	protected void fx(Ballistica bolt, Callback callback) {
+	public void fx(Ballistica bolt, Callback callback) {
 		MagicMissile.boltFromChar( curUser.sprite.parent,
 				MagicMissile.SHADOW,
 				curUser.sprite,

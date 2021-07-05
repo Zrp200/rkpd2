@@ -43,6 +43,7 @@ import com.zrp200.rkpd2.utils.GLog;
 import com.zrp200.rkpd2.windows.WndOptions;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
@@ -56,7 +57,8 @@ public class Chasm implements Hero.Doom {
 			@Override
 			public void call() {
 				GameScene.show(
-						new WndOptions( Messages.get(Chasm.class, "chasm"),
+						new WndOptions( new Image(Dungeon.level.tilesTex(), 48, 48, 16, 16),
+								Messages.get(Chasm.class, "chasm"),
 								Messages.get(Chasm.class, "jump"),
 								Messages.get(Chasm.class, "yes"),
 								Messages.get(Chasm.class, "no") ) {
@@ -133,7 +135,7 @@ public class Chasm implements Hero.Doom {
 	public static void mobFall( Mob mob ) {
 		if (mob.isAlive()) mob.die( Chasm.class );
 		
-		((MobSprite)mob.sprite).fall();
+		if (mob.sprite != null) ((MobSprite)mob.sprite).fall();
 	}
 	
 	public static class Falling extends Buff {

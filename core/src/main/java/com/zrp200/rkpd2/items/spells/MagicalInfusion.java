@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.items.spells;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.Statistics;
+import com.zrp200.rkpd2.actors.buffs.Degrade;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.Item;
@@ -47,6 +48,10 @@ public class MagicalInfusion extends InventorySpell {
 	@Override
 	protected void onItemSelected( Item item ) {
 
+		ScrollOfUpgrade.upgrade(curUser);
+
+		Degrade.detach( curUser, Degrade.class );
+
 		if (item instanceof Weapon && ((Weapon) item).enchantment != null && !((Weapon) item).hasCurseEnchant()) {
 			((Weapon) item).upgrade(true);
 		} else if (item instanceof Armor && ((Armor) item).glyph != null && !((Armor) item).hasCurseGlyph()) {
@@ -59,7 +64,6 @@ public class MagicalInfusion extends InventorySpell {
 		Talent.onUpgradeScrollUsed( Dungeon.hero );
 		Badges.validateItemLevelAquired(item);
 
-		curUser.sprite.emitter().start(Speck.factory(Speck.UP), 0.2f, 3);
 		Statistics.upgradesUsed++;
 	}
 	

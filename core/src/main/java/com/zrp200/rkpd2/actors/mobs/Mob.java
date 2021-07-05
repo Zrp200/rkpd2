@@ -29,9 +29,19 @@ import com.watabou.utils.Reflection;
 import com.zrp200.rkpd2.*;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.Amok;
+import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.ChampionEnemy;
+import com.zrp200.rkpd2.actors.buffs.Charm;
+import com.zrp200.rkpd2.actors.buffs.Corruption;
+import com.zrp200.rkpd2.actors.buffs.Preparation;
+import com.zrp200.rkpd2.actors.buffs.Sleep;
+import com.zrp200.rkpd2.actors.buffs.SoulMark;
+import com.zrp200.rkpd2.actors.buffs.Terror;
 import com.zrp200.rkpd2.actors.buffs.*;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.actors.mobs.npcs.DirectableAlly;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.Surprise;
 import com.zrp200.rkpd2.effects.Wound;
@@ -39,7 +49,6 @@ import com.zrp200.rkpd2.effects.particles.ShadowParticle;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Gold;
 import com.zrp200.rkpd2.items.Item;
-import com.zrp200.rkpd2.items.artifacts.DriedRose;
 import com.zrp200.rkpd2.items.artifacts.TimekeepersHourglass;
 import com.zrp200.rkpd2.items.rings.Ring;
 import com.zrp200.rkpd2.items.rings.RingOfWealth;
@@ -57,6 +66,7 @@ import com.zrp200.rkpd2.utils.GLog;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 
 public abstract class Mob extends Char {
@@ -84,11 +94,11 @@ public abstract class Mob extends Char {
 	
 	protected int target = -1;
 	
-	protected int defenseSkill = 0;
+	public int defenseSkill = 0;
 	
 	public int EXP = 1;
 	public int maxLvl = Hero.MAX_LEVEL;
-	
+
 	public Char enemy;
 	protected boolean enemySeen;
 	protected boolean alerted = false;
@@ -149,22 +159,26 @@ public abstract class Mob extends Char {
 	public CharSprite sprite() {
 		return Reflection.newInstance(spriteClass);
 	}
-	
-	@Override
-	protected boolean act() {
-		
-		super.act();
-		
+
+	boolean updateAlert() {
 		boolean justAlerted = alerted;
 		alerted = false;
-		
 		if (justAlerted){
 			sprite.showAlert();
 		} else {
 			sprite.hideAlert();
 			sprite.hideLost();
 		}
-		
+		return justAlerted;
+	}
+
+	@Override
+	protected boolean act() {
+
+		super.act();
+
+		boolean justAlerted = updateAlert();
+
 		if (paralysed > 0) {
 			enemySeen = false;
 			spend( TICK );
@@ -499,7 +513,6 @@ public abstract class Mob extends Char {
 			sprite.add( CharSprite.State.PARALYSED );
 	}
 
-	
 	protected boolean doAttack( Char enemy ) {
 		
 		if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
@@ -618,7 +631,7 @@ public abstract class Mob extends Char {
 				Badges.validateMonstersSlain();
 				Statistics.qualifiedForNoKilling = false;
 				
-				int exp = Dungeon.hero.lvl <= maxLvl+1 ? EXP : 0;
+				int exp = !isRewardSuppressed() ? EXP : 0;
 				if (exp > 0) {
 					Dungeon.hero.sprite.showStatus(CharSprite.POSITIVE, Messages.get(this, "exp", exp));
 				}
@@ -657,7 +670,7 @@ public abstract class Mob extends Char {
 				&& soulMarked
 				&& Random.Float() < (Dungeon.hero.hasTalent(Talent.NECROMANCERS_MINIONS)
 					? .15f*Dungeon.hero.pointsInTalent(Talent.NECROMANCERS_MINIONS)
-					: .1f*Dungeon.hero.pointsInTalent(Talent.RK_WARLOCK))){
+					: 0.4f*Dungeon.hero.pointsInTalent(Talent.RK_WARLOCK))/3f){
 			Wraith w = Wraith.spawnAt(pos);
 			if (w != null) {
 				Buff.affect(w, Corruption.class);
@@ -668,9 +681,10 @@ public abstract class Mob extends Char {
 			}
 		}
 	}
-	
+
+	public final boolean isRewardSuppressed() { return Dungeon.hero.lvl > maxLvl + 2; }
 	public void rollToDropLoot(){
-		if (Dungeon.hero.lvl > maxLvl + 3) return;
+		if (isRewardSuppressed()) return;
 		
 		float lootChance = this.lootChance;
 		lootChance *= RingOfWealth.dropChanceMultiplier( Dungeon.hero );
@@ -695,7 +709,7 @@ public abstract class Mob extends Char {
 		}
 		
 		//lucky enchant logic
-		if (Dungeon.hero.lvl <= maxLvl && buff(Lucky.LuckProc.class) != null){
+		if (!isRewardSuppressed() && buff(Lucky.LuckProc.class) != null){
 			Dungeon.level.drop(Lucky.genLoot(), pos).sprite.drop();
 			Lucky.showFlare(sprite);
 		}
@@ -709,8 +723,13 @@ public abstract class Mob extends Char {
 		}
 
 		//bounty hunter talent
-		if (Dungeon.hero.buff(Talent.BountyHunterTracker.class) != null){
-			Dungeon.level.drop(new Gold((Dungeon.hero.hasTalent(Talent.BOUNTY_HUNTER) ? 25 : 10) * Dungeon.hero.pointsInTalent(Talent.BOUNTY_HUNTER,Talent.RK_ASSASSIN)), pos).sprite.drop();
+		if (Dungeon.hero.buff(Talent.BountyHunterTracker.class) != null) {
+			Preparation prep = Dungeon.hero.buff(Preparation.class);
+			if (prep != null && Random.Float() < 0.25f * prep.attackLevel()) {
+				int value = 15 * Dungeon.hero.pointsInTalent(Talent.BOUNTY_HUNTER, Talent.RK_ASSASSIN);
+				if(Dungeon.hero.hasTalent(Talent.BOUNTY_HUNTER)) value *= 3; // 45 / 90 / 135
+				Dungeon.level.drop(new Gold(value), pos).sprite.drop();
+			}
 		}
 
 	}
@@ -1022,27 +1041,35 @@ public abstract class Mob extends Char {
 	
 	
 	private static ArrayList<Mob> heldAllies = new ArrayList<>();
-	
+
 	public static void holdAllies( Level level ){
+		holdAllies(level, Dungeon.hero.pos);
+	}
+
+	public static void holdAllies( Level level, int holdFromPos ){
 		heldAllies.clear();
 		for (Mob mob : level.mobs.toArray( new Mob[0] )) {
-			//preserve the ghost no matter where they are
-			if (mob instanceof DriedRose.GhostHero) {
-				((DriedRose.GhostHero) mob).clearDefensingPos();
+			//preserve directable allies no matter where they are
+			if (mob instanceof DirectableAlly) {
+				((DirectableAlly) mob).clearDefensingPos();
 				level.mobs.remove( mob );
 				heldAllies.add(mob);
 				
 			//preserve intelligent allies if they are near the hero
 			} else if (mob.alignment == Alignment.ALLY
 					&& mob.intelligentAlly
-					&& Dungeon.level.distance(Dungeon.hero.pos, mob.pos) <= 3){
+					&& Dungeon.level.distance(holdFromPos, mob.pos) <= 5){
 				level.mobs.remove( mob );
 				heldAllies.add(mob);
 			}
 		}
 	}
-	
+
 	public static void restoreAllies( Level level, int pos ){
+		restoreAllies(level, pos, -1);
+	}
+
+	public static void restoreAllies( Level level, int pos, int gravitatePos ){
 		if (!heldAllies.isEmpty()){
 			
 			ArrayList<Integer> candidatePositions = new ArrayList<>();
@@ -1051,8 +1078,20 @@ public abstract class Mob extends Char {
 					candidatePositions.add(i+pos);
 				}
 			}
-			Collections.shuffle(candidatePositions);
-			
+
+			//gravitate pos sets a preferred location for allies to be closer to
+			if (gravitatePos == -1) {
+				Collections.shuffle(candidatePositions);
+			} else {
+				Collections.sort(candidatePositions, new Comparator<Integer>() {
+					@Override
+					public int compare(Integer t1, Integer t2) {
+						return Dungeon.level.distance(gravitatePos, t1) -
+								Dungeon.level.distance(gravitatePos, t2);
+					}
+				});
+			}
+
 			for (Mob ally : heldAllies) {
 				level.mobs.add(ally);
 				ally.state = ally.WANDERING;
@@ -1062,7 +1101,8 @@ public abstract class Mob extends Char {
 				} else {
 					ally.pos = pos;
 				}
-				
+				if (ally.sprite != null) ally.sprite.place(ally.pos);
+
 			}
 		}
 		heldAllies.clear();

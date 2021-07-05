@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.actors.buffs;
 
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
+import com.watabou.noosa.Image;
 
 public class Slow extends FlavourBuff {
 
@@ -35,7 +36,12 @@ public class Slow extends FlavourBuff {
 
 	@Override
 	public int icon() {
-		return BuffIndicator.SLOW;
+		return BuffIndicator.TIME;
+	}
+
+	@Override
+	public void tintIcon(Image icon) {
+		icon.hardlight(1f, 0.33f, 0.2f);
 	}
 
 	@Override

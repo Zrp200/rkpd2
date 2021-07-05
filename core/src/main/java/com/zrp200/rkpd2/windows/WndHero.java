@@ -21,6 +21,15 @@
 
 package com.zrp200.rkpd2.windows;
 
+import com.zrp200.rkpd2.ShatteredPixelDungeon;
+import com.zrp200.rkpd2.ui.IconButton;
+import com.zrp200.rkpd2.ui.Icons;
+import com.watabou.gltextures.SmartTexture;
+import com.watabou.gltextures.TextureCache;
+import com.watabou.noosa.Group;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.TextureFilm;
+import com.watabou.noosa.ui.Component;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.Statistics;
@@ -36,12 +45,6 @@ import com.zrp200.rkpd2.ui.ScrollPane;
 import com.zrp200.rkpd2.ui.StatusPane;
 import com.zrp200.rkpd2.ui.TalentsPane;
 import com.zrp200.rkpd2.ui.Window;
-import com.watabou.gltextures.SmartTexture;
-import com.watabou.gltextures.TextureCache;
-import com.watabou.noosa.Group;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.TextureFilm;
-import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -124,8 +127,18 @@ public class WndHero extends WndTabbed {
 			else
 				title.label((hero.name() + "\n" + Messages.get(this, "title", hero.lvl, hero.className())).toUpperCase(Locale.ENGLISH));
 			title.color(Window.TITLE_COLOR);
-			title.setRect( 0, 0, WIDTH, 0 );
+			title.setRect( 0, 0, WIDTH-16, 0 );
 			add(title);
+
+			IconButton infoButton = new IconButton(Icons.get(Icons.INFO)){
+				@Override
+				protected void onClick() {
+					super.onClick();
+					ShatteredPixelDungeon.scene().addToFront(new WndHeroInfo(hero.heroClass));
+				}
+			};
+			infoButton.setRect(title.right(), 0, 16, 16);
+			add(infoButton);
 
 			pos = title.bottom() + 2*GAP;
 

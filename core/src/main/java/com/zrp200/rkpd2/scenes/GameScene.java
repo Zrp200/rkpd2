@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.scenes;
 
 import com.watabou.glwrap.Blending;
 import com.watabou.noosa.*;
+import com.zrp200.rkpd2.Challenges;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
@@ -56,6 +57,36 @@ import com.zrp200.rkpd2.levels.rooms.secret.SecretRoom;
 import com.zrp200.rkpd2.levels.traps.Trap;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.plants.Plant;
+import com.zrp200.rkpd2.sprites.CharSprite;
+import com.zrp200.rkpd2.sprites.DiscardedItemSprite;
+import com.zrp200.rkpd2.sprites.HeroSprite;
+import com.zrp200.rkpd2.sprites.ItemSprite;
+import com.zrp200.rkpd2.sprites.RatKingHeroSprite;
+import com.zrp200.rkpd2.tiles.CustomTilemap;
+import com.zrp200.rkpd2.tiles.DungeonTerrainTilemap;
+import com.zrp200.rkpd2.tiles.DungeonTileSheet;
+import com.zrp200.rkpd2.tiles.DungeonTilemap;
+import com.zrp200.rkpd2.tiles.DungeonWallsTilemap;
+import com.zrp200.rkpd2.tiles.FogOfWar;
+import com.zrp200.rkpd2.tiles.GridTileMap;
+import com.zrp200.rkpd2.tiles.RaisedTerrainTilemap;
+import com.zrp200.rkpd2.tiles.TerrainFeaturesTilemap;
+import com.zrp200.rkpd2.tiles.WallBlockingTilemap;
+import com.zrp200.rkpd2.ui.ActionIndicator;
+import com.zrp200.rkpd2.ui.AttackIndicator;
+import com.zrp200.rkpd2.ui.Banner;
+import com.zrp200.rkpd2.ui.BusyIndicator;
+import com.zrp200.rkpd2.ui.CharHealthIndicator;
+import com.zrp200.rkpd2.ui.GameLog;
+import com.zrp200.rkpd2.ui.Icons;
+import com.zrp200.rkpd2.ui.LootIndicator;
+import com.zrp200.rkpd2.ui.QuickSlotButton;
+import com.zrp200.rkpd2.ui.ResumeIndicator;
+import com.zrp200.rkpd2.ui.StatusPane;
+import com.zrp200.rkpd2.ui.TargetHealthIndicator;
+import com.zrp200.rkpd2.ui.Toast;
+import com.zrp200.rkpd2.ui.Toolbar;
+import com.zrp200.rkpd2.ui.Window;
 import com.zrp200.rkpd2.sprites.*;
 import com.zrp200.rkpd2.tiles.*;
 import com.zrp200.rkpd2.ui.*;
@@ -305,39 +336,39 @@ public class GameScene extends PixelScene {
 		counter.show(this, busy.center(), 0f);
 		
 		switch (InterlevelScene.mode) {
-		case RESURRECT:
-			ScrollOfTeleportation.appear( Dungeon.hero, Dungeon.level.entrance );
-			new Flare( 8, 32 ).color( 0xFFFF66, true ).show( hero, 2f ) ;
-			break;
-		case RETURN:
-			ScrollOfTeleportation.appear(  Dungeon.hero, Dungeon.hero.pos );
-			break;
-		case DESCEND:
-			switch (Dungeon.depth) {
-			case 1:
-				WndStory.showChapter( WndStory.ID_SEWERS );
+			case RESURRECT:
+				ScrollOfTeleportation.appear( Dungeon.hero, Dungeon.level.entrance );
+				new Flare( 8, 32 ).color( 0xFFFF66, true ).show( hero, 2f ) ;
 				break;
-			case 6:
-				WndStory.showChapter( WndStory.ID_PRISON );
+			case RETURN:
+				ScrollOfTeleportation.appear(  Dungeon.hero, Dungeon.hero.pos );
 				break;
-			case 11:
-				WndStory.showChapter( WndStory.ID_CAVES );
-				break;
-			case 16:
-				WndStory.showChapter( WndStory.ID_CITY );
-				break;
-			case 21:
-				WndStory.showChapter( WndStory.ID_HALLS );
-				break;
+			case DESCEND:
+			case FALL:
+				switch (Dungeon.depth) {
+				case 1:
+					WndStory.showChapter( WndStory.ID_SEWERS );
+					break;
+				case 6:
+					WndStory.showChapter( WndStory.ID_PRISON );
+					break;
+				case 11:
+					WndStory.showChapter( WndStory.ID_CAVES );
+					break;
+				case 16:
+					WndStory.showChapter( WndStory.ID_CITY );
+					break;
+				case 21:
+					WndStory.showChapter( WndStory.ID_HALLS );
+					break;
 				case 27:
 					WndStory.showChapter(WndStory.ID_ABYSS);
 					break;
-			}
-			if (Dungeon.hero.isAlive()) {
-				Badges.validateNoKilling();
-			}
-			break;
-		default:
+				}
+				if (Dungeon.hero.isAlive()) {
+					Badges.validateNoKilling();
+				}
+				break;
 		}
 
 		ArrayList<Item> dropped = Dungeon.droppedItems.get( Dungeon.depth );
@@ -346,7 +377,7 @@ public class GameScene extends PixelScene {
 				int pos = Dungeon.level.randomRespawnCell( null );
 				if (item instanceof Potion) {
 					((Potion)item).shatter( pos );
-				} else if (item instanceof Plant.Seed) {
+				} else if (item instanceof Plant.Seed && !Dungeon.isChallenged(Challenges.NO_HERBALISM)) {
 					Dungeon.level.plant( (Plant.Seed)item, pos );
 				} else if (item instanceof Honeypot) {
 					Dungeon.level.drop(((Honeypot) item).shatter(null, pos), pos);
@@ -434,7 +465,7 @@ public class GameScene extends PixelScene {
 						GLog.p(Messages.get(this, "secret_hint"));
 					}
 				}
-				
+
 			} else if (InterlevelScene.mode == InterlevelScene.Mode.RESET) {
 				GLog.h(Messages.get(this, "warp"));
 			} else {
@@ -519,7 +550,7 @@ public class GameScene extends PixelScene {
 			return !Actor.processing();
 		}
 	}
-	
+
 	@Override
 	public synchronized void onPause() {
 		try {
@@ -537,7 +568,11 @@ public class GameScene extends PixelScene {
 	//sometimes UI changes can be prompted by the actor thread.
 	// We queue any removed element destruction, rather than destroying them in the actor thread.
 	private ArrayList<Gizmo> toDestroy = new ArrayList<>();
-	
+
+	//the actor thread processes at a maximum of 60 times a second
+	//this caps the speed of resting for higher refresh rate displays
+	private float notifyDelay = 1/60f;
+
 	@Override
 	public synchronized void update() {
 		if (Dungeon.hero == null || scene == null) {
@@ -545,7 +580,9 @@ public class GameScene extends PixelScene {
 		}
 
 		super.update();
-		
+
+		if (notifyDelay > 0) notifyDelay -= Game.elapsed;
+
 		if (!Emitter.freezeEmitters) water.offset( 0, -5 * Game.elapsed );
 
 		if (!Actor.processing() && Dungeon.hero.isAlive()) {
@@ -566,7 +603,8 @@ public class GameScene extends PixelScene {
 				Thread.currentThread().setName("SHPD Render Thread");
 				Actor.keepActorThreadAlive = true;
 				actorThread.start();
-			} else {
+			} else if (notifyDelay <= 0f) {
+				notifyDelay += 1/60f;
 				synchronized (actorThread) {
 					actorThread.notify();
 				}
@@ -625,6 +663,7 @@ public class GameScene extends PixelScene {
 
 		float pos = scene.toolbar.top();
 
+		//FIXME adjusting this to position even without visibility resulted in deadlocks
 		if (scene.tagAttack){
 			scene.attack.setPos( tagLeft, pos - scene.attack.height());
 			scene.attack.flip(tagLeft == 0);
@@ -644,7 +683,7 @@ public class GameScene extends PixelScene {
 		}
 
 		if (scene.tagResume) {
-			scene.resume.setPos( tagLeft, pos - scene.resume.height() );
+			scene.resume.setPos(tagLeft, pos - scene.resume.height());
 			scene.resume.flip(tagLeft == 0);
 		}
 	}
@@ -974,7 +1013,13 @@ public class GameScene extends PixelScene {
 	public static void handleCell( int cell ) {
 		cellSelector.select( cell );
 	}
-	
+
+	public static void selectCell( CellSelector.TargetedListener listener) {
+		if(!listener.action()) {
+			listener.highlightCells();
+			selectCell((CellSelector.Listener)listener); // default logic
+		}
+	}
 	public static void selectCell( CellSelector.Listener listener ) {
 		if (cellSelector.listener != null && cellSelector.listener != defaultCellListener){
 			cellSelector.listener.onSelect(null);
@@ -1088,8 +1133,10 @@ public class GameScene extends PixelScene {
 		} else if (objects.size() == 1){
 			examineObject(objects.get(0));
 		} else {
-			GameScene.show(new WndOptions(Messages.get(GameScene.class, "choose_examine"),
-					Messages.get(GameScene.class, "multiple_examine"), names.toArray(new String[names.size()])){
+			GameScene.show(new WndOptions(Icons.get(Icons.INFO),
+					Messages.get(GameScene.class, "choose_examine"),
+					Messages.get(GameScene.class, "multiple_examine"),
+					names.toArray(new String[names.size()])){
 				@Override
 				protected void onSelect(int index) {
 					examineObject(objects.get(index));

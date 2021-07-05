@@ -27,7 +27,7 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.scenes.GameScene;
-import com.zrp200.rkpd2.windows.WndBag;
+import com.zrp200.rkpd2.windows.WndQuickBag;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
@@ -61,7 +61,7 @@ public class Bag extends Item implements Iterable<Item> {
 
 		if (action.equals( AC_OPEN )) {
 			
-			GameScene.show( new WndBag( this, null, WndBag.Mode.ALL, null ) );
+			GameScene.show( new WndQuickBag( this ) );
 			
 		}
 	}

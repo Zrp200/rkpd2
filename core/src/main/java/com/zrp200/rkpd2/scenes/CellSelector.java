@@ -27,6 +27,8 @@ import com.zrp200.rkpd2.SPDSettings;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.mobs.Mob;
+import com.zrp200.rkpd2.actors.mobs.npcs.NPC;
+import com.zrp200.rkpd2.effects.SelectableCell;
 import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.tiles.DungeonTilemap;
@@ -40,6 +42,9 @@ import com.watabou.noosa.ScrollArea;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Signal;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CellSelector extends ScrollArea {
 
@@ -245,10 +250,12 @@ public class CellSelector extends ScrollArea {
 				} else {
 					if (action == SPDAction.ZOOM_IN){
 						zoom( camera.zoom+1 );
+						mouseZoom = camera.zoom;
 						return true;
 
 					} else if (action == SPDAction.ZOOM_OUT){
 						zoom( camera.zoom-1 );
+						mouseZoom = camera.zoom;
 						return true;
 					}
 				}
@@ -262,6 +269,10 @@ public class CellSelector extends ScrollArea {
 	};
 	
 	private boolean moveFromAction(GameAction action){
+		if (Dungeon.hero == null){
+			return false;
+		}
+
 		int cell = Dungeon.hero.pos;
 
 		if (action == SPDAction.N)  cell += -Dungeon.level.width();
@@ -332,9 +343,65 @@ public class CellSelector extends ScrollArea {
 		super.destroy();
 		KeyEvent.removeKeyListener( keyListener );
 	}
-	
+
 	public interface Listener {
 		void onSelect( Integer cell );
 		String prompt();
+	}
+
+	public static abstract class TargetedListener implements Listener {
+		private boolean skippable = true;
+		private final List<SelectableCell> selectableCells = new ArrayList();
+		public final void highlightCells() {
+			for(CharSprite s : getTargets()) {
+				selectableCells.add(new SelectableCell(s));
+			}
+		}
+		private List<CharSprite> targets;
+		protected abstract List<CharSprite> findTargets();
+		public final List<CharSprite> getTargets() { // lazily evaluated
+			if(targets == null) targets = findTargets();
+			return targets;
+		}
+
+		/** if a character can be highlighted by this selector at all. This affects auto-target as well. */
+		protected boolean canTarget(Char ch) {
+			return !(ch instanceof NPC || ch.alignment == Char.Alignment.ALLY);
+		}
+
+		protected abstract void action(Char ch);
+
+		// if there's only one target, this skips the actual selecting.
+		protected final boolean action() {
+			getTargets(); if(!skippable) return false;
+			Char target = null;
+			for(CharSprite s : getTargets()) {
+				Char ch = s.ch;
+				if(canTarget(ch)) {
+					if(target != null) return false; // more than one possible target, force manual targeting
+					target = ch;
+				}
+			}
+			if(target == null) return false; // no targets
+
+			action(target);
+			return true;
+		}
+		@Override final public void onSelect(Integer cell) {
+			for(SelectableCell c : selectableCells) c.killAndErase();
+			selectableCells.clear();
+
+			if(cell == null) return;
+
+			Char c = Actor.findChar(cell);
+			if(c != null && getTargets().contains(c.sprite)) action(c);
+			else onInvalid(cell);
+		}
+
+		/** toggles the autoskip when applicable. Considers whether the target can be auto-targeted. */
+		protected final void reject(Char ch) {
+			if(ch != null && ch.sprite != null && canTarget(ch) && ch.sprite.isVisible()) skippable = false;
+		}
+		protected void onInvalid(int cell) {}
 	}
 }

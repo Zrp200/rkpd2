@@ -41,6 +41,7 @@ import com.zrp200.rkpd2.items.scrolls.ScrollOfTransmutation;
 import com.zrp200.rkpd2.items.scrolls.exotic.ExoticScroll;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
 import com.zrp200.rkpd2.windows.WndBag;
@@ -140,7 +141,7 @@ public class UnstableSpellbook extends Artifact {
 					final ExploitHandler handler = Buff.affect(hero, ExploitHandler.class);
 					handler.scroll = scroll;
 
-					GameScene.show(new WndOptions(
+					GameScene.show(new WndOptions(new ItemSprite(this),
 							Messages.get(this, "prompt"),
 							Messages.get(this, "read_empowered"),
 							scroll.trueName(),
@@ -238,6 +239,17 @@ public class UnstableSpellbook extends Artifact {
 		return super.upgrade();
 	}
 
+	public static boolean canUseScroll( Item item ){
+		if (item instanceof Scroll){
+			if (!(curItem instanceof UnstableSpellbook)){
+				return true;
+			} else {
+				return item.isIdentified() && ((UnstableSpellbook) curItem).scrolls.contains(item.getClass());
+			}
+		}
+		return false;
+	}
+
 	@Override
 	public String desc() {
 		String desc = super.desc();
@@ -327,8 +339,9 @@ public class UnstableSpellbook extends Artifact {
 					}
 				}
 				GLog.w( Messages.get(UnstableSpellbook.class, "unable_scroll") );
-			} else if (item instanceof Scroll && !item.isIdentified())
+			} else if (item instanceof Scroll && !item.isIdentified()) {
 				GLog.w( Messages.get(UnstableSpellbook.class, "unknown_scroll") );
+			}
 		}
 	};
 }

@@ -21,8 +21,11 @@
 
 package com.zrp200.rkpd2.actors.hero;
 
+import com.watabou.noosa.Image;
+import com.watabou.utils.Reflection;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.GamesInProgress;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Adrenaline;
@@ -34,8 +37,11 @@ import com.zrp200.rkpd2.actors.buffs.EnhancedRings;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.buffs.Haste;
 import com.zrp200.rkpd2.actors.buffs.Recharging;
+import com.zrp200.rkpd2.actors.buffs.RevealedArea;
 import com.zrp200.rkpd2.actors.buffs.Roots;
 import com.zrp200.rkpd2.actors.buffs.WandEmpower;
+import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
+import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.Speck;
@@ -59,6 +65,7 @@ import com.zrp200.rkpd2.items.weapon.melee.MeleeWeapon;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.levels.Level;
 import com.zrp200.rkpd2.levels.Terrain;
+import com.zrp200.rkpd2.messages.Languages;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.watabou.noosa.audio.Sample;
@@ -66,28 +73,33 @@ import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.utils.GLog;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 
+import static com.watabou.utils.Reflection.newInstance;
+
 public enum Talent {
 
 	//Warrior T1
 	HEARTY_MEAL(0), ARMSMASTERS_INTUITION(1), TEST_SUBJECT(2), IRON_WILL(3),
 	//Warrior T2
-	IRON_STOMACH(4),
-	RESTORED_WILLPOWER(5),
-	RUNIC_TRANSFERENCE(6), // TODO buff
-	LETHAL_MOMENTUM(7),
-	IMPROVISED_PROJECTILES(8), // TODO buff
+	IRON_STOMACH(4), RESTORED_WILLPOWER(5), RUNIC_TRANSFERENCE(6), LETHAL_MOMENTUM(7), IMPROVISED_PROJECTILES(8),
 	//Warrior T3
 	HOLD_FAST(9, 3), STRONGMAN(10, 3),
 	//Berserker T3
 	ENDLESS_RAGE(11, 3), BERSERKING_STAMINA(12, 3), ENRAGED_CATALYST(13, 3), ONE_MAN_ARMY(7,3),
 	//Gladiator T3
 	CLEAVE(14, 3), LETHAL_DEFENSE(15, 3), ENHANCED_COMBO(16, 3), SKILL(98,3),
+	//Heroic Leap T4
+	BODY_SLAM(17, 4), IMPACT_WAVE(18, 4), DOUBLE_JUMP(19, 4),
+	//Shockwave T4
+	EXPANDING_WAVE(20, 4), STRIKING_WAVE(21, 4), SHOCK_FORCE(22, 4),
+	//Endure T4
+	SUSTAINED_RETRIBUTION(23, 4), SHRUG_IT_OFF(24, 4), EVEN_THE_ODDS(25, 4),
 
 	//Mage T1
 	ENERGIZING_MEAL_I(36), SCHOLARS_INTUITION(33), TESTED_HYPOTHESIS(34), BACKUP_BARRIER(35),
@@ -99,6 +111,12 @@ public enum Talent {
 	EMPOWERED_STRIKE(43, 3), MYSTICAL_CHARGE(44, 3), EXCESS_CHARGE(45, 3), SORCERY(38,3),
 	//Warlock T3
 	SOUL_EATER(46, 3), SOUL_SIPHON(47, 3), NECROMANCERS_MINIONS(48, 3), WARLOCKS_TOUCH (135, 3),
+	//Elemental Blast T4
+	BLAST_RADIUS(49, 4), ELEMENTAL_POWER(50, 4), REACTIVE_BARRIER(51, 4),
+	//Wild Magic T4
+	WILD_POWER(52, 4), FIRE_EVERYTHING(53, 4), CONSERVED_MAGIC(54, 4),
+	//Warp Beacon T4
+	TELEFRAG(55, 4), REMOTE_BEACON(56, 4), LONGRANGE_WARP(57, 4),
 
 	//Rogue T1
 	CACHED_RATIONS(64), THIEFS_INTUITION(65), SUCKER_PUNCH(66), MENDING_SHADOWS(128),
@@ -110,6 +128,12 @@ public enum Talent {
 	ENHANCED_LETHALITY(75, 3), ASSASSINS_REACH(76, 3), BOUNTY_HUNTER(77, 3), LETHAL_MOMENTUM_2(7,3),
 	//Freerunner T3
 	EVASIVE_ARMOR(78, 3), PROJECTILE_MOMENTUM(79, 3), SPEEDY_STEALTH(80, 3), FAST_RECOVERY(136,3), // TODO implement icon for fast recovery
+	//Smoke Bomb T4
+	HASTY_RETREAT(81, 4), BODY_REPLACEMENT(82, 4), SHADOW_STEP(83, 4),
+	//Death Mark T4
+	FEAR_THE_REAPER(84, 4), DEATHLY_DURABILITY(85, 4), DOUBLE_MARK(86, 4),
+	//Shadow Clone T4
+	SHADOW_BLADE(87, 4), CLONED_ARMOR(88, 4), PERFECT_COPY(89, 4),
 
 	//Huntress T1
 	NATURES_BOUNTY(96), SURVIVALISTS_INTUITION(97), FOLLOWUP_STRIKE(98), NATURES_AID(99),
@@ -118,10 +142,49 @@ public enum Talent {
 	//Huntress T3
 	POINT_BLANK(105, 3), SEER_SHOT(106, 3),
 	//Sniper T3
-	FARSIGHT(107, 3), SHARED_ENCHANTMENT(108, 3), SHARED_UPGRADES(109, 3), RANGER(98,3),
+	FARSIGHT(107, 3), SHARED_ENCHANTMENT(108, 3), SHARED_UPGRADES(109, 3), MULTISHOT(137,3),
 	//Warden T3
 	DURABLE_TIPS(110, 3), BARKSKIN(111, 3), SHIELDING_DEW(112, 3), NATURES_BETTER_AID(102,3),
-	// TODO add unique icons
+	//Spectral Blades T4
+	FAN_OF_BLADES(113, 4), PROJECTING_BLADES(114, 4), SPIRIT_BLADES(115, 4),
+	//Natures Power T4
+	GROWING_POWER(116, 4), NATURES_WRATH(117, 4), WILD_MOMENTUM(118, 4),
+	//Spirit Hawk T4
+	EAGLE_EYE(119, 4), GO_FOR_THE_EYES(120, 4), SWIFT_SPIRIT(121, 4),
+	//universal T4
+	HEROIC_ENERGY(26, 4) {
+		// this is why wrath doesn't have any talents...
+		private boolean ratmogrify() {
+			// FIXME this is really brittle, will be an issue if/when I add OmniAbility
+			return GamesInProgress.selectedClass == HeroClass.RAT_KING
+					|| Dungeon.hero != null
+						&& (Dungeon.hero.heroClass == HeroClass.RAT_KING
+							|| Dungeon.hero.armorAbility instanceof Ratmogrify);
+		}
+		@Override public int icon() {
+			if ( ratmogrify() ) return 127;
+			switch (Dungeon.hero != null ? Dungeon.hero.heroClass : GamesInProgress.selectedClass){
+				case WARRIOR: default: return 26;
+				case MAGE: return 58;
+				case ROGUE: return 90;
+				case HUNTRESS: return 122;
+				// Rat King handled on line 164
+			}
+		}
+
+		@Override public String title() {
+			//TODO translate this
+			if (Messages.lang() == Languages.ENGLISH
+					&& ratmogrify()) {
+				return "ratroic energy";
+			}
+			return super.title();
+		}
+	},
+
+	//Ratmogrify T4
+	RATSISTANCE(124, 4), RATLOMACY(125, 4), RATFORCEMENTS(126, 4),
+	// TODO add unique icons, really bad now.
 	ROYAL_PRIVILEGE(32), // food related talents, uses empowering icon
 	ROYAL_INTUITION(97), // intuition-related talents, uses survivalist's icon
 	KINGS_WISDOM(34), // on-id + combat talents, uses tested hypothesis
@@ -133,21 +196,63 @@ public enum Talent {
 	PURSUIT(98), // durable projectiles (5),silent steps(4),lethal momentum (3),shield battery(5), uses FUS
 	// Rat King T3
 	RK_BERSERKER(11,3), RK_GLADIATOR(16,3), RK_BATTLEMAGE(43,3), RK_WARLOCK(47,3), RK_ASSASSIN(75,3), RK_FREERUNNER(78,3), RK_SNIPER(109,3), RK_WARDEN(102,3);
+
+	public static abstract class Cooldown extends FlavourBuff {
+		public static <T extends Cooldown> void affectHero(Class<T> cls) {
+			if(cls == Cooldown.class) return;
+			T buff = Buff.affect(Dungeon.hero, cls);
+			buff.spend( buff.duration() );
+		}
+		public abstract float duration();
+		public float iconFadePercent() { return Math.max(0, visualcooldown() / duration()); }
+		public String toString() { return Messages.get(this, "name"); }
+		public String desc() { return Messages.get(this, "desc", dispTurns(visualcooldown())); }
+	}
+
 	// TODO is splitting up t2s arbitrarily really a good idea?
-	public static class ImprovisedProjectileCooldown extends FlavourBuff{};
+	public static class ImprovisedProjectileCooldown extends Cooldown {
+		public float duration() { return Dungeon.hero.hasTalent(IMPROVISED_PROJECTILES) ? 15 : 50; }
+		public int icon() { return BuffIndicator.TIME; }
+		public void tintIcon(Image icon) { icon.hardlight(0.15f, 0.2f, 0.5f); }
+	};
 	public static class LethalMomentumTracker extends FlavourBuff{};
 	public static class WandPreservationCounter extends CounterBuff{};
 	public static class EmpoweredStrikeTracker extends FlavourBuff{};
 	public static class BountyHunterTracker extends FlavourBuff{};
-	public static class RejuvenatingStepsCooldown extends FlavourBuff{};
-	public static class SeerShotCooldown extends FlavourBuff{};
+	public static class RejuvenatingStepsCooldown extends Cooldown{
+		@Override public float duration() {
+			int points = Dungeon.hero.pointsInTalent(REJUVENATING_STEPS, POWER_WITHIN);
+			if(Dungeon.hero.pointsInTalent(Talent.REJUVENATING_STEPS) > 0) points++;
+			return 10*(float)Math.pow(2,1-points);
+		}
+		public int icon() { return BuffIndicator.TIME; }
+		public void tintIcon(Image icon) { icon.hardlight(0f, 0.35f, 0.15f); }
+	};
+	public static class RejuvenatingStepsFurrow extends CounterBuff{};
+	public static class SeerShotCooldown extends Cooldown{
+		@Override public float duration() {
+			return Dungeon.hero.hasTalent(SEER_SHOT) ? 5 : 20;
+		}
+		public int icon() {
+			// changed cooldown behavior to be more stacking-friendly.
+			return target.buff(RevealedArea.class) != null && !Dungeon.hero.hasTalent(SEER_SHOT) ? BuffIndicator.NONE : BuffIndicator.TIME;
+		}
+		public void tintIcon(Image icon) { icon.hardlight(0.7f, 0.4f, 0.7f); }
+	};
+	public static class SpiritBladesTracker extends FlavourBuff{};
 
 
 	int icon;
 	int maxPoints;
 
 	// tiers 1/2/3/4 start at levels 2/7/13/21
-	public static int[] tierLevelThresholds = new int[]{0, 2, 7, 13, 21+4, 31};
+	public static int[] tierLevelThresholds = new int[]{0, 2, 7, 13, 21/*+4*/, 31};
+
+	public static int getMaxPoints(int tier) {
+		int max = tierLevelThresholds[tier+1] - tierLevelThresholds[tier];
+		if(tier == 3) max += 4;
+		return max;
+	}
 
 	Talent(int icon ){
 		this(icon, 2);
@@ -177,14 +282,10 @@ public enum Talent {
 	public static void onTalentUpgraded( Hero hero, Talent talent){
 		int points = hero.pointsInTalent(talent);
 		switch(talent) {
-			case SCHOLARS_INTUITION:
-				for(Item item : hero.belongings) {
-					if(item instanceof Scroll || item instanceof Potion) {
-						for(int i=0; i < item.quantity() && !item.isIdentified(); i++) {
-							if(Random.Int(3) == 0) item.identify(); // it increases by 33%, so we just reroll it with a 33% chance.
-						}
-					}
-				}
+			case ROYAL_PRIVILEGE: case NATURES_BOUNTY:
+				int count = talent == NATURES_BOUNTY ? 3 : 2;
+				if(points == 1) count *= 2; // for the initial upgrade.
+				Buff.count(hero, NatureBerriesAvailable.class, count);
 				break;
 			case ARMSMASTERS_INTUITION: case THIEFS_INTUITION: case ROYAL_INTUITION:
 				for(Item item : hero.belongings)
@@ -194,18 +295,36 @@ public enum Talent {
 					if(item.isEquipped(hero)) onItemEquipped(hero,item);
 				}
 				break;
-			case ROYAL_PRIVILEGE: case NATURES_BOUNTY:
-				int count = talent == NATURES_BOUNTY ? 3 : 2;
-				if(points == 1) count *= 2; // for the initial upgrade.
-				Buff.count(hero, NatureBerriesAvailable.class, count);
+			case SCHOLARS_INTUITION:
+				for(Item item : hero.belongings) {
+					if (item instanceof Scroll || item instanceof Potion) {
+						for (int i = 0; i < item.quantity() && !item.isIdentified(); i++) {
+							if (Random.Int(3 * points) == 0)
+								item.identify(); // adjusts for the difference in chance.
+						}
+					}
+				}
+				break;
+			case LIGHT_CLOAK:
+				if (hero.pointsInTalent(LIGHT_CLOAK) == 1) {
+					for (Item item : Dungeon.hero.belongings.backpack) {
+						if (item instanceof CloakOfShadows) {
+							((CloakOfShadows) item).activate(Dungeon.hero);
+						}
+					}
+				}
 				break;
 			case BERSERKING_STAMINA: // takes immediate effect
 				Berserk berserk = hero.buff(Berserk.class);
 				if(berserk != null) berserk.recover(1/3f);
 				break;
-		}
-		if (talent == FARSIGHT || talent == RK_SNIPER){
-			Dungeon.observe();
+			case SEER_SHOT:
+				float mod = points == 1 ? 0 : 1f/(points-1);
+				for(RevealedArea buff : hero.buffs(RevealedArea.class)) buff.postpone(buff.cooldown() * mod);
+				break;
+			case FARSIGHT: case RK_SNIPER: case HEIGHTENED_SENSES: case KINGS_VISION:
+				Dungeon.observe();
+				break;
 		}
 
 	}
@@ -291,13 +410,13 @@ public enum Talent {
 			if(hero.hasTalent(ARMSMASTERS_INTUITION)) points++;
 			factor *= 1f + points;
 		}
-		// 3x/instant for mage (see Wand.wandUsed())
+		// 3x/instant for mage (see Wand.wandUsed()), 4.5x/instant for rk
 		if (item instanceof Wand){
 			factor *= 1f + 2*(hero.pointsInTalent(SCHOLARS_INTUITION) + hero.pointsInTalent(ROYAL_INTUITION));
 		}
 		// 2x/instant for rogue (see onItemEqupped), also id's type on equip/on pickup
 		if (item instanceof Ring){
-			factor *= 1f + hero.pointsInTalent(THIEFS_INTUITION) + hero.pointsInTalent(ROYAL_INTUITION);
+			factor *= 1f + (Dungeon.hero.heroClass == HeroClass.ROGUE ? 1 : 0) + hero.pointsInTalent(THIEFS_INTUITION, ROYAL_INTUITION);
 		}
 		return factor;
 	}
@@ -319,9 +438,9 @@ public enum Talent {
 			Random.shuffle(grassCells);
 			for (int cell : grassCells){
 				Char ch = Actor.findChar(cell);
-				if (ch != null){
+				if (ch != null && ch.alignment == Char.Alignment.ENEMY){
 					int duration = 1+hero.pointsInTalent(RESTORED_NATURE,RESTORATION);
-					if(hero.heroClass == HeroClass.HUNTRESS) duration *= 1.5;
+					if(hero.heroClass == HeroClass.HUNTRESS) duration *= 2; // 4/6 root, for whatever it's worth.
 					Buff.affect(ch, Roots.class, duration);
 				}
 				if (Dungeon.level.map[cell] == Terrain.EMPTY ||
@@ -352,7 +471,7 @@ public enum Talent {
 
 	public static void onUpgradeScrollUsed( Hero hero ){
 		if (hero.hasTalent(ENERGIZING_UPGRADE,RESTORATION)){
-			int charge = 1+hero.pointsInTalent(ENERGIZING_UPGRADE,RESTORATION);
+			int charge = 1+2*hero.pointsInTalent(ENERGIZING_UPGRADE,RESTORATION);
 			MagesStaff staff = hero.belongings.getItem(MagesStaff.class);
 			if(hero.hasTalent(ENERGIZING_UPGRADE)) {
 				hero.belongings.charge(charge, true);
@@ -440,7 +559,7 @@ public enum Talent {
 			id = true;
 		}
 		if( (item instanceof Scroll || item instanceof Potion) && !item.isIdentified() && hero.hasTalent(SCHOLARS_INTUITION) ) {
-			if(!item.collected && Random.Int(3) >= 3-hero.pointsInTalent(SCHOLARS_INTUITION)) {
+			if(!item.collected && Random.Int(4-hero.pointsInTalent(SCHOLARS_INTUITION)) == 0) {
 				item.identify();
 				id = true;
 			}
@@ -503,7 +622,7 @@ public enum Talent {
 	public static class SuckerPunchTracker extends Buff{};
 	public static class FollowupStrikeTracker extends Buff{};
 
-	public static final int MAX_TALENT_TIERS = 3;
+	public static final int MAX_TALENT_TIERS = 4;
 
 	public static void initClassTalents( Hero hero ){
 		initClassTalents( hero.heroClass, hero.talents );
@@ -608,7 +727,7 @@ public enum Talent {
 				Collections.addAll(tierTalents, CLEAVE, LETHAL_DEFENSE, ENHANCED_COMBO, SKILL);
 				break;
 			case BATTLEMAGE:
-				Collections.addAll(tierTalents, SORCERY, EMPOWERED_STRIKE, MYSTICAL_CHARGE, EXCESS_CHARGE);
+				Collections.addAll(tierTalents, EMPOWERED_STRIKE, MYSTICAL_CHARGE, EXCESS_CHARGE, SORCERY);
 				break;
 			case WARLOCK:
 				Collections.addAll(tierTalents, SOUL_EATER, SOUL_SIPHON, NECROMANCERS_MINIONS, WARLOCKS_TOUCH);
@@ -620,7 +739,7 @@ public enum Talent {
 				Collections.addAll(tierTalents, EVASIVE_ARMOR, PROJECTILE_MOMENTUM, SPEEDY_STEALTH, FAST_RECOVERY);
 				break;
 			case SNIPER:
-				Collections.addAll(tierTalents, FARSIGHT, SHARED_ENCHANTMENT, SHARED_UPGRADES, RANGER);
+				Collections.addAll(tierTalents, FARSIGHT, SHARED_ENCHANTMENT, SHARED_UPGRADES, MULTISHOT);
 				break;
 			case WARDEN:
 				Collections.addAll(tierTalents, DURABLE_TIPS, BARKSKIN, SHIELDING_DEW, NATURES_BETTER_AID);
@@ -633,8 +752,22 @@ public enum Talent {
 		}
 		tierTalents.clear();
 
-		//tier4
-		//TBD
+	}
+
+	public static void initArmorTalents( Hero hero ){
+		initArmorTalents( hero.armorAbility, hero.talents);
+	}
+
+	public static void initArmorTalents(ArmorAbility abil, ArrayList<LinkedHashMap<Talent, Integer>> talents ){
+		if (abil == null) return;
+
+		while (talents.size() < MAX_TALENT_TIERS){
+			talents.add(new LinkedHashMap<>());
+		}
+
+		for (Talent t : abil.talents()){
+			talents.get(3).put(t, 0);
+		}
 	}
 
 	private static final String TALENT_TIER = "talents_tier_";
@@ -659,6 +792,7 @@ public enum Talent {
 	public static void restoreTalentsFromBundle( Bundle bundle, Hero hero ){
 		if (hero.heroClass != null) initClassTalents(hero);
 		if (hero.subClass != null)  initSubclassTalents(hero);
+		if (hero.armorAbility != null)  initArmorTalents(hero);
 
 		for (int i = 0; i < MAX_TALENT_TIERS; i++){
 			LinkedHashMap<Talent, Integer> tier = hero.talents.get(i);
@@ -673,6 +807,7 @@ public enum Talent {
 					if (tierBundle.contains(talent.name())){
 						tier.put(talent, Math.min(tierBundle.getInt(talent.name()), talent.maxPoints()));
 					}
+					if(tierBundle.contains("ranger")) tier.put(MULTISHOT, Math.min(tierBundle.getInt(talent.name()), MULTISHOT.maxPoints));
 				}
 			}
 		}

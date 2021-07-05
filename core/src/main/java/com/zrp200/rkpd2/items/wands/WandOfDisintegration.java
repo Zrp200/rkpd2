@@ -64,7 +64,7 @@ public class WandOfDisintegration extends DamageWand {
 	}
 
 	@Override
-	protected void onZap( Ballistica beam ) {
+	public void onZap(Ballistica beam) {
 		
 		boolean terrainAffected = false;
 		
@@ -112,7 +112,7 @@ public class WandOfDisintegration extends DamageWand {
 		int lvl = level + (chars.size()-1) + terrainBonus;
 		for (Char ch : chars) {
 			int damage = damageRoll(lvl);
-			processSoulMark(ch, chargesPerCast(), damage);
+			wandProc(ch, chargesPerCast(), damage);
 			ch.damage( damage, this );
 			ch.sprite.centerEmitter().burst( PurpleParticle.BURST, Random.IntRange( 1, 2 ) );
 			ch.sprite.flash();
@@ -129,7 +129,7 @@ public class WandOfDisintegration extends DamageWand {
 	}
 	
 	@Override
-	protected void fx( Ballistica beam, Callback callback ) {
+	public void fx(Ballistica beam, Callback callback) {
 		
 		int cell = beam.path.get(Math.min(beam.dist, distance()));
 		curUser.sprite.parent.add(new Beam.DeathRay(curUser.sprite.center(), DungeonTilemap.raisedTileCenterToWorld( cell )));

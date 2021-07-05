@@ -85,7 +85,10 @@ public class Buff extends Actor {
 		diactivate();
 		return true;
 	}
-	
+
+	@Override // need to be public, alternatively could have prolong/affect affect all instances instead of just one.
+	public void postpone(float time) { super.postpone(time); }
+
 	public int icon() {
 		return BuffIndicator.NONE;
 	}

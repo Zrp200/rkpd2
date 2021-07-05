@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
+import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.mobs.Mob;
@@ -87,6 +88,14 @@ public class MagicalSleep extends Buff {
 	@Override
 	public int icon() {
 		return BuffIndicator.MAGIC_SLEEP;
+	}
+
+	@Override
+	public void fx(boolean on) {
+		if (!on && (target.paralysed <= 1) ) {
+			//in case the character has visual paralysis from another source
+			target.sprite.remove(CharSprite.State.PARALYSED);
+		}
 	}
 
 	@Override

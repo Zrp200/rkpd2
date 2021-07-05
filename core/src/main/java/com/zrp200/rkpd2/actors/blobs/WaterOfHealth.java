@@ -31,8 +31,8 @@ import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.effects.particles.ShadowParticle;
 import com.zrp200.rkpd2.effects.particles.ShaftParticle;
 import com.zrp200.rkpd2.items.Ankh;
-import com.zrp200.rkpd2.items.DewVial;
 import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.Waterskin;
 import com.zrp200.rkpd2.items.potions.PotionOfHealing;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRemoveCurse;
 import com.zrp200.rkpd2.journal.Notes.Landmark;
@@ -49,12 +49,12 @@ public class WaterOfHealth extends WellWater {
 		
 		Sample.INSTANCE.play( Assets.Sounds.DRINK );
 
-		hero.HP = hero.HT;
-		hero.sprite.emitter().start( Speck.factory( Speck.HEALING ), 0.4f, 4 );
-
 		PotionOfHealing.cure( hero );
 		hero.belongings.uncurseEquipped();
 		hero.buff( Hunger.class ).satisfy( Hunger.STARVING );
+
+		hero.HP = hero.HT;
+		hero.sprite.emitter().start( Speck.factory( Speck.HEALING ), 0.4f, 4 );
 		
 		CellEmitter.get( hero.pos ).start( ShaftParticle.FACTORY, 0.2f, 3 );
 
@@ -67,8 +67,8 @@ public class WaterOfHealth extends WellWater {
 	
 	@Override
 	protected Item affectItem( Item item, int pos ) {
-		if (item instanceof DewVial && !((DewVial)item).isFull()) {
-			((DewVial)item).fill();
+		if (item instanceof Waterskin && !((Waterskin)item).isFull()) {
+			((Waterskin)item).fill();
 			CellEmitter.get( pos ).start( Speck.factory( Speck.HEALING ), 0.4f, 4 );
 			Sample.INSTANCE.play( Assets.Sounds.DRINK );
 			return item;

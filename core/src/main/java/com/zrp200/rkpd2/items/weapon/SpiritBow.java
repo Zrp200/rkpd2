@@ -29,6 +29,7 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.RevealedArea;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.actors.hero.abilities.huntress.NaturesPower;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.effects.Splash;
 import com.zrp200.rkpd2.items.Item;
@@ -42,6 +43,12 @@ import com.zrp200.rkpd2.items.weapon.enchantments.Lucky;
 import com.zrp200.rkpd2.items.weapon.enchantments.Unstable;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.plants.Blindweed;
+import com.zrp200.rkpd2.plants.Firebloom;
+import com.zrp200.rkpd2.plants.Icecap;
+import com.zrp200.rkpd2.plants.Plant;
+import com.zrp200.rkpd2.plants.Sorrowmoss;
+import com.zrp200.rkpd2.plants.Stormvine;
 import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
@@ -50,6 +57,7 @@ import com.zrp200.rkpd2.ui.QuickSlotButton;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
+import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 
@@ -91,7 +99,11 @@ public class SpiritBow extends Weapon {
 			
 		}
 	}
-	
+
+	private static Class[] harmfulPlants = new Class[]{
+			Blindweed.class, Firebloom.class, Icecap.class, Sorrowmoss.class,  Stormvine.class
+	};
+
 	@Override
 	public String info() {
 		String info = desc();
@@ -167,11 +179,11 @@ public class SpiritBow extends Weapon {
 				damage += Random.IntRange( 0, exStr );
 			}
 		}
-		
+
 		return damage;
 	}
 
-	
+
 	@Override
 	public int level() {
 		return (int)internalLevel();
@@ -197,7 +209,7 @@ public class SpiritBow extends Weapon {
 	}
 	@Override
 	public Item upgrade(boolean enchant) {
-		ScrollOfEnchantment.enchantWeapon(this);
+		new ScrollOfEnchantment().enchantWeapon(this);
 		return this;
 	}
 
@@ -207,7 +219,7 @@ public class SpiritBow extends Weapon {
 
 	public int shotCount; // used for sniper specials
 	public class SpiritArrow extends MissileWeapon {
-		
+
 		{
 			image = ItemSpriteSheet.SPIRIT_ARROW;
 
@@ -240,7 +252,7 @@ public class SpiritBow extends Weapon {
 			}
 			return damage;
 		}
-		
+
 		@Override
 		public boolean hasEnchant(Class<? extends Enchantment> type, Char owner) {
 			return SpiritBow.this.hasEnchant(type, owner);
@@ -248,6 +260,35 @@ public class SpiritBow extends Weapon {
 
 		@Override
 		public int proc(Char attacker, Char defender, int damage) {
+			if (attacker.buff(NaturesPower.naturesPowerTracker.class) != null && !sniperSpecial){
+
+				Actor.add(new Actor() {
+					{
+						actPriority = VFX_PRIO;
+					}
+
+					@Override
+					protected boolean act() {
+
+						if (Random.Int(/*12*/8) < ((Hero)attacker).pointsInTalent(Talent.NATURES_WRATH)){
+							Plant plant = (Plant) Reflection.newInstance(Random.element(harmfulPlants));
+							plant.pos = defender.pos;
+							plant.activate( defender.isAlive() ? defender : null );
+						}
+
+						if (!defender.isAlive()){
+							NaturesPower.naturesPowerTracker tracker = attacker.buff(NaturesPower.naturesPowerTracker.class);
+							if (tracker != null){
+								tracker.extend(((Hero) attacker).shiftedPoints(Talent.WILD_MOMENTUM));
+							}
+						}
+
+						Actor.remove(this);
+						return true;
+					}
+				});
+
+			}
 			return SpiritBow.this.proc(attacker, defender, damage);
 		}
 
@@ -255,19 +296,28 @@ public class SpiritBow extends Weapon {
 		public void onRangedAttack(Char enemy, int cell, boolean hit) { } // does nothing.
 
 		@Override
-		public float speedFactor(Char user) {
+		public float baseDelay(Char user) {
 			if(sniperSpecial) {
 				switch (SpiritBow.this.augment) {
 					case NONE:
 					default:
 						return 0f;
 					case SPEED:
-						return 1f * RingOfFuror.attackDelayMultiplier(user);
+						return 1f * RingOfFuror.attackSpeedMultiplier(user);
 					case DAMAGE:
-						return 2f * RingOfFuror.attackDelayMultiplier(user);
+						return 2f * RingOfFuror.attackSpeedMultiplier(user);
 				}
 			}
-			else return SpiritBow.this.speedFactor(user);
+			else return SpiritBow.this.baseDelay(user);
+		}
+		@Override
+		protected float speedMultiplier(Char owner) {
+			float speed = SpiritBow.this.speedMultiplier(owner);
+			if (owner.buff(NaturesPower.naturesPowerTracker.class) != null){
+				// +33% speed to +50% speed, depending on talent points
+				speed += ((8 + ((Hero)owner).shiftedPoints(Talent.GROWING_POWER)) / 24f);
+			}
+			return speed;
 		}
 		
 		@Override
@@ -287,14 +337,20 @@ public class SpiritBow extends Weapon {
 		@Override
 		protected void onThrow( int cell ) {
 			Char enemy = Actor.findChar( cell );
+			boolean hitGround;
 			if (enemy == null || enemy == curUser) {
 				parent = null;
-				Splash.at( cell, 0xCC99FFFF, 1 );
+				hitGround = true;
 			} else {
-				if (!curUser.shoot( enemy, this )) {
-					Splash.at(cell, 0xCC99FFFF, 1);
-					if((hasEnchant(Explosive.class,curUser) || (hasEnchant(Unstable.class,curUser) && Unstable.getRandomEnchant(SpiritBow.this) instanceof Explosive)) && new Explosive().tryProc(curUser,SpiritBow.this.buffedLvl())) new Bomb().explode(cell);
-				}
+				hitGround = !curUser.shoot( enemy, this );
+			}
+			if(hitGround) {
+				Splash.at(cell, 0xCC99FFFF, 1);
+				if((hasEnchant(Explosive.class,curUser)
+						|| (hasEnchant(Unstable.class,curUser)
+						&& Unstable.getRandomEnchant(SpiritBow.this) instanceof Explosive))
+							&& new Explosive().tryProc(curUser, SpiritBow.this.buffedLvl()))
+					new Bomb().explode(cell);
 			}
 		}
 
@@ -322,7 +378,7 @@ public class SpiritBow extends Weapon {
 				QuickSlotButton.target(enemy);
 				
 				final boolean last = flurryCount == 1;
-				
+
 				throwSound();
 				
 				((MissileSprite) user.sprite.parent.recycle(MissileSprite.class)).
@@ -360,11 +416,10 @@ public class SpiritBow extends Weapon {
 						&& user.buff(Talent.SeerShotCooldown.class) == null){
 					int shotPos = throwPos(user, dst);
 					if (Actor.findChar(shotPos) == null) {
-						Buff.detach(user, RevealedArea.class);
-						RevealedArea a = Buff.affect(user, RevealedArea.class, 5 * user.pointsInTalent(Talent.SEER_SHOT,Talent.RK_WARDEN));
+						RevealedArea a = Buff.append(user, RevealedArea.class, 5 * user.pointsInTalent(Talent.SEER_SHOT,Talent.RK_WARDEN));
 						a.depth = Dungeon.depth;
 						a.pos = shotPos;
-						Buff.affect(user, Talent.SeerShotCooldown.class, user.hasTalent(Talent.SEER_SHOT) ? 20f : 10f);
+						Talent.Cooldown.affectHero(Talent.SeerShotCooldown.class);
 					}
 				}
 				forceSkipDelay = sniperSpecial && --shotCount > 0;

@@ -21,18 +21,27 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
-import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 
-public class ScrollEmpower extends FlavourBuff {
+import static com.zrp200.rkpd2.Dungeon.hero;
+
+public class ScrollEmpower extends Buff {
 
 	{
 		type = buffType.POSITIVE;
 	}
+
+	public static int boost() {
+		return Math.max(
+				hero.pointsInTalent(Talent.EMPOWERING_SCROLLS)*2,
+				hero.pointsInTalent(Talent.RK_BATTLEMAGE)
+		);
+	}
+
 
 	@Override
 	public void detach() {
@@ -51,19 +60,13 @@ public class ScrollEmpower extends FlavourBuff {
 	}
 
 	@Override
-	public float iconFadePercent() {
-		int duration = Dungeon.hero != null && Dungeon.hero.hasTalent(Talent.EMPOWERING_SCROLLS) ? 40 : 20;
-		return Math.max(0, (duration-visualcooldown()) / duration);
-	}
-
-	@Override
 	public String toString() {
 		return Messages.get(this, "name");
 	}
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", Dungeon.hero.heroClass.title(), (int)visualcooldown(), Dungeon.hero.pointsInTalent(Talent.EMPOWERING_SCROLLS,Talent.RK_BATTLEMAGE));
+		return Messages.get(this, "desc", boost());
 	}
 
 }

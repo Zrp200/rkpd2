@@ -44,9 +44,11 @@ import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.plants.Plant.Seed;
 import com.zrp200.rkpd2.plants.Sungrass;
+import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
+import com.zrp200.rkpd2.windows.WndUseItem;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Reflection;
 
@@ -83,6 +85,13 @@ public class Blandfruit extends Food {
 
 	@Override
 	public void execute( Hero hero, String action ) {
+
+		if (action.equals( Potion.AC_CHOOSE )){
+
+			GameScene.show(new WndUseItem(null, this) );
+			return;
+
+		}
 
 		if (action.equals( AC_EAT ) && potionAttrib == null) {
 
@@ -163,6 +172,12 @@ public class Blandfruit extends Food {
 		if (potionAttrib instanceof PotionOfPurity)         potionGlow = new ItemSprite.Glowing( 0xC152AA );
 		if (potionAttrib instanceof PotionOfExperience)     potionGlow = new ItemSprite.Glowing( 0x404040 );
 		if (potionAttrib instanceof PotionOfHaste)          potionGlow = new ItemSprite.Glowing( 0xCCBB00 );
+
+		potionAttrib.setAction();
+		defaultAction = potionAttrib.defaultAction;
+		if (defaultAction.equals(Potion.AC_DRINK)){
+			defaultAction = AC_EAT;
+		}
 
 		return this;
 	}

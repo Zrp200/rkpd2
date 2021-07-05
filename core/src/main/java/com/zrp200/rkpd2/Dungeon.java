@@ -28,6 +28,7 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.*;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.actors.hero.abilities.huntress.SpiritHawk;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.npcs.Blacksmith;
 import com.zrp200.rkpd2.actors.mobs.npcs.Ghost;
@@ -41,6 +42,8 @@ import com.zrp200.rkpd2.items.artifacts.TalismanOfForesight;
 import com.zrp200.rkpd2.items.potions.Potion;
 import com.zrp200.rkpd2.items.rings.Ring;
 import com.zrp200.rkpd2.items.scrolls.Scroll;
+import com.zrp200.rkpd2.items.wands.WandOfRegrowth;
+import com.zrp200.rkpd2.items.wands.WandOfWarding;
 import com.zrp200.rkpd2.journal.Notes;
 import com.zrp200.rkpd2.levels.*;
 import com.zrp200.rkpd2.levels.rooms.secret.SecretRoom;
@@ -87,7 +90,6 @@ public class Dungeon {
 		PHANTOM_EQUIP,
 
 		//containers
-		DEW_VIAL,
 		VELVET_POUCH,
 		SCROLL_HOLDER,
 		POTION_BANDOLIER,
@@ -238,7 +240,7 @@ public class Dungeon {
 			level = new PrisonLevel();
 			break;
 		case 10:
-			level = new NewPrisonBossLevel();
+			level = new PrisonBossLevel();
 			break;
 		case 11:
 		case 12:
@@ -247,7 +249,7 @@ public class Dungeon {
 			level = new CavesLevel();
 			break;
 		case 15:
-			level = new NewCavesBossLevel();
+			level = new CavesBossLevel();
 			break;
 		case 16:
 		case 17:
@@ -256,30 +258,16 @@ public class Dungeon {
 			level = new CityLevel();
 			break;
 		case 20:
-			level = new NewCityBossLevel();
+			level = new CityBossLevel();
 			break;
 		case 21:
-			//logic for old city boss levels, need to spawn a shop on floor 21
-			try {
-				Bundle bundle = FileUtils.bundleFromFile(GamesInProgress.depthFile(GamesInProgress.curSlot, 20));
-				Class cls = bundle.getBundle(LEVEL).getClass("__className");
-				if (cls == NewCityBossLevel.class) {
-					level = new HallsLevel();
-				} else {
-					level = new LastShopLevel();
-				}
-			} catch (Exception e) {
-				ShatteredPixelDungeon.reportException(e);
-				level = new HallsLevel();
-			}
-			break;
 		case 22:
 		case 23:
 		case 24:
 			level = new HallsLevel();
 			break;
 		case 25:
-			level = new NewHallsBossLevel();
+			level = new HallsBossLevel();
 			break;
 		case 26:
 			level = new LastLevel();
@@ -539,6 +527,7 @@ public class Dungeon {
 
 		seed = bundle.contains( SEED ) ? bundle.getLong( SEED ) : DungeonSeed.randomSeed();
 
+		Actor.clear();
 		Actor.restoreNextID( bundle );
 
 		quickslot.reset();
@@ -677,11 +666,23 @@ public class Dungeon {
 		Rankings.INSTANCE.submit( true, cause );
 	}
 
+	//default to recomputing based on max hero vision, in case vision just shrank/grew
 	public static void observe(){
-		int dist = 8 + 2*Dungeon.hero.pointsInTalent(Talent.FARSIGHT,Talent.RK_SNIPER);
+		int dist = 8;
+		dist *= hero.getViewDistanceModifier();
 		observe( dist+1 );
 	}
-	
+
+	private static void reveal(int pos, int radius) {
+		for(int i=-radius+1; i < radius; i++) {
+			int length = radius*2-1,offset = pos-radius+1 + i*level.width();
+			if(offset < 0) { length += offset; offset = 0; }
+			length -= Math.max(offset-level.visited.length,0);
+			BArray.or( level.visited, level.heroFOV, offset, length, level.visited );
+		}
+		GameScene.updateFog(pos,radius);
+	}
+
 	public static void observe( int dist ) {
 
 		if (level == null) {
@@ -713,47 +714,58 @@ public class Dungeon {
 		
 		if (hero.buff(MindVision.class) != null){
 			for (Mob m : level.mobs.toArray(new Mob[0])){
-				BArray.or( level.visited, level.heroFOV, m.pos - 1 - level.width(), 3, level.visited );
-				BArray.or( level.visited, level.heroFOV, m.pos, 3, level.visited );
-				BArray.or( level.visited, level.heroFOV, m.pos - 1 + level.width(), 3, level.visited );
 				//updates adjacent cells too
-				GameScene.updateFog(m.pos, 2);
+				reveal(m.pos, 2);
 			}
 		}
 		
 		if (hero.buff(Awareness.class) != null){
 			for (Heap h : level.heaps.valueList()){
-				BArray.or( level.visited, level.heroFOV, h.pos - 1 - level.width(), 3, level.visited );
-				BArray.or( level.visited, level.heroFOV, h.pos - 1, 3, level.visited );
-				BArray.or( level.visited, level.heroFOV, h.pos - 1 + level.width(), 3, level.visited );
-				GameScene.updateFog(h.pos, 2);
+				reveal(h.pos, 2);
 			}
 		}
 
 		for (TalismanOfForesight.CharAwareness c : hero.buffs(TalismanOfForesight.CharAwareness.class)){
-			if (Dungeon.depth != c.depth) continue;
 			Char ch = (Char) Actor.findById(c.charID);
 			if (ch == null) continue;
-			BArray.or( level.visited, level.heroFOV, ch.pos - 1 - level.width(), 3, level.visited );
-			BArray.or( level.visited, level.heroFOV, ch.pos - 1, 3, level.visited );
-			BArray.or( level.visited, level.heroFOV, ch.pos - 1 + level.width(), 3, level.visited );
-			GameScene.updateFog(ch.pos, 2);
+			reveal(ch.pos, 2);
 		}
 
 		for (TalismanOfForesight.HeapAwareness h : hero.buffs(TalismanOfForesight.HeapAwareness.class)){
 			if (Dungeon.depth != h.depth) continue;
-			BArray.or( level.visited, level.heroFOV, h.pos - 1 - level.width(), 3, level.visited );
-			BArray.or( level.visited, level.heroFOV, h.pos - 1, 3, level.visited );
-			BArray.or( level.visited, level.heroFOV, h.pos - 1 + level.width(), 3, level.visited );
-			GameScene.updateFog(h.pos, 2);
+			reveal(h.pos, 2);
 		}
 
 		for (RevealedArea a : hero.buffs(RevealedArea.class)){
 			if (Dungeon.depth != a.depth) continue;
-			BArray.or( level.visited, level.heroFOV, a.pos - 1 - level.width(), 3, level.visited );
-			BArray.or( level.visited, level.heroFOV, a.pos - 1, 3, level.visited );
-			BArray.or( level.visited, level.heroFOV, a.pos - 1 + level.width(), 3, level.visited );
-			GameScene.updateFog(a.pos, 2);
+			reveal(a.pos, Dungeon.hero.hasTalent(Talent.SEER_SHOT) ? 3 : 2);
+		}
+
+		for (Char ch : Actor.chars()){
+			if (ch instanceof WandOfWarding.Ward
+					|| ch instanceof WandOfRegrowth.Lotus
+					|| ch instanceof SpiritHawk.HawkAlly){
+				x = ch.pos % level.width();
+				y = ch.pos / level.width();
+
+				//left, right, top, bottom
+				dist = ch.viewDistance+1;
+				l = Math.max( 0, x - dist );
+				r = Math.min( x + dist, level.width() - 1 );
+				t = Math.max( 0, y - dist );
+				b = Math.min( y + dist, level.height() - 1 );
+
+				width = r - l + 1;
+				height = b - t + 1;
+
+				pos = l + t * level.width();
+
+				for (int i = t; i <= b; i++) {
+					BArray.or( level.visited, level.heroFOV, pos, width, level.visited );
+					pos+=level.width();
+				}
+				GameScene.updateFog(ch.pos, dist);
+			}
 		}
 
 		GameScene.afterObserve();

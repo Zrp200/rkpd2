@@ -45,6 +45,7 @@ import com.zrp200.rkpd2.plants.Stormvine;
 import com.zrp200.rkpd2.plants.Sungrass;
 import com.zrp200.rkpd2.plants.Swiftthistle;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.windows.WndOptions;
 import com.watabou.utils.Reflection;
 
@@ -74,7 +75,8 @@ public abstract class TippedDart extends Dart {
 		super.execute(hero, action);
 		if (action.equals( AC_CLEAN )){
 			
-			GameScene.show(new WndOptions(Messages.get(this, "clean_title"),
+			GameScene.show(new WndOptions(new ItemSprite(this),
+					Messages.titleCase(name()),
 					Messages.get(this, "clean_desc"),
 					Messages.get(this, "clean_all"),
 					Messages.get(this, "clean_one"),
@@ -129,8 +131,10 @@ public abstract class TippedDart extends Dart {
 	@Override
 	protected float durabilityPerUse() {
 		float use = super.durabilityPerUse();
-		
-		use /= (1 + Dungeon.hero.pointsInTalent(Talent.DURABLE_TIPS,Talent.RK_WARDEN));
+
+		int points = Dungeon.hero.pointsInTalent(Talent.DURABLE_TIPS, Talent.RK_WARDEN);
+		if(Dungeon.hero.canHaveTalent(Talent.DURABLE_TIPS)) points++;
+		use /= (1 + points);
 
 		//checks both destination and source position
 		float lotusPreserve = 0f;

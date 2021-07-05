@@ -45,6 +45,8 @@ import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.tiles.DungeonTilemap;
 
+import java.nio.Buffer;
+
 public class ItemSprite extends MovieClip {
 
 	public static final int SIZE	= 16;
@@ -216,7 +218,6 @@ public class ItemSprite extends MovieClip {
 			case HEAP: case FOR_SALE:
 				return view( heap.peek() );
 			case CHEST:
-			case MIMIC:
 				return view( ItemSpriteSheet.CHEST, null );
 			case LOCKED_CHEST:
 				return view( ItemSpriteSheet.LOCKED_CHEST, null );
@@ -259,7 +260,10 @@ public class ItemSprite extends MovieClip {
 	@Override
 	public void kill() {
 		super.kill();
-		if (emitter != null) emitter.killAndErase();
+		if (emitter != null) {
+			emitter.on = false;
+			emitter.autoKill = true;
+		}
 		emitter = null;
 	}
 
@@ -282,7 +286,7 @@ public class ItemSprite extends MovieClip {
 
 		if (renderShadow) {
 			if (dirty) {
-				verticesBuffer.position(0);
+				((Buffer)verticesBuffer).position(0);
 				verticesBuffer.put(vertices);
 				if (buffer == null)
 					buffer = new Vertexbuffer(verticesBuffer);

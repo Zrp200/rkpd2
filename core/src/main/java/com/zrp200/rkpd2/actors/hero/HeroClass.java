@@ -21,13 +21,29 @@
 
 package com.zrp200.rkpd2.actors.hero;
 
-import com.watabou.utils.Bundle;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.QuickSlot;
+import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
+import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
+import com.zrp200.rkpd2.actors.hero.abilities.huntress.NaturesPower;
+import com.zrp200.rkpd2.actors.hero.abilities.huntress.SpectralBlades;
+import com.zrp200.rkpd2.actors.hero.abilities.huntress.SpiritHawk;
+import com.zrp200.rkpd2.actors.hero.abilities.mage.ElementalBlast;
+import com.zrp200.rkpd2.actors.hero.abilities.mage.WarpBeacon;
+import com.zrp200.rkpd2.actors.hero.abilities.mage.WildMagic;
+import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath;
+import com.zrp200.rkpd2.actors.hero.abilities.rogue.DeathMark;
+import com.zrp200.rkpd2.actors.hero.abilities.rogue.ShadowClone;
+import com.zrp200.rkpd2.actors.hero.abilities.rogue.SmokeBomb;
+import com.zrp200.rkpd2.actors.hero.abilities.warrior.Endure;
+import com.zrp200.rkpd2.actors.hero.abilities.warrior.HeroicLeap;
+import com.zrp200.rkpd2.actors.hero.abilities.warrior.Shockwave;
 import com.zrp200.rkpd2.items.BrokenSeal;
 import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.Waterskin;
 import com.zrp200.rkpd2.items.armor.ClothArmor;
 import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
 import com.zrp200.rkpd2.items.bags.MagicalHolster;
@@ -39,6 +55,11 @@ import com.zrp200.rkpd2.items.potions.PotionOfHealing;
 import com.zrp200.rkpd2.items.potions.PotionOfInvisibility;
 import com.zrp200.rkpd2.items.potions.PotionOfLiquidFlame;
 import com.zrp200.rkpd2.items.potions.PotionOfMindVision;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfIdentify;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfLullaby;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfMagicMapping;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfRage;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfUpgrade;
 import com.zrp200.rkpd2.items.scrolls.*;
 import com.zrp200.rkpd2.items.wands.Wand;
 import com.zrp200.rkpd2.items.wands.WandOfMagicMissile;
@@ -51,26 +72,26 @@ import com.zrp200.rkpd2.items.weapon.missiles.ThrowingKnife;
 import com.zrp200.rkpd2.items.weapon.missiles.ThrowingStone;
 import com.zrp200.rkpd2.messages.Messages;
 
+import java.util.Locale;
+
 public enum HeroClass {
 
-	WARRIOR( "warrior", HeroSubClass.BERSERKER, HeroSubClass.GLADIATOR ),
-	MAGE( "mage", HeroSubClass.BATTLEMAGE, HeroSubClass.WARLOCK ) {
+	WARRIOR(HeroSubClass.BERSERKER, HeroSubClass.GLADIATOR),
+	MAGE(HeroSubClass.BATTLEMAGE, HeroSubClass.WARLOCK) {
 		@Override public int getBonus(Item item) { return item instanceof Wand ? 2 : 0; }
 	},
-	ROGUE( "rogue", HeroSubClass.ASSASSIN, HeroSubClass.FREERUNNER ) {
+	ROGUE(HeroSubClass.ASSASSIN, HeroSubClass.FREERUNNER) {
 		//@Override public int getBonus(Item item) { return item instanceof Weapon ? 1 : 0; }
 	},
-	HUNTRESS( "huntress", HeroSubClass.SNIPER, HeroSubClass.WARDEN ),
-	RAT_KING ("rat_king",HeroSubClass.KING);
+	HUNTRESS(HeroSubClass.SNIPER, HeroSubClass.WARDEN),
+	RAT_KING (HeroSubClass.KING);
 
-	private String title;
 	private HeroSubClass[] subClasses;
 
 	public static final int MAGE_WAND_BOOST = 2;
 	public int getBonus(Item item) { return 0; }
 
-	HeroClass( String title, HeroSubClass...subClasses ) {
-		this.title = title;
+	HeroClass( HeroSubClass...subClasses ) {
 		this.subClasses = subClasses;
 	}
 
@@ -79,39 +100,11 @@ public enum HeroClass {
 		hero.heroClass = this;
 		Talent.initClassTalents(hero);
 
-		initCommon( hero );
-
-		switch (this) {
-			case WARRIOR:
-				initWarrior( hero );
-				break;
-
-			case MAGE:
-				initMage( hero );
-				break;
-
-			case ROGUE:
-				initRogue( hero );
-				break;
-
-			case HUNTRESS:
-				initHuntress( hero );
-				break;
-			case RAT_KING:
-				initRatKing( hero );
-				break;
-		}
-
-	}
-
-	private static void initCommon( Hero hero ) {
 		Item i = new ClothArmor().identify();
-		if (!Challenges.isItemBlocked(i)) hero.belongings.armor = (ClothArmor)i;
+		if (!Challenges.isItemBlocked(i)) hero.belongings.armor = (ClothArmor) i;
 
 		i = new Food();
 		if (!Challenges.isItemBlocked(i)) i.collect();
-
-		new ScrollOfIdentify().identify();
 
 		// give all bags.
 		new VelvetPouch().collect();
@@ -122,6 +115,39 @@ public enum HeroClass {
 		Dungeon.LimitedDrops.POTION_BANDOLIER.drop();
 		Dungeon.LimitedDrops.SCROLL_HOLDER.drop();
 		Dungeon.LimitedDrops.MAGICAL_HOLSTER.drop();
+
+		Waterskin waterskin = new Waterskin();
+		waterskin.collect();
+
+		new ScrollOfIdentify().identify();
+
+		switch (this) {
+			case WARRIOR:
+				initWarrior(hero);
+				break;
+
+			case MAGE:
+				initMage(hero);
+				break;
+
+			case ROGUE:
+				initRogue(hero);
+				break;
+
+			case HUNTRESS:
+				initHuntress(hero);
+				break;
+			case RAT_KING:
+				initRatKing(hero);
+				break;
+		}
+
+		for (int s = 0; s < QuickSlot.SIZE; s++) {
+			if (Dungeon.quickslot.getItem(s) == null) {
+				Dungeon.quickslot.setSlot(s, waterskin);
+				break;
+			}
+		}
 	}
 
 	public Badges.Badge masteryBadge() {
@@ -220,11 +246,30 @@ public enum HeroClass {
 	}
 
 	public String title() {
-		return Messages.get(HeroClass.class, title);
+		return Messages.get(HeroClass.class, name());
+	}
+
+	public String desc(){
+		return Messages.get(HeroClass.class, name()+"_desc");
 	}
 
 	public HeroSubClass[] subClasses() {
 		return subClasses;
+	}
+
+	public ArmorAbility[] armorAbilities(){
+		switch (this) {
+			case WARRIOR: default:
+				return new ArmorAbility[]{new HeroicLeap(), new Shockwave(), new Endure()};
+			case MAGE:
+				return new ArmorAbility[]{new ElementalBlast(), new WildMagic(), new WarpBeacon()};
+			case ROGUE:
+				return new ArmorAbility[]{new SmokeBomb(), new DeathMark(), new ShadowClone()};
+			case HUNTRESS:
+				return new ArmorAbility[]{new SpectralBlades(), new NaturesPower(), new SpiritHawk()};
+			case RAT_KING:
+				return new ArmorAbility[]{new Wrath(), new Ratmogrify()/*, new OmniAbility()*/};
+		}
 	}
 
 	public String spritesheet() {
@@ -243,7 +288,7 @@ public enum HeroClass {
 	}
 
 	public String splashArt(){
-		return "splashes/" + title + ".jpg";
+		return "splashes/" + name().toLowerCase(Locale.ENGLISH) + ".jpg";
 		/*switch (this) {
 			case WARRIOR: default:
 				return Assets.Splashes.WARRIOR;
@@ -258,7 +303,7 @@ public enum HeroClass {
 	
 	public String[] perks() {
 		String[] perks = new String[5];
-		for(int i=0; i < perks.length; i++) perks[i] = Messages.get(HeroClass.class, title + "_perk" + (i+1));
+		for(int i=0; i < perks.length; i++) perks[i] = Messages.get(HeroClass.class, name() + "_perk" + (i+1));
 		return perks;
 	}
 	
@@ -280,17 +325,7 @@ public enum HeroClass {
 	}
 	
 	public String unlockMsg() {
-		return Messages.get(HeroClass.class, title + "_unlock");
+		return Messages.get(HeroClass.class, name() + "_unlock");
 	}
 
-	private static final String CLASS	= "class";
-	
-	public void storeInBundle( Bundle bundle ) {
-		bundle.put( CLASS, toString() );
-	}
-	
-	public static HeroClass restoreInBundle( Bundle bundle ) {
-		String value = bundle.getString( CLASS );
-		return value.length() > 0 ? valueOf( value ) : ROGUE;
-	}
 }

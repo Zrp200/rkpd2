@@ -65,7 +65,7 @@ public class WandOfLivingEarth extends DamageWand {
 	}
 	
 	@Override
-	protected void onZap(Ballistica bolt) {
+	public void onZap(Ballistica bolt) {
 		Char ch = Actor.findChar(bolt.collisionPos);
 		int damage = damageRoll();
 		int armorToAdd = damage;
@@ -94,7 +94,7 @@ public class WandOfLivingEarth extends DamageWand {
 		if (guardian != null && guardian == ch){
 			guardian.sprite.centerEmitter().burst(MagicMissile.EarthParticle.ATTRACT, 8 + buffedLvl() / 2);
 			guardian.setInfo(curUser, buffedLvl(), armorToAdd);
-			processSoulMark(guardian, chargesPerCast());
+			wandProc(guardian, chargesPerCast());
 			Sample.INSTANCE.play( Assets.Sounds.HIT_MAGIC, 1, 0.9f * Random.Float(0.87f, 1.15f) );
 
 		//shooting the guardian at a location
@@ -110,7 +110,7 @@ public class WandOfLivingEarth extends DamageWand {
 
 				ch.sprite.centerEmitter().burst(MagicMissile.EarthParticle.BURST, 5 + buffedLvl()/2);
 
-				processSoulMark(ch, chargesPerCast(), damage);
+				wandProc(ch, chargesPerCast(), damage);
 				ch.damage(damage, this);
 
 				int closest = -1;
@@ -154,7 +154,7 @@ public class WandOfLivingEarth extends DamageWand {
 
 				ch.sprite.centerEmitter().burst(MagicMissile.EarthParticle.BURST, 5 + buffedLvl() / 2);
 
-				processSoulMark(ch, chargesPerCast(), damage);
+				wandProc(ch, chargesPerCast(), damage);
 				ch.damage(damage, this);
 				Sample.INSTANCE.play( Assets.Sounds.HIT_MAGIC, 1, 0.8f * Random.Float(0.87f, 1.15f) );
 				
@@ -176,7 +176,7 @@ public class WandOfLivingEarth extends DamageWand {
 	}
 	
 	@Override
-	protected void fx(Ballistica bolt, Callback callback) {
+	public void fx(Ballistica bolt, Callback callback) {
 		MagicMissile.boltFromChar(curUser.sprite.parent,
 				MagicMissile.EARTH,
 				curUser.sprite,
@@ -304,7 +304,7 @@ public class WandOfLivingEarth extends DamageWand {
 
 		private int wandLevel = -1;
 
-		private void setInfo(Hero hero, int wandLevel, int healthToAdd){
+		public void setInfo(Hero hero, int wandLevel, int healthToAdd){
 			if (wandLevel > this.wandLevel) {
 				this.wandLevel = wandLevel;
 				HT = 16 + 8 * wandLevel;

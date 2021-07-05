@@ -23,12 +23,16 @@ package com.zrp200.rkpd2.items;
 
 import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.buffs.Barrier;
 import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.Terror;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.Speck;
+import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
@@ -46,15 +50,17 @@ public class Dewdrop extends Item {
 	@Override
 	public boolean doPickUp( Hero hero ) {
 		
-		DewVial vial = hero.belongings.getItem( DewVial.class );
+		Waterskin flask = hero.belongings.getItem( Waterskin.class );
 		
-		if (vial != null && !vial.isFull()){
-			
-			vial.collectDew( this );
-			
+		if (flask != null && !flask.isFull()){
+
+			flask.collectDew( this );
+			GameScene.pickUp( this, hero.pos );
+
 		} else {
 
-			if (!consumeDew(1, hero)){
+			int terr = Dungeon.level.map[hero.pos];
+			if (!consumeDew(1, hero, terr == Terrain.ENTRANCE|| terr == Terrain.EXIT || terr == Terrain.UNLOCKED_EXIT)){
 				return false;
 			}
 			
@@ -66,18 +72,16 @@ public class Dewdrop extends Item {
 		return true;
 	}
 
-	public static boolean consumeDew(int quantity, Hero hero){
+	public static boolean consumeDew(int quantity, Hero hero, boolean force){
 		//20 drops for a full heal
-		int heal = Math.round( hero.HT * 0.05f * quantity );
-
+		float rawHeal = hero.HT * 0.05f * quantity;
+		int shield = Random.round(rawHeal * hero.pointsInTalent(Talent.SHIELDING_DEW)/4f); // I have a random rounding obsession I guess.
+		int heal = Math.round(rawHeal);
 		int effect = Math.min( hero.HT - hero.HP, heal );
-		int shield = 0;
 		if (hero.hasTalent(Talent.SHIELDING_DEW,Talent.RK_WARDEN)){
-			shield = heal - effect;
-			//if(hero.hasTalent(Talent.SHIELDING_DEW)) {
-			//	shield += Random.round(hero.HT * .05f * quantity * 0.2f * hero.pointsInTalent(Talent.SHIELDING_DEW));
-			//}
-			int maxShield = Math.round(hero.HT *0.2f*hero.pointsInTalent(Talent.SHIELDING_DEW,Talent.RK_WARDEN));			int curShield = 0;
+			shield += heal - effect;
+			int maxShield = Math.round(hero.HT *0.2f*hero.pointsInTalent(Talent.SHIELDING_DEW,Talent.RK_WARDEN));
+			int curShield = 0;
 			if (hero.buff(Barrier.class) != null) curShield = hero.buff(Barrier.class).shielding();
 			shield = Math.min(shield, maxShield-curShield);
 		}
@@ -93,7 +97,7 @@ public class Dewdrop extends Item {
 				hero.sprite.showStatus( CharSprite.POSITIVE, Messages.get(Dewdrop.class, "shield", shield) );
 			}
 
-		} else {
+		} else if (!force) {
 			GLog.i( Messages.get(Dewdrop.class, "already_full") );
 			return false;
 		}

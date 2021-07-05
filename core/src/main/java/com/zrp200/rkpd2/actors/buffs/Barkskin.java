@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.actors.buffs;
 
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.watabou.utils.Bundle;
@@ -71,10 +72,17 @@ public class Barkskin extends Buff {
 		return BuffIndicator.BARKSKIN;
 	}
 
+	public static int getGrassDuration(Hero hero) {
+		int points = hero.pointsInTalent(Talent.BARKSKIN, Talent.RK_WARDEN);
+		if(hero.canHaveTalent(Talent.BARKSKIN)) points++;
+		return hero.lvl*points/2;
+	}
+
 	@Override
 	public float iconFadePercent() {
 		if (target instanceof Hero){
-			float max = ((Hero) target).lvl;
+			Hero hero = (Hero)target;
+			int max = Math.max(getGrassDuration(hero), 2+hero.lvl/3);
 			return Math.max(0, (max-level)/max);
 		}
 		return 0;

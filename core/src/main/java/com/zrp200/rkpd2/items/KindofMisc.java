@@ -28,6 +28,7 @@ import com.zrp200.rkpd2.items.artifacts.Artifact;
 import com.zrp200.rkpd2.items.rings.Ring;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.utils.GLog;
 import com.zrp200.rkpd2.windows.WndOptions;
 
@@ -84,7 +85,8 @@ public abstract class KindofMisc extends EquipableItem {
 			}
 
 			GameScene.show(
-					new WndOptions(Messages.get(KindofMisc.class, "unequip_title"),
+					new WndOptions(new ItemSprite(this),
+							Messages.get(KindofMisc.class, "unequip_title"),
 							Messages.get(KindofMisc.class, "unequip_message"),
 							miscs[0] == null ? "---" : Messages.titleCase(miscs[0].toString()),
 							miscs[1] == null ? "---" : Messages.titleCase(miscs[1].toString()),

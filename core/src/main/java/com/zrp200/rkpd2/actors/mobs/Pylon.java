@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.actors.mobs;
 
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
@@ -37,7 +38,7 @@ import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.Lightning;
 import com.zrp200.rkpd2.effects.particles.SparkParticle;
 import com.zrp200.rkpd2.items.Heap;
-import com.zrp200.rkpd2.levels.NewCavesBossLevel;
+import com.zrp200.rkpd2.levels.CavesBossLevel;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.PylonSprite;
@@ -48,12 +49,14 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
+import java.util.ArrayList;
+
 public class Pylon extends Mob {
 
 	{
 		spriteClass = PylonSprite.class;
 
-		HP = HT = 50;
+		HP = HT = Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 80 : 50;
 
 		maxLvl = -2;
 
@@ -85,20 +88,38 @@ public class Pylon extends Mob {
 			return true;
 		}
 
-		int cell1 = pos + PathFinder.CIRCLE8[targetNeighbor];
-		int cell2 = pos + PathFinder.CIRCLE8[(targetNeighbor+4)%8];
+		ArrayList<Integer> shockCells = new ArrayList<>();
+
+		shockCells.add(pos + PathFinder.CIRCLE8[targetNeighbor]);
+
+		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)){
+			shockCells.add(pos + PathFinder.CIRCLE8[(targetNeighbor+3)%8]);
+			shockCells.add(pos + PathFinder.CIRCLE8[(targetNeighbor+5)%8]);
+		} else {
+			shockCells.add(pos + PathFinder.CIRCLE8[(targetNeighbor+4)%8]);
+		}
 
 		sprite.flash();
-		if (Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[cell1] || Dungeon.level.heroFOV[cell2]) {
-			sprite.parent.add(new Lightning(DungeonTilemap.raisedTileCenterToWorld(cell1),
-					DungeonTilemap.raisedTileCenterToWorld(cell2), null));
-			CellEmitter.get(cell1).burst(SparkParticle.FACTORY, 3);
-			CellEmitter.get(cell2).burst(SparkParticle.FACTORY, 3);
+
+		boolean visible = Dungeon.level.heroFOV[pos];
+		for (int cell : shockCells){
+			if (Dungeon.level.heroFOV[cell]){
+				visible = true;
+			}
+		}
+
+		if (visible) {
+			for (int cell : shockCells){
+				sprite.parent.add(new Lightning(sprite.center(),
+						DungeonTilemap.raisedTileCenterToWorld(cell), null));
+				CellEmitter.get(cell).burst(SparkParticle.FACTORY, 3);
+			}
 			Sample.INSTANCE.play( Assets.Sounds.LIGHTNING );
 		}
 
-		shockChar(Actor.findChar(cell1));
-		shockChar(Actor.findChar(cell2));
+		for (int cell : shockCells) {
+			shockChar(Actor.findChar(cell));
+		}
 
 		targetNeighbor = (targetNeighbor+1)%8;
 
@@ -106,12 +127,12 @@ public class Pylon extends Mob {
 	}
 
 	private void shockChar( Char ch ){
-		if (ch != null && !(ch instanceof NewDM300)){
+		if (ch != null && !(ch instanceof DM300)){
 			ch.sprite.flash();
 			ch.damage(Random.NormalIntRange(10, 20), new Electricity());
 
 			if (ch == Dungeon.hero && !ch.isAlive()){
-				Dungeon.fail(NewDM300.class);
+				Dungeon.fail(DM300.class);
 				GLog.n( Messages.get(Electricity.class, "ondeath") );
 			}
 		}
@@ -157,11 +178,13 @@ public class Pylon extends Mob {
 	}
 
 	@Override
-	public void damage(int dmg, Object src) {
+	public boolean isInvulnerable(Class effect) {
 		//immune to damage when inactive
-		if (alignment == Alignment.NEUTRAL){
-			return;
-		}
+		return (alignment == Alignment.NEUTRAL);
+	}
+
+	@Override
+	public void damage(int dmg, Object src) {
 		if (dmg >= 15){
 			//takes 15/16/17/18/19/20 dmg at 15/17/20/24/29/36 incoming dmg
 			dmg = 14 + (int)(Math.sqrt(8*(dmg - 14) + 1) - 1)/2;
@@ -172,7 +195,7 @@ public class Pylon extends Mob {
 	@Override
 	public void die(Object cause) {
 		super.die(cause);
-		((NewCavesBossLevel)Dungeon.level).eliminatePylon();
+		((CavesBossLevel)Dungeon.level).eliminatePylon();
 	}
 
 	private static final String ALIGNMENT = "alignment";

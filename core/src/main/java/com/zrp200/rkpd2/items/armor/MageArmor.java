@@ -21,36 +21,26 @@
 
 package com.zrp200.rkpd2.items.armor;
 
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Burning;
-import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.buffs.Roots;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.effects.particles.ElmoParticle;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Random;
 
 public class MageArmor extends ClassArmor {
 	
 	{
 		image = ItemSpriteSheet.ARMOR_MAGE;
 	}
-	
-	@Override
-	public void doSpecial() {
-		if(doMoltenEarth()) {
-			useCharge();
-			curUser.spend( Actor.TICK );
-			Invisibility.dispel();
-			curUser.sprite.operate(curUser.pos);
-			playMoltenEarthFX();
-		}
-	}
+
+
+	// legacy functionality used by RatKingArmor.java
 	public static boolean doMoltenEarth() {
 		boolean success = false;
 		for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {

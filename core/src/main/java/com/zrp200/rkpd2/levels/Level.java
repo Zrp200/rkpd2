@@ -21,6 +21,17 @@
 
 package com.zrp200.rkpd2.levels;
 
+import com.zrp200.rkpd2.actors.hero.abilities.huntress.SpiritHawk;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.Group;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundlable;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Point;
+import com.watabou.utils.Random;
+import com.watabou.utils.Reflection;
+import com.watabou.utils.SparseArray;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
@@ -46,7 +57,6 @@ import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.mobs.Bestiary;
-import com.zrp200.rkpd2.actors.mobs.Mimic;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.YogFist;
 import com.zrp200.rkpd2.actors.mobs.npcs.Sheep;
@@ -79,16 +89,6 @@ import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.tiles.CustomTilemap;
 import com.zrp200.rkpd2.utils.BArray;
 import com.zrp200.rkpd2.utils.GLog;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.Group;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundlable;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Point;
-import com.watabou.utils.Random;
-import com.watabou.utils.Reflection;
-import com.watabou.utils.SparseArray;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -310,8 +310,8 @@ public abstract class Level implements Bundlable {
 
 		version = bundle.getInt( VERSION );
 		
-		//saves from before v0.7.5e are not supported
-		if (version < ShatteredPixelDungeon.v0_7_5e){
+		//saves from before v0.8.0b are not supported
+		if (version < ShatteredPixelDungeon.v0_8_0b){
 			throw new RuntimeException("old save");
 		}
 
@@ -397,13 +397,6 @@ public abstract class Level implements Bundlable {
 		buildFlagMaps();
 		cleanWalls();
 
-		//compat with pre-0.8.0 saves
-		for (Heap h : heaps.valueList()){
-			if (h.type == Heap.Type.MIMIC){
-				heaps.remove(h.pos);
-				mobs.add(Mimic.spawnAt(h.pos, h.items));
-			}
-		}
 	}
 	
 	@Override
@@ -937,23 +930,24 @@ public abstract class Level implements Bundlable {
 			Web.affectChar( ch );
 		}
 
-		if ( (map[ch.pos] == Terrain.GRASS || map[ch.pos] == Terrain.EMBERS)
-				&& ch == Dungeon.hero && Dungeon.hero.hasTalent(Talent.REJUVENATING_STEPS,Talent.POWER_WITHIN)
-				&& ch.buff(Talent.RejuvenatingStepsCooldown.class) == null){
-
-			if (Dungeon.hero.buff(LockedFloor.class) != null && !Dungeon.hero.buff(LockedFloor.class).regenOn()){
-				set(ch.pos, Terrain.FURROWED_GRASS);
-			} else {
-				set(ch.pos, Terrain.HIGH_GRASS);
-			}
-			GameScene.updateMap(ch.pos);
-			int points = Dungeon.hero.pointsInTalent(Talent.REJUVENATING_STEPS,Talent.POWER_WITHIN);
-			if(Dungeon.hero.pointsInTalent(Talent.REJUVENATING_STEPS) > 0) points++;
-			Buff.affect(ch, Talent.RejuvenatingStepsCooldown.class, 10*(float)Math.pow(2,1-points));
-		}
-
 		if (!ch.flying){
-			
+
+			if ( (map[ch.pos] == Terrain.GRASS || map[ch.pos] == Terrain.EMBERS)
+				&& ch == Dungeon.hero && Dungeon.hero.hasTalent(Talent.REJUVENATING_STEPS,Talent.POWER_WITHIN)
+					&& ch.buff(Talent.RejuvenatingStepsCooldown.class) == null){
+
+				if (Dungeon.hero.buff(LockedFloor.class) != null && !Dungeon.hero.buff(LockedFloor.class).regenOn()){
+					set(ch.pos, Terrain.FURROWED_GRASS);
+				} else if (ch.buff(Talent.RejuvenatingStepsFurrow.class) != null && ch.buff(Talent.RejuvenatingStepsFurrow.class).count() >= 200) {
+					set(ch.pos, Terrain.FURROWED_GRASS);
+				} else {
+					set(ch.pos, Terrain.HIGH_GRASS);
+					Buff.count(ch, Talent.RejuvenatingStepsFurrow.class, 3 - Dungeon.hero.pointsInTalent(Talent.REJUVENATING_STEPS));
+				}
+				GameScene.updateMap(ch.pos);
+				Talent.Cooldown.affectHero(Talent.RejuvenatingStepsCooldown.class);
+			}
+
 			if (pit[ch.pos]){
 				if (ch == Dungeon.hero) {
 					Chasm.heroFall(ch.pos);
@@ -1081,7 +1075,7 @@ public abstract class Level implements Bundlable {
 			
 			int viewDist = c.viewDistance;
 			if (c instanceof Hero){
-				viewDist *= 1f + 0.25f*((Hero) c).pointsInTalent(Talent.FARSIGHT,Talent.RK_SNIPER);
+				viewDist *= ((Hero)c).getViewDistanceModifier();
 			}
 			
 			ShadowCaster.castShadow( cx, cy, fieldOfView, blocking, viewDist );
@@ -1127,8 +1121,21 @@ public abstract class Level implements Bundlable {
 			}
 		}
 
+		if (c instanceof SpiritHawk.HawkAlly && Dungeon.hero.pointsInTalent(Talent.EAGLE_EYE) >= 3){
+			int range = 1+(Dungeon.hero.pointsInTalent(Talent.EAGLE_EYE)-2);
+			for (Mob mob : mobs) {
+				int p = mob.pos;
+				if (!fieldOfView[p] && distance(c.pos, p) <= range) {
+					for (int i : PathFinder.NEIGHBOURS9) {
+						fieldOfView[mob.pos + i] = true;
+					}
+				}
+			}
+		}
+
 		//Currently only the hero can get mind vision or awareness
 		if (c.isAlive() && c == Dungeon.hero) {
+			Hero hero = (Hero)c;
 
 			if (heroMindFov == null || heroMindFov.length != length()){
 				heroMindFov = new boolean[length];
@@ -1143,9 +1150,9 @@ public abstract class Level implements Bundlable {
 						heroMindFov[mob.pos + i] = true;
 					}
 				}
-			} else if (((Hero)c).heroClass == HeroClass.HUNTRESS || ((Hero)c).hasTalent(Talent.HEIGHTENED_SENSES,Talent.KINGS_VISION)) {
-				int points = ((Hero)c).pointsInTalent(Talent.HEIGHTENED_SENSES,Talent.KINGS_VISION);
-				if(((Hero)c).heroClass == HeroClass.HUNTRESS) points++; // yup.
+			} else if (hero.hasTalent(Talent.HEIGHTENED_SENSES, Talent.KINGS_VISION) || hero.heroClass == HeroClass.HUNTRESS) {
+				int points = hero.pointsInTalent(Talent.HEIGHTENED_SENSES,Talent.KINGS_VISION);
+				if(hero.heroClass == HeroClass.HUNTRESS) points++; // yup.
 				for (Mob mob : mobs) {
 					int p = mob.pos;
 					if (!fieldOfView[p] && distance(c.pos, p) <= 1+points) {
@@ -1164,10 +1171,8 @@ public abstract class Level implements Bundlable {
 			}
 
 			for (TalismanOfForesight.CharAwareness a : c.buffs(TalismanOfForesight.CharAwareness.class)){
-				if (Dungeon.depth != a.depth) continue;
 				Char ch = (Char) Actor.findById(a.charID);
 				if (ch == null) {
-					a.detach();
 					continue;
 				}
 				int p = ch.pos;
@@ -1180,7 +1185,9 @@ public abstract class Level implements Bundlable {
 			}
 
 			for (Mob m : mobs){
-				if (m instanceof WandOfWarding.Ward || m instanceof WandOfRegrowth.Lotus){
+				if (m instanceof WandOfWarding.Ward
+						|| m instanceof WandOfRegrowth.Lotus
+						|| m instanceof SpiritHawk.HawkAlly){
 					if (m.fieldOfView == null || m.fieldOfView.length != length()){
 						m.fieldOfView = new boolean[length()];
 						Dungeon.level.updateFieldOfView( m, m.fieldOfView );

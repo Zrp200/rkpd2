@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
+import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
 import com.zrp200.rkpd2.items.artifacts.DriedRose;
 import com.zrp200.rkpd2.items.wands.WandOfLivingEarth;
 import com.zrp200.rkpd2.items.wands.WandOfWarding;
@@ -33,6 +34,7 @@ import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.EarthGuardianSprite;
 import com.zrp200.rkpd2.sprites.GhostSprite;
+import com.zrp200.rkpd2.sprites.HeroSprite;
 import com.zrp200.rkpd2.sprites.RatSprite;
 import com.zrp200.rkpd2.sprites.WardSprite;
 import com.zrp200.rkpd2.ui.Archs;
@@ -56,6 +58,7 @@ import com.watabou.utils.Point;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
 
+import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.util.Calendar;
 
@@ -74,7 +77,9 @@ public class SurfaceScene extends PixelScene {
 
 	private static final int NSTARS		= 100;
 	private static final int NCLOUDS	= 5;
-	
+
+	private Pet[] rats;
+
 	private Camera viewport;
 	@Override
 	public void create() {
@@ -134,14 +139,27 @@ public class SurfaceScene extends PixelScene {
 			patch.brightness( dayTime ? 0.7f : 0.4f );
 			window.add( patch );
 		}
-		
+
 		Avatar a = new Avatar( Dungeon.hero.heroClass );
 		// Removing semitransparent contour
 		a.am = 2; a.aa = -1;
-		a.x = (SKY_WIDTH - a.width) / 2;
-		a.y = SKY_HEIGHT - a.height;
+		a.x = (SKY_WIDTH - a.width()) / 2;
+		a.y = SKY_HEIGHT - a.height();
 		align(a);
-		
+
+		if (Dungeon.hero.armorAbility instanceof Ratmogrify) {
+			rats = new Pet[30];
+			for (int i = 0; i < rats.length; i++){
+				Pet pet = new Pet();
+				pet.rm = pet.gm = pet.bm = 1.2f;
+				pet.x = Random.Int(SKY_WIDTH)-10;
+				pet.y = SKY_HEIGHT - pet.height;
+				window.add(pet);
+				rats[i] = pet;
+				if (dayTime) pet.brightness( 1.2f );
+			}
+		}
+
 		final Pet pet = new Pet();
 		pet.rm = pet.gm = pet.bm = 1.2f;
 		pet.x = SKY_WIDTH / 2 + 2;
@@ -238,7 +256,22 @@ public class SurfaceScene extends PixelScene {
 		
 		fadeIn();
 	}
-	
+
+	private float ratJumpTimer = 0.02f;
+	@Override
+	public void update() {
+		if (rats != null) {
+			ratJumpTimer -= Game.elapsed;
+			while (ratJumpTimer <= 0f) {
+				ratJumpTimer += 0.02f;
+				Random.element(rats).jump();
+			}
+		}
+
+		super.update();
+
+	}
+
 	@Override
 	public void destroy() {
 		Badges.saveGlobal();
@@ -289,8 +322,8 @@ public class SurfaceScene extends PixelScene {
 			
 			vertices[12]	= 0;
 			vertices[13]	= 1;
-			
-			verticesBuffer.position( 0 );
+
+			((Buffer)verticesBuffer).position( 0 );
 			verticesBuffer.put( vertices );
 		}
 		
@@ -371,11 +404,18 @@ public class SurfaceScene extends PixelScene {
 		private static final int HEIGHT	= 32;
 		
 		public Avatar( HeroClass cl ) {
-			super( Assets.Sprites.AVATARS );
-			frame( new TextureFilm( texture, WIDTH, HEIGHT ).get( cl.ordinal() ) );
+			if (cl == HeroClass.RAT_KING) {
+				// FIXME do I want this animated?
+				copy(HeroSprite.avatar(cl, 6));
+				scale.set(WIDTH/width(),HEIGHT/height());
+			}
+			else {
+				texture(Assets.Sprites.AVATARS);
+				frame( new TextureFilm( texture, WIDTH, HEIGHT ).get( cl.ordinal() ) );
+			}
 		}
 	}
-	
+
 	private static class Pet extends RatSprite {
 		
 		public void jump() {

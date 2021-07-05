@@ -32,9 +32,48 @@ import com.zrp200.rkpd2.actors.blobs.Blob;
 import com.zrp200.rkpd2.actors.blobs.Electricity;
 import com.zrp200.rkpd2.actors.blobs.ToxicGas;
 import com.zrp200.rkpd2.actors.buffs.*;
+import com.zrp200.rkpd2.actors.buffs.Adrenaline;
+import com.zrp200.rkpd2.actors.buffs.ArcaneArmor;
+import com.zrp200.rkpd2.actors.buffs.Barkskin;
+import com.zrp200.rkpd2.actors.buffs.Bleeding;
+import com.zrp200.rkpd2.actors.buffs.Bless;
+import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.Burning;
+import com.zrp200.rkpd2.actors.buffs.ChampionEnemy;
+import com.zrp200.rkpd2.actors.buffs.Charm;
+import com.zrp200.rkpd2.actors.buffs.Chill;
+import com.zrp200.rkpd2.actors.buffs.Corrosion;
+import com.zrp200.rkpd2.actors.buffs.Corruption;
+import com.zrp200.rkpd2.actors.buffs.Cripple;
+import com.zrp200.rkpd2.actors.buffs.Doom;
+import com.zrp200.rkpd2.actors.buffs.EarthImbue;
+import com.zrp200.rkpd2.actors.buffs.FireImbue;
+import com.zrp200.rkpd2.actors.buffs.Frost;
+import com.zrp200.rkpd2.actors.buffs.FrostImbue;
+import com.zrp200.rkpd2.actors.buffs.Haste;
+import com.zrp200.rkpd2.actors.buffs.Hex;
+import com.zrp200.rkpd2.actors.buffs.Hunger;
+import com.zrp200.rkpd2.actors.buffs.LifeLink;
+import com.zrp200.rkpd2.actors.buffs.MagicalSleep;
+import com.zrp200.rkpd2.actors.buffs.Ooze;
+import com.zrp200.rkpd2.actors.buffs.Paralysis;
+import com.zrp200.rkpd2.actors.buffs.Poison;
+import com.zrp200.rkpd2.actors.buffs.Preparation;
+import com.zrp200.rkpd2.actors.buffs.ShieldBuff;
+import com.zrp200.rkpd2.actors.buffs.Slow;
+import com.zrp200.rkpd2.actors.buffs.SnipersMark;
+import com.zrp200.rkpd2.actors.buffs.SoulMark;
+import com.zrp200.rkpd2.actors.buffs.Speed;
+import com.zrp200.rkpd2.actors.buffs.Stamina;
+import com.zrp200.rkpd2.actors.buffs.Terror;
+import com.zrp200.rkpd2.actors.buffs.Vertigo;
+import com.zrp200.rkpd2.actors.buffs.Vulnerable;
+import com.zrp200.rkpd2.actors.buffs.Weakness;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.actors.hero.abilities.rogue.DeathMark;
+import com.zrp200.rkpd2.actors.hero.abilities.warrior.Endure;
 import com.zrp200.rkpd2.actors.mobs.Elemental;
 import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.items.KindOfWeapon;
@@ -50,6 +89,7 @@ import com.zrp200.rkpd2.items.wands.WandOfFirebolt;
 import com.zrp200.rkpd2.items.wands.WandOfFrost;
 import com.zrp200.rkpd2.items.wands.WandOfLightning;
 import com.zrp200.rkpd2.items.weapon.enchantments.Blazing;
+import com.zrp200.rkpd2.items.weapon.enchantments.Blocking;
 import com.zrp200.rkpd2.items.weapon.enchantments.Grim;
 import com.zrp200.rkpd2.items.weapon.enchantments.Shocking;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
@@ -136,7 +176,7 @@ public abstract class Char extends Actor {
 			return true;
 		} else if (c instanceof Hero
 				&& alignment == Alignment.ALLY
-				&& Dungeon.level.distance(pos, c.pos) <= Math.max(4*Dungeon.hero.pointsInTalent(Talent.ALLY_WARP), 3*Dungeon.hero.pointsInTalent(Talent.RK_WARDEN))){
+				&& Dungeon.level.distance(pos, c.pos) <= Math.max(4*Dungeon.hero.pointsInTalent(Talent.ALLY_WARP), 2*Dungeon.hero.pointsInTalent(Talent.RK_WARLOCK))){
 			return true;
 		} else {
 			return false;
@@ -145,11 +185,6 @@ public abstract class Char extends Actor {
 	
 	//swaps places by default
 	public boolean interact(Char c){
-
-		//can't spawn places if one char has restricted movement
-		if (rooted || c.rooted || buff(Vertigo.class) != null || c.buff(Vertigo.class) != null){
-			return true;
-		}
 
 		//don't allow char to swap onto hazard unless they're flying
 		//you can swap onto a hazard though, as you're not the one instigating the swap
@@ -175,6 +210,11 @@ public abstract class Char extends Actor {
 			ScrollOfTeleportation.appear(Dungeon.hero, curPos);
 			Dungeon.observe();
 			GameScene.updateFog();
+			return true;
+		}
+
+		//can't swap places if one char has restricted movement
+		if (rooted || c.rooted || buff(Vertigo.class) != null || c.buff(Vertigo.class) != null){
 			return true;
 		}
 
@@ -242,8 +282,16 @@ public abstract class Char extends Actor {
 			}
 		}
 	}
-	
-	public boolean attack( Char enemy ) {
+
+	final public boolean attack( Char enemy ){
+		return attack(enemy, 1f, 0f, 1f);
+	}
+
+	final public boolean attack( Char enemy, float dmgMulti, float dmgBonus, float accMulti) {
+		return attack(enemy, dmgMulti, dmgBonus, accMulti, 1);
+	}
+
+	public boolean attack( Char enemy, float dmgMulti, float dmgBonus, float accMulti, int rolls) {
 
 		if (enemy == null) return false;
 		
@@ -259,10 +307,16 @@ public abstract class Char extends Actor {
 
 			return false;
 
-		} else if (hit( this, enemy, false )) {
+		} else if (hit( this, enemy, accMulti )) {
 			
 			int dr = enemy.drRoll();
-			
+
+			Barkskin bark = enemy.buff(Barkskin.class);
+			if (bark != null)   dr += Random.NormalIntRange( 0 , bark.level() );
+
+			Blocking.BlockBuff block = enemy.buff(Blocking.BlockBuff.class);
+			if (block != null)  dr += block.blockingRoll();
+
 			if (this instanceof Hero){
 				Hero h = (Hero)this;
 				KindOfWeapon wep = h.belongings.weapon;
@@ -277,17 +331,27 @@ public abstract class Char extends Actor {
 				}
 			}
 			
-			int dmg;
+			int dmg = 0;
 			Preparation prep = buff(Preparation.class);
-			if (prep != null){
-				dmg = prep.damageRoll(this);
-				if (this == Dungeon.hero && Dungeon.hero.hasTalent(Talent.BOUNTY_HUNTER,Talent.RK_ASSASSIN)) {
-					Buff.affect(Dungeon.hero, Talent.BountyHunterTracker.class, 0.0f);
+			while(rolls-- > 0) {
+				if (prep != null) {
+					dmg = Math.max(dmg, prep.damageRoll(this));
+					if (this == Dungeon.hero && Dungeon.hero.hasTalent(Talent.BOUNTY_HUNTER, Talent.RK_ASSASSIN)) {
+						Buff.affect(Dungeon.hero, Talent.BountyHunterTracker.class, 0.0f);
+					}
+				} else {
+					dmg = Math.max(dmg,damageRoll());
 				}
-			} else {
-				dmg = damageRoll();
 			}
-			
+
+			dmg = Math.round(dmg*dmgMulti);
+			dmg += dmgBonus;
+
+			Endure.EndureTracker endure = enemy.buff(Endure.EndureTracker.class);
+			if (endure != null){
+				dmg = endure.adjustDamageTaken(dmg);
+			}
+
 			int effectiveDamage = enemy.defenseProc( this, dmg );
 			effectiveDamage = Math.max( effectiveDamage - dr, 0 );
 			
@@ -325,6 +389,7 @@ public abstract class Char extends Actor {
 				} else {
 					//helps with triggering any on-damage effects that need to activate
 					enemy.damage(-1, this);
+					DeathMark.processFearTheReaper(enemy);
 				}
 				enemy.sprite.showStatus(CharSprite.NEGATIVE, Messages.get(Preparation.class, "assassinated"));
 			}
@@ -379,7 +444,11 @@ public abstract class Char extends Actor {
 	public static int INFINITE_ACCURACY = 1_000_000;
 	public static int INFINITE_EVASION = 1_000_000;
 
-	public static boolean hit( Char attacker, Char defender, boolean magic ) {
+	final public static boolean hit( Char attacker, Char defender, boolean magic ) {
+		return hit(attacker, defender, magic ? 2f : 1f);
+	}
+
+	public static boolean hit( Char attacker, Char defender, float accMulti ) {
 		float acuStat = attacker.attackSkill( defender );
 		float defStat = defender.defenseSkill( attacker );
 
@@ -405,7 +474,7 @@ public abstract class Char extends Actor {
 			defRoll *= buff.evasionAndAccuracyFactor();
 		}
 		
-		return (magic ? acuRoll * 2 : acuRoll) >= defRoll;
+		return (acuRoll * accMulti) >= defRoll;
 	}
 	
 	public int attackSkill( Char target ) {
@@ -455,7 +524,7 @@ public abstract class Char extends Actor {
 		return speed;
 	}
 
-	protected float attackDelay() {
+	public float attackDelay() {
 		float delay = TICK;
 		if(buff(Adrenaline.class) != null) delay /= 1.5f;
 		return delay;
@@ -507,6 +576,14 @@ public abstract class Char extends Actor {
 		if (this.buff(Doom.class) != null && !isImmune(Doom.class)){
 			dmg *= 2;
 		}
+		if (alignment != Alignment.ALLY && this.buff(DeathMark.DeathMarkTracker.class) != null){
+			dmg *= 1.25f;
+		}
+		Endure.EndureTracker endure = buff(Endure.EndureTracker.class);
+		//reduce damage here if it isn't coming from a chacter (if it is we already reduced it)
+		if (endure != null && !(src instanceof Char)){
+			dmg = endure.adjustDamageTaken(dmg);
+		}
 
 		Class<?> srcClass = src.getClass();
 		if (isImmune( srcClass )) {
@@ -550,6 +627,12 @@ public abstract class Char extends Actor {
 			buff( Paralysis.class ).processDamage(dmg);
 		}
 
+		Endure.EndureTracker endure = buff(Endure.EndureTracker.class);
+		//reduce damage here if it isn't coming from a chacter (if it is we already reduced it)
+		if (endure != null){
+			dmg = endure.enforceDamagetakenLimit(dmg);
+		}
+
 		int shielded = dmg;
 		//FIXME: when I add proper damage properties, should add an IGNORES_SHIELDS property to use here.
 		if (!(src instanceof Hunger)){
@@ -572,6 +655,8 @@ public abstract class Char extends Actor {
 
 		if (!isAlive()) {
 			die( src );
+		} else if (HP == 0 && buff(DeathMark.DeathMarkTracker.class) != null){
+			DeathMark.processFearTheReaper(this);
 		}
 	}
 
@@ -609,9 +694,14 @@ public abstract class Char extends Actor {
 		destroy();
 		if (src != Chasm.class) sprite.die();
 	}
-	
+
+	//we cache this info to prevent having to call buff(...) in isAlive.
+	//This is relevant because we call isAlive during drawing, which has both performance
+	//and thread coordination implications
+	public boolean deathMarked = false;
+
 	public boolean isAlive() {
-		return HP > 0;
+		return HP > 0 || deathMarked;
 	}
 	
 	@Override

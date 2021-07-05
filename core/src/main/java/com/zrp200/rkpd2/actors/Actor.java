@@ -112,7 +112,6 @@ public abstract class Actor implements Bundlable {
 		}
 	}
 
-	private static int nextID = 1;
 	public int id() {
 		if (id > 0) {
 			return id;
@@ -131,6 +130,7 @@ public abstract class Actor implements Bundlable {
 	public static Actor current() { return current; }
 
 	private static SparseArray<Actor> ids = new SparseArray<>();
+	private static int nextID = 1;
 
 	private static float now = 0;
 	

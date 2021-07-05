@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.items.stones;
 
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.levels.traps.Trap;
@@ -42,8 +43,11 @@ public class StoneOfDisarming extends Runestone {
 	
 	{
 		image = ItemSpriteSheet.STONE_DISARM;
+
+		//so traps do not activate before the effect
+		pressesCell = false;
 	}
-	
+
 	@Override
 	protected void activate(final int cell) {
 		boolean[] FOV = new boolean[Dungeon.level.length()];

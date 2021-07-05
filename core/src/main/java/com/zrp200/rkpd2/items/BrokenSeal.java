@@ -96,7 +96,7 @@ public class BrokenSeal extends Item {
 	@Override
 	//scroll of upgrade can be used directly once, same as upgrading armor the seal is affixed to then removing it.
 	public boolean isUpgradable() {
-		return level() < 1+(Dungeon.hero != null ? Dungeon.hero.pointsInTalent(Talent.IRON_WILL):0);
+		return level() == 0;
 	}
 
 	protected static WndBag.Listener armorSelector = new WndBag.Listener() {
@@ -114,7 +114,8 @@ public class BrokenSeal extends Item {
 
 				} else if (armor.glyph != null && seal.getGlyph() != null
 						&& armor.glyph.getClass() != seal.getGlyph().getClass()) {
-					GameScene.show(new WndOptions(Messages.get(BrokenSeal.class, "choose_title"),
+					GameScene.show(new WndOptions(new ItemSprite(seal),
+							Messages.get(BrokenSeal.class, "choose_title"),
 							Messages.get(BrokenSeal.class, "choose_desc") + (Dungeon.hero.pointsInTalent(Talent.RUNIC_TRANSFERENCE) < 2 ? "\n\n" + Messages.get(BrokenSeal.class, "lose_warning"):""),
 							armor.glyph.name(),
 							seal.getGlyph().name()){
@@ -173,7 +174,7 @@ public class BrokenSeal extends Item {
 		@Override
 		public synchronized boolean act() {
 			if (shielding() < maxShield()) {
-				partialShield += 1/(RECHARGE_RATE /* * (1 - ((Hero)target).pointsInTalent(Talent.IRON_WILL)/(float)maxShield())*/); // this adjusts the seal recharge rate.
+				partialShield += 1/(RECHARGE_RATE * (1 - ((Hero)target).shiftedPoints(Talent.IRON_WILL)/(float)maxShield())); // this adjusts the seal recharge rate.
 			}
 			
 			while (partialShield >= 1){
@@ -202,7 +203,9 @@ public class BrokenSeal extends Item {
 		public synchronized int maxShield() {
 			Hero hero = (Hero)target;
 			if (armor != null && armor.isEquipped(hero)) {
-				int bonus = hero.pointsInTalent(Talent.NOBLE_CAUSE,Talent.IRON_WILL);
+				// iron will is 1 (0+1) / 3 (1+2) / 5 (2+3)
+				// noble cause is 0/1/2
+				int bonus = hero.pointsInTalent(Talent.NOBLE_CAUSE, Talent.IRON_WILL) + hero.shiftedPoints(Talent.IRON_WILL);
 				BrokenSeal brokenSeal = armor.checkSeal();
 				if(brokenSeal != null && brokenSeal.level() > 1) bonus -= brokenSeal.level()-1; // doesn't stack, sorry.
 				return armor.tier + armor.level() + bonus;

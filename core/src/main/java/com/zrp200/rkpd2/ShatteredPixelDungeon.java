@@ -32,49 +32,84 @@ import com.watabou.utils.PlatformSupport;
 public class ShatteredPixelDungeon extends Game {
 
 	//variable constants for specific older versions of shattered, used for data conversion
-	//versions older than v0.7.5e are no longer supported, and data from them is ignored
 	public static final int
+			v0_1_0=557,
 			v0_0_1=551,
 			v0_0_0=550;
 
 	public static final int v0_7_5e = 382;
 
+	//versions older than v0.8.0b are no longer supported, and data from them is ignored
 	public static final int v0_8_0b = 414;
 	public static final int v0_8_1a = 422;
 	public static final int v0_8_2d = 463;
 
 	public static final int v0_9_0b  = 489;
 	public static final int v0_9_1d  = 511;
-	public static final int v0_9_2   = 519;
+	public static final int v0_9_2b  = 532;
+	public static final int v0_9_3   = 544;
 	
 	public ShatteredPixelDungeon( PlatformSupport platform ) {
 		super( sceneClass == null ? WelcomeScene.class : sceneClass, platform );
 
-		//v0.8.0
+		//v0.9.3
 		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.actors.mobs.ArmoredBrute.class,
-				"com.zrp200.rkpd2.actors.mobs.Shielded");
+				com.zrp200.rkpd2.actors.mobs.Tengu.class,
+				"com.zrp200.rkpd2.actors.mobs.NewTengu" );
 		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.actors.mobs.DM100.class,
-				"com.zrp200.rkpd2.actors.mobs.Shaman");
+				com.zrp200.rkpd2.levels.PrisonBossLevel.class,
+				"com.zrp200.rkpd2.levels.NewPrisonBossLevel" );
 		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.actors.mobs.Elemental.FireElemental.class,
-				"com.zrp200.rkpd2.actors.mobs.Elemental");
+				com.zrp200.rkpd2.levels.PrisonBossLevel.ExitVisual.class,
+				"com.zrp200.rkpd2.levels.NewPrisonBossLevel$exitVisual" );
 		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.actors.mobs.Elemental.NewbornFireElemental.class,
-				"com.zrp200.rkpd2.actors.mobs.NewbornElemental");
+				com.zrp200.rkpd2.levels.PrisonBossLevel.ExitVisualWalls.class,
+				"com.zrp200.rkpd2.levels.NewPrisonBossLevel$exitVisualWalls" );
 		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.actors.mobs.OldDM300.class,
-				"com.zrp200.rkpd2.actors.mobs.DM300");
+				com.zrp200.rkpd2.actors.mobs.DM300.class,
+				"com.zrp200.rkpd2.actors.mobs.NewDM300" );
 		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.levels.OldCavesBossLevel.class,
-				"com.zrp200.rkpd2.levels.CavesBossLevel" );
+				com.zrp200.rkpd2.levels.CavesBossLevel.class,
+				"com.zrp200.rkpd2.levels.NewCavesBossLevel" );
 		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.levels.OldCityBossLevel.class,
-				"com.zrp200.rkpd2.levels.CityBossLevel" );
+				com.zrp200.rkpd2.levels.CavesBossLevel.PylonEnergy.class,
+				"com.zrp200.rkpd2.levels.NewCavesBossLevel$PylonEnergy" );
 		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.levels.OldHallsBossLevel.class,
-				"com.zrp200.rkpd2.levels.HallsBossLevel" );
+				com.zrp200.rkpd2.levels.CavesBossLevel.ArenaVisuals.class,
+				"com.zrp200.rkpd2.levels.NewCavesBossLevel$ArenaVisuals" );
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.levels.CavesBossLevel.CityEntrance.class,
+				"com.zrp200.rkpd2.levels.NewCavesBossLevel$CityEntrance" );
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.levels.CavesBossLevel.EntranceOverhang.class,
+				"com.zrp200.rkpd2.levels.NewCavesBossLevel$EntranceOverhang" );
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.levels.CityBossLevel.class,
+				"com.zrp200.rkpd2.levels.NewCityBossLevel" );
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.levels.CityBossLevel.CustomGroundVisuals.class,
+				"com.zrp200.rkpd2.levels.NewCityBossLevel$CustomGroundVisuals" );
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.levels.CityBossLevel.CustomWallVisuals.class,
+				"com.zrp200.rkpd2.levels.NewCityBossLevel$CustomWallVisuals" );
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.levels.HallsBossLevel.class,
+				"com.zrp200.rkpd2.levels.NewHallsBossLevel" );
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.levels.HallsBossLevel.CenterPieceVisuals.class,
+				"com.zrp200.rkpd2.levels.NewHallsBossLevel$CenterPieceWalls" );
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.levels.HallsBossLevel.CenterPieceWalls.class,
+				"com.zrp200.rkpd2.levels.NewHallsBossLevel$CenterPieceWalls" );
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.items.Waterskin.class,
+				"com.zrp200.rkpd2.items.DewVial" );
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.items.TengusMask.class,
+				"com.zrp200.rkpd2.items.TomeOfMastery" );
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.items.KingsCrown.class,
+				"com.zrp200.rkpd2.items.ArmorKit" );
 		
 	}
 	

@@ -28,6 +28,7 @@ import com.watabou.glwrap.Quad;
 import com.watabou.glwrap.Vertexbuffer;
 import com.watabou.utils.RectF;
 
+import java.nio.Buffer;
 import java.nio.FloatBuffer;
 
 public class BitmapText extends Visual {
@@ -74,7 +75,7 @@ public class BitmapText extends Visual {
 
 		if (dirty) {
 			updateVertices();
-			quads.limit(quads.position());
+			((Buffer)quads).limit(quads.position());
 			if (buffer == null)
 				buffer = new Vertexbuffer(quads);
 			else
@@ -124,29 +125,29 @@ public class BitmapText extends Visual {
 			float w = font.width( rect );
 			float h = font.height( rect );
 
-			vertices[0] 	= width;
-			vertices[1] 	= 0;
+			vertices[0]     = width;
+			vertices[1]     = 0;
 
-			vertices[2]		= rect.left;
-			vertices[3]		= rect.top;
+			vertices[2]     = rect.left;
+			vertices[3]     = rect.top;
 
-			vertices[4] 	= width + w;
-			vertices[5] 	= 0;
+			vertices[4]     = width + w;
+			vertices[5]     = 0;
 
-			vertices[6]		= rect.right;
-			vertices[7]		= rect.top;
+			vertices[6]     = rect.right;
+			vertices[7]     = rect.top;
 
-			vertices[8] 	= width + w;
-			vertices[9] 	= h;
+			vertices[8]     = width + w;
+			vertices[9]     = h;
 
-			vertices[10]	= rect.right;
-			vertices[11]	= rect.bottom;
+			vertices[10]    = rect.right;
+			vertices[11]    = rect.bottom;
 
-			vertices[12]	= width;
-			vertices[13]	= h;
+			vertices[12]    = width;
+			vertices[13]    = h;
 
-			vertices[14]	= rect.left;
-			vertices[15]	= rect.bottom;
+			vertices[14]    = rect.left;
+			vertices[15]    = rect.bottom;
 
 			quads.put( vertices );
 			realLength++;

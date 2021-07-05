@@ -21,39 +21,42 @@
 
 package com.zrp200.rkpd2.actors.hero;
 
+import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.scenes.GameScene;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.Image;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.wands.Wand;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
-import com.zrp200.rkpd2.items.weapon.melee.MeleeWeapon;
-import com.zrp200.rkpd2.items.weapon.melee.Whip;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.messages.Messages;
-import com.watabou.utils.Bundle;
+import com.zrp200.rkpd2.sprites.ItemSprite;
+import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
 public enum HeroSubClass {
 
-	NONE( null ),
+	NONE,
 	
-	GLADIATOR( "gladiator" ),
-	BERSERKER( "berserker" ),
-	
-	WARLOCK( "warlock" ),
-	BATTLEMAGE( "battlemage" ) {
+	GLADIATOR,
+	BERSERKER,
+
+	WARLOCK,
+	BATTLEMAGE {
 		@Override public int getBonus(Item item) {
 			// mage boost now also applies to staff...
 			return item instanceof MagesStaff ? 2 : 0;
 		}
 	},
-	
-	ASSASSIN( "assassin" ) {
+
+	ASSASSIN {
 		@Override public int getBonus(Item item) {
 			// +2 to melee / +2 to thrown. total boosts = 4
 			return item instanceof Weapon ? 2 : 0;
 		}
 	},
-	FREERUNNER( "freerunner" ) {
+	FREERUNNER {
 		@Override
 		public int getBonus(Item item) {
 			// +1 to wands* (+freerun bonus), +2 to missiles, +1 to anything with reach. total boosts = 4 before other modifiers. note that freerunner has easy access to gamebreaking mechanics.
@@ -64,37 +67,73 @@ public enum HeroSubClass {
 		}
 	},
 	
-	SNIPER( "sniper" ),
-	WARDEN( "warden" ),
+	SNIPER,
+	WARDEN,
 
-	KING ("king");
-	
-	private String title;
+	KING;
 
 	// this corresponds to the one in HeroClass
 	public int getBonus(Item item) { return 0; }
 	
-	HeroSubClass( String title ) {
-		this.title = title;
-	}
-	
 	public String title() {
-		return Messages.get(this, title);
+		return Messages.get(this, name());
 	}
-	
+
+	public String shortDesc() {
+		return Messages.get(this, name()+"_short_desc");
+	}
+
 	public String desc() {
-		return Messages.get(this, title+"_desc");
+		//Include the staff effect description in the battlemage's desc if possible
+		if (this == BATTLEMAGE){
+			String desc = Messages.get(this, name() + "_desc");
+			if (Game.scene() instanceof GameScene){
+				MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
+				if (staff != null && staff.wandClass() != null){
+					desc += "\n\n" + Messages.get(staff.wandClass(), "bmage_desc");
+					desc = desc.replaceAll("_", "");
+				}
+			}
+			return desc;
+		} else {
+			return Messages.get(this, name() + "_desc");
+		}
 	}
-	
-	private static final String SUBCLASS	= "subClass";
-	
-	public void storeInBundle( Bundle bundle ) {
-		bundle.put( SUBCLASS, toString() );
+
+	//FIXME shouldn't hardcode these, probably want to just have a BuffIcon class
+	// TO EVAN: please do this, thanks.
+	public Image icon(){
+		switch (this){
+			case GLADIATOR: default:
+				return new Image(Assets.Interfaces.BUFFS_LARGE, 16, 16, 16, 16);
+			case BERSERKER:
+				return new Image(Assets.Interfaces.BUFFS_LARGE, 32, 16, 16, 16);
+
+			case WARLOCK:
+				return new Image(Assets.Interfaces.BUFFS_LARGE, 64, 32, 16, 16);
+			case BATTLEMAGE:
+				Image im = new Image(Assets.Interfaces.BUFFS_LARGE, 32, 48, 16, 16);
+				im.hardlight(1f, 1f, 0f);
+				return im;
+
+			case ASSASSIN:
+				im = new Image(Assets.Interfaces.BUFFS_LARGE, 160, 32, 16, 16);
+				im.hardlight(1f, 0f, 0f);
+				return im;
+			case FREERUNNER:
+				im = new Image(Assets.Interfaces.BUFFS_LARGE, 48, 48, 16, 16);
+				im.hardlight(1f, 1f, 0f);
+				return im;
+
+			case SNIPER:
+				return new Image(Assets.Interfaces.BUFFS_LARGE, 176, 16, 16, 16);
+			case WARDEN:
+				return new Image(Assets.Interfaces.BUFFS_LARGE, 208, 0, 16, 16);
+
+			case KING:
+				im = new ItemSprite(ItemSpriteSheet.ARMOR_RAT_KING);
+				return im;
+		}
 	}
-	
-	public static HeroSubClass restoreInBundle( Bundle bundle ) {
-		String value = bundle.getString( SUBCLASS );
-		return valueOf( value );
-	}
-	
+
 }

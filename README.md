@@ -1,19 +1,14 @@
-# Shattered Pixel Dungeon
+# Rat King Pixel Dungeon 2
 
-A Roguelike RPG, with randomly generated levels, items, enemies, and traps! Based on the [source code of Pixel Dungeon](https://github.com/00-Evan/pixel-dungeon-gradle), by [Watabou](https://www.watabou.ru).
+![image](https://user-images.githubusercontent.com/7078074/119247071-a6277380-bb3b-11eb-9452-e9f0d8c040d2.png)
 
-Shattered Pixel Dungeon currently compiles for Android and desktop platforms. It is available from [GitHub](https://github.com/00-Evan/shattered-pixel-dungeon/releases), [Google Play](https://play.google.com/store/apps/details?id=com.shatteredpixel.shatteredpixeldungeon), [Amazon](https://www.amazon.com/Shattered-Pixel-Dungeon/dp/B00OH2C21M), and [F-Droid](https://f-droid.org/repository/browse/?fdid=com.shatteredpixel.shatteredpixeldungeon).
+First released on April 1 2021, this fork is all about introducing more power to the game. The King, a one-off character in Pixel Dungeon already, debuts here as a playable hero whose power is unmatched.
 
-If you like this game, please consider [supporting me on Patreon](https://www.patreon.com/ShatteredPixel)!
+Challenges are left in for those that want to push their opness to the limit.
 
-There is an official blog for this project at [ShatteredPixel.com](http://www.shatteredpixel.com).
+---
+Forked from the [source code of Shattered Pixel Dungeon](https://github.com/00-evan/shattered-pixel-dungeon/) by [00-Evan](https://shatteredpixel.com/), inspired by Rat King Dungeon by the same author.
 
-The game also has a translation project hosted on [Transifex](https://www.transifex.com/shattered-pixel/shattered-pixel-dungeon/).
+This will remain in sync with updates coming from Shattered Pixel Dungeon for the foreseeable future.
 
-Note that **this repository does not accept pull requests!** The code here is provided in hopes that others may find it useful for their own projects, not to allow community contribution. Issue reports of all kinds (bug reports, feature requests, etc.) are welcome.
-
-If you'd like to work with the code, you can find the following guides in `/docs`:
-- [Compiling for Android.](docs/getting-started-android.md)
-    - **[If you plan to distribute on Google Play please read the end of this guide.](docs/getting-started-android.md#distributing-your-apk)**
-- [Compiling for desktop platforms.](docs/getting-started-desktop.md)
-- [Recommended changes for making your own mod.](docs/recommended-changes.md)
+RKPD2 currently compiles for Android and desktop platforms. It is currently only available from [GitHub](https://github.com/Zrp200/rkpd2/releases), but it may expand to other distribution sites such as Google Play in the future.

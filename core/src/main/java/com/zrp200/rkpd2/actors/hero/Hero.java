@@ -30,6 +30,27 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.blobs.Alchemy;
 import com.zrp200.rkpd2.actors.buffs.*;
+import com.zrp200.rkpd2.actors.buffs.AdrenalineSurge;
+import com.zrp200.rkpd2.actors.buffs.Amok;
+import com.zrp200.rkpd2.actors.buffs.Awareness;
+import com.zrp200.rkpd2.actors.buffs.Barkskin;
+import com.zrp200.rkpd2.actors.buffs.Berserk;
+import com.zrp200.rkpd2.actors.buffs.Bless;
+import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.Burning;
+import com.zrp200.rkpd2.actors.buffs.Combo;
+import com.zrp200.rkpd2.actors.buffs.Drowsy;
+import com.zrp200.rkpd2.actors.buffs.Foresight;
+import com.zrp200.rkpd2.actors.buffs.Fury;
+import com.zrp200.rkpd2.actors.buffs.HoldFast;
+import com.zrp200.rkpd2.actors.buffs.Hunger;
+import com.zrp200.rkpd2.actors.buffs.Invisibility;
+import com.zrp200.rkpd2.actors.buffs.MindVision;
+import com.zrp200.rkpd2.actors.buffs.Momentum;
+import com.zrp200.rkpd2.actors.buffs.Paralysis;
+import com.zrp200.rkpd2.actors.buffs.Regeneration;
+import com.zrp200.rkpd2.actors.buffs.SnipersMark;
+import com.zrp200.rkpd2.actors.buffs.Vertigo;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.Monk;
 import com.zrp200.rkpd2.actors.mobs.Phantom;
@@ -55,7 +76,6 @@ import com.zrp200.rkpd2.items.wands.WandOfDisintegration;
 import com.zrp200.rkpd2.items.wands.WandOfLivingEarth;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.Weapon;
-import com.zrp200.rkpd2.items.weapon.enchantments.Blocking;
 import com.zrp200.rkpd2.items.weapon.melee.Flail;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
@@ -84,6 +104,18 @@ import com.zrp200.rkpd2.windows.WndHero;
 import com.zrp200.rkpd2.windows.WndMessage;
 import com.zrp200.rkpd2.windows.WndResurrect;
 import com.zrp200.rkpd2.windows.WndTradeItem;
+import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
+import com.zrp200.rkpd2.actors.hero.abilities.huntress.NaturesPower;
+import com.zrp200.rkpd2.actors.hero.abilities.warrior.Endure;
+import com.zrp200.rkpd2.items.armor.ClassArmor;
+import com.watabou.noosa.Camera;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Callback;
+import com.watabou.utils.GameMath;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -107,6 +139,7 @@ public class Hero extends Char {
 	
 	public HeroClass heroClass = HeroClass.ROGUE;
 	public HeroSubClass subClass = HeroSubClass.NONE;
+	public ArmorAbility armorAbility = null;
 	public ArrayList<LinkedHashMap<Talent, Integer>> talents = new ArrayList<>();
 	
 	private int attackSkill = 10;
@@ -137,6 +170,12 @@ public class Hero extends Char {
 	//This list is maintained so that some logic checks can be skipped
 	// for enemies we know we aren't seeing normally, resultign in better performance
 	public ArrayList<Mob> mindVisionEnemies = new ArrayList<>();
+
+	public double getViewDistanceModifier() {
+		int points = pointsInTalent(Talent.FARSIGHT, Talent.RK_SNIPER);
+		if(canHaveTalent(Talent.FARSIGHT)) points++;
+		return 1 + 0.25*points;
+	}
 
 	public Hero() {
 		super();
@@ -176,6 +215,15 @@ public class Hero extends Char {
 			STR += buff.boost();
 		}
 
+		// TODO buff for warrior
+		if (hasTalent(Talent.STRONGMAN,Talent.RK_GLADIATOR)){ // note that you need to have points in this.
+			float boost = Math.max(
+					0.05f + 0.08f*pointsInTalent(Talent.STRONGMAN), // get it? ~1.5x. Very, very slightly worse than v0.0.1
+					0.03f + 0.05f*pointsInTalent(Talent.RK_GLADIATOR)
+			);
+			STR = (int)Math.floor(STR * (1 + boost));
+		}
+
 		return STR;
 	}
 
@@ -183,6 +231,10 @@ public class Hero extends Char {
 	public int getBonus(Item item) {
 		return heroClass.getBonus(item) + subClass.getBonus(item);
 	}
+
+	private static final String CLASS       = "class";
+	private static final String SUBCLASS    = "subClass";
+	private static final String ABILITY     = "armorAbility";
 
 	private static final String ATTACK		= "attackSkill";
 	private static final String DEFENSE		= "defenseSkill";
@@ -195,9 +247,10 @@ public class Hero extends Char {
 	public void storeInBundle( Bundle bundle ) {
 
 		super.storeInBundle( bundle );
-		
-		heroClass.storeInBundle( bundle );
-		subClass.storeInBundle( bundle );
+
+		bundle.put( CLASS, heroClass );
+		bundle.put( SUBCLASS, subClass );
+		bundle.put( ABILITY, armorAbility );
 		Talent.storeTalentsInBundle( bundle, this );
 		
 		bundle.put( ATTACK, attackSkill );
@@ -222,9 +275,10 @@ public class Hero extends Char {
 		HTBoost = bundle.getInt(HTBOOST);
 
 		super.restoreFromBundle( bundle );
-		
-		heroClass = HeroClass.restoreInBundle( bundle );
-		subClass = HeroSubClass.restoreInBundle( bundle );
+
+		heroClass = bundle.getEnum( CLASS, HeroClass.class );
+		subClass = bundle.getEnum( SUBCLASS, HeroSubClass.class );
+		armorAbility = (ArmorAbility)bundle.get( ABILITY );
 		Talent.restoreTalentsFromBundle( bundle, this );
 		
 		attackSkill = bundle.getInt( ATTACK );
@@ -242,8 +296,8 @@ public class Hero extends Char {
 		info.hp = bundle.getInt( Char.TAG_HP );
 		info.ht = bundle.getInt( Char.TAG_HT );
 		info.shld = bundle.getInt( Char.TAG_SHLD );
-		info.heroClass = HeroClass.restoreInBundle( bundle );
-		info.subClass = HeroSubClass.restoreInBundle( bundle );
+		info.heroClass = bundle.getEnum( CLASS, HeroClass.class );
+		info.subClass = bundle.getEnum( SUBCLASS, HeroSubClass.class );
 		Belongings.preview( info, bundle );
 	}
 
@@ -275,6 +329,24 @@ public class Hero extends Char {
 		return sum;
 	}
 
+	/** shifts [shifted] so that +0 becomes +1 */
+	public int shiftedPoints( Talent shifted ) {
+		int points = pointsInTalent(shifted);
+		if(canHaveTalent(shifted)) points++;
+		return points;
+	}
+	/** shifts [shifted] so that +0 becomes +1, or returns the points in standard */
+	public int shiftedPoints( Talent shifted, Talent standard ) {
+		return Math.max(shiftedPoints(shifted), pointsInTalent(standard));
+	}
+	/** gives a free +1 when the heroclass matches [cls] */
+	public int pointsInTalentWithInnate( HeroClass cls, Talent... talents) {
+		int points = pointsInTalent(talents);
+		if(heroClass == cls) points++;
+		return points;
+
+	}
+
 	public void upgradeTalent( Talent talent ){
 		for (LinkedHashMap<Talent, Integer> tier : talents){
 			for (Talent f : tier.keySet()){
@@ -294,12 +366,12 @@ public class Hero extends Char {
 
 	public int talentPointsAvailable(int tier){
 		if (lvl < Talent.tierLevelThresholds[tier]
-			|| (tier == 3 && subClass == HeroSubClass.NONE)){
+			|| (tier == 3 && subClass == HeroSubClass.NONE)
+			|| (tier == 4 && armorAbility == null)){
 			return 0;
-		} else if (lvl >= Talent.tierLevelThresholds[tier+1]){
-			return Talent.tierLevelThresholds[tier+1] - Talent.tierLevelThresholds[tier] - talentPointsSpent(tier);
 		} else {
-			return 1 + lvl - Talent.tierLevelThresholds[tier] - talentPointsSpent(tier);
+			return Math.min(1 + lvl - Talent.tierLevelThresholds[tier], Talent.getMaxPoints(tier))
+					- talentPointsSpent(tier);
 		}
 	}
 	
@@ -339,7 +411,13 @@ public class Hero extends Char {
 	}
 	
 	public int tier() {
-		return belongings.armor == null ? 0 : belongings.armor.tier;
+		if (belongings.armor instanceof ClassArmor){
+			return 6;
+		} else if (belongings.armor != null){
+			return belongings.armor.tier;
+		} else {
+			return 0;
+		}
 	}
 	
 	public boolean shoot( Char enemy, MissileWeapon wep ) {
@@ -369,7 +447,8 @@ public class Hero extends Char {
 		
 		float accuracy = 1;
 		accuracy *= RingOfAccuracy.accuracyMultiplier( this );
-		
+		if(subClass == HeroSubClass.SNIPER) accuracy *= 4/3d; // sniper innate boost
+
 		if (wep instanceof MissileWeapon){
 			if (Dungeon.level.adjacent( pos, target.pos )) {
 				int points = pointsInTalent(Talent.POINT_BLANK,Talent.RK_SNIPER);
@@ -444,11 +523,6 @@ public class Hero extends Char {
 			}
 			if (wepDr > 0) dr += wepDr;
 		}
-		Barkskin bark = buff(Barkskin.class);
-		if (bark != null)               dr += Random.NormalIntRange( 0 , bark.level() );
-		
-		Blocking.BlockBuff block = buff(Blocking.BlockBuff.class);
-		if (block != null)              dr += block.blockingRoll();
 
 		if (buff(HoldFast.class) != null){
 			dr += Random.NormalIntRange(0, HoldFast.armor());
@@ -472,7 +546,10 @@ public class Hero extends Char {
 		
 		Berserk berserk = buff(Berserk.class);
 		if (berserk != null) dmg = berserk.damageFactor(dmg);
-		
+
+		Endure.EndureTracker endure = buff(Endure.EndureTracker.class);
+		if (endure != null) dmg = endure.damageFactor(dmg);
+
 		return buff( Fury.class ) != null ? (int)(dmg * 1.5f) : dmg;
 	}
 	
@@ -494,7 +571,12 @@ public class Hero extends Char {
 		} else {
 			((HeroSprite)sprite).sprint( 1f );
 		}
-		
+
+		NaturesPower.naturesPowerTracker natStrength = buff(NaturesPower.naturesPowerTracker.class);
+		if (natStrength != null){
+			speed *= (2f + 0.25f*shiftedPoints(Talent.GROWING_POWER));
+		}
+
 		return speed;
 		
 	}
@@ -530,13 +612,13 @@ public class Hero extends Char {
 		float delay = super.attackDelay();
 		if (belongings.weapon != null) {
 			
-			delay *= belongings.weapon.speedFactor( this );
+			delay *= belongings.weapon.delayFactor( this );
 			
 		} else {
 			//Normally putting furor speed on unarmed attacks would be unnecessary
 			//But there's going to be that one guy who gets a furor+force ring combo
 			//This is for that one guy, you shall get your fists of fury!
-			delay *= RingOfFuror.attackDelayMultiplier(this);
+			delay /= RingOfFuror.attackSpeedMultiplier(this);
 		}
 		if(hasTalent(Talent.ONE_MAN_ARMY)) {
 			int enemies = 0;
@@ -576,7 +658,11 @@ public class Hero extends Char {
 		
 		//calls to dungeon.observe will also update hero's local FOV.
 		fieldOfView = Dungeon.level.heroFOV;
-		
+
+		if (buff(Endure.EndureTracker.class) != null){
+			buff(Endure.EndureTracker.class).endEnduring();
+		}
+
 		if (!ready) {
 			//do a full observe (including fog update) if not resting.
 			if (!resting || buff(MindVision.class) != null || buff(Awareness.class) != null) {
@@ -652,7 +738,9 @@ public class Hero extends Char {
 		}
 		
 		if(hasTalent(Talent.BARKSKIN,Talent.RK_WARDEN) && Dungeon.level.map[pos] == Terrain.FURROWED_GRASS){
-			Buff.affect(this, Barkskin.class).set( lvl, pointsInTalent(Talent.BARKSKIN,Talent.RK_WARDEN) );
+			Buff.affect(this, Barkskin.class).set(
+					Barkskin.getGrassDuration(this),
+					Dungeon.hero.hasTalent(Talent.BARKSKIN) ? 2 : 1);
 		}
 		
 		return actResult;
@@ -1083,12 +1171,21 @@ public class Hero extends Char {
 					if(staff == wep || Random.Int(3) < pointsInTalent())
 						if (buff(Talent.EmpoweredStrikeTracker.class) != null) {
 							buff(Talent.EmpoweredStrikeTracker.class).detach();
-							damage = Math.round(damage * (1f + pointsInTalent(Talent.EMPOWERED_STRIKE, Talent.RK_BATTLEMAGE) / 6f / (hasTalent(Talent.EMPOWERED_STRIKE) ? 1.5f : 1)));
+							damage = Math.round(damage * (1f + Math.max(
+									Dungeon.hero.pointsInTalent(Talent.EMPOWERED_STRIKE)/3f,
+									Dungeon.hero.pointsInTalent(Talent.RK_BATTLEMAGE)/4f)));
 						}
 						staff.procWand(enemy, damage);
 					}
 		}
 		if (wep != null) damage = wep.proc( this, enemy, damage );
+
+		if (buff(Talent.SpiritBladesTracker.class) != null
+				&& Random.Int(4) < pointsInTalent(Talent.SPIRIT_BLADES)){
+			SpiritBow bow = belongings.getItem(SpiritBow.class);
+			if (bow != null) damage = bow.proc( this, enemy, damage );
+			buff(Talent.SpiritBladesTracker.class).detach();
+		}
 
 		damage = Talent.onAttackProc( this, enemy, damage );
 		
@@ -1103,9 +1200,11 @@ public class Hero extends Char {
 					
 					@Override
 					protected boolean act() {
-						if (enemy.isAlive() || hasTalent(Talent.RANGER)) {
-							int bonusTurns = hasTalent(Talent.SHARED_UPGRADES,Talent.RK_SNIPER) ? wep.buffedLvl() : 0;
-							Buff.prolong(Hero.this, SnipersMark.class, SnipersMark.DURATION + bonusTurns).set(enemy.id(), bonusTurns);
+						if (enemy.isAlive() || hasTalent(Talent.MULTISHOT)) {
+							int level = hasTalent(Talent.RK_SNIPER) || canHaveTalent(Talent.SHARED_UPGRADES) ? wep.buffedLvl() : 0;
+							SnipersMark mark = Buff.affect(Hero.this, SnipersMark.class);
+							mark.set(enemy.id(), level);
+							if(!enemy.isAlive()) mark.remove(enemy.id()); // this lets it trigger ranger
 						}
 						Actor.remove(this);
 						return true;
@@ -1459,6 +1558,12 @@ public class Hero extends Char {
 			for (Item i : belongings) {
 				i.onHeroGainExp(percent, this);
 			}
+			if (buff(Talent.RejuvenatingStepsFurrow.class) != null){
+				buff(Talent.RejuvenatingStepsFurrow.class).countDown(percent*200f);
+				if (buff(Talent.RejuvenatingStepsFurrow.class).count() <= 0){
+					buff(Talent.RejuvenatingStepsFurrow.class).detach();
+				}
+			}
 		}
 		
 		boolean levelUp = false;
@@ -1495,10 +1600,17 @@ public class Hero extends Char {
 				sprite.showStatus( CharSprite.POSITIVE, Messages.get(Hero.class, "level_up") );
 				Sample.INSTANCE.play( Assets.Sounds.LEVELUP );
 				if (lvl < Talent.tierLevelThresholds[Talent.MAX_TALENT_TIERS+1]){
-					GLog.newLine();
-					GLog.p( Messages.get(this, "new_talent") );
-					StatusPane.talentBlink = 10f;
-					WndHero.lastIdx = 1;
+					int points = 1;
+					if(lvl >= 21 && lvl < 25) points += 1;
+					if(lvl >= Talent.tierLevelThresholds[4] && armorAbility != null && armorAbility.talents().length == 0) points--;
+					if(points > 0) {
+						GLog.newLine();
+						String new_talent = "new_talent";
+						if(points > 1) new_talent += "s"; // double
+						GLog.p( Messages.get(this, new_talent) );
+						StatusPane.talentBlink = 10f;
+						WndHero.lastIdx = 1;
+					}
 				}
 			}
 			
@@ -1674,6 +1786,12 @@ public class Hero extends Char {
 			items.remove( item );
 		}
 
+		for (Char c : Actor.chars()){
+			if (c instanceof DeathCommentator){
+				((DeathCommentator) c).sayHeroKilled();
+			}
+		}
+
 		GameScene.gameOver();
 		
 		if (cause instanceof Hero.Doom) {
@@ -1683,9 +1801,9 @@ public class Hero extends Char {
 		Dungeon.deleteGame( GamesInProgress.curSlot, true );
 	}
 
-	//effectively cache this buff to prevent having to call buff(Berserk.class) a bunch.
+	//effectively cache this buff to prevent having to call buff(...) a bunch.
 	//This is relevant because we call isAlive during drawing, which has both performance
-	//and concurrent modification implications if that method calls buff(Berserk.class)
+	//and thread coordination implications if that method calls buff(...) frequently
 	private Berserk berserk;
 
 	@Override
@@ -1964,5 +2082,10 @@ public class Hero extends Char {
 
 	public static interface Doom {
 		public void onDeath();
+	}
+
+	/* says something when the hero dies.*/
+	public interface DeathCommentator {
+		void sayHeroKilled();
 	}
 }

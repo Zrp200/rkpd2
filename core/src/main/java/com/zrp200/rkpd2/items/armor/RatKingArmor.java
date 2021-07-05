@@ -34,11 +34,11 @@ import java.util.Map;
 public class RatKingArmor extends ClassArmor{
     {
         // TODO add proper asset
-        image = ItemSpriteSheet.CROWN;
+        image = ItemSpriteSheet.ARMOR_RAT_KING;
     }
     private static final float JUMP_DELAY=2f;
 
-    @Override
+    // TODO port to ability or rework
     public void doSpecial() {
         GameScene.selectCell( teleporter );
     }

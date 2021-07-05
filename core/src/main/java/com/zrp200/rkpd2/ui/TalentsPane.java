@@ -21,9 +21,11 @@
 
 package com.zrp200.rkpd2.ui;
 
+import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.PixelScene;
@@ -53,7 +55,15 @@ public class TalentsPane extends ScrollPane {
 		int tiersAvailable = 1;
 
 		if (!canUpgrade){
-			tiersAvailable = Talent.MAX_TALENT_TIERS;
+			if (!Badges.isUnlocked(Badges.Badge.LEVEL_REACHED_1)){
+				tiersAvailable = 1;
+			} else if (!Badges.isUnlocked(Badges.Badge.LEVEL_REACHED_2) || !Badges.isUnlocked(Badges.Badge.BOSS_SLAIN_2)){
+				tiersAvailable = 2;
+			} else if (!Badges.isUnlocked(Badges.Badge.BOSS_SLAIN_4)){
+				tiersAvailable = 3;
+			} else {
+				tiersAvailable = Talent.MAX_TALENT_TIERS;
+			}
 		} else {
 			while (tiersAvailable < Talent.MAX_TALENT_TIERS
 					&& Dungeon.hero.lvl+1 >= Talent.tierLevelThresholds[tiersAvailable+1]){
@@ -61,6 +71,8 @@ public class TalentsPane extends ScrollPane {
 			}
 			if (tiersAvailable > 2 && Dungeon.hero.subClass == HeroSubClass.NONE){
 				tiersAvailable = 2;
+			} else if (tiersAvailable > 3 && Dungeon.hero.armorAbility == null || tiersAvailable > 3 && Dungeon.hero.armorAbility instanceof Wrath){
+				tiersAvailable = 3;
 			}
 		}
 
@@ -86,12 +98,16 @@ public class TalentsPane extends ScrollPane {
 
 		if (tiersAvailable == 1) {
 			blockText = PixelScene.renderTextBlock(Messages.get(this, "unlock_tier2"), 6);
+			content.add(blockText);
 		} else if (tiersAvailable == 2) {
 			blockText = PixelScene.renderTextBlock(Messages.get(this, "unlock_tier3"), 6);
+			content.add(blockText);
+		} else if (tiersAvailable == 3 && Dungeon.hero.armorAbility == null) {
+			blockText = PixelScene.renderTextBlock(Messages.get(this, "unlock_tier4"), 6);
+			content.add(blockText);
 		} else {
-			blockText = PixelScene.renderTextBlock(Messages.get(this, "coming_soon"), 6);
+			blockText = null;
 		}
-		content.add(blockText);
 	}
 
 	@Override
@@ -112,15 +128,22 @@ public class TalentsPane extends ScrollPane {
 
 		}
 
-		float bottom = Math.max(height, top + 20);
+		float bottom;
+		if (blockText != null) {
+			bottom = Math.max(height, top + 20);
 
-		blocker.x = 0;
-		blocker.y = top;
-		blocker.size(width, bottom - top);
+			blocker.x = 0;
+			blocker.y = top;
+			blocker.size(width, bottom - top);
 
-		blockText.maxWidth((int)width);
-		blockText.align(RenderedTextBlock.CENTER_ALIGN);
-		blockText.setPos((width - blockText.width())/2f, blocker.y + (bottom - blocker.y - blockText.height())/2);
+			blockText.maxWidth((int) width);
+			blockText.align(RenderedTextBlock.CENTER_ALIGN);
+			blockText.setPos((width - blockText.width()) / 2f, blocker.y + (bottom - blocker.y - blockText.height()) / 2);
+		} else {
+			bottom = Math.max(height, top);
+
+			blocker.visible = false;
+		}
 
 		content.setSize(width, bottom);
 	}
@@ -129,7 +152,7 @@ public class TalentsPane extends ScrollPane {
 
 		private int tier;
 
-		RenderedTextBlock title;
+		public RenderedTextBlock title;
 		ArrayList<TalentButton> buttons;
 
 		ArrayList<Image> stars = new ArrayList<>();
@@ -171,7 +194,7 @@ public class TalentsPane extends ScrollPane {
 				stars.clear();
 			}
 
-			int totStars = Talent.tierLevelThresholds[tier+1] - Talent.tierLevelThresholds[tier];
+			int totStars = Talent.getMaxPoints(tier);
 			int openStars = Dungeon.hero.talentPointsAvailable(tier);
 			int usedStars = Dungeon.hero.talentPointsSpent(tier);
 			for (int i = 0; i < totStars; i++){

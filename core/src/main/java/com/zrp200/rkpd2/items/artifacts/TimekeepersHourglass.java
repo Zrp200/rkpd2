@@ -35,6 +35,7 @@ import com.zrp200.rkpd2.items.rings.RingOfEnergy;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.CharSprite;
+import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
 import com.zrp200.rkpd2.windows.WndOptions;
@@ -89,7 +90,8 @@ public class TimekeepersHourglass extends Artifact {
 			} else if (charge <= 0)         GLog.i( Messages.get(this, "no_charge") );
 			else if (cursed)                GLog.i( Messages.get(this, "cursed") );
 			else GameScene.show(
-						new WndOptions( Messages.get(this, "name"),
+						new WndOptions(new ItemSprite(this),
+								Messages.titleCase(name()),
 								Messages.get(this, "prompt"),
 								Messages.get(this, "stasis"),
 								Messages.get(this, "freeze")) {

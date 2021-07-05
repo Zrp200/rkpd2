@@ -28,11 +28,11 @@ import com.zrp200.rkpd2.actors.buffs.Hex;
 import com.zrp200.rkpd2.actors.buffs.MagicalSleep;
 import com.zrp200.rkpd2.actors.buffs.Vulnerable;
 import com.zrp200.rkpd2.actors.buffs.Weakness;
+import com.zrp200.rkpd2.actors.hero.abilities.mage.WarpBeacon;
 import com.zrp200.rkpd2.actors.mobs.DM100;
 import com.zrp200.rkpd2.actors.mobs.Eye;
 import com.zrp200.rkpd2.actors.mobs.Shaman;
 import com.zrp200.rkpd2.actors.mobs.Warlock;
-import com.zrp200.rkpd2.actors.mobs.Yog;
 import com.zrp200.rkpd2.actors.mobs.YogFist;
 import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.wands.WandOfBlastWave;
@@ -78,12 +78,13 @@ public class AntiMagic extends Armor.Glyph {
 		RESISTS.add( WandOfPrismaticLight.class );
 		RESISTS.add( WandOfTransfusion.class );
 		RESISTS.add( WandOfWarding.Ward.class );
-		
+
+		RESISTS.add( WarpBeacon.class );
+
 		RESISTS.add( DM100.LightningBolt.class );
 		RESISTS.add( Shaman.EarthenBolt.class );
 		RESISTS.add( Warlock.DarkBolt.class );
 		RESISTS.add( Eye.DeathGaze.class );
-		RESISTS.add( Yog.BurningFist.DarkBolt.class );
 		RESISTS.add( YogFist.BrightFist.LightBeam.class );
 		RESISTS.add( YogFist.DarkFist.DarkBolt.class );
 	}

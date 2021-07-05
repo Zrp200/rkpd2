@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('C:\\Users\\Zrp200\\Zrp200.jks')
+            storePassword 'palkia'
+            keyAlias 'Zrp200'
+            keyPassword 'palkia'
+        }
+    }
     compileSdkVersion appAndroidCompileSDK
     compileOptions.sourceCompatibility = compileOptions.targetCompatibility = appJavaCompatibility
 
@@ -44,6 +52,7 @@ android {
                 releaseImplementation project(':services:updates:githubUpdates')
                 releaseImplementation project(':services:news:shatteredNews')
             }
+            signingConfig signingConfigs.release
         }
     }
 

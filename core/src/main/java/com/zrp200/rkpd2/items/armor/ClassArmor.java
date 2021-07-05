@@ -21,43 +21,69 @@
 
 package com.zrp200.rkpd2.items.armor;
 
+import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.LockedFloor;
+import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.windows.WndChooseAbility;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
 import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.actors.hero.HeroClass;
+import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
 import com.zrp200.rkpd2.items.BrokenSeal;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRecharging;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.utils.GLog;
-import com.watabou.utils.Bundle;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
-
-import static com.zrp200.rkpd2.Dungeon.hero;
 
 abstract public class ClassArmor extends Armor {
 
-	private static final String AC_SPECIAL = "SPECIAL";
+	private static final String AC_ABILITY = "ABILITY";
 	
 	{
 		levelKnown = true;
 		cursedKnown = true;
-		defaultAction = AC_SPECIAL;
+		defaultAction = AC_ABILITY;
 
 		bones = false;
 	}
 
 	private int armorTier;
 
-	protected float charge = 0;
+	private Charger charger;
+	public float charge = 0;
 	
 	public ClassArmor() {
-		super( 6 );
+		super( 5 );
 	}
-	
-	public static ClassArmor upgrade ( Hero owner, Armor armor ) {
+
+	@Override
+	public void activate(Char ch) {
+		super.activate(ch);
+		charger = new Charger();
+		charger.attachTo(ch);
+	}
+
+	@Override
+	public boolean doUnequip( Hero hero, boolean collect, boolean single ) {
+		if (super.doUnequip( hero, collect, single )) {
+			if (charger != null){
+				charger.detach();
+				charger = null;
+			}
+			return true;
+
+		} else {
+			return false;
+
+		}
+	}
+
+	public static ClassArmor upgrade (Hero owner, Armor armor ) {
 		
 		ClassArmor classArmor = null;
 		
@@ -84,18 +110,14 @@ abstract public class ClassArmor extends Armor {
 		}
 
 		classArmor.level(armor.level() - (armor.curseInfusionBonus ? 1 : 0));
-		classArmor.armorTier = armor.tier;
+		classArmor.tier = armor.tier;
 		classArmor.augment = armor.augment;
 		classArmor.inscribe( armor.glyph );
 		classArmor.cursed = armor.cursed;
 		classArmor.curseInfusionBonus = armor.curseInfusionBonus;
 		classArmor.identify();
 
-		classArmor.charge = 0;
-		if (owner.lvl > 18){
-			classArmor.charge += (owner.lvl-18)*25;
-			if (classArmor.charge > 100) classArmor.charge = 100;
-		}
+		classArmor.charge = 50;
 		
 		return classArmor;
 	}
@@ -106,29 +128,38 @@ abstract public class ClassArmor extends Armor {
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
-		bundle.put( ARMOR_TIER, armorTier );
+		bundle.put( ARMOR_TIER, tier );
 		bundle.put( CHARGE, charge );
 	}
 
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
-		armorTier = bundle.getInt( ARMOR_TIER );
+		tier = bundle.getInt( ARMOR_TIER );
 		charge = bundle.getFloat(CHARGE);
 	}
 	
 	@Override
 	public ArrayList<String> actions( Hero hero ) {
 		ArrayList<String> actions = super.actions( hero );
-		if (hero.HP >= 3 && isEquipped( hero )) {
-			actions.add( AC_SPECIAL );
+		if (isEquipped( hero )) {
+			actions.add( AC_ABILITY );
 		}
 		return actions;
 	}
 
 	@Override
+	public String actionName(String action, Hero hero) {
+		if (hero.armorAbility != null && action.equals(AC_ABILITY)){
+			return hero.armorAbility.name().toUpperCase();
+		} else {
+			return super.actionName(action, hero);
+		}
+	}
+
+	@Override
 	public String status() {
-		return Messages.format( "%.0f%%", charge );
+		return Messages.format( "%.0f%%", Math.floor(charge) );
 	}
 
 	@Override
@@ -136,12 +167,18 @@ abstract public class ClassArmor extends Armor {
 
 		super.execute( hero, action );
 
-		if (action.equals(AC_SPECIAL)) {
-			
-			if (!isEquipped( hero )) {
+		if (action.equals(AC_ABILITY)){
+
+			//for pre-0.9.3 saves
+			if (hero.armorAbility == null){
+				GameScene.show(new WndChooseAbility(null, this, hero));
+			} else if (!isEquipped( hero )) {
+				usesTargeting = false;
 				GLog.w( Messages.get(this, "not_equipped") );
 			} else {
-				if(charge < 35) {
+				if (charge < hero.armorAbility.chargeUse(hero)) {
+					/*usesTargeting = false;
+					GLog.w( Messages.get(this, "low_charge") );*/
 					GLog.n("Rat King: I don't have time for this nonsense! I have a kingdom to run! CLASS ARMOR SUPERCHAARGE!!");
 					charge += 100;
 					hero.HP = Math.max( Math.min(hero.HP,1), hero.HP*2/3 );
@@ -149,46 +186,33 @@ abstract public class ClassArmor extends Armor {
 					ScrollOfRecharging.charge(hero);
 					Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);
 				}
-				curUser = hero;
-				doSpecial();
+				usesTargeting = hero.armorAbility.useTargeting();
+				hero.armorAbility.use(this, hero);
 			}
-			
+
 		}
 	}
 
+	// TODO remove
 	protected void useCharge() {
 		charge -= 35;
 		updateQuickslot();
 	}
 
 	@Override
-	public void onHeroGainExp(float levelPercent, Hero hero) {
-		super.onHeroGainExp(levelPercent, hero);
-		if(charge > 100) return;
-		charge += 50 * levelPercent;
-		if (charge > 100) charge = 100;
-		updateQuickslot();
-	}
+	public String desc() {
+		String desc = super.desc();
 
-	abstract public void doSpecial();
-
-	@Override
-	public int STRReq(int lvl) {
-		return STRReq(armorTier, lvl);
-	}
-
-	@Override
-	public int DRMax(int lvl){
-		if (Dungeon.isChallenged(Challenges.NO_ARMOR)){
-			return 1 + armorTier + lvl + augment.defenseFactor(lvl);
-		}
-
-		int max = armorTier * (2 + lvl) + augment.defenseFactor(lvl);
-		if (lvl > max){
-			return ((lvl - max)+1)/2;
+		ArmorAbility ability = Dungeon.hero.armorAbility;
+		if (ability != null){
+			desc += "\n\n" + ability.shortDesc();
+			float chargeUse = ability.chargeUse(Dungeon.hero);
+			desc += " " + Messages.get(this, "charge_use", new DecimalFormat("#.##").format(chargeUse));
 		} else {
-			return max;
+			desc += "\n\n" + "_" + Messages.get(this, "no_ability") + "_";
 		}
+
+		return desc;
 	}
 	
 	@Override
@@ -201,4 +225,19 @@ abstract public class ClassArmor extends Armor {
 		return 0;
 	}
 
+	public class Charger extends Buff {
+		@Override
+		public boolean act() {
+			LockedFloor lock = target.buff(LockedFloor.class);
+			if (charge < 100 && (lock == null || lock.regenOn())) {
+				charge += 100 / 500f; //500 turns to full charge
+				updateQuickslot();
+				if (charge > 100) {
+					charge = 100;
+				}
+			}
+			spend(TICK);
+			return true;
+		}
+	}
 }

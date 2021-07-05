@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.ui.Component;
+import com.zrp200.rkpd2.ui.Window;
 
 import java.util.ArrayList;
 
@@ -38,6 +39,15 @@ public class ChangeInfo extends Component {
 	private RenderedTextBlock text;
 	
 	private ArrayList<ChangeButton> buttons = new ArrayList<>();
+
+	public ChangeInfo( String title, boolean majorTitle, String text, ChangeButton... buttons) {
+		this(title, majorTitle, text);
+		for(ChangeButton button : buttons) addButton(button);
+	}
+	public ChangeInfo( String title, boolean majorTitle, int color, String text, ChangeButton... buttons) {
+		this(title, majorTitle, text, buttons);
+		hardlight(color);
+	}
 	
 	public ChangeInfo( String title, boolean majorTitle, String text){
 		super();

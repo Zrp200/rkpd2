@@ -23,6 +23,7 @@ package com.watabou.glwrap;
 
 import com.badlogic.gdx.Gdx;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -97,7 +98,7 @@ public class Quad {
 			}
 			
 			indices.put( values );
-			indices.position( 0 );
+			((Buffer)indices).position( 0 );
 		}
 		
 		return indices;

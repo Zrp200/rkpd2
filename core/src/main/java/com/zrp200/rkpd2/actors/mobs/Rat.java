@@ -21,8 +21,12 @@
 
 package com.zrp200.rkpd2.actors.mobs;
 
+import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
+import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.RatSprite;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
 public class Rat extends Mob {
@@ -35,10 +39,39 @@ public class Rat extends Mob {
 		
 		maxLvl = 5;
 	}
-	
+
+	@Override
+	public String name() {
+		String name = super.name();
+		String prefixed = Messages.get(this, alignment.toString().toLowerCase(), name);
+		return prefixed.isEmpty() ? name : prefixed;
+	}
+
+	@Override
+	public String description() {
+		String bonus_desc = Messages.get(this,"desc_"+alignment.toString().toLowerCase(), false);
+		String desc = super.description();
+		if(!bonus_desc.isEmpty()) desc += "\n\n" + bonus_desc;
+		return desc;
+	}
+
+	@Override
+	protected boolean act() {
+		if (Dungeon.level.heroFOV[pos] && Dungeon.hero.armorAbility instanceof Ratmogrify){
+			alignment = Alignment.ALLY;
+			if (state == SLEEPING) state = WANDERING;
+		}
+		return super.act();
+	}
+
+	// technically this behavior could be generalized to all mobs, but this is not the mod to do that.
+	protected float[] // this change lets me use fractional values....
+			damageRange = {1,4},
+			armorRange  = {0,1};
+
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 1, 4 );
+		return Math.round( Random.NormalFloat( damageRange[0], damageRange[1] ) );
 	}
 	
 	@Override
@@ -48,6 +81,20 @@ public class Rat extends Mob {
 	
 	@Override
 	public int drRoll() {
-		return Random.NormalIntRange(0, 1);
+		return Math.round(Random.NormalFloat(armorRange[0], armorRange[1]));
+	}
+
+	private static final String RAT_ALLY = "rat_ally";
+
+	@Override
+	public void storeInBundle(Bundle bundle) {
+		super.storeInBundle(bundle);
+		if (alignment == Alignment.ALLY) bundle.put(RAT_ALLY, true);
+	}
+
+	@Override
+	public void restoreFromBundle(Bundle bundle) {
+		super.restoreFromBundle(bundle);
+		if (bundle.contains(RAT_ALLY)) alignment = Alignment.ALLY;
 	}
 }
