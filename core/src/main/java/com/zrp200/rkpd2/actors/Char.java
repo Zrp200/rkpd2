@@ -572,7 +572,7 @@ public abstract class Char extends Actor {
 			dmg *= 2;
 		}
 		if (alignment != Alignment.ALLY && this.buff(DeathMark.DeathMarkTracker.class) != null){
-			dmg *= 1.25f;
+			dmg *= DeathMark.damageMultiplier();
 		}
 		Endure.EndureTracker endure = buff(Endure.EndureTracker.class);
 		//reduce damage here if it isn't coming from a chacter (if it is we already reduced it)

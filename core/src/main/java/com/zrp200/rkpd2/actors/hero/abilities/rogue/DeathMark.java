@@ -27,11 +27,11 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Barrier;
 import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.Cripple;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.buffs.Terror;
 import com.zrp200.rkpd2.actors.buffs.Vertigo;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
@@ -47,6 +47,10 @@ import static com.zrp200.rkpd2.Dungeon.hero;
 
 public class DeathMark extends ArmorAbility {
 
+	public static float damageMultiplier() {
+		return hero.heroClass == HeroClass.ROGUE ? 5/3f : 1.25f;
+	}
+
 	@Override
 	public String targetingPrompt() {
 		return Messages.get(this, "prompt");
@@ -60,6 +64,7 @@ public class DeathMark extends ArmorAbility {
 	public float chargeUse( Hero hero ) {
 		float chargeUse = super.chargeUse(hero);
 		if (hero.buff(DoubleMarkTracker.class) != null){
+			// FIXME should this really be level shifted? Leaving this in right now because I don't know what else to do with it, but it's pretty confusing.
 			//reduced charge use by 33%/55%/70%/80/86%
 			chargeUse *= Math.pow(0.67, hero.shiftedPoints(Talent.DOUBLE_MARK));
 		}
@@ -94,7 +99,7 @@ public class DeathMark extends ArmorAbility {
 
 		if (hero.buff(DoubleMarkTracker.class) != null){
 			hero.buff(DoubleMarkTracker.class).detach();
-		} else if (hero.canHaveTalent(Talent.DOUBLE_MARK)) {
+		} else if (hero.hasTalent(Talent.DOUBLE_MARK)) {
 			Buff.affect(hero, DoubleMarkTracker.class, 0.01f);
 		}
 
