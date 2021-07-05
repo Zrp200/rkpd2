@@ -94,7 +94,7 @@ public class AbyssalNightmare extends Mob {
 	}
 
 	@Override
-	protected float attackDelay() {
+	public float attackDelay() {
 		return super.attackDelay()*1.6f;
 	}
 
@@ -317,11 +317,8 @@ public class AbyssalNightmare extends Mob {
 		immunities.add( Shaman.EarthenBolt.class );
 		immunities.add( Warlock.DarkBolt.class );
 		immunities.add( Eye.DeathGaze.class );
-		immunities.add( Yog.BurningFist.DarkBolt.class );
 		immunities.add( FinalFroggit.Bolt.class);
 		immunities.add( SpectreRat.DarkBolt.class);
-
-		immunities.add(NewTengu.FireAbility.FireBlob.class);
 
 		immunities.add(Grim.class);
 		immunities.add(Kinetic.class);
