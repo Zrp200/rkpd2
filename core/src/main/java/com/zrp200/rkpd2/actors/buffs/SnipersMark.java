@@ -200,13 +200,8 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		if (objects.isEmpty()) {
 			if(hero.hasTalent(Talent.MULTISHOT)) {
 				GameScene.selectCell(new CellSelector.TargetedListener() {
-					@Override protected List<CharSprite> findTargets() {
-						ArrayList<CharSprite> targets = new ArrayList<>();
-						for (Char ch : Dungeon.level.mobs) {
-							if (canDoSniperSpecial(bow, ch)) targets.add(ch.sprite);
-							else reject(ch);
-						}
-						return targets;
+					@Override protected boolean isValidTarget(Char ch) {
+						return canDoSniperSpecial(bow, ch);
 					}
 
 					@Override protected void action(Char ch) {

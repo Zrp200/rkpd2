@@ -51,7 +51,6 @@ import com.zrp200.rkpd2.utils.BArray;
 import com.zrp200.rkpd2.utils.GLog;
 import com.zrp200.rkpd2.windows.WndCombo;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -455,16 +454,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		}
 
 		private HashMap<Char, Integer> targets = new HashMap<>();
-		@Override
-		protected List<CharSprite> findTargets() {
-			ArrayList<CharSprite> sprites = new ArrayList<>();
-			for(Char ch : Dungeon.level.mobs.toArray(new Char[0])) {
-				if(evalTarget(ch)) sprites.add(ch.sprite);
-			}
-			return sprites;
-		}
-
-		private boolean evalTarget(Char enemy) {
+		protected boolean isValidTarget(Char enemy) {
 			if (enemy != null
 					&& enemy.alignment != Char.Alignment.ALLY
 					&& enemy != target
@@ -485,7 +475,6 @@ public class Combo extends Buff implements ActionIndicator.Action {
 					}
 				}
 			}
-			reject(enemy);
 			return false;
 		}
 

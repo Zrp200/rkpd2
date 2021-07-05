@@ -1375,7 +1375,10 @@ public class Hero extends Char {
 	public Mob visibleEnemy( int index ) {
 		return visibleEnemies.get(index % visibleEnemies.size());
 	}
-	
+	public boolean visibleEnemy( Mob mob ) {
+		return visibleEnemies.contains(mob);
+	}
+
 	private boolean walkingToVisibleTrapInFog = false;
 	
 	//FIXME this is a fairly crude way to track this, really it would be nice to have a short
