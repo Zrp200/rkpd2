@@ -9,10 +9,7 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.buffs.Blindness;
-import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.Invisibility;
-import com.zrp200.rkpd2.actors.buffs.Paralysis;
+import com.zrp200.rkpd2.actors.buffs.*;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
@@ -42,7 +39,7 @@ import java.util.Map;
 public class Wrath extends ArmorAbility {
 
     {
-        baseChargeUse = 35;
+        baseChargeUse = 100;
     }
 
     @Override
@@ -51,7 +48,8 @@ public class Wrath extends ArmorAbility {
     }
 
     @Override
-    public Talent[] talents() { return new Talent[0]; }
+    public Talent[] talents() { return new Talent[]{
+            Talent.AURIC_TESLA, Talent.QUANTUM_POSITION, Talent.RAT_AGE}; }
 
     private static final float JUMP_DELAY=2f;
 
@@ -109,7 +107,12 @@ public class Wrath extends ArmorAbility {
         if(stages[0]) for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
             Char mob = Actor.findChar(hero.pos + PathFinder.NEIGHBOURS8[i]);
             if (mob != null && mob != hero && mob.alignment != Char.Alignment.ALLY) {
-                Buff.prolong(mob, Paralysis.class, 5);
+                if (hero.canHaveTalent(Talent.AURIC_TESLA)) {
+                    int damage = hero.drRoll();
+                    damage = Math.round(damage*0.25f*hero.pointsInTalent(Talent.AURIC_TESLA));
+                    mob.damage(damage, hero);
+                    Buff.prolong(mob, Paralysis.class, hero.pointsInTalent(Talent.AURIC_TESLA));
+                }
             }
         }
         // huntress
@@ -161,6 +164,9 @@ public class Wrath extends ArmorAbility {
             @Override
             protected boolean act() {
                 Buff.prolong(hero, Invisibility.class, Invisibility.DURATION/2f);
+                if (hero.hasTalent(Talent.AURIC_TESLA)){
+                    Buff.prolong(hero, Adrenaline.class, hero.pointsInTalent(Talent.AURIC_TESLA)*1.5f);
+                }
                 remove(this);
                 return true;
             }

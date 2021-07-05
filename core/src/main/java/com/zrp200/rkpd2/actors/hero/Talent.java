@@ -22,24 +22,17 @@
 package com.zrp200.rkpd2.actors.hero;
 
 import com.watabou.noosa.Image;
-import com.watabou.utils.Reflection;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.noosa.particles.Emitter;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.GamesInProgress;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.buffs.Adrenaline;
-import com.zrp200.rkpd2.actors.buffs.ArtifactRecharge;
-import com.zrp200.rkpd2.actors.buffs.Berserk;
-import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.CounterBuff;
-import com.zrp200.rkpd2.actors.buffs.EnhancedRings;
-import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
-import com.zrp200.rkpd2.actors.buffs.Haste;
-import com.zrp200.rkpd2.actors.buffs.Recharging;
-import com.zrp200.rkpd2.actors.buffs.RevealedArea;
-import com.zrp200.rkpd2.actors.buffs.Roots;
-import com.zrp200.rkpd2.actors.buffs.WandEmpower;
+import com.zrp200.rkpd2.actors.buffs.*;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
 import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
 import com.zrp200.rkpd2.actors.mobs.Mob;
@@ -68,19 +61,12 @@ import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.messages.Languages;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.noosa.particles.Emitter;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Random;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.utils.GLog;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-
-import static com.watabou.utils.Reflection.newInstance;
 
 public enum Talent {
 
@@ -195,7 +181,9 @@ public enum Talent {
 	KINGS_VISION(103), // improvised projectiles (4), arcane vision(4), wide search(3), heightened senses(4), uses heightened senses
 	PURSUIT(98), // durable projectiles (5),silent steps(4),lethal momentum (3),shield battery(5), uses FUS
 	// Rat King T3
-	RK_BERSERKER(11,3), RK_GLADIATOR(16,3), RK_BATTLEMAGE(43,3), RK_WARLOCK(47,3), RK_ASSASSIN(75,3), RK_FREERUNNER(78,3), RK_SNIPER(109,3), RK_WARDEN(102,3);
+	RK_BERSERKER(11,3), RK_GLADIATOR(16,3), RK_BATTLEMAGE(43,3), RK_WARLOCK(47,3), RK_ASSASSIN(75,3), RK_FREERUNNER(78,3), RK_SNIPER(109,3), RK_WARDEN(102,3),
+	// Wrath T4
+	AURIC_TESLA(92, 4), QUANTUM_POSITION(93, 4), RAT_AGE(94, 4);
 
 	public static abstract class Cooldown extends FlavourBuff {
 		public static <T extends Cooldown> void affectHero(Class<T> cls) {

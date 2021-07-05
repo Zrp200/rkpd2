@@ -27,10 +27,13 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.Burning;
 import com.zrp200.rkpd2.actors.buffs.Roots;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.effects.particles.ElmoParticle;
+import com.zrp200.rkpd2.items.weapon.SpiritBow;
+import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
+import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
 public class MageArmor extends ClassArmor {
@@ -47,9 +50,17 @@ public class MageArmor extends ClassArmor {
 			if (Dungeon.level.heroFOV[mob.pos]
 					&& mob.alignment != Char.Alignment.ALLY) {
 				success = true;
-				Buff.affect( mob, Burning.class ).reignite( mob );
+				if (Dungeon.hero.canHaveTalent(Talent.AURIC_TESLA) &&
+						Random.Int(4) < (Dungeon.hero.pointsInTalent(Talent.AURIC_TESLA) - 1)){
+					SpiritBow bow = Dungeon.hero.belongings.getItem(SpiritBow.class);
+					MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
+					if (staff == null && Dungeon.hero.belongings.weapon instanceof MagesStaff){
+						staff = (MagesStaff) Dungeon.hero.belongings.weapon;
+					}
+					if (staff != null) staff.wand().onZap(new Ballistica(mob.pos, mob.pos, Ballistica.STOP_TARGET));
+					if (bow != null) bow.proc( Dungeon.hero, mob, bow.damageRoll(Dungeon.hero) );
+				}
 				Buff.prolong( mob, Roots.class, Roots.DURATION );
-				mob.damage(Random.NormalIntRange(4, 16 + Dungeon.depth), new Burning());
 			}
 		}
 		return success;
