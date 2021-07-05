@@ -368,7 +368,7 @@ public class CellSelector extends ScrollArea {
 					skippable = skippable && !forceManualTargeting(ch);
 				}
 				else {
-					skippable = skippable && canSkip(ch);
+					skippable = skippable && canIgnore(ch);
 				}
 			}
 		} public final List<Char> getTargets() { // lazily evaluated
@@ -386,11 +386,13 @@ public class CellSelector extends ScrollArea {
 		}
 		// whether this character can be 'safely' skipped for purposes of, well, skipping. usually overlaps with auto-target.
 		// Sometimes we want to be given the option to choose our move even if there is only one valid target.
-		private boolean canSkip(Char ch) {
+		private boolean canIgnore(Char ch) {
 			switch (ch.alignment) {
 				case ALLY: return true;
-				case NEUTRAL: return ch instanceof NPC;
-				case ENEMY: default: return false;
+				case NEUTRAL: if(ch instanceof NPC) return true;
+				case ENEMY: default:
+					// this prevents potentially dangerous actions without forcing it every time.
+					return ch.sprite != null && !ch.sprite.isVisible();
 			}
 		}
 
@@ -411,10 +413,14 @@ public class CellSelector extends ScrollArea {
 			action(target);
 			return true;
 		}
-		// highlights but forces player to tap it. currently unused.
+
+		// when a target is valid and this is true, the player will be forced to select it manually.
+		// currently is dependant on canAutoTarget, meaning that when this plays a role the character WON'T be highlighted.
 		protected boolean forceManualTargeting(Char ch) {
-			return false;
+			// 'invisible' enemies such as mimics
+			return !( ch instanceof NPC || ch.alignment == Char.Alignment.ALLY || canAutoTarget(ch) );
 		}
+
 		@Override final public void onSelect(Integer cell) {
 			for(SelectableCell c : selectableCells) c.killAndErase();
 			selectableCells.clear();
