@@ -162,10 +162,11 @@ public class MagesStaff extends MeleeWeapon {
 
 		if (wand.curCharges < wand.maxCharges) {
 			if (Dungeon.hero.pointsInTalent(Talent.TURNABOUT) >= 4 || Dungeon.hero.subClass != HeroSubClass.KING) {
+				ScrollOfRecharging.charge(Dungeon.hero);
 				gainCharge(0.5f);
 			}
 		}
-		ScrollOfRecharging.charge(Dungeon.hero);
+
 	}
 	public void procWand(Char defender, int damage) {
 		wand.onHit(this,Dungeon.hero,defender,damage);

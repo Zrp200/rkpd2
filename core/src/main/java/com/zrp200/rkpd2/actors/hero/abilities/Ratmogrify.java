@@ -1,5 +1,9 @@
 package com.zrp200.rkpd2.actors.hero.abilities;
 
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
@@ -21,10 +25,6 @@ import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.RatSprite;
 import com.zrp200.rkpd2.ui.TargetHealthIndicator;
 import com.zrp200.rkpd2.utils.GLog;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 
@@ -226,27 +226,27 @@ public class Ratmogrify extends ArmorAbility {
 			armorRange[0] *= getModifier();
 			armorRange[1] *= getModifier();
 
-			defenseSkill *= getModifier();
+			defenseSkill *= getModifier()*3;
 		}
 
 		@Override public int attackSkill(Char target) {
-			return (int)( super.attackSkill(target) * getModifier() );
+			return (int)( super.attackSkill(target) * getModifier()*5 );
 		}
 	}
 	public static class SummonedAlbino extends Albino {
 		{
-			HP = HT *= getModifier();
+			HP = HT *= getModifier()*2;
 
 			damageRange[0] *= getModifier();
 			damageRange[1] *= getModifier();
 			armorRange[0] *= getModifier();
 			armorRange[1] *= getModifier();
 
-			defenseSkill *= getModifier();
+			defenseSkill *= getModifier()*6;
 		}
 
 		@Override public int attackSkill(Char target) {
-			return (int)( super.attackSkill(target) * getModifier() );
+			return (int)( super.attackSkill(target) * getModifier()*10 );
 		}
 	}
 }

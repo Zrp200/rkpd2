@@ -22,10 +22,7 @@
 package com.zrp200.rkpd2.items.rings;
 
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
-
-import java.text.DecimalFormat;
 
 public class RingOfAccuracy extends Ring {
 
@@ -39,12 +36,17 @@ public class RingOfAccuracy extends Ring {
 	}
 
 	@Override
+	protected float cap() {
+		return 2f;
+	}
+
+	@Override
 	protected RingBuff buff( ) {
 		return new Accuracy();
 	}
 	
 	public static float accuracyMultiplier( Char target ){
-		return (float)Math.pow(1.3f, getBuffedBonus(target, Accuracy.class));
+		return Math.min(2f, (float)Math.pow(1.3f, getBuffedBonus(target, Accuracy.class)));
 	}
 	
 	public class Accuracy extends RingBuff {

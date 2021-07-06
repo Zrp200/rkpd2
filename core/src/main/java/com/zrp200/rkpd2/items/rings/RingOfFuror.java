@@ -22,10 +22,7 @@
 package com.zrp200.rkpd2.items.rings;
 
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
-
-import java.text.DecimalFormat;
 
 public class RingOfFuror extends Ring {
 
@@ -42,9 +39,14 @@ public class RingOfFuror extends Ring {
 	protected RingBuff buff( ) {
 		return new Furor();
 	}
-	
+
+	@Override
+	protected float cap() {
+		return 2.5f;
+	}
+
 	public static float attackSpeedMultiplier(Char target ){
-		return (float)Math.pow(1.105, getBuffedBonus(target, Furor.class));
+		return Math.min(2f, (float)Math.pow(1.105, getBuffedBonus(target, Furor.class)));
 	}
 
 	public class Furor extends RingBuff {

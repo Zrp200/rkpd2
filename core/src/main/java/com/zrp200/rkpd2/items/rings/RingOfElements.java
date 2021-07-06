@@ -24,18 +24,10 @@ package com.zrp200.rkpd2.items.rings;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.blobs.Electricity;
 import com.zrp200.rkpd2.actors.blobs.ToxicGas;
-import com.zrp200.rkpd2.actors.buffs.Burning;
-import com.zrp200.rkpd2.actors.buffs.Chill;
-import com.zrp200.rkpd2.actors.buffs.Corrosion;
-import com.zrp200.rkpd2.actors.buffs.Frost;
-import com.zrp200.rkpd2.actors.buffs.Ooze;
-import com.zrp200.rkpd2.actors.buffs.Paralysis;
-import com.zrp200.rkpd2.actors.buffs.Poison;
+import com.zrp200.rkpd2.actors.buffs.*;
 import com.zrp200.rkpd2.items.armor.glyphs.AntiMagic;
-import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
-import java.text.DecimalFormat;
 import java.util.HashSet;
 
 public class RingOfElements extends Ring {
@@ -47,6 +39,11 @@ public class RingOfElements extends Ring {
 	@Override
 	protected float multiplier() {
 		return 0.825f;
+	}
+
+	@Override
+	protected float cap() {
+		return 0.4f;
 	}
 
 	@Override
@@ -75,7 +72,7 @@ public class RingOfElements extends Ring {
 		
 		for (Class c : RESISTS){
 			if (c.isAssignableFrom(effect)){
-				return (float)Math.pow(0.825, getBuffedBonus(target, Resistance.class));
+				return Math.max(0.4f, (float)Math.pow(0.825, getBuffedBonus(target, Resistance.class)));
 			}
 		}
 		

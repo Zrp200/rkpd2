@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.ui.changelist;
 
 import com.watabou.noosa.Image;
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.items.armor.RatKingArmor;
 import com.zrp200.rkpd2.items.armor.WarriorArmor;
 import com.zrp200.rkpd2.items.bags.VelvetPouch;
 import com.zrp200.rkpd2.items.wands.WandOfFirebolt;
@@ -40,9 +41,7 @@ import java.util.ArrayList;
 import static com.zrp200.rkpd2.Assets.Interfaces.TALENT_ICONS;
 import static com.zrp200.rkpd2.actors.hero.HeroClass.*;
 import static com.zrp200.rkpd2.messages.Messages.get;
-import static com.zrp200.rkpd2.sprites.CharSprite.NEGATIVE;
-import static com.zrp200.rkpd2.sprites.CharSprite.POSITIVE;
-import static com.zrp200.rkpd2.sprites.CharSprite.WARNING;
+import static com.zrp200.rkpd2.sprites.CharSprite.*;
 import static com.zrp200.rkpd2.sprites.HeroSprite.avatar;
 import static com.zrp200.rkpd2.sprites.ItemSpriteSheet.*;
 import static com.zrp200.rkpd2.ui.Icons.DEPTH;
@@ -379,8 +378,36 @@ public class RKPD2Changes {
         },
         foot = { // extra message at bottom.
             new ChangeInfo("",true,"Enjoy!")
+        },
+        abyssal = {
+                new ChangeInfo("Abyssal", true, TITLE_COLOR, "",
+                    new ChangeButton(get(Icons.DEPTH),"New chapter!",
+                            "Added endless abyss chapter from Summoning PD, excluding exclusive traps"),
+                    new ChangeButton(avatar(RAT_KING,6), "Rat King Nerfs (rat king nerfs)",
+                            "Rat King's incomprehensible power bugged me during development of abyss too much.\n\n" +
+                                    "_-_ Added 40% damage penalty\n" +
+                                    "_-_ Added arrowhead effect (2x recieved damage)\n" +
+                                    "_-_ Added 25% accuracy penalty\n" +
+                                    "_-_ Added 35% evasion penalty\n" +
+                                    "_-_ Added 33% wand damage penalty\n" +
+                                    "_-_ Added recharge penalty for cloak, chains and hourglass\n" +
+                                    "_-_ Added 33% enchantment proc penalty\n" +
+                                    "_-_ Increased shielding decay\n" +
+                                    "_-_ Nerfed all subclass powers\n" +
+                                    "_-_ Added 50% missile durability penalty.\n\n" +
+                                    "Those powers can be _partially recovered_ in some way..."),
+                        new ChangeButton(new ItemSprite(new RatKingArmor()), "Rat King's Wrath",
+                                "Reworked Rat King's Wrath into full armor ability with 3 exclusive talents:\n\n" +
+                                        "_-_ _Auric Tesla Ability_ twists Wrath's components to have properties of 0.9.3 Shattered armor abilities.\n\n" +
+                                        "_-_ _Quantum Positioning_ significantly extends Wrath's range.\n\n" +
+                                        "_-_ _Rat Age Origins_ turns Smoke Bomb component into gas spreader which can freeze, confuse and damage enemies.\n\n" +
+                                        "Molten Earth damage, Heroic Leap paralysis and Spectral Blades range have been signficantly adjusted, cost increased from _35_ to _100_."),
+                new ChangeButton(new ItemSprite(RING_AGATE), "Ring caps",
+                        "Most of the rings have been capped at 2x of their effect (2.5x for Furor, 60% damage reduction for defense rings and no cap for SS and Wealth).")
+
+            )
         };
 
     // this affects what is displayed.
-    final ChangeInfo[][] changes = {v010, v001, v000, foot};
+    final ChangeInfo[][] changes = {abyssal, v010, v001, v000, foot};
 }

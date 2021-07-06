@@ -21,6 +21,8 @@
 
 package com.zrp200.rkpd2.items.rings;
 
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
@@ -36,8 +38,6 @@ import com.zrp200.rkpd2.journal.Catalog;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.Random;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -182,6 +182,7 @@ public class Ring extends KindofMisc {
 		int level = level();
 		if(!isIdentified()) level(0);
 		double bonus = Math.pow(multiplier(),soloBuffedBonus(false));
+		if (bonus > cap() && multiplier() > 1 || bonus < cap() && multiplier() <= 1) bonus = cap();
 		bonus = multiplier() < 1 ? 1-bonus : bonus-1;
 		String res = Messages.get(this,(isIdentified()?"":"typical_")+"stats", new DecimalFormat("#.##").format(100f * bonus));
 		level(level);
@@ -190,6 +191,7 @@ public class Ring extends KindofMisc {
 	protected float multiplier() {
 		return 0;
 	}
+	protected float cap() { return 0; }
 
 	@Override
 	public Item upgrade() {

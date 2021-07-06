@@ -22,10 +22,7 @@
 package com.zrp200.rkpd2.items.rings;
 
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
-
-import java.text.DecimalFormat;
 
 public class RingOfTenacity extends Ring {
 
@@ -39,13 +36,18 @@ public class RingOfTenacity extends Ring {
 	}
 
 	@Override
+	protected float cap() {
+		return 0.4f;
+	}
+
+	@Override
 	protected RingBuff buff( ) {
 		return new Tenacity();
 	}
 	
 	public static float damageMultiplier( Char t ){
 		//(HT - HP)/HT = heroes current % missing health.
-		return (float)Math.pow(0.85, getBuffedBonus( t, Tenacity.class)*((float)(t.HT - t.HP)/t.HT));
+		return Math.max(0.4f, (float)Math.pow(0.85, getBuffedBonus( t, Tenacity.class)*((float)(t.HT - t.HP)/t.HT)));
 	}
 
 	public class Tenacity extends RingBuff {

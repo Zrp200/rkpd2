@@ -22,7 +22,6 @@
 package com.zrp200.rkpd2.items.rings;
 
 
-import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.items.Item;
@@ -75,12 +74,17 @@ public class RingOfMight extends Ring {
 			((Hero) buff.target).updateHT( false );
 		}
 	}
-	
+
+	@Override
+	protected float cap() {
+		return 2f;
+	}
+
 	public String statsInfo() {
 		// if I want to get this working with innate boosts again, then I'll just have to
 		return Messages.get(this, isIdentified()?"stats":"typical_stats",
 				soloBonus(),
-				new DecimalFormat("#.##").format(100f * (Math.pow(1.035, soloBuffedBonus()) - 1f)));
+				new DecimalFormat("#.##").format(100f * (Math.min(2f, Math.pow(1.035, soloBuffedBonus()) - 1f))));
 	}
 
 	@Override
@@ -93,7 +97,7 @@ public class RingOfMight extends Ring {
 	}
 	
 	public static float HTMultiplier( Char target ){
-		return (float)Math.pow(1.035, getBuffedBonus(target, Might.class));
+		return Math.min(2f, (float)Math.pow(1.035, getBuffedBonus(target, Might.class)));
 	}
 
 	public class Might extends RingBuff {

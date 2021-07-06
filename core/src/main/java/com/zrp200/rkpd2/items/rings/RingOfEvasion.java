@@ -22,10 +22,7 @@
 package com.zrp200.rkpd2.items.rings;
 
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
-
-import java.text.DecimalFormat;
 
 public class RingOfEvasion extends Ring {
 
@@ -39,12 +36,17 @@ public class RingOfEvasion extends Ring {
 	}
 
 	@Override
+	protected float cap() {
+		return 2f;
+	}
+
+	@Override
 	protected RingBuff buff( ) {
 		return new Evasion();
 	}
 	
 	public static float evasionMultiplier( Char target ){
-		return (float) Math.pow( 1.15, getBuffedBonus(target, Evasion.class));
+		return Math.min(2f, (float) Math.pow( 1.15, getBuffedBonus(target, Evasion.class)));
 	}
 
 	public class Evasion extends RingBuff {

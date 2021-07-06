@@ -50,7 +50,7 @@ public class Wrath extends ArmorAbility {
 
     @Override
     public Talent[] talents() { return new Talent[]{
-            Talent.AURIC_TESLA, Talent.QUANTUM_POSITION, Talent.RAT_AGE}; }
+            Talent.AURIC_TESLA, Talent.QUANTUM_POSITION, Talent.RAT_AGE, Talent.HEROIC_ENERGY}; }
 
     private static final float JUMP_DELAY=2f;
 

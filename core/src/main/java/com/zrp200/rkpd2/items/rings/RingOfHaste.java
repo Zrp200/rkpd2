@@ -22,10 +22,7 @@
 package com.zrp200.rkpd2.items.rings;
 
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
-
-import java.text.DecimalFormat;
 
 public class RingOfHaste extends Ring {
 
@@ -39,12 +36,17 @@ public class RingOfHaste extends Ring {
 	}
 
 	@Override
+	protected float cap() {
+		return 2f;
+	}
+
+	@Override
 	protected RingBuff buff( ) {
 		return new Haste();
 	}
 	
 	public static float speedMultiplier( Char target ){
-		return (float)Math.pow(1.2, getBuffedBonus(target, Haste.class));
+		return Math.min(2f, (float)Math.pow(1.2, getBuffedBonus(target, Haste.class)));
 	}
 	
 	public class Haste extends RingBuff {
