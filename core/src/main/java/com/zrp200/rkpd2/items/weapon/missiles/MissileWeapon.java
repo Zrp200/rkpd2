@@ -21,15 +21,12 @@
 
 package com.zrp200.rkpd2.items.weapon.missiles;
 
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.buffs.Adrenaline;
-import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.Corruption;
-import com.zrp200.rkpd2.actors.buffs.MagicImmune;
-import com.zrp200.rkpd2.actors.buffs.Momentum;
-import com.zrp200.rkpd2.actors.buffs.PinCushion;
+import com.zrp200.rkpd2.actors.buffs.*;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -38,16 +35,14 @@ import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
 import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.bags.MagicalHolster;
 import com.zrp200.rkpd2.items.rings.RingOfSharpshooting;
-import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.wands.WandOfDisintegration;
+import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.enchantments.Projecting;
-import com.zrp200.rkpd2.items.weapon.missiles.darts.Dart;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
+import com.zrp200.rkpd2.items.weapon.missiles.darts.Dart;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.utils.GLog;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 
@@ -290,6 +285,9 @@ abstract public class MissileWeapon extends Weapon {
 		}
 		if (holster) {
 			usages *= MagicalHolster.HOLSTER_DURABILITY_FACTOR;
+		}
+		if (Dungeon.hero.heroClass == HeroClass.RAT_KING && Dungeon.hero.pointsInTalent(Talent.EYE_THERAPY) < 2){
+			usages *= 0.5f;
 		}
 		
 		usages *= RingOfSharpshooting.durabilityMultiplier( Dungeon.hero );

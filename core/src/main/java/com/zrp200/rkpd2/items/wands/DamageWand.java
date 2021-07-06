@@ -21,13 +21,14 @@
 
 package com.zrp200.rkpd2.items.wands;
 
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.buffs.WandEmpower;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.messages.Messages;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Random;
 
 //for wands that directly damage a target
 //wands with AOE effects count here (e.g. fireblast), but wands with indrect damage do not (e.g. venom, transfusion)
@@ -59,6 +60,9 @@ public abstract class DamageWand extends Wand{
 				emp.detach();
 			}
 			Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG, 0.75f, 1.2f);
+		}
+		if (Dungeon.hero.heroClass == HeroClass.RAT_KING){
+			dmg *= 0.66f + Dungeon.hero.pointsInTalent(Talent.EYE_THERAPY)*0.04f;
 		}
 		return dmg;
 	}

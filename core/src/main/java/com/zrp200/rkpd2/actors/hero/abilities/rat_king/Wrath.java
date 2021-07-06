@@ -125,7 +125,7 @@ public class Wrath extends ArmorAbility {
                     int damage = hero.drRoll();
                     damage = Math.round(damage*0.25f*hero.pointsInTalent(Talent.AURIC_TESLA));
                     mob.damage(damage, hero);
-                    Buff.prolong(mob, Paralysis.class, hero.pointsInTalent(Talent.AURIC_TESLA));
+                    Buff.prolong(mob, Paralysis.class, 2 + hero.pointsInTalent(Talent.AURIC_TESLA));
                 }
             }
         }

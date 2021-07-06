@@ -1,5 +1,11 @@
 package com.zrp200.rkpd2.items.wands;
 
+import com.watabou.noosa.Game;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Callback;
+import com.watabou.utils.PointF;
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
@@ -7,6 +13,8 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Corruption;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.mobs.npcs.NPC;
 import com.zrp200.rkpd2.effects.MagicMissile;
 import com.zrp200.rkpd2.items.weapon.Weapon;
@@ -19,12 +27,6 @@ import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.sprites.WardSprite;
 import com.zrp200.rkpd2.utils.GLog;
 import com.zrp200.rkpd2.windows.WndOptions;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.Callback;
-import com.watabou.utils.PointF;
-import com.watabou.utils.Random;
 
 public class WandOfWarding extends Wand {
 
@@ -302,6 +304,9 @@ public class WandOfWarding extends Wand {
 
 			//always hits
 			int dmg = Random.NormalIntRange( 2 + wandLevel, 8 + 4*wandLevel );
+			if (Dungeon.hero.heroClass == HeroClass.RAT_KING){
+				dmg *= 0.66f + Dungeon.hero.pointsInTalent(Talent.EYE_THERAPY)*0.04f;
+			}
 			MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
 			Wand.wandProc(enemy, wandLevel, 1, true, dmg,
 					staff != null && staff.wandClass() == WandOfWarding.class && Dungeon.hero.belongings.getItem(WandOfWarding.class) == null); // damage was already done.

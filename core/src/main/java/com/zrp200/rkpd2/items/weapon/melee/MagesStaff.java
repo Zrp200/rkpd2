@@ -21,13 +21,17 @@
 
 package com.zrp200.rkpd2.items.weapon.melee;
 
+import com.watabou.noosa.audio.Sample;
+import com.watabou.noosa.particles.Emitter;
+import com.watabou.noosa.particles.PixelParticle;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Barrier;
 import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.CounterBuff;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
@@ -37,13 +41,7 @@ import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.artifacts.Artifact;
 import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRecharging;
-import com.zrp200.rkpd2.items.wands.Wand;
-import com.zrp200.rkpd2.items.wands.WandOfCorrosion;
-import com.zrp200.rkpd2.items.wands.WandOfCorruption;
-import com.zrp200.rkpd2.items.wands.WandOfDisintegration;
-import com.zrp200.rkpd2.items.wands.WandOfLivingEarth;
-import com.zrp200.rkpd2.items.wands.WandOfMagicMissile;
-import com.zrp200.rkpd2.items.wands.WandOfRegrowth;
+import com.zrp200.rkpd2.items.wands.*;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
@@ -53,11 +51,6 @@ import com.zrp200.rkpd2.utils.GLog;
 import com.zrp200.rkpd2.windows.WndBag;
 import com.zrp200.rkpd2.windows.WndOptions;
 import com.zrp200.rkpd2.windows.WndUseItem;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.noosa.particles.Emitter;
-import com.watabou.noosa.particles.PixelParticle;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 
@@ -167,7 +160,11 @@ public class MagesStaff extends MeleeWeapon {
 			}
 		}
 
-		if (wand.curCharges < wand.maxCharges) gainCharge(0.5f);
+		if (wand.curCharges < wand.maxCharges) {
+			if (Dungeon.hero.pointsInTalent(Talent.TURNABOUT) >= 4 || Dungeon.hero.subClass != HeroSubClass.KING) {
+				gainCharge(0.5f);
+			}
+		}
 		ScrollOfRecharging.charge(Dungeon.hero);
 	}
 	public void procWand(Char defender, int damage) {

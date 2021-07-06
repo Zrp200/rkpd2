@@ -21,21 +21,20 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
-import com.watabou.utils.Random;
-import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.QuickSlot;
-import com.zrp200.rkpd2.actors.hero.Talent;
-import com.zrp200.rkpd2.effects.Speck;
-import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.items.Item;
-import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.ui.ActionIndicator;
-import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.GameMath;
+import com.watabou.utils.Random;
+import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
+import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.effects.Speck;
+import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.ui.ActionIndicator;
+import com.zrp200.rkpd2.ui.BuffIndicator;
 
 public class Momentum extends Buff implements ActionIndicator.Action {
 	
@@ -78,6 +77,9 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 		}
 		movedLastTurn = false;
 
+		if (Dungeon.hero.heroClass == HeroClass.RAT_KING && freerunCooldown > 0 && Dungeon.hero.pointsInTalent(Talent.RATCELERATE) < 4){
+			spend(TICK*2);
+		}
 		spend(TICK);
 		return true;
 	}
@@ -96,10 +98,14 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 	}
 
 	public float speedMultiplier(){
+		float baseSpeed = 2;
+		if (Dungeon.hero.heroClass == HeroClass.RAT_KING){
+			baseSpeed -= 0.75f - (Dungeon.hero.pointsInTalent(Talent.RATCELERATE)-2)*0.25f;
+		}
 		if (freerunning()){
-			return 2;
+			return baseSpeed;
 		} else if (target.invisible > 0 && Dungeon.hero.pointsInTalent(Talent.SPEEDY_STEALTH,Talent.RK_FREERUNNER) == 3){
-			return 2;
+			return baseSpeed;
 		} else {
 			return 1;
 		}

@@ -22,6 +22,8 @@
 package com.zrp200.rkpd2.items.artifacts;
 
 
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
@@ -42,8 +44,6 @@ import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.utils.GLog;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundle;
 
 import java.util.ArrayList;
 
@@ -236,6 +236,9 @@ public class CloakOfShadows extends Artifact {
 					if (!isEquipped(Dungeon.hero)){
 						chargeToGain *= (Dungeon.hero.hasTalent(Talent.LIGHT_CLOAK) ? 1/3f : 0.1f) *
 								Dungeon.hero.pointsInTalent(Talent.LIGHT_CLOAK,Talent.RK_FREERUNNER);
+						if (Dungeon.hero.heroClass == HeroClass.RAT_KING) {
+							chargeToGain *= 0.6f + Dungeon.hero.pointsInTalent(Talent.RATCELERATE)*0.1f;
+						}
 					}
 					partialCharge += chargeToGain;
 				}

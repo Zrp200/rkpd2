@@ -49,6 +49,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static com.zrp200.rkpd2.actors.hero.HeroSubClass.KING;
+
 public class Preparation extends Buff implements ActionIndicator.Action {
 	
 	{
@@ -135,6 +137,7 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 			if (AttackLevel.getLvl(turnsInvis).blinkDistance() > 0 && target == Dungeon.hero){
 				ActionIndicator.setAction(this);
 			}
+			if (Dungeon.hero.subClass == KING && Dungeon.hero.pointsInTalent(Talent.TURNABOUT) < 4) spend(TICK);
 			spend(TICK);
 		} else {
 			detach();

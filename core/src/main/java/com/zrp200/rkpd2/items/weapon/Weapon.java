@@ -21,6 +21,10 @@
 
 package com.zrp200.rkpd2.items.weapon;
 
+import com.watabou.utils.Bundlable;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Random;
+import com.watabou.utils.Reflection;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
@@ -35,35 +39,12 @@ import com.zrp200.rkpd2.items.KindOfWeapon;
 import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
 import com.zrp200.rkpd2.items.rings.RingOfFuror;
 import com.zrp200.rkpd2.items.wands.WandOfDisintegration;
-import com.zrp200.rkpd2.items.weapon.curses.Annoying;
-import com.zrp200.rkpd2.items.weapon.curses.Displacing;
-import com.zrp200.rkpd2.items.weapon.curses.Exhausting;
-import com.zrp200.rkpd2.items.weapon.curses.Fragile;
-import com.zrp200.rkpd2.items.weapon.curses.Friendly;
-import com.zrp200.rkpd2.items.weapon.curses.Polarized;
-import com.zrp200.rkpd2.items.weapon.curses.Sacrificial;
-import com.zrp200.rkpd2.items.weapon.curses.Wayward;
-import com.zrp200.rkpd2.items.weapon.enchantments.Blazing;
-import com.zrp200.rkpd2.items.weapon.enchantments.Blocking;
-import com.zrp200.rkpd2.items.weapon.enchantments.Blooming;
-import com.zrp200.rkpd2.items.weapon.enchantments.Chilling;
-import com.zrp200.rkpd2.items.weapon.enchantments.Corrupting;
-import com.zrp200.rkpd2.items.weapon.enchantments.Elastic;
-import com.zrp200.rkpd2.items.weapon.enchantments.Grim;
-import com.zrp200.rkpd2.items.weapon.enchantments.Kinetic;
-import com.zrp200.rkpd2.items.weapon.enchantments.Lucky;
-import com.zrp200.rkpd2.items.weapon.enchantments.Projecting;
-import com.zrp200.rkpd2.items.weapon.enchantments.Shocking;
-import com.zrp200.rkpd2.items.weapon.enchantments.Unstable;
-import com.zrp200.rkpd2.items.weapon.enchantments.Vampiric;
+import com.zrp200.rkpd2.items.weapon.curses.*;
+import com.zrp200.rkpd2.items.weapon.enchantments.*;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.utils.GLog;
-import com.watabou.utils.Bundlable;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.Random;
-import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -376,6 +357,9 @@ abstract public class Weapon extends KindOfWeapon {
 			Berserk rage = attacker.buff(Berserk.class);
 			if (attacker instanceof Hero && rage != null) {
 				multi += (rage.rageAmount() / 6f) * ((Hero) attacker).shiftedPoints(Talent.ENRAGED_CATALYST,Talent.RK_BERSERKER);
+			}
+			if (Dungeon.hero.heroClass == HeroClass.RAT_KING && Dungeon.hero.pointsInTalent(Talent.EYE_THERAPY) < 3){
+				multi *= 0.66f;
 			}
 			return multi;
 		}

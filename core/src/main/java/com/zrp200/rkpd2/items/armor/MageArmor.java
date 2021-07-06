@@ -33,7 +33,6 @@ import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.effects.particles.ElmoParticle;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
-import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
 public class MageArmor extends ClassArmor {
@@ -57,7 +56,7 @@ public class MageArmor extends ClassArmor {
 					if (staff == null && Dungeon.hero.belongings.weapon instanceof MagesStaff){
 						staff = (MagesStaff) Dungeon.hero.belongings.weapon;
 					}
-					if (staff != null) staff.wand().onZap(new Ballistica(mob.pos, mob.pos, Ballistica.STOP_TARGET));
+					if (staff != null) staff.wand().onHit(staff, Dungeon.hero, mob, staff.damageRoll(Dungeon.hero));
 					if (bow != null) bow.proc( Dungeon.hero, mob, bow.damageRoll(Dungeon.hero) );
 				}
 				Buff.prolong( mob, Roots.class, Roots.DURATION );

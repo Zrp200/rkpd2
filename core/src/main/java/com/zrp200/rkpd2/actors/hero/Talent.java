@@ -183,7 +183,9 @@ public enum Talent {
 	// Rat King T3
 	RK_BERSERKER(11,3), RK_GLADIATOR(16,3), RK_BATTLEMAGE(43,3), RK_WARLOCK(47,3), RK_ASSASSIN(75,3), RK_FREERUNNER(78,3), RK_SNIPER(109,3), RK_WARDEN(102,3),
 	// Wrath T4
-	AURIC_TESLA(92, 4), QUANTUM_POSITION(93, 4), RAT_AGE(94, 4);
+	AURIC_TESLA(92, 4), QUANTUM_POSITION(93, 4), RAT_AGE(94, 4),
+	// Rebirth T4
+	TURNABOUT(60, 4), REINFORCEMENT(61, 4), RATCELERATE(62, 4), EYE_THERAPY(63, 4);
 
 	public static abstract class Cooldown extends FlavourBuff {
 		public static <T extends Cooldown> void affectHero(Class<T> cls) {

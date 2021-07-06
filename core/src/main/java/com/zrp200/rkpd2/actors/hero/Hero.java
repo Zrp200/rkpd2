@@ -429,6 +429,14 @@ public class Hero extends Char {
 				accuracy *= 1.5f;
 			}
 		}
+
+		if (heroClass == HeroClass.RAT_KING){
+			float penalty = 0.25f;
+			if (hasTalent(Talent.TURNABOUT)){
+				penalty -= 0.05f * (pointsInTalent(Talent.TURNABOUT)-1);
+			}
+			accuracy *= (1 - penalty);
+		}
 		
 		if (wep != null) {
 			return (int)(attackSkill * accuracy * wep.accuracyFactor( this ));
@@ -457,6 +465,14 @@ public class Hero extends Char {
 
 		if (belongings.armor != null) {
 			evasion = belongings.armor.evasionFactor(this, evasion);
+		}
+
+		if (heroClass == HeroClass.RAT_KING){
+			float penalty = 0.35f;
+			if (hasTalent(Talent.REINFORCEMENT)){
+				penalty -= 0.05f * (pointsInTalent(Talent.REINFORCEMENT)-1);
+			}
+			evasion *= (1 - penalty);
 		}
 
 		return Math.round(evasion);
@@ -709,9 +725,11 @@ public class Hero extends Char {
 		}
 		
 		if(hasTalent(Talent.BARKSKIN,Talent.RK_WARDEN) && Dungeon.level.map[pos] == Terrain.FURROWED_GRASS){
-			Buff.affect(this, Barkskin.class).set(
-					Barkskin.getGrassDuration(this),
-					Dungeon.hero.hasTalent(Talent.BARKSKIN) ? 2 : 1);
+			if (subClass != HeroSubClass.KING || pointsInTalent(Talent.REINFORCEMENT) >= 4) {
+				Buff.affect(this, Barkskin.class).set(
+						Barkskin.getGrassDuration(this),
+						Dungeon.hero.hasTalent(Talent.BARKSKIN) ? 2 : 1);
+			}
 		}
 		
 		return actResult;
@@ -1185,6 +1203,14 @@ public class Hero extends Char {
 			break;
 		default:
 		}
+
+		if (heroClass == HeroClass.RAT_KING){
+			float penalty = 0.4f;
+			if (hasTalent(Talent.TURNABOUT)){
+				penalty -= 0.05f * pointsInTalent(Talent.TURNABOUT);
+			}
+			damage *= (1 - penalty);
+		}
 		
 		return damage;
 	}
@@ -1194,7 +1220,7 @@ public class Hero extends Char {
 		
 		if (damage > 0 && (subClass == HeroSubClass.BERSERKER || subClass == HeroSubClass.KING)){
 			Berserk berserk = Buff.affect(this, Berserk.class);
-			berserk.damage(damage);
+			berserk.damage((int) (damage * (subClass == HeroSubClass.KING && pointsInTalent(Talent.REINFORCEMENT) < 3 ? 0.6f : 1f)));
 		}
 		
 		if (belongings.armor != null) {
@@ -1232,6 +1258,13 @@ public class Hero extends Char {
 		CapeOfThorns.Thorns thorns = buff( CapeOfThorns.Thorns.class );
 		if (thorns != null) {
 			dmg = thorns.proc(dmg, (src instanceof Char ? (Char)src : null),  this);
+		}
+		if (heroClass == HeroClass.RAT_KING){
+			float penalty = 1f;
+			if (hasTalent(Talent.REINFORCEMENT)){
+				penalty -= 0.20f * (pointsInTalent(Talent.REINFORCEMENT));
+			}
+			dmg *= (1 + penalty);
 		}
 		/*// berserker gets rage from all sources. all hail viscosity!
 		// TODO change for 0.9.2?

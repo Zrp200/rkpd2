@@ -32,43 +32,6 @@ import com.zrp200.rkpd2.actors.blobs.Blob;
 import com.zrp200.rkpd2.actors.blobs.Electricity;
 import com.zrp200.rkpd2.actors.blobs.ToxicGas;
 import com.zrp200.rkpd2.actors.buffs.*;
-import com.zrp200.rkpd2.actors.buffs.Adrenaline;
-import com.zrp200.rkpd2.actors.buffs.ArcaneArmor;
-import com.zrp200.rkpd2.actors.buffs.Barkskin;
-import com.zrp200.rkpd2.actors.buffs.Bleeding;
-import com.zrp200.rkpd2.actors.buffs.Bless;
-import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.Burning;
-import com.zrp200.rkpd2.actors.buffs.ChampionEnemy;
-import com.zrp200.rkpd2.actors.buffs.Charm;
-import com.zrp200.rkpd2.actors.buffs.Chill;
-import com.zrp200.rkpd2.actors.buffs.Corrosion;
-import com.zrp200.rkpd2.actors.buffs.Corruption;
-import com.zrp200.rkpd2.actors.buffs.Cripple;
-import com.zrp200.rkpd2.actors.buffs.Doom;
-import com.zrp200.rkpd2.actors.buffs.EarthImbue;
-import com.zrp200.rkpd2.actors.buffs.FireImbue;
-import com.zrp200.rkpd2.actors.buffs.Frost;
-import com.zrp200.rkpd2.actors.buffs.FrostImbue;
-import com.zrp200.rkpd2.actors.buffs.Haste;
-import com.zrp200.rkpd2.actors.buffs.Hex;
-import com.zrp200.rkpd2.actors.buffs.Hunger;
-import com.zrp200.rkpd2.actors.buffs.LifeLink;
-import com.zrp200.rkpd2.actors.buffs.MagicalSleep;
-import com.zrp200.rkpd2.actors.buffs.Ooze;
-import com.zrp200.rkpd2.actors.buffs.Paralysis;
-import com.zrp200.rkpd2.actors.buffs.Poison;
-import com.zrp200.rkpd2.actors.buffs.Preparation;
-import com.zrp200.rkpd2.actors.buffs.ShieldBuff;
-import com.zrp200.rkpd2.actors.buffs.Slow;
-import com.zrp200.rkpd2.actors.buffs.SnipersMark;
-import com.zrp200.rkpd2.actors.buffs.SoulMark;
-import com.zrp200.rkpd2.actors.buffs.Speed;
-import com.zrp200.rkpd2.actors.buffs.Stamina;
-import com.zrp200.rkpd2.actors.buffs.Terror;
-import com.zrp200.rkpd2.actors.buffs.Vertigo;
-import com.zrp200.rkpd2.actors.buffs.Vulnerable;
-import com.zrp200.rkpd2.actors.buffs.Weakness;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -325,9 +288,12 @@ public abstract class Char extends Actor {
 					SoulMark.process(enemy,(wep != null ? wep.buffedLvl():0)+Math.max(0,h.pointsInTalent(Talent.WARLOCKS_TOUCH)-1),1,Random.Int(4) >= h.pointsInTalent(Talent.WARLOCKS_TOUCH));
 				}
 				if (h.belongings.weapon instanceof MissileWeapon
-						&& (h.subClass == HeroSubClass.SNIPER || h.subClass == HeroSubClass.KING)
 						&& !Dungeon.level.adjacent(h.pos, enemy.pos)){
-					dr = 0;
+					if (h.subClass == HeroSubClass.SNIPER)
+						dr = 0;
+					if (h.subClass == HeroSubClass.KING && h.pointsInTalent(Talent.EYE_THERAPY) > 3){
+						dr = Math.max(0, dr - 5);
+					}
 				}
 			}
 			
