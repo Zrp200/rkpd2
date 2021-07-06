@@ -38,7 +38,9 @@ import com.zrp200.rkpd2.actors.hero.abilities.rogue.SmokeBomb;
 import com.zrp200.rkpd2.actors.hero.abilities.warrior.Endure;
 import com.zrp200.rkpd2.actors.hero.abilities.warrior.HeroicLeap;
 import com.zrp200.rkpd2.actors.hero.abilities.warrior.Shockwave;
-import com.zrp200.rkpd2.items.*;
+import com.zrp200.rkpd2.items.BrokenSeal;
+import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.Waterskin;
 import com.zrp200.rkpd2.items.armor.ClothArmor;
 import com.zrp200.rkpd2.items.armor.ScoutArmor;
 import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
@@ -214,7 +216,6 @@ public enum HeroClass {
 
 		new PotionOfMindVision().identify();
 		new ScrollOfLullaby().identify();
-		hero.lvl = 10;
 	}
 
 	private static void initRatKing( Hero hero ) {
@@ -237,9 +238,6 @@ public enum HeroClass {
 		Dungeon.quickslot.setSlot(0, bow);
 		Dungeon.quickslot.setSlot(1, cloak);
 		Dungeon.quickslot.setSlot(2, staff);
-		new KingsCrown().collect();
-		new TengusMask().collect();
-		hero.lvl = 30;
 	}
 
 	public String title() {

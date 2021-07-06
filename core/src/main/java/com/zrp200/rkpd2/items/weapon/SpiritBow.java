@@ -162,6 +162,45 @@ public class SpiritBow extends Weapon {
 	public int targetingPos(Hero user, int dst) {
 		return knockArrow().targetingPos(user, dst);
 	}
+
+	public class SuperShot extends SpiritArrow{
+		{
+			hitSound = Assets.Sounds.HIT_STRONG;
+		}
+
+		@Override
+		public int image() {
+			return ItemSpriteSheet.SR_RANGED;
+		}
+
+		@Override
+		public int damageRoll(Char owner) {
+			int damage = SpiritBow.this.damageRoll(owner);
+			int distance = Dungeon.level.distance(owner.pos, targetPos) - 1;
+			float multiplier = Math.min(5f, 1.32f * (float)Math.pow(1.13f, distance));
+			damage = Math.round(damage * multiplier);
+			return damage;
+		}
+
+		@Override
+		public float baseDelay(Char user) {
+			return SpiritBow.this.baseDelay(user) * 2f;
+		}
+
+		@Override
+		public void onThrow(int cell) {
+			superShot = false;
+			super.onThrow(cell);
+		}
+
+		@Override
+		public int proc(Char attacker, Char defender, int damage) {
+			if (Dungeon.hero.hasTalent(Talent.RESTORED_NATURE)){
+				Buff.affect(defender, Roots.class, Dungeon.hero.pointsInTalent(Talent.RESTORED_NATURE) + baseDelay(attacker));
+			}
+			return super.proc(attacker, defender, damage);
+		}
+	}
 	
 	private int targetPos;
 
@@ -210,6 +249,9 @@ public class SpiritBow extends Weapon {
 	}
 
 	public SpiritArrow knockArrow(){
+		if (superShot){
+			return new SuperShot();
+		}
 		return new SpiritArrow();
 	}
 
@@ -423,6 +465,8 @@ public class SpiritBow extends Weapon {
 			}
 		}
 	}
+
+	public static boolean superShot = false;
 	
 	private CellSelector.Listener shooter = new CellSelector.Listener() {
 		@Override
