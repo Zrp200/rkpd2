@@ -21,6 +21,9 @@
 
 package com.zrp200.rkpd2.windows;
 
+import com.watabou.noosa.Game;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.ui.Component;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
@@ -35,9 +38,6 @@ import com.zrp200.rkpd2.ui.IconButton;
 import com.zrp200.rkpd2.ui.Icons;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
 import com.zrp200.rkpd2.ui.TalentsPane;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -188,6 +188,7 @@ public class WndHeroInfo extends WndTabbed {
 							new ItemSprite(ItemSpriteSheet.THROWING_CLUB),
 							new ItemSprite(ItemSpriteSheet.ARTIFACT_TALISMAN),
 							new ItemSprite(ItemSpriteSheet.GLOVES),
+							new ItemSprite(ItemSpriteSheet.ARMOR_SCOUT),
 							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
 					break;
 				case RAT_KING:

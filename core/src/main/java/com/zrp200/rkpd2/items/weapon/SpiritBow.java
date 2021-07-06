@@ -38,6 +38,7 @@ import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.huntress.NaturesPower;
 import com.zrp200.rkpd2.effects.Splash;
 import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.armor.ScoutArmor;
 import com.zrp200.rkpd2.items.bombs.Bomb;
 import com.zrp200.rkpd2.items.rings.RingOfFuror;
 import com.zrp200.rkpd2.items.rings.RingOfSharpshooting;
@@ -177,7 +178,7 @@ public class SpiritBow extends Weapon {
 		public int damageRoll(Char owner) {
 			int damage = SpiritBow.this.damageRoll(owner);
 			int distance = Dungeon.level.distance(owner.pos, targetPos) - 1;
-			float multiplier = Math.min(5f, 1.32f * (float)Math.pow(1.13f, distance));
+			float multiplier = Math.min(ScoutArmor.maxDamage(), ScoutArmor.startingBoost() * (float)Math.pow(ScoutArmor.distanceMultiplier(), distance));
 			damage = Math.round(damage * multiplier);
 			return damage;
 		}

@@ -1,9 +1,11 @@
 package com.zrp200.rkpd2.items.armor;
 
 import com.watabou.noosa.Image;
+import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.messages.Messages;
@@ -45,7 +47,7 @@ public class ScoutArmor extends Armor {
     public static class ScoutCooldown extends FlavourBuff {
         public int icon() { return BuffIndicator.TIME; }
         public void tintIcon(Image icon) { icon.hardlight(0x360235); }
-        public float iconFadePercent() { return Math.max(0, 1 - (visualcooldown() / 35)); }
+        public float iconFadePercent() { return Math.max(0, 1 - (visualcooldown() / 25)); }
         public String toString() { return Messages.get(this, "name"); }
         public String desc() { return Messages.get(this, "desc", dispTurns(visualcooldown())); }
     };
@@ -72,7 +74,25 @@ public class ScoutArmor extends Armor {
         }
     }
 
+    public static float startingBoost(){
+        return 1.32f + 0.08f * Dungeon.hero.pointsInTalent(Talent.POINT_BLANK);
+    }
 
+    public static float distanceMultiplier(){
+        return 1.13f + 0.04f * Dungeon.hero.pointsInTalent(Talent.SEER_SHOT);
+    }
+
+    public static float maxDamage(){
+        return 3.5f + 0.25f * Dungeon.hero.pointsInTalent(Talent.FAN_OF_BLADES, Talent.GROWING_POWER, Talent.GO_FOR_THE_EYES);
+    }
+
+    @Override
+    public String desc() {
+        return Messages.get(this, "desc",
+                Math.round(100 * (startingBoost()-1)),
+                Math.round(100 * (distanceMultiplier()-1)),
+                Math.round(100 * maxDamage()));
+    }
 
     public int DRMax(int lvl){
 
@@ -100,7 +120,7 @@ public class ScoutArmor extends Armor {
             if (target != null && bow != null) {
                 SpiritBow.superShot = true;
                 bow.knockArrow().cast(curUser, target);
-                Buff.affect(curUser, ScoutCooldown.class, 35f);
+                Buff.affect(curUser, ScoutCooldown.class, 25f);
             }
         }
         @Override
