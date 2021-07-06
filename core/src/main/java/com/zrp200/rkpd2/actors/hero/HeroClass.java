@@ -40,6 +40,7 @@ import com.zrp200.rkpd2.actors.hero.abilities.warrior.HeroicLeap;
 import com.zrp200.rkpd2.actors.hero.abilities.warrior.Shockwave;
 import com.zrp200.rkpd2.items.*;
 import com.zrp200.rkpd2.items.armor.ClothArmor;
+import com.zrp200.rkpd2.items.armor.ScoutArmor;
 import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
 import com.zrp200.rkpd2.items.bags.MagicalHolster;
 import com.zrp200.rkpd2.items.bags.PotionBandolier;
@@ -204,13 +205,16 @@ public enum HeroClass {
 	private static void initHuntress( Hero hero ) {
 
 		(hero.belongings.weapon = new Gloves()).identify();
+		(hero.belongings.armor = new ScoutArmor()).identify();
 		SpiritBow bow = new SpiritBow();
 		bow.identify().collect();
 
 		Dungeon.quickslot.setSlot(0, bow);
+		Dungeon.quickslot.setSlot(1, hero.belongings.armor);
 
 		new PotionOfMindVision().identify();
 		new ScrollOfLullaby().identify();
+		hero.lvl = 10;
 	}
 
 	private static void initRatKing( Hero hero ) {

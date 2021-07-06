@@ -420,7 +420,7 @@ public enum Talent {
 				shield.supercharge((int)Math.round(shield.maxShield()*multiplier));
 			}
 		}
-		if (hero.hasTalent(RESTORED_NATURE,RESTORATION)){
+		if (hero.hasTalent(RESTORATION)){
 			ArrayList<Integer> grassCells = new ArrayList<>();
 			for (int i : PathFinder.NEIGHBOURS8){
 				grassCells.add(hero.pos+i);
@@ -429,8 +429,7 @@ public enum Talent {
 			for (int cell : grassCells){
 				Char ch = Actor.findChar(cell);
 				if (ch != null && ch.alignment == Char.Alignment.ENEMY){
-					int duration = 1+hero.pointsInTalent(RESTORED_NATURE,RESTORATION);
-					if(hero.heroClass == HeroClass.HUNTRESS) duration *= 2; // 4/6 root, for whatever it's worth.
+					int duration = 1+hero.pointsInTalent(RESTORATION);
 					Buff.affect(ch, Roots.class, duration);
 				}
 				if (Dungeon.level.map[cell] == Terrain.EMPTY ||
@@ -441,7 +440,7 @@ public enum Talent {
 				}
 				CellEmitter.get(cell).burst(LeafParticle.LEVEL_SPECIFIC, 4);
 			}
-			if (hero.pointsInTalent(RESTORED_NATURE,RESTORATION) == 1){
+			if (hero.pointsInTalent(RESTORATION) == 1){
 				grassCells.remove(0);
 				grassCells.remove(0);
 				grassCells.remove(0);

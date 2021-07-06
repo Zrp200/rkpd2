@@ -21,16 +21,21 @@
 
 package com.zrp200.rkpd2.items.weapon;
 
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Callback;
+import com.watabou.utils.Random;
+import com.watabou.utils.Reflection;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.RevealedArea;
+import com.zrp200.rkpd2.actors.buffs.Roots;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.huntress.NaturesPower;
-import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.effects.Splash;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.bombs.Bomb;
@@ -43,21 +48,12 @@ import com.zrp200.rkpd2.items.weapon.enchantments.Lucky;
 import com.zrp200.rkpd2.items.weapon.enchantments.Unstable;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.plants.Blindweed;
-import com.zrp200.rkpd2.plants.Firebloom;
-import com.zrp200.rkpd2.plants.Icecap;
-import com.zrp200.rkpd2.plants.Plant;
-import com.zrp200.rkpd2.plants.Sorrowmoss;
-import com.zrp200.rkpd2.plants.Stormvine;
+import com.zrp200.rkpd2.plants.*;
 import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.sprites.MissileSprite;
 import com.zrp200.rkpd2.ui.QuickSlotButton;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Callback;
-import com.watabou.utils.Random;
-import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 
