@@ -22,6 +22,10 @@
 package com.zrp200.rkpd2.actors.buffs;
 
 import com.badlogic.gdx.utils.IntIntMap;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.PathFinder;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
@@ -36,17 +40,11 @@ import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
-import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.ActionIndicator;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.utils.BArray;
 import com.zrp200.rkpd2.utils.GLog;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.PathFinder;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -269,46 +267,41 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 			return !(enemy == null || Dungeon.hero.isCharmedBy(enemy) || enemy instanceof NPC || !Dungeon.level.heroFOV[enemy.pos]);
 		}
 
-		@Override
-		protected List<CharSprite> findTargets() {
-			ArrayList<CharSprite> targets = new ArrayList<>();
+		@Override protected void findTargets() {
 			AttackLevel lvl = AttackLevel.getLvl(turnsInvis);
 			PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.not(Dungeon.level.solid, null), lvl.blinkDistance());
-			for (Char enemy : Dungeon.level.mobs) {
-				if ( !canAttack(enemy) ){
-					reject(enemy);
-					//GLog.w(Messages.get(Preparation.class, "no_target"));
-					continue;
-				}
-				if( Dungeon.hero.canAttack(enemy) ) {
-					targets.add(enemy.sprite);
-					continue;
-				}
-				int dest = -1;
-				for (int i : PathFinder.NEIGHBOURS8){
-					int cell = enemy.pos+i;
-					//cannot blink into a cell that's occupied or impassable, only over them
-					if (Actor.findChar(cell) != null)     continue;
-					if (!Dungeon.level.passable[cell])    continue;
+			super.findTargets();
+		} @Override protected boolean isValidTarget(Char enemy) {
+			if ( !canAttack(enemy) ){
+				//GLog.w(Messages.get(Preparation.class, "no_target"));
+				return false;
+			}
+			// check if the hero can reach them outright.
+			if( Dungeon.hero.canAttack(enemy) ) {
+				return true;
+			}
+			int dest = -1;
+			for (int i : PathFinder.NEIGHBOURS8){
+				int cell = enemy.pos+i;
+				//cannot blink into a cell that's occupied or impassable, only over them
+				if (Actor.findChar(cell) != null)     continue;
+				if (!Dungeon.level.passable[cell])    continue;
 
-					if (dest == -1 || PathFinder.distance[dest] > PathFinder.distance[cell]){
-						dest = cell;
+				if (dest == -1 || PathFinder.distance[dest] > PathFinder.distance[cell]){
+					dest = cell;
 					//if two cells have the same pathfinder distance, prioritize the one with the closest true distance to the hero
-					} else if (PathFinder.distance[dest] == PathFinder.distance[cell]){
-						if (Dungeon.level.trueDistance(Dungeon.hero.pos, dest) > Dungeon.level.trueDistance(Dungeon.hero.pos, cell)){
-							dest = cell;
-						}
+				} else if (PathFinder.distance[dest] == PathFinder.distance[cell]){
+					if (Dungeon.level.trueDistance(Dungeon.hero.pos, dest) > Dungeon.level.trueDistance(Dungeon.hero.pos, cell)){
+						dest = cell;
 					}
 				}
-				if (dest == -1 || PathFinder.distance[dest] == Integer.MAX_VALUE || Dungeon.hero.rooted){
-					reject(enemy);
-					//GLog.w(Messages.get(Preparation.class, "out_of_reach"));
-					continue;
-				}
-				targets.add(enemy.sprite);
-				blinkPos.put(enemy.pos, dest);
 			}
-			return targets;
+			if (dest == -1 || PathFinder.distance[dest] == Integer.MAX_VALUE || Dungeon.hero.rooted){
+				//GLog.w(Messages.get(Preparation.class, "out_of_reach"));
+				return false;
+			}
+			blinkPos.put(enemy.pos, dest);
+			return true;
 		}
 
 		@Override

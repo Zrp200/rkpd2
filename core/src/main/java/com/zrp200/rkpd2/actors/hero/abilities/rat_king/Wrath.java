@@ -9,6 +9,7 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.blobs.*;
 import com.zrp200.rkpd2.actors.buffs.*;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -81,8 +82,21 @@ public class Wrath extends ArmorAbility {
                     Buff.prolong(mob, Blindness.class, Blindness.DURATION / 2f);
                     if (mob.state == mob.HUNTING) mob.state = mob.WANDERING;
                     mob.sprite.emitter().burst(Speck.factory(Speck.LIGHT), 4);
+                    if (hero.hasTalent(Talent.RAT_AGE)) {
+                        GameScene.add(Blob.seed(mob.pos, 80, Inferno.class));
+                        if (hero.pointsInTalent(Talent.RAT_AGE) > 1){
+                            GameScene.add(Blob.seed(mob.pos, 80, Blizzard.class));
+                        }
+                        if (hero.pointsInTalent(Talent.RAT_AGE) > 2){
+                            GameScene.add(Blob.seed(mob.pos, 80, ConfusionGas.class));
+                        }
+                        if (hero.pointsInTalent(Talent.RAT_AGE) > 3){
+                            GameScene.add(Blob.seed(mob.pos, 80, Regrowth.class));
+                        }
+                    }
                 }
             }
+
 
             CellEmitter.get(hero.pos).burst(Speck.factory(Speck.WOOL), 10);
             hero.sprite.turnTo(hero.pos, target); // jump from warrior leap
@@ -166,6 +180,15 @@ public class Wrath extends ArmorAbility {
                 Buff.prolong(hero, Invisibility.class, Invisibility.DURATION/2f);
                 if (hero.hasTalent(Talent.AURIC_TESLA)){
                     Buff.prolong(hero, Adrenaline.class, hero.pointsInTalent(Talent.AURIC_TESLA)*1.5f);
+                }
+                if (hero.hasTalent(Talent.RAT_AGE)){
+                    Buff.affect(hero, FireImbue.class).set(9f);
+                    if (hero.pointsInTalent(Talent.RAT_AGE) > 1){
+                        Buff.affect(hero, FrostImbue.class, 9f);
+                    }
+                    if (hero.pointsInTalent(Talent.RAT_AGE) > 2){
+                        Buff.affect(hero, BlobImmunity.class, 9f);
+                    }
                 }
                 remove(this);
                 return true;

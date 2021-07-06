@@ -21,27 +21,24 @@
 
 package com.zrp200.rkpd2.scenes;
 
+import com.watabou.input.*;
+import com.watabou.noosa.Camera;
+import com.watabou.noosa.ScrollArea;
+import com.watabou.utils.GameMath;
+import com.watabou.utils.PointF;
+import com.watabou.utils.Signal;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.SPDAction;
 import com.zrp200.rkpd2.SPDSettings;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.mobs.Mob;
+import com.zrp200.rkpd2.actors.mobs.Phantom;
 import com.zrp200.rkpd2.actors.mobs.npcs.NPC;
 import com.zrp200.rkpd2.effects.SelectableCell;
 import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.tiles.DungeonTilemap;
-import com.watabou.input.GameAction;
-import com.watabou.input.KeyBindings;
-import com.watabou.input.KeyEvent;
-import com.watabou.input.PointerEvent;
-import com.watabou.input.ScrollEvent;
-import com.watabou.noosa.Camera;
-import com.watabou.noosa.ScrollArea;
-import com.watabou.utils.GameMath;
-import com.watabou.utils.PointF;
-import com.watabou.utils.Signal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -353,31 +350,57 @@ public class CellSelector extends ScrollArea {
 		private boolean skippable = true;
 		private final List<SelectableCell> selectableCells = new ArrayList();
 		public final void highlightCells() {
-			for(CharSprite s : getTargets()) {
-				selectableCells.add(new SelectableCell(s));
+			for(Char c : getTargets()) {
+				if( canAutoTarget(c) ) { // highlight conflicts
+					selectableCells.add(new SelectableCell(c.sprite));
+				}
 			}
 		}
-		private List<CharSprite> targets;
-		protected abstract List<CharSprite> findTargets();
-		public final List<CharSprite> getTargets() { // lazily evaluated
-			if(targets == null) targets = findTargets();
+		private List<Char> targets;
+		protected void findTargets() {
+			targets = new ArrayList();
+			for(Char ch : Dungeon.level.mobs.toArray(new Char[0])) {
+				if( isValidTarget(ch) ) {
+					targets.add(ch);
+					skippable = skippable && !forceManualTargeting(ch);
+				}
+				else {
+					skippable = skippable && canIgnore(ch);
+				}
+			}
+		} public final List<Char> getTargets() { // lazily evaluated
+			if(targets == null) findTargets();
 			return targets;
 		}
+		protected abstract boolean isValidTarget(Char ch);
 
-		/** if a character can be highlighted by this selector at all. This affects auto-target as well. */
-		protected boolean canTarget(Char ch) {
-			return !(ch instanceof NPC || ch.alignment == Char.Alignment.ALLY);
+		/**
+		 * if a character can be highlighted by this selector at all.
+		 * Also is checked for auto-target.
+		 */
+		protected boolean canAutoTarget(Char ch) {
+			return ch instanceof Mob && !(ch instanceof Phantom) && Dungeon.hero.visibleEnemy( (Mob) ch );
+		}
+		// whether this character can be 'safely' skipped for purposes of, well, skipping. usually overlaps with auto-target.
+		// Sometimes we want to be given the option to choose our move even if there is only one valid target.
+		private boolean canIgnore(Char ch) {
+			switch (ch.alignment) {
+				case ALLY: return true;
+				case NEUTRAL: if(ch instanceof NPC) return true;
+				case ENEMY: default:
+					// this prevents potentially dangerous actions without forcing it every time.
+					return ch.sprite != null && !ch.sprite.isVisible();
+			}
 		}
 
 		protected abstract void action(Char ch);
 
 		// if there's only one target, this skips the actual selecting.
 		protected final boolean action() {
-			getTargets(); if(!skippable) return false;
+			if(getTargets().isEmpty() || !skippable) return false;
 			Char target = null;
-			for(CharSprite s : getTargets()) {
-				Char ch = s.ch;
-				if(canTarget(ch)) {
+			for(Char ch : getTargets()) {
+				if( canAutoTarget(ch) ) {
 					if(target != null) return false; // more than one possible target, force manual targeting
 					target = ch;
 				}
@@ -387,6 +410,14 @@ public class CellSelector extends ScrollArea {
 			action(target);
 			return true;
 		}
+
+		// when a target is valid and this is true, the player will be forced to select it manually.
+		// currently is dependant on canAutoTarget, meaning that when this plays a role the character WON'T be highlighted.
+		protected boolean forceManualTargeting(Char ch) {
+			// 'invisible' enemies such as mimics
+			return !( ch instanceof NPC || ch.alignment == Char.Alignment.ALLY || canAutoTarget(ch) );
+		}
+
 		@Override final public void onSelect(Integer cell) {
 			for(SelectableCell c : selectableCells) c.killAndErase();
 			selectableCells.clear();
@@ -394,14 +425,10 @@ public class CellSelector extends ScrollArea {
 			if(cell == null) return;
 
 			Char c = Actor.findChar(cell);
-			if(c != null && getTargets().contains(c.sprite)) action(c);
+			if(c != null && getTargets().contains(c)) action(c);
 			else onInvalid(cell);
 		}
 
-		/** toggles the autoskip when applicable. Considers whether the target can be auto-targeted. */
-		protected final void reject(Char ch) {
-			if(ch != null && ch.sprite != null && canTarget(ch) && ch.sprite.isVisible()) skippable = false;
-		}
-		protected void onInvalid(int cell) {}
+		protected void onInvalid(int cell) {/* do nothing */}
 	}
 }

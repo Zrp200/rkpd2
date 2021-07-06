@@ -63,7 +63,7 @@ public class FrostFire extends Blob {
 					burn( cell );
 
 					fire = cur[cell] - 1;
-					if (fire <= 0 && flamable[cell]) {
+					if (fire <= 0 && (flamable[cell])) {
 
 						Dungeon.level.destroy( cell );
 

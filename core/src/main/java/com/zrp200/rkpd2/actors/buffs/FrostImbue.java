@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.actors.buffs;
 
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.blobs.FrostFire;
 import com.zrp200.rkpd2.effects.particles.SnowParticle;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
@@ -63,5 +64,6 @@ public class FrostImbue extends FlavourBuff {
 	{
 		immunities.add( Frost.class );
 		immunities.add( Chill.class );
+		immunities.add(FrostFire.class);
 	}
 }

@@ -30,27 +30,9 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.blobs.Alchemy;
 import com.zrp200.rkpd2.actors.buffs.*;
-import com.zrp200.rkpd2.actors.buffs.AdrenalineSurge;
-import com.zrp200.rkpd2.actors.buffs.Amok;
-import com.zrp200.rkpd2.actors.buffs.Awareness;
-import com.zrp200.rkpd2.actors.buffs.Barkskin;
-import com.zrp200.rkpd2.actors.buffs.Berserk;
-import com.zrp200.rkpd2.actors.buffs.Bless;
-import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.Burning;
-import com.zrp200.rkpd2.actors.buffs.Combo;
-import com.zrp200.rkpd2.actors.buffs.Drowsy;
-import com.zrp200.rkpd2.actors.buffs.Foresight;
-import com.zrp200.rkpd2.actors.buffs.Fury;
-import com.zrp200.rkpd2.actors.buffs.HoldFast;
-import com.zrp200.rkpd2.actors.buffs.Hunger;
-import com.zrp200.rkpd2.actors.buffs.Invisibility;
-import com.zrp200.rkpd2.actors.buffs.MindVision;
-import com.zrp200.rkpd2.actors.buffs.Momentum;
-import com.zrp200.rkpd2.actors.buffs.Paralysis;
-import com.zrp200.rkpd2.actors.buffs.Regeneration;
-import com.zrp200.rkpd2.actors.buffs.SnipersMark;
-import com.zrp200.rkpd2.actors.buffs.Vertigo;
+import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
+import com.zrp200.rkpd2.actors.hero.abilities.huntress.NaturesPower;
+import com.zrp200.rkpd2.actors.hero.abilities.warrior.Endure;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.Monk;
 import com.zrp200.rkpd2.actors.mobs.Phantom;
@@ -60,6 +42,7 @@ import com.zrp200.rkpd2.effects.Flare;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.*;
 import com.zrp200.rkpd2.items.Heap.Type;
+import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.items.armor.glyphs.AntiMagic;
 import com.zrp200.rkpd2.items.armor.glyphs.Brimstone;
 import com.zrp200.rkpd2.items.armor.glyphs.Viscosity;
@@ -104,18 +87,6 @@ import com.zrp200.rkpd2.windows.WndHero;
 import com.zrp200.rkpd2.windows.WndMessage;
 import com.zrp200.rkpd2.windows.WndResurrect;
 import com.zrp200.rkpd2.windows.WndTradeItem;
-import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
-import com.zrp200.rkpd2.actors.hero.abilities.huntress.NaturesPower;
-import com.zrp200.rkpd2.actors.hero.abilities.warrior.Endure;
-import com.zrp200.rkpd2.items.armor.ClassArmor;
-import com.watabou.noosa.Camera;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.Callback;
-import com.watabou.utils.GameMath;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1354,7 +1325,10 @@ public class Hero extends Char {
 	public Mob visibleEnemy( int index ) {
 		return visibleEnemies.get(index % visibleEnemies.size());
 	}
-	
+	public boolean visibleEnemy( Mob mob ) {
+		return visibleEnemies.contains(mob);
+	}
+
 	private boolean walkingToVisibleTrapInFog = false;
 	
 	//FIXME this is a fairly crude way to track this, really it would be nice to have a short

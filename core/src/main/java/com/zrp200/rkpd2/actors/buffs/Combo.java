@@ -41,7 +41,6 @@ import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
-import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.ActionIndicator;
@@ -51,9 +50,7 @@ import com.zrp200.rkpd2.utils.BArray;
 import com.zrp200.rkpd2.utils.GLog;
 import com.zrp200.rkpd2.windows.WndCombo;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class Combo extends Buff implements ActionIndicator.Action {
 	
@@ -455,16 +452,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		}
 
 		private HashMap<Char, Integer> targets = new HashMap<>();
-		@Override
-		protected List<CharSprite> findTargets() {
-			ArrayList<CharSprite> sprites = new ArrayList<>();
-			for(Char ch : Dungeon.level.mobs.toArray(new Char[0])) {
-				if(evalTarget(ch)) sprites.add(ch.sprite);
-			}
-			return sprites;
-		}
-
-		private boolean evalTarget(Char enemy) {
+		protected boolean isValidTarget(Char enemy) {
 			if (enemy != null
 					&& enemy.alignment != Char.Alignment.ALLY
 					&& enemy != target
@@ -485,7 +473,6 @@ public class Combo extends Buff implements ActionIndicator.Action {
 					}
 				}
 			}
-			reject(enemy);
 			return false;
 		}
 
