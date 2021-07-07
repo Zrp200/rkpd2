@@ -61,6 +61,7 @@ import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.messages.Languages;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.utils.GLog;
 
@@ -207,6 +208,8 @@ public enum Talent {
 	public static class WandPreservationCounter extends CounterBuff{};
 	public static class EmpoweredStrikeTracker extends FlavourBuff{};
 	public static class BountyHunterTracker extends FlavourBuff{};
+	public static class MysticalUpgradeWandTracker extends FlavourBuff{};
+	public static class MysticalUpgradeMissileTracker extends FlavourBuff{};
 	public static class RejuvenatingStepsCooldown extends Cooldown{
 		@Override public float duration() {
 			int points = Dungeon.hero.pointsInTalent(REJUVENATING_STEPS, POWER_WITHIN);
@@ -215,6 +218,24 @@ public enum Talent {
 		}
 		public int icon() { return BuffIndicator.TIME; }
 		public void tintIcon(Image icon) { icon.hardlight(0f, 0.35f, 0.15f); }
+	};
+	public static class EnergizingUpgradeCooldown extends Cooldown {
+		public float duration() { return 65 - Dungeon.hero.pointsInTalent(ENERGIZING_UPGRADE)*15; }
+		public int icon() { return BuffIndicator.TIME; }
+		public void tintIcon(Image icon) { icon.hardlight(0xf1f028); }
+	};
+	public static class EnergizingUpgradeTracker extends FlavourBuff{
+
+		@Override
+		public void detach() {
+			super.detach();
+			Talent.Cooldown.affectHero(EnergizingUpgradeCooldown.class);
+		}
+		@Override
+		public void fx(boolean on) {
+			if (on) target.sprite.add(CharSprite.State.SPIRIT);
+			else target.sprite.remove(CharSprite.State.SPIRIT);
+		}
 	};
 	public static class RejuvenatingStepsFurrow extends CounterBuff{};
 	public static class SeerShotCooldown extends Cooldown{
@@ -457,8 +478,8 @@ public enum Talent {
 	}
 
 	public static void onUpgradeScrollUsed( Hero hero ){
-		if (hero.hasTalent(ENERGIZING_UPGRADE,RESTORATION)){
-			int charge = 1+2*hero.pointsInTalent(ENERGIZING_UPGRADE,RESTORATION);
+		if (hero.hasTalent(RESTORATION)){
+			int charge = 1+2*hero.pointsInTalent(RESTORATION);
 			MagesStaff staff = hero.belongings.getItem(MagesStaff.class);
 			if(hero.hasTalent(ENERGIZING_UPGRADE)) {
 				hero.belongings.charge(charge, true);
@@ -470,7 +491,7 @@ public enum Talent {
 				SpellSprite.show( hero, SpellSprite.CHARGE );
 			}
 		}
-		if (hero.hasTalent(MYSTICAL_UPGRADE,RESTORATION)){
+		if (hero.hasTalent(RESTORATION)){
 			boolean charge = false;
 			if(hero.hasTalent(MYSTICAL_UPGRADE)) {
 				for(Artifact.ArtifactBuff buff : Dungeon.hero.buffs(Artifact.ArtifactBuff.class)) {
@@ -482,7 +503,7 @@ public enum Talent {
 			}
 			CloakOfShadows cloak = hero.belongings.getItem(CloakOfShadows.class);
 			if (cloak != null){
-				cloak.overCharge(1+hero.pointsInTalent(MYSTICAL_UPGRADE,RESTORATION));
+				cloak.overCharge(1+hero.pointsInTalent(RESTORATION));
 				charge = true; }
 			if(charge) {
 				ScrollOfRecharging.charge( Dungeon.hero );

@@ -21,6 +21,9 @@
 
 package com.zrp200.rkpd2.items;
 
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.GameMath;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.actors.buffs.Barrier;
 import com.zrp200.rkpd2.actors.hero.Hero;
@@ -28,9 +31,6 @@ import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.GameMath;
 
 import java.util.ArrayList;
 
@@ -106,6 +106,7 @@ public class Waterskin extends Item {
 
 				if (Dewdrop.consumeDew(dropsNeeded, hero, true)){
 					volume -= dropsNeeded;
+					Talent.onHealingPotionUsed(hero);
 
 					hero.spend(TIME_TO_DRINK);
 					hero.busy();

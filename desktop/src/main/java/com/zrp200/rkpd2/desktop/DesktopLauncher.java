@@ -148,7 +148,7 @@ public class DesktopLauncher {
 		DesktopWindowListener listener = new DesktopWindowListener();
 		config.setWindowListener( listener );
 		
-		config.setWindowIcon("icons/icon_256.png");
+		config.setWindowIcon("icons/icon_96x96.png");
 
 		new Lwjgl3Application(new ShatteredPixelDungeon(new DesktopPlatformSupport()), config);
 	}

@@ -21,21 +21,17 @@
 
 package com.zrp200.rkpd2.items.wands;
 
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Callback;
+import com.watabou.utils.PointF;
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.buffs.Barrier;
-import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.Degrade;
-import com.zrp200.rkpd2.actors.buffs.Invisibility;
-import com.zrp200.rkpd2.actors.buffs.LockedFloor;
-import com.zrp200.rkpd2.actors.buffs.MagicImmune;
-import com.zrp200.rkpd2.actors.buffs.Momentum;
-import com.zrp200.rkpd2.actors.buffs.Recharging;
-import com.zrp200.rkpd2.actors.buffs.ScrollEmpower;
-import com.zrp200.rkpd2.actors.buffs.SoulMark;
+import com.zrp200.rkpd2.actors.buffs.*;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -55,11 +51,6 @@ import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.ui.QuickSlotButton;
 import com.zrp200.rkpd2.utils.GLog;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.Callback;
-import com.watabou.utils.PointF;
-import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 
@@ -409,25 +400,40 @@ public abstract class Wand extends Item {
 			buff.detach();
 		}
 
+		if (Dungeon.hero.pointsInTalent(Talent.MYSTICAL_UPGRADE) > 0){
+			Buff.affect(Dungeon.hero, Talent.MysticalUpgradeMissileTracker.class, 1f);
+		}
+
 		//if the wand is owned by the hero, but not in their inventory, it must be in the staff
 		if (charger != null
-				&& charger.target == Dungeon.hero
-				&& !Dungeon.hero.belongings.contains(this)) {
-			if (curCharges == 0 && Dungeon.hero.hasTalent(Talent.BACKUP_BARRIER,Talent.NOBLE_CAUSE)) {
-				//grants 3/5 shielding
-			int shielding = 1+2*Dungeon.hero.pointsInTalent(Talent.BACKUP_BARRIER, Talent.NOBLE_CAUSE);
-			if(Dungeon.hero.hasTalent(Talent.BACKUP_BARRIER)) shielding = (int)Math.ceil(shielding*1.5f);
-			Buff.affect(Dungeon.hero, Barrier.class).setShield(shielding);
-			}
-			if (Dungeon.hero.hasTalent(Talent.EMPOWERED_STRIKE,Talent.RK_BATTLEMAGE)){
-				Buff.prolong(Dungeon.hero, Talent.EmpoweredStrikeTracker.class, 10f);
+				&& charger.target == Dungeon.hero) {
+			if (!Dungeon.hero.belongings.contains(this)) {
+				if (curCharges == 0 && Dungeon.hero.hasTalent(Talent.BACKUP_BARRIER, Talent.NOBLE_CAUSE)) {
+					//grants 3/5 shielding
+					int shielding = 1 + 2 * Dungeon.hero.pointsInTalent(Talent.BACKUP_BARRIER, Talent.NOBLE_CAUSE);
+					if (Dungeon.hero.hasTalent(Talent.BACKUP_BARRIER)) shielding = (int) Math.ceil(shielding * 1.5f);
+					Buff.affect(Dungeon.hero, Barrier.class).setShield(shielding);
+				}
+				if (Dungeon.hero.hasTalent(Talent.EMPOWERED_STRIKE, Talent.RK_BATTLEMAGE)) {
+					Buff.prolong(Dungeon.hero, Talent.EmpoweredStrikeTracker.class, 10f);
+				}
+			} else {
+				if (Dungeon.hero.hasTalent(Talent.ENERGIZING_UPGRADE) && curCharges == 0 &&
+						(Dungeon.hero.buff(Talent.EnergizingUpgradeCooldown.class) == null &&
+								Dungeon.hero.buff(Talent.EnergizingUpgradeTracker.class) == null)) {
+					Buff.affect(Dungeon.hero, Talent.EnergizingUpgradeTracker.class, 4f);
+					charger.energizeTime = 5;
+				}
 			}
 		}
 
 		Invisibility.dispel();
 		updateQuickslot();
 
-		curUser.spendAndNext( TIME_TO_ZAP );
+		if (curUser.buff(Talent.MysticalUpgradeWandTracker.class) == null)
+			curUser.spendAndNext( TIME_TO_ZAP );
+		else
+			Buff.detach(curUser, Talent.MysticalUpgradeWandTracker.class);
 	}
 	
 	@Override
@@ -605,6 +611,7 @@ public abstract class Wand extends Item {
 		private static final float CHARGE_BUFF_BONUS = 0.25f;
 
 		float scalingFactor = NORMAL_SCALE_FACTOR;
+		private int energizeTime = 0;
 		
 		@Override
 		public boolean attachTo( Char target ) {
@@ -617,6 +624,15 @@ public abstract class Wand extends Item {
 		public boolean act() {
 			if (curCharges < maxCharges)
 				recharge();
+			if (energizeTime > 0){
+				energizeTime--;
+				if (energizeTime == 0){
+					curCharges = maxCharges;
+					Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);
+					ScrollOfRecharging.charge(curUser);
+					updateQuickslot();
+				}
+			}
 			
 			while (partialCharge >= 1 && curCharges < maxCharges) {
 				partialCharge--;
@@ -631,6 +647,18 @@ public abstract class Wand extends Item {
 			spend( TICK );
 			
 			return true;
+		}
+
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put("energize", energizeTime);
+		}
+
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			energizeTime = bundle.getInt("energize");
 		}
 
 		private void recharge(){

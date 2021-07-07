@@ -11,11 +11,11 @@ buildscript {
 allprojects {
 
     ext {
-        appName = 'RKPD2'
+        appName = 'Abyssal RKPD2'
         appPackageName = 'com.zrp200.rkpd2abyssal'
 
         appVersionCode = 551
-        appVersionName = '0.0.1Abyss'
+        appVersionName = '0.1.1Abyss'
 
         appJavaCompatibility = JavaVersion.VERSION_1_8
 
