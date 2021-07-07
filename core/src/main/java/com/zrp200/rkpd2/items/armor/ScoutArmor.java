@@ -6,7 +6,6 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
-import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
@@ -62,15 +61,14 @@ public class ScoutArmor extends Armor {
                 GLog.w( Messages.get(ScoutArmor.class, "not_ready"));
                 return;
             }
-            for (Item item : hero.belongings.backpack){
-                if (item instanceof SpiritBow){
-                    curUser = hero;
-                    bow = (SpiritBow) item;
-                    GameScene.selectCell(shooter);
-                    return;
-                }
+            bow = Dungeon.hero.belongings.getItem(SpiritBow.class);
+            if (bow == null && Dungeon.hero.belongings.weapon instanceof SpiritBow){
+                bow = (SpiritBow) Dungeon.hero.belongings.weapon;
             }
-            GLog.w( Messages.get(ScoutArmor.class, "no_bow"));
+            if (bow == null){
+                GLog.w( Messages.get(ScoutArmor.class, "no_bow"));
+            }
+            else GameScene.selectCell(shooter);
         }
     }
 

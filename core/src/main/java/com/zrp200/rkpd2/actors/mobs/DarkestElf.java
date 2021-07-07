@@ -364,7 +364,7 @@ public class DarkestElf extends AbyssalMob {
 		}
 	}
 
-	public static class NecroSlime extends Slime {
+	public static class NecroSlime extends DarkSlime {
 
 		{
 			state = HUNTING;
