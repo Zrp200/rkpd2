@@ -386,6 +386,11 @@ public class RKPD2Changes {
                     new ChangeButton(avatar(RAT_KING,6), "Rat King Nerfs (rat king nerfs)",
                             "Rat King's incomprehensible power bugged me during development of abyss too much.\n\n" +
                                     "_-_ Reduced HP by 60%"),
+                        new ChangeButton(new Image(Assets.Sprites.HUNTRESS, 0, 15, 12, 15), "Huntress changes",
+                                "The Huntress recieved brand new starting armor to make her more stylish and strong.\n\n" +
+                                        "_-_ With new armor, she can use _Super-Shots_ to shoot stronger arrow which does more damage with distance.\n\n" +
+                                        "_-_ This ability has 35 turns cooldown.\n\n" +
+                                        "_-_ The armor works as +1 cloak armor, but still can be viable in endgame."),
                         new ChangeButton(new ItemSprite(new RatKingArmor()), "Rat King's Wrath",
                                 "Reworked Rat King's Wrath into full armor ability with 3 exclusive talents:\n\n" +
                                         "_-_ _Auric Tesla Ability_ twists Wrath's components to have properties of 0.9.3 Shattered armor abilities.\n\n" +
@@ -393,8 +398,15 @@ public class RKPD2Changes {
                                         "_-_ _Rat Age Origins_ turns Smoke Bomb component into gas spreader which can freeze, confuse and damage enemies.\n\n" +
                                         "Molten Earth damage, Heroic Leap paralysis, Smoke Bomb invis and Spectral Blades range have been signficantly adjusted, cost increased from _35_ to _100_."),
                 new ChangeButton(new ItemSprite(RING_AGATE), "Ring caps",
-                        "Most of the rings have been capped at 2x of their effect (2.5x for Furor, 60% damage reduction for defense rings and no cap for SS and Wealth).")
+                        "Most of the rings have been capped at 2x of their effect (2.5x for Furor, 60% damage reduction for defense rings and no cap for SS and Wealth)."),
 
+                new ChangeButton(new Image(TALENT_ICONS, 16*5,16,16,16), "Talent changes",
+                        "_-_ Reworked _Energized Upgrade_ to recharge auxiliary wands when they are fully used.\n\n" +
+                                "_-_ Replaced _Mystical Upgrade_ with _Dual Wielding_, allowing player to use wands and missiles at same time.\n\n" +
+                                "_-_ Healing potion talents work on drinking from waterskin.\n\n" +
+                                "_-_ Replaced _Restored Nature_ with _Ivylash_, which augments super-shots with Rooting.\n\n" +
+                                "_-_ Huntress T3 and T4 talents boost the damage potential of Super-Shots."
+                )
             )
         };
 

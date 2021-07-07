@@ -14,7 +14,7 @@ allprojects {
         appName = 'Abyssal RKPD2'
         appPackageName = 'com.zrp200.rkpd2abyssal'
 
-        appVersionCode = 551
+        appVersionCode = 559
         appVersionName = '0.1.1Abyss'
 
         appJavaCompatibility = JavaVersion.VERSION_1_8

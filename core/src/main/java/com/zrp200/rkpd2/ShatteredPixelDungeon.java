@@ -21,18 +21,19 @@
 
 package com.zrp200.rkpd2;
 
-import com.zrp200.rkpd2.scenes.GameScene;
-import com.zrp200.rkpd2.scenes.PixelScene;
-import com.zrp200.rkpd2.scenes.WelcomeScene;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PlatformSupport;
+import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.scenes.PixelScene;
+import com.zrp200.rkpd2.scenes.WelcomeScene;
 
 public class ShatteredPixelDungeon extends Game {
 
 	//variable constants for specific older versions of shattered, used for data conversion
 	public static final int
+			v0_1_1=559,
 			v0_1_0=557,
 			v0_0_1=551,
 			v0_0_0=550;

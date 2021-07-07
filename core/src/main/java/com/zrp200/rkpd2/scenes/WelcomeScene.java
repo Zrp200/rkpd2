@@ -21,27 +21,21 @@
 
 package com.zrp200.rkpd2.scenes;
 
-import com.zrp200.rkpd2.Badges;
-import com.zrp200.rkpd2.Challenges;
-import com.zrp200.rkpd2.Chrome;
-import com.zrp200.rkpd2.GamesInProgress;
-import com.zrp200.rkpd2.Rankings;
-import com.zrp200.rkpd2.SPDSettings;
-import com.zrp200.rkpd2.ShatteredPixelDungeon;
-import com.zrp200.rkpd2.effects.BannerSprites;
-import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.ui.Icons;
-import com.zrp200.rkpd2.ui.RenderedTextBlock;
-import com.zrp200.rkpd2.ui.StyledButton;
 import com.watabou.glwrap.Blending;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.utils.FileUtils;
+import com.zrp200.rkpd2.*;
+import com.zrp200.rkpd2.effects.BannerSprites;
+import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.ui.Icons;
+import com.zrp200.rkpd2.ui.RenderedTextBlock;
+import com.zrp200.rkpd2.ui.StyledButton;
 
 public class WelcomeScene extends PixelScene {
 
-	private static final int LATEST_UPDATE = ShatteredPixelDungeon.v0_1_0;
+	private static final int LATEST_UPDATE = ShatteredPixelDungeon.v0_1_1;
 
 	@Override
 	public void create() {
