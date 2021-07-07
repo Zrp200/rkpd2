@@ -391,7 +391,7 @@ public class RKPD2Changes {
                                         "_-_ _Auric Tesla Ability_ twists Wrath's components to have properties of 0.9.3 Shattered armor abilities.\n\n" +
                                         "_-_ _Quantum Positioning_ significantly extends Wrath's range.\n\n" +
                                         "_-_ _Rat Age Origins_ turns Smoke Bomb component into gas spreader which can freeze, confuse and damage enemies.\n\n" +
-                                        "Molten Earth damage, Heroic Leap paralysis and Spectral Blades range have been signficantly adjusted, cost increased from _35_ to _100_."),
+                                        "Molten Earth damage, Heroic Leap paralysis, Smoke Bomb invis and Spectral Blades range have been signficantly adjusted, cost increased from _35_ to _100_."),
                 new ChangeButton(new ItemSprite(RING_AGATE), "Ring caps",
                         "Most of the rings have been capped at 2x of their effect (2.5x for Furor, 60% damage reduction for defense rings and no cap for SS and Wealth).")
 

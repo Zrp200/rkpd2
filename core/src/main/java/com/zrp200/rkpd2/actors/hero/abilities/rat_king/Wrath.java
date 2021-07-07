@@ -125,7 +125,7 @@ public class Wrath extends ArmorAbility {
                     int damage = hero.drRoll();
                     damage = Math.round(damage*0.25f*hero.pointsInTalent(Talent.AURIC_TESLA));
                     mob.damage(damage, hero);
-                    Buff.prolong(mob, Paralysis.class, hero.pointsInTalent(Talent.AURIC_TESLA));
+                    Buff.prolong(mob, Paralysis.class, hero.pointsInTalent(Talent.AURIC_TESLA)+2);
                 }
             }
         }
@@ -177,7 +177,7 @@ public class Wrath extends ArmorAbility {
             { actPriority = HERO_PRIO; } // this is basically the hero acting.
             @Override
             protected boolean act() {
-                Buff.prolong(hero, Invisibility.class, Invisibility.DURATION/2f);
+                Buff.prolong(hero, Invisibility.class, Invisibility.DURATION/4f);
                 if (hero.hasTalent(Talent.AURIC_TESLA)){
                     Buff.prolong(hero, Adrenaline.class, hero.pointsInTalent(Talent.AURIC_TESLA)*1.5f);
                 }
