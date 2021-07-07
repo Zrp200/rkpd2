@@ -286,9 +286,6 @@ abstract public class MissileWeapon extends Weapon {
 		if (holster) {
 			usages *= MagicalHolster.HOLSTER_DURABILITY_FACTOR;
 		}
-		if (Dungeon.hero.heroClass == HeroClass.RAT_KING && Dungeon.hero.pointsInTalent(Talent.EYE_THERAPY) < 2){
-			usages *= 0.5f;
-		}
 		
 		usages *= RingOfSharpshooting.durabilityMultiplier( Dungeon.hero );
 		

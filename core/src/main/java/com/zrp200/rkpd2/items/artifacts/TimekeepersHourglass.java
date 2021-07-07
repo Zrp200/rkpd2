@@ -32,7 +32,6 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Hunger;
 import com.zrp200.rkpd2.actors.buffs.LockedFloor;
 import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.items.Item;
@@ -224,9 +223,6 @@ public class TimekeepersHourglass extends Artifact {
 				//90 turns to charge at full, 60 turns to charge at 0/10
 				float chargeGain = 1 / (90f - (chargeCap - charge)*3f);
 				chargeGain *= RingOfEnergy.artifactChargeMultiplier(target);
-				if (Dungeon.hero.heroClass == HeroClass.RAT_KING) {
-					chargeGain *= 0.5f + (Dungeon.hero.pointsInTalent(Talent.RATCELERATE)-1)*0.05f;
-				}
 				partialCharge += chargeGain;
 
 				if (partialCharge >= 1) {

@@ -33,7 +33,6 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.BrokenSeal;
 import com.zrp200.rkpd2.items.Item;
@@ -60,13 +59,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 	private float initialComboTime = baseComboTime();
 
 	private static float baseComboTime() {
-		float comboTime = 5f + (Dungeon.hero != null ? Dungeon.hero.pointsInTalent(Talent.SKILL) : 0);
-		if (Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.RAT_KING){
-			if (Dungeon.hero.pointsInTalent(Talent.TURNABOUT) < 3){
-				comboTime = 2f;
-			}
-		}
-		return comboTime;
+		return 5f+(Dungeon.hero != null ? Dungeon.hero.pointsInTalent(Talent.SKILL) : 0);
 	}
 
 	@Override

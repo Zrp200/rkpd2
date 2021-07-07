@@ -23,9 +23,6 @@ package com.zrp200.rkpd2.actors.buffs;
 
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
-import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.actors.hero.HeroClass;
-import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.BuffIndicator;
@@ -54,8 +51,6 @@ public class Barrier extends ShieldBuff {
 	public boolean act() {
 
 		partialLostShield += Math.min(1f, shielding()/20f);
-		if (target == Dungeon.hero && Dungeon.hero.heroClass == HeroClass.RAT_KING && Dungeon.hero.pointsInTalent(Talent.REINFORCEMENT) < 4)
-			partialLostShield *= 2;
 
 		if (partialLostShield >= 1f) {
 			absorbDamage(1);

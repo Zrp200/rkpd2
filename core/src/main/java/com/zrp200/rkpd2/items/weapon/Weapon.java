@@ -358,9 +358,6 @@ abstract public class Weapon extends KindOfWeapon {
 			if (attacker instanceof Hero && rage != null) {
 				multi += (rage.rageAmount() / 6f) * ((Hero) attacker).shiftedPoints(Talent.ENRAGED_CATALYST,Talent.RK_BERSERKER);
 			}
-			if (Dungeon.hero.heroClass == HeroClass.RAT_KING && Dungeon.hero.pointsInTalent(Talent.EYE_THERAPY) < 3){
-				multi *= 0.66f;
-			}
 			return multi;
 		}
 

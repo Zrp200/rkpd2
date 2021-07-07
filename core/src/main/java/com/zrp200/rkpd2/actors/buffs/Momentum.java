@@ -28,7 +28,6 @@ import com.watabou.utils.GameMath;
 import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.Item;
@@ -77,9 +76,6 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 		}
 		movedLastTurn = false;
 
-		if (Dungeon.hero.heroClass == HeroClass.RAT_KING && freerunCooldown > 0 && Dungeon.hero.pointsInTalent(Talent.RATCELERATE) < 4){
-			spend(TICK*2);
-		}
 		spend(TICK);
 		return true;
 	}
@@ -98,14 +94,10 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 	}
 
 	public float speedMultiplier(){
-		float baseSpeed = 2;
-		if (Dungeon.hero.heroClass == HeroClass.RAT_KING){
-			baseSpeed -= 0.75f - (Dungeon.hero.pointsInTalent(Talent.RATCELERATE)-2)*0.25f;
-		}
 		if (freerunning()){
-			return baseSpeed;
+			return 2;
 		} else if (target.invisible > 0 && Dungeon.hero.pointsInTalent(Talent.SPEEDY_STEALTH,Talent.RK_FREERUNNER) == 3){
-			return baseSpeed;
+			return 2;
 		} else {
 			return 1;
 		}

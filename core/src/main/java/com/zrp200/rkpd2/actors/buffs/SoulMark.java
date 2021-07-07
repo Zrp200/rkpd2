@@ -45,16 +45,12 @@ public class SoulMark extends FlavourBuff {
 	public static void process(Char defender, int level, int chargesUsed, boolean delay) {
 		//standard 1 - 0.92^x chance, plus 7%. Starts at 15%
 		if (defender != Dungeon.hero
-				&& (Dungeon.hero.subClass == HeroSubClass.WARLOCK || Dungeon.hero.subClass == HeroSubClass.KING)) {
-			double chance = Math.pow(0.92f, (level * chargesUsed) + 1) - 0.07f;
-			if (Dungeon.hero.pointsInTalent(Talent.TURNABOUT) < 3) chance *= 0.75f;
-			if (Random.Float() > chance) {
-				DelayedMark mark = affect(defender, DelayedMark.class);
-				mark.duration = DURATION + level;
-				if (!delay)
-					mark.activate(); // is active immediately, which means that if damage is taken directly afterwards it'll be processed.
-				// see Char#damage
-			}
+				&& (Dungeon.hero.subClass == HeroSubClass.WARLOCK || Dungeon.hero.subClass == HeroSubClass.KING)
+				&& Random.Float() > (Math.pow(0.92f, (level * chargesUsed) + 1) - 0.07f)) {
+			DelayedMark mark = affect(defender,DelayedMark.class);
+			mark.duration = DURATION+level;
+			if(!delay) mark.activate(); // is active immediately, which means that if damage is taken directly afterwards it'll be processed.
+			// see Char#damage
 		}
 	}
 	// basically lets me hold onto it for a hot second. detaching adds the mark, which means I can delay activation to when I want it to.

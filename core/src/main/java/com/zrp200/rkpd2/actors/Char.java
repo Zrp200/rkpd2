@@ -288,12 +288,9 @@ public abstract class Char extends Actor {
 					SoulMark.process(enemy,(wep != null ? wep.buffedLvl():0)+Math.max(0,h.pointsInTalent(Talent.WARLOCKS_TOUCH)-1),1,Random.Int(4) >= h.pointsInTalent(Talent.WARLOCKS_TOUCH));
 				}
 				if (h.belongings.weapon instanceof MissileWeapon
+						&& (h.subClass == HeroSubClass.SNIPER || h.subClass == HeroSubClass.KING)
 						&& !Dungeon.level.adjacent(h.pos, enemy.pos)){
-					if (h.subClass == HeroSubClass.SNIPER)
-						dr = 0;
-					if (h.subClass == HeroSubClass.KING && h.pointsInTalent(Talent.EYE_THERAPY) > 3){
-						dr = Math.max(0, dr - 5);
-					}
+					dr = 0;
 				}
 			}
 			
