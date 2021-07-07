@@ -385,17 +385,7 @@ public class RKPD2Changes {
                             "Added endless abyss chapter from Summoning PD, excluding exclusive traps"),
                     new ChangeButton(avatar(RAT_KING,6), "Rat King Nerfs (rat king nerfs)",
                             "Rat King's incomprehensible power bugged me during development of abyss too much.\n\n" +
-                                    "_-_ Added 40% damage penalty\n" +
-                                    "_-_ Added arrowhead effect (2x recieved damage)\n" +
-                                    "_-_ Added 25% accuracy penalty\n" +
-                                    "_-_ Added 35% evasion penalty\n" +
-                                    "_-_ Added 33% wand damage penalty\n" +
-                                    "_-_ Added recharge penalty for cloak, chains and hourglass\n" +
-                                    "_-_ Added 33% enchantment proc penalty\n" +
-                                    "_-_ Increased shielding decay\n" +
-                                    "_-_ Nerfed all subclass powers\n" +
-                                    "_-_ Added 50% missile durability penalty.\n\n" +
-                                    "Those powers can be _partially recovered_ in some way..."),
+                                    "_-_ Reduced HP by 60%"),
                         new ChangeButton(new ItemSprite(new RatKingArmor()), "Rat King's Wrath",
                                 "Reworked Rat King's Wrath into full armor ability with 3 exclusive talents:\n\n" +
                                         "_-_ _Auric Tesla Ability_ twists Wrath's components to have properties of 0.9.3 Shattered armor abilities.\n\n" +

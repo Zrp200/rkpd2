@@ -163,6 +163,9 @@ public class Hero extends Char {
 		int curHT = HT;
 		
 		HT = 20 + 5*(lvl-1) + HTBoost;
+		if (heroClass != null && heroClass == HeroClass.RAT_KING){
+			HT = 8 + 2*(lvl-1) + HTBoost;
+		}
 		float multiplier = RingOfMight.HTMultiplier(this);
 		HT = Math.round(multiplier * HT);
 		

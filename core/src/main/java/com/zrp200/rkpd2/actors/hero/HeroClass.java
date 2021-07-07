@@ -237,6 +237,7 @@ public enum HeroClass {
 		Dungeon.quickslot.setSlot(0, bow);
 		Dungeon.quickslot.setSlot(1, cloak);
 		Dungeon.quickslot.setSlot(2, staff);
+		hero.HP = hero.HT = 8;
 	}
 
 	public String title() {
