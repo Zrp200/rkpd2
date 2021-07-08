@@ -363,7 +363,6 @@ public class CloakOfShadows extends Artifact {
 		}
 
 		public void dispel(){
-			updateQuickslot();
 			detach();
 		}
 
@@ -389,8 +388,8 @@ public class CloakOfShadows extends Artifact {
 
 			if (target.invisible > 0)   target.invisible--;
 
-			updateQuickslot();
 			super.detach();
+			updateQuickslot();
 		}
 		
 		private static final String TURNSTOCOST = "turnsToCost";
