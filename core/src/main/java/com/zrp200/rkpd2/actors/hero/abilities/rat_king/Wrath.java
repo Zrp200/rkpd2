@@ -1,15 +1,12 @@
 package com.zrp200.rkpd2.actors.hero.abilities.rat_king;
 
 import com.watabou.noosa.Camera;
-import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Point;
-import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.buffs.Blindness;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.buffs.Paralysis;
@@ -23,15 +20,11 @@ import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.items.armor.HuntressArmor;
 import com.zrp200.rkpd2.items.armor.MageArmor;
-import com.zrp200.rkpd2.items.armor.RogueArmor;
-import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
 import com.zrp200.rkpd2.items.weapon.missiles.Shuriken;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.MissileSprite;
-import com.zrp200.rkpd2.utils.BArray;
 import com.zrp200.rkpd2.utils.GLog;
 
 import java.util.HashMap;
@@ -47,7 +40,7 @@ public class Wrath extends ArmorAbility {
 
     @Override
     public String targetingPrompt() {
-        return Messages.get(SmokeBomb.class, "prompt");
+        return new SmokeBomb().targetingPrompt();
     }
 
     @Override
@@ -62,12 +55,7 @@ public class Wrath extends ArmorAbility {
         boolean[] stages = new boolean[3]; // jump/molten/blades
 
         if( stages[0] = target != hero.pos ) {
-            PathFinder.buildDistanceMap(hero.pos, BArray.not(Dungeon.level.solid, null), 8);
-            if (PathFinder.distance[target] == Integer.MAX_VALUE ||
-                    !Dungeon.level.heroFOV[target]) {
-                GLog.w(Messages.get(RogueArmor.class, "fov"));
-                return;
-            }
+            if( !SmokeBomb.isValidTarget(hero, target) ) return;
 
             if (Actor.findChar(target) != null) { // use heroic leap mechanics instead.
                 Ballistica route = new Ballistica(hero.pos, target, Ballistica.STOP_TARGET);
@@ -78,23 +66,10 @@ public class Wrath extends ArmorAbility {
                 }
             }
 
-            for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
-                if (Dungeon.level.adjacent(mob.pos, hero.pos) && mob.alignment != Char.Alignment.ALLY) {
-                    Buff.prolong(mob, Blindness.class, Blindness.DURATION / 2f);
-                    if (mob.state == mob.HUNTING) mob.state = mob.WANDERING;
-                    mob.sprite.emitter().burst(Speck.factory(Speck.LIGHT), 4);
-                }
-            }
-
-            CellEmitter.get(hero.pos).burst(Speck.factory(Speck.WOOL), 10);
-            hero.sprite.turnTo(hero.pos, target); // jump from warrior leap
-            ScrollOfTeleportation.appear(hero, target);
-            hero.move(target); // impact from warrior leap.
-            Sample.INSTANCE.play(Assets.Sounds.PUFF);
-            Dungeon.level.occupyCell(hero);
-            // at least do warrior vfx now.
-            Dungeon.observe();
-            GameScene.updateFog();
+            SmokeBomb.blindAdjacentMobs(hero);
+            hero.sprite.turnTo(hero.pos, target);
+            SmokeBomb.throwSmokeBomb(hero, target);
+            hero.move(target);
             CellEmitter.center(hero.pos).burst(Speck.factory(Speck.DUST), 10);
             Camera.main.shake(2, 0.5f);
         }
@@ -130,7 +105,7 @@ public class Wrath extends ArmorAbility {
                 targets.put( callback, mob );
             }
         }
-        // this guarentees proper sequence of events for spectral blades
+        // this guarantees proper sequence of events for spectral blades
         if ( stages[2] = targets.size() > 0 ) {
             // turn towards the average point of all enemies being shot at.
             Point sum = new Point(); for(Mob mob : targets.values()) sum.offset(Dungeon.level.cellToPoint(mob.pos));
@@ -139,7 +114,7 @@ public class Wrath extends ArmorAbility {
             hero.sprite.doAfterAnim( () -> hero.sprite.zap(Dungeon.level.pointToCell(sum), ()->{
                 Shuriken proto = new Shuriken();
                 for(Map.Entry<Callback, Mob> entry : targets.entrySet())
-                    ( (MissileSprite)hero.sprite.parent.recycle( MissileSprite.class ) )
+                    ( (MissileSprite) hero.sprite.parent.recycle(MissileSprite.class) )
                             .reset( hero.sprite, entry.getValue().pos, proto, entry.getKey() );
             }));
             hero.busy();
