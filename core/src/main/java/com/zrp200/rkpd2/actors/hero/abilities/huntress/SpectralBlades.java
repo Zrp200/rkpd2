@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.actors.hero.abilities.huntress;
 
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
@@ -76,14 +77,18 @@ public class SpectralBlades extends ArmorAbility {
 		targets.add(enemy);
 
 		if (hero.canHaveTalent(Talent.FAN_OF_BLADES)){
-			ConeAOE cone = new ConeAOE(b, 30*hero.shiftedPoints(Talent.FAN_OF_BLADES));
+			int degrees = Math.max(30, 45*hero.pointsInTalent(Talent.FAN_OF_BLADES));
+			ConeAOE cone = new ConeAOE(b, degrees);
 			for (Ballistica ray : cone.rays){
-				Char toAdd = findChar(ray, hero, 2*hero.shiftedPoints(Talent.PROJECTING_BLADES), targets);
+				// 1/3/5/7/9 up from 0/2/4/6/8
+				Char toAdd = findChar(ray, hero, 1+2*hero.pointsInTalent(Talent.PROJECTING_BLADES), targets);
 				if (toAdd != null && hero.fieldOfView[toAdd.pos]){
 					targets.add(toAdd);
 				}
 			}
-			while (targets.size() > 1 + hero.shiftedPoints(Talent.FAN_OF_BLADES)){
+			// 1/2-3/4/5-6/7, up from 0/1/2/3/4
+			int additionalTargets = Random.round( .5f*( 3*hero.shiftedPoints(Talent.FAN_OF_BLADES) - 1 ) );
+			while (targets.size() > 1 + additionalTargets){
 				Char furthest = null;
 				for (Char ch : targets){
 					if (furthest == null){
@@ -109,8 +114,8 @@ public class SpectralBlades extends ArmorAbility {
 				@Override
 				public void call() {
 					float dmgMulti = ch == enemy ? 1f : 0.75f;
-					float accmulti = 1f + 0.25f*hero.shiftedPoints(Talent.PROJECTING_BLADES);
-					if (hero.canHaveTalent(Talent.SPIRIT_BLADES)){
+					float accmulti = 1 + 1/3f*hero.shiftedPoints(Talent.PROJECTING_BLADES);
+					if (hero.hasTalent(Talent.SPIRIT_BLADES)){
 						Buff.affect(hero, Talent.SpiritBladesTracker.class, 0f);
 					}
 					hero.attack( ch, dmgMulti, 0, accmulti );
