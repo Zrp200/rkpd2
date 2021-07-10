@@ -36,10 +36,9 @@ public class ScrollEmpower extends Buff {
 	}
 
 	public static int boost() {
-		return Math.max(
-				hero.pointsInTalent(Talent.EMPOWERING_SCROLLS)*2,
-				hero.pointsInTalent(Talent.RK_BATTLEMAGE)
-		);
+		return (int)hero.byTalent(
+				Talent.EMPOWERING_SCROLLS, 2,
+				Talent.RK_BATTLEMAGE, 1);
 	}
 
 
@@ -66,7 +65,7 @@ public class ScrollEmpower extends Buff {
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", boost());
+		return Messages.get(this, "desc", hero.heroClass.title(), boost());
 	}
 
 }
