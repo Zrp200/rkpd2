@@ -157,7 +157,9 @@ public class Berserk extends Buff {
 
 	public void damage(int damage){
 		if (state == State.RECOVERING && !berserker()) return;
-		float maxPower = 1f + 0.15f*((Hero)target).shiftedPoints(Talent.ENDLESS_RAGE,Talent.RK_BERSERKER);
+		float maxPower = 1f + ((Hero)target).byTalent(
+				Talent.ENDLESS_RAGE, 0.2f,
+				Talent.RK_BERSERKER, 0.15f);
 		power = Math.min(maxPower*recovered(), power + rageFactor(damage)*recovered() );
 		BuffIndicator.refreshHero(); //show new power immediately
 	}
