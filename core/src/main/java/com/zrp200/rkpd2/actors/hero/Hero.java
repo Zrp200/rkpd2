@@ -350,6 +350,10 @@ public class Hero extends Char {
 		return sum;
 	}
 
+	public float byTalent(Talent t1, float f1, Talent t2, float f2) {
+		return Math.max(f1*pointsInTalent(t1), f2*pointsInTalent(t2));
+	}
+
 	/** shifts [shifted] so that +0 becomes +1 */
 	public int shiftedPoints( Talent shifted ) {
 		int points = pointsInTalent(shifted);

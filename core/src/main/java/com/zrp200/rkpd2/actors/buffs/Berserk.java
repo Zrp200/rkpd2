@@ -75,8 +75,9 @@ public class Berserk extends Buff {
 		return target instanceof Hero && ((Hero)target).subClass == HeroSubClass.BERSERKER;
 	}
 
+	public static float STAMINA_REDUCTION = 1/3f;
 	private static float levelRecoverStart() {
-		return LEVEL_RECOVER_START-Dungeon.hero.pointsInTalent(Talent.BERSERKING_STAMINA,Talent.RK_BERSERKER)/3f;
+		return LEVEL_RECOVER_START-Dungeon.hero.pointsInTalent(Talent.BERSERKING_STAMINA,Talent.RK_BERSERKER)*STAMINA_REDUCTION;
 	}
 
 	protected float maxBerserkDuration() {

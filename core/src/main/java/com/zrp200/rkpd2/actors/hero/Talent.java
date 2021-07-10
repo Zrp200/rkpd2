@@ -316,7 +316,7 @@ public enum Talent {
 				break;
 			case BERSERKING_STAMINA: // takes immediate effect
 				Berserk berserk = hero.buff(Berserk.class);
-				if(berserk != null) berserk.recover(1/3f);
+				if(berserk != null) berserk.recover(Berserk.STAMINA_REDUCTION);
 				break;
 			case SEER_SHOT:
 				float mod = points == 1 ? 0 : 1f/(points-1);
