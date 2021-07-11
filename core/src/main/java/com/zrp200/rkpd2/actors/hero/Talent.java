@@ -194,7 +194,9 @@ public enum Talent {
 	KINGS_VISION(103), // improvised projectiles (4), arcane vision(4), wide search(3), heightened senses(4), uses heightened senses
 	PURSUIT(98), // durable projectiles (5),silent steps(4),lethal momentum (3),shield battery(5), uses FUS
 	// Rat King T3
-	RK_BERSERKER(11,3), RK_GLADIATOR(16,3), RK_BATTLEMAGE(43,3), RK_WARLOCK(47,3), RK_ASSASSIN(75,3), RK_FREERUNNER(78,3), RK_SNIPER(109,3), RK_WARDEN(102,3);
+	RK_BERSERKER(11,3), RK_GLADIATOR(16,3), RK_BATTLEMAGE(43,3), RK_WARLOCK(47,3), RK_ASSASSIN(75,3), RK_FREERUNNER(78,3), RK_SNIPER(109,3), RK_WARDEN(102,3),
+	// Wrath2
+	AFTERSHOCK(21,4), RAT_BLAST(49,4), SMOKE_AND_MIRRORS(83,4), SEA_OF_BLADES(113,4);
 
 	protected String[] aliases = new String[0];
 
