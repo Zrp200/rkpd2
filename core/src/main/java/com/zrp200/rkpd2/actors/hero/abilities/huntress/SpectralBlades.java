@@ -30,6 +30,7 @@ import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
+import com.zrp200.rkpd2.actors.mobs.npcs.NPC;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.items.weapon.missiles.Shuriken;
@@ -146,7 +147,7 @@ public class SpectralBlades extends ArmorAbility {
 			if (ch != null){
 				if (ch == hero || existingTargets.contains(ch)){
 					continue;
-				} else if (ch.alignment != Char.Alignment.ALLY){
+				} else if (ch.alignment != Char.Alignment.ALLY && !(ch instanceof NPC)){
 					return ch;
 				} else {
 					return null;
