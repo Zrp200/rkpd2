@@ -67,7 +67,8 @@ public class SpectralBlades extends ArmorAbility {
 		Ballistica b = new Ballistica(hero.pos, target, Ballistica.WONT_STOP);
 		final HashSet<Char> targets = new HashSet<>();
 
-		Char enemy = findChar(b, hero, 2*hero.shiftedPoints(Talent.PROJECTING_BLADES), targets);
+		int wallPenetration = 1+2*hero.pointsInTalent(Talent.PROJECTING_BLADES);
+		Char enemy = findChar(b, hero, wallPenetration, targets);
 
 		if (enemy == null){
 			GLog.w(Messages.get(this, "no_target"));
@@ -81,7 +82,7 @@ public class SpectralBlades extends ArmorAbility {
 			ConeAOE cone = new ConeAOE(b, degrees);
 			for (Ballistica ray : cone.rays){
 				// 1/3/5/7/9 up from 0/2/4/6/8
-				Char toAdd = findChar(ray, hero, 1+2*hero.pointsInTalent(Talent.PROJECTING_BLADES), targets);
+				Char toAdd = findChar(ray, hero, wallPenetration, targets);
 				if (toAdd != null && hero.fieldOfView[toAdd.pos]){
 					targets.add(toAdd);
 				}
@@ -113,7 +114,7 @@ public class SpectralBlades extends ArmorAbility {
 			Callback callback = new Callback() {
 				@Override
 				public void call() {
-					float dmgMulti = ch == enemy ? 1f : 0.75f;
+					float dmgMulti = ch == enemy ? 1f : 0.5f;
 					float accmulti = 1 + 1/3f*hero.shiftedPoints(Talent.PROJECTING_BLADES);
 					if (hero.hasTalent(Talent.SPIRIT_BLADES)){
 						Buff.affect(hero, Talent.SpiritBladesTracker.class, 0f);
