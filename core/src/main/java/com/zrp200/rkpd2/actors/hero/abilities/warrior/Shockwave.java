@@ -46,6 +46,11 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 
+import static com.zrp200.rkpd2.actors.hero.Talent.AFTERSHOCK;
+import static com.zrp200.rkpd2.actors.hero.Talent.EXPANDING_WAVE;
+import static com.zrp200.rkpd2.actors.hero.Talent.SHOCK_FORCE;
+import static com.zrp200.rkpd2.actors.hero.Talent.STRIKING_WAVE;
+
 public class Shockwave extends ArmorAbility {
 
 	{
@@ -57,28 +62,16 @@ public class Shockwave extends ArmorAbility {
 		return Messages.get(this, "prompt");
 	}
 
-	@Override
-	protected void activate(ClassArmor armor, Hero hero, Integer target) {
-		if (target == null){
-			return;
-		}
-		if (target == hero.pos){
-			GLog.w(Messages.get(this, "self_target"));
-			return;
-		}
-		hero.busy();
+	public static void activate(Hero hero, int target, int degrees, int maxDist, Callback next) {
+		boolean endTurn = next == null;
 
-		armor.charge -= chargeUse(hero);
-		Item.updateQuickslot();
+		hero.busy();
 
 		Ballistica aim = new Ballistica(hero.pos, target, Ballistica.WONT_STOP);
 
-		int maxDist = 5 + hero.shiftedPoints(Talent.EXPANDING_WAVE);
 		int dist = Math.min(aim.dist, maxDist);
 
-		ConeAOE cone = new ConeAOE(aim,
-				dist,
-				60 + 15*hero.shiftedPoints(Talent.EXPANDING_WAVE),
+		ConeAOE cone = new ConeAOE(aim, dist, degrees,
 				Ballistica.STOP_SOLID | Ballistica.STOP_TARGET);
 
 		//cast to cells at the tip, rather than all cells, better performance.
@@ -92,7 +85,8 @@ public class Shockwave extends ArmorAbility {
 		}
 
 		hero.sprite.zap(target);
-		Sample.INSTANCE.play(Assets.Sounds.BLAST, 1f, 0.5f);
+		// TODO fix so that sounds can just play as soon as possible.
+		Sample.INSTANCE.playDelayed(Assets.Sounds.BLAST, next == null ? 0f : 0.1f, 1f, 0.5f);
 		Camera.main.shake(2, 0.5f);
 		//final zap at 2/3 distance, for timing of the actual effect
 		MagicMissile.boltFromChar(hero.sprite.parent,
@@ -109,24 +103,26 @@ public class Shockwave extends ArmorAbility {
 							if (ch != null && ch.alignment != hero.alignment){
 								int scalingStr = hero.STR()-10;
 								int damage = Random.NormalIntRange(5 + scalingStr, 10 + 2*scalingStr);
-								damage = Math.round(damage * (1f + 0.2f*hero.shiftedPoints(Talent.SHOCK_FORCE)));
+								damage = Math.round(damage * (1f + 0.2f*hero.shiftedPoints(SHOCK_FORCE,AFTERSHOCK)));
 								damage -= ch.drRoll();
 
 								if (hero.pointsInTalent(Talent.STRIKING_WAVE) == 4){
 									Buff.affect(hero, Talent.StrikingWaveTracker.class, 0f);
 								}
 
-								if (Random.Int(10) < 3*hero.pointsInTalent(Talent.STRIKING_WAVE)){
+								if (Random.Int(10) < 3*hero.pointsInTalent(STRIKING_WAVE)
+										|| Random.Int(4) < hero.pointsInTalent(AFTERSHOCK)){
 									damage = hero.attackProc(ch, damage);
 									ch.damage(damage, hero);
-									if (hero.subClass == HeroSubClass.GLADIATOR || hero.subClass == HeroSubClass.KING){
-										Buff.affect( hero, Combo.class ).hit( ch );
+									switch (hero.subClass) {
+										case KING: case GLADIATOR:
+											Buff.affect( hero, Combo.class ).hit( ch );
 									}
 								} else {
 									ch.damage(damage, hero);
 								}
 								if (ch.isAlive()){
-									if (Random.Int(4) < hero.pointsInTalent(Talent.SHOCK_FORCE)){
+									if (Random.Int(4) < hero.pointsInTalent(SHOCK_FORCE,AFTERSHOCK)){
 										Buff.affect(ch, Paralysis.class, 5f);
 									} else {
 										Buff.affect(ch, Cripple.class, 5f);
@@ -136,11 +132,28 @@ public class Shockwave extends ArmorAbility {
 							}
 						}
 
-						Invisibility.dispel();
-						hero.spendAndNext(Actor.TICK);
+						if(endTurn) {
+							Invisibility.dispel();
+							hero.spendAndNext(Actor.TICK);
+						} else next.call();
 
 					}
 				});
+	}
+	protected void activate(ClassArmor armor, Hero hero, Integer target) {
+		if (target == null){
+			return;
+		}
+		if (target == hero.pos){
+			GLog.w(Messages.get(Shockwave.class, "self_target"));
+			return;
+		}
+		activate(hero, target,
+				60 + 15*hero.shiftedPoints(EXPANDING_WAVE),
+				5 + hero.shiftedPoints(EXPANDING_WAVE),
+				null);
+		armor.charge -= chargeUse(hero);
+		Item.updateQuickslot();
 	}
 
 	@Override
@@ -150,6 +163,6 @@ public class Shockwave extends ArmorAbility {
 
 	@Override
 	public Talent[] talents() {
-		return new Talent[]{Talent.EXPANDING_WAVE, Talent.STRIKING_WAVE, Talent.SHOCK_FORCE, Talent.HEROIC_ENERGY};
+		return new Talent[]{EXPANDING_WAVE, STRIKING_WAVE, SHOCK_FORCE, Talent.HEROIC_ENERGY};
 	}
 }
