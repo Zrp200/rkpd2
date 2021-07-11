@@ -108,41 +108,50 @@ public class SpectralBlades extends ArmorAbility {
 		armor.charge -= chargeUse(hero);
 		Item.updateQuickslot();
 
-		Item proto = new Shuriken();
-
 		final HashSet<Callback> callbacks = new HashSet<>();
 
+		Callback onComplete = ()->{
+			Invisibility.dispel();
+			hero.spendAndNext( hero.attackDelay() );
+		};
 		for (Char ch : targets) {
-			Callback callback = new Callback() {
-				@Override
-				public void call() {
-					float dmgMulti = ch == enemy ? 1f : 0.5f;
-					float accmulti = 1 + 1/3f*hero.shiftedPoints(Talent.PROJECTING_BLADES);
-					if (hero.hasTalent(Talent.SPIRIT_BLADES)){
-						Buff.affect(hero, Talent.SpiritBladesTracker.class, 0f);
-					}
-					hero.attack( ch, dmgMulti, 0, accmulti );
-					callbacks.remove( this );
-					if (callbacks.isEmpty()) {
-						Invisibility.dispel();
-						hero.spendAndNext( hero.attackDelay() );
-					}
-				}
-			};
-
-			MissileSprite m = ((MissileSprite)hero.sprite.parent.recycle( MissileSprite.class ));
-			m.reset( hero.sprite, ch.pos, proto, callback );
-			m.hardlight(0.6f, 1f, 1f);
-			m.alpha(0.8f);
-
-			callbacks.add( callback );
+			shoot(hero, ch,
+					ch == enemy ? 1f : 0.5f,
+					1 + 1/3f*hero.shiftedPoints(Talent.PROJECTING_BLADES),
+					Talent.SPIRIT_BLADES, Talent.SpiritBladesTracker.class,
+					callbacks, onComplete);
 		}
 
 		hero.sprite.zap( enemy.pos );
 		hero.busy();
 	}
 
-	private Char findChar(Ballistica path, Hero hero, int wallPenetration, HashSet<Char> existingTargets){
+	private static final Item PROTO = new Shuriken();
+	public static void shoot(Hero hero,
+							 Char ch,
+							 float dmgMulti,
+							 float accMulti,
+							 Talent spiritBlades,
+							 Class<? extends Talent.SpiritBladesTracker> trackerClass,
+							 HashSet<Callback> callbacks,
+							 Callback onComplete)
+	{
+		Callback callback = new Callback() {
+			@Override public void call() {
+				if (hero.hasTalent(spiritBlades)) Buff.affect(hero, trackerClass, 0f);
+				hero.attack( ch, dmgMulti, 0, accMulti );
+				callbacks.remove( this );
+				if (callbacks.isEmpty()) onComplete.call();
+			}
+		};
+		MissileSprite m = ((MissileSprite)hero.sprite.parent.recycle( MissileSprite.class ));
+		m.reset( hero.sprite, ch.pos, PROTO, callback );
+		m.hardlight(0.6f, 1f, 1f);
+		m.alpha(0.8f);
+		callbacks.add(callback);
+	}
+
+	public static Char findChar(Ballistica path, Hero hero, int wallPenetration, HashSet<Char> existingTargets){
 		for (int cell : path.path){
 			Char ch = Actor.findChar(cell);
 			if (ch != null){

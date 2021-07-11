@@ -53,6 +53,7 @@ import com.zrp200.rkpd2.actors.buffs.Paralysis;
 import com.zrp200.rkpd2.actors.buffs.Regeneration;
 import com.zrp200.rkpd2.actors.buffs.SnipersMark;
 import com.zrp200.rkpd2.actors.buffs.Vertigo;
+import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath2;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.Monk;
 import com.zrp200.rkpd2.actors.mobs.Snake;
@@ -1188,15 +1189,20 @@ public class Hero extends Char {
 		
 		KindOfWeapon wep = belongings.weapon();
 
+		Talent.SpiritBladesTracker tracker = buff(Talent.SpiritBladesTracker.class);
+		float mult = tracker instanceof Wrath2.SpectralBladesTracker
+				? ((Wrath2.SpectralBladesTracker)tracker).effectiveness
+				: 1f;
+
 		// subclass logic here
 		switch(subClass) {
 			case KING: case BATTLEMAGE:
 				MagesStaff staff = belongings.getItem(MagesStaff.class);
 				if(staff != null && (staff == wep || hasTalent(Talent.SORCERY))){
-					if(staff == wep || Random.Int(5) < pointsInTalent(Talent.SORCERY)) {
+					if((mult == 1 || Random.Float() < mult) && (staff == wep || Random.Int(5) < pointsInTalent(Talent.SORCERY))) {
 						staff.procBM();
 					}
-					if(staff == wep || Random.Int(3) < pointsInTalent(Talent.SORCERY))
+					if((mult == 1 || Random.Float() < mult) && (staff == wep || Random.Int(3) < pointsInTalent(Talent.SORCERY)))
 						if (buff(Talent.EmpoweredStrikeTracker.class) != null) {
 							buff(Talent.EmpoweredStrikeTracker.class).detach();
 							damage = Math.round(damage * (1f + Math.max(
@@ -1208,7 +1214,7 @@ public class Hero extends Char {
 		}
 		if (wep != null) damage = wep.proc( this, enemy, damage );
 
-		if (buff(Talent.SpiritBladesTracker.class) != null
+		if (tracker != null
 				&& Random.Int(10) < 3*pointsInTalent(Talent.SPIRIT_BLADES)){
 			SpiritBow bow = belongings.getItem(SpiritBow.class);
 			if (bow != null) damage = bow.proc( this, enemy, damage );
