@@ -23,6 +23,8 @@ package com.zrp200.rkpd2.ui.changelist;
 
 import com.watabou.noosa.Image;
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.actors.hero.HeroSubClass;
+import com.zrp200.rkpd2.items.KingsCrown;
 import com.zrp200.rkpd2.items.armor.WarriorArmor;
 import com.zrp200.rkpd2.items.bags.VelvetPouch;
 import com.zrp200.rkpd2.items.wands.WandOfFirebolt;
@@ -87,6 +89,24 @@ public class RKPD2Changes {
         v010 = {
             new ChangeInfo("v0.1.0", true, TITLE_COLOR, ""),
 
+            new ChangeInfo("v0.1.0a", false, TITLE_COLOR, "",
+                    new ChangeButton(new ItemSprite(new KingsCrown()), "Ability adjustments",list(2,
+                            "Death mark now gives +33% damage, up from +25%.",
+                            "Projecting blades penetration is now 1/3/5/7/9, down from 2/4/6/8/10, and its accuracy boost is 0/33/67/100/133 instead of 25/50/75/100/125.",
+                            "Fan of blades now affects 1/2-3/4/5-6/7 targets in a 30/45/90/135/180 degree AOE cone, from 1/2/3/4/5 targets in a 30/60/90/120/150 degree cone AOE.",
+                            "Growing power no longer has a +0 effect, overall point effectiveness increased to compensate.",
+                            "Nerfed Nature's Wrath to be 10%/20%/30%/40%, down from 13%/25%/38%/50%")),
+                    new ChangeButton(HeroSubClass.BERSERKER.icon(), "Berserker", "I don't think level-shifting talents is what berserker needs. I'll explore different avenues for changes here later, but in the meantime I've reverted most of the levelshifting here and lightly buffed the affected talents instead."
+                            + "\n\n"+list(2,
+                            "Endless rage now gives +20%/40%/60% maximum rage instead of +15/30/45/60 rage. This is still up from v0.0.1, because endless rage is such a crappy talent that's only somewhat salvaged by the fact I made it cause you to gain more rage at low HP.",
+                            "Enraged Catalyst now gives +0/+20/40/60% enchant proc rate at full rage, instead of +17/+33/+50/+66",
+                            "Berserking stamina level shifting left intact (actually it was implemented).")),
+                    new ChangeButton(Icons.get(TARGET), "Special Action Targeting", "Refactored Special Action Targeting. The only notable change is that only visible enemies are highlighted now; unopened mimics for example should no longer be autotargeted and must be manually tapped."),
+                    bugFixes(list(2,
+                            "Rogue's cloak boost to weapons being incorrectly displayed in some cases",
+                            "Missing text for certain Rat King's Wrath interactions",
+                            "String formatting failure in Enhanced Scrolls",
+                            "Various typos in talent and subclass descriptions."))),
             new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, TITLE_COLOR, "",
                 new ChangeButton(Icons.get(INFO), "Developer Commentary",
                     "I regret the relatively long wait for a v0.9.3 implementation, but RKPD2 is now updated to Shattered v0.9.3c! Enjoy smaller levels, some quality of life improvements, and even more buffs to your favorite heroes."
@@ -175,13 +195,13 @@ public class RKPD2Changes {
                     //+"\n_TODO_ Multishot free shot can stack with standard marking."
                     //+"\n"
                 ),
-                new ChangeButton(HeroSprite.avatar(WARRIOR,6), "Warrior T2 and T3",
-                    "Berserker and (to a smaller extent) Gladiator have an issue where they can kinda feel sorta weak directly after you subclass... so I've decided to nip the issue in the bud (even if it means buffing already powerful subclasses...)"
-                        +"\n\n_-_ Endless Rage, Berserking Stamina, and Enraged Catalyst unique effects level-shifted."
-                        +"\n_-_ Cleave buffed from 0/10/20/30 (was bugged) to 15/30/45/60"
-                        +"\n\nI have also declined to nerf Improvised Projectiles."
-                ),
-                new ChangeButton(HeroSprite.avatar(MAGE, 6), "Battlemage", "Battlemage is currently a bit 'weaker' than warlock, and thus it's getting a power spike after subclassing."
+                new ChangeButton(HeroSprite.avatar(WARRIOR,6), "Warrior", list(2,
+                        "Cleave buffed from 0/10/20/30 (was bugged) to 15/30/45/60.",
+                        "Endless Rage buffed from +15%/30%/45% to +20%/40%/60%",
+                        "Enraged Catalyst buffed from 17%/33%/50% to 20%/40%/60%.",
+                        "Berserking Stamina level-shifted.",
+                        "Improvised projectiles is not nerfed.")),
+                new ChangeButton(HeroSubClass.BATTLEMAGE.icon(), "Battlemage", "Battlemage is currently a bit 'weaker' than warlock, and thus it's getting a power spike after subclassing."
                     +"\n\n_-_ Mystical Charge recharging now .5/1/1.5/2 instead of 0/.75/1.5/2.25 at +0/1/2/3 respectively."
                     +"\n\n_-_ Excess Charge proc chance is now 20/40/60/80 at +0/1/2/3, up from 0/25/50/75."),
                 misc(list(2,
