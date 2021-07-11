@@ -29,11 +29,11 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.effects.Speck;
-import com.zrp200.rkpd2.items.wands.Wand;
-import com.zrp200.rkpd2.items.wands.WandOfWarding;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.BuffIndicator;
+
+import static com.zrp200.rkpd2.Dungeon.hero;
 
 public class SoulMark extends FlavourBuff {
 
@@ -46,8 +46,8 @@ public class SoulMark extends FlavourBuff {
 
 	public static void process(Char defender, int level, int chargesUsed, boolean delay) {
 		//standard 1 - 0.92^x chance, plus 7%. Starts at 15%
-		if (defender != Dungeon.hero
-				&& (Dungeon.hero.subClass == HeroSubClass.WARLOCK || Dungeon.hero.subClass == HeroSubClass.KING)
+		if (defender != hero
+				&& (hero.subClass == HeroSubClass.WARLOCK || Dungeon.hero.subClass == HeroSubClass.KING)
 				&& Random.Float() > (Math.pow(0.92f, (level * chargesUsed) + 1) - 0.07f)) {
 			DelayedMark mark = affect(defender,DelayedMark.class);
 			mark.duration = DURATION+level;
@@ -76,24 +76,24 @@ public class SoulMark extends FlavourBuff {
 	}
 
 	public void proc(Object src, Char defender, int damage) {
-		if(!(src instanceof Char) && !Dungeon.hero.hasTalent(Talent.SOUL_SIPHON)) return; // this shouldn't come up, but in case it does...
+		if(!(src instanceof Char) && !hero.hasTalent(Talent.SOUL_SIPHON)) return; // this shouldn't come up, but in case it does...
 		int restoration = Math.min(damage, defender.HP);
 		//physical damage that doesn't come from the hero is less effective
-		if (src != Dungeon.hero){
+		if (src != hero){
 			// wand damage is handled prior this method's calling.
-			int points = Dungeon.hero.pointsInTalent(Talent.SOUL_SIPHON,Talent.RK_WARLOCK);
+			int points = hero.pointsInTalent(Talent.SOUL_SIPHON,Talent.RK_WARLOCK);
 			restoration = Math.round(restoration * (
-					Dungeon.hero.hasTalent(Talent.SOUL_SIPHON) ?
+					hero.hasTalent(Talent.SOUL_SIPHON) ?
 							src instanceof Char ? points*.2f : .1f*(1+points)
 							: points / 7.5f ));
 		}
 		if(restoration > 0)
 		{
-			Buff.affect(Dungeon.hero, Hunger.class).affectHunger(restoration*Math.max(
-					Dungeon.hero.pointsInTalent(Talent.SOUL_EATER)/2f,
-					Dungeon.hero.pointsInTalent(Talent.RK_WARLOCK)/3f));
-			Dungeon.hero.HP = (int) Math.ceil(Math.min(Dungeon.hero.HT, Dungeon.hero.HP + (restoration * 0.4f)));
-			Dungeon.hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), 1);
+			Buff.affect(hero, Hunger.class).affectHunger(restoration*Math.max(
+					hero.pointsInTalent(Talent.SOUL_EATER)/2f,
+					hero.pointsInTalent(Talent.RK_WARLOCK)/3f));
+			hero.HP = (int) Math.ceil(Math.min(hero.HT, hero.HP + (restoration * 0.4f)));
+			hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), 1);
 		}
 	}
 
@@ -125,6 +125,6 @@ public class SoulMark extends FlavourBuff {
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", Dungeon.hero.subClass.title(), dispTurns());
+		return Messages.get(this, "desc", hero.subClass.title(), dispTurns());
 	}
 }
