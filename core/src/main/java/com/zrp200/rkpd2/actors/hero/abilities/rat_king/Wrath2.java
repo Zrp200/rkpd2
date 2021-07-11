@@ -13,6 +13,7 @@ import com.zrp200.rkpd2.actors.buffs.Paralysis;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
+import com.zrp200.rkpd2.actors.hero.abilities.mage.ElementalBlast;
 import com.zrp200.rkpd2.actors.hero.abilities.rogue.SmokeBomb;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.effects.CellEmitter;
@@ -75,13 +76,18 @@ public class Wrath2 extends ArmorAbility {
             CellEmitter.center(hero.pos).burst(Speck.factory(Speck.DUST), 10);
             Camera.main.shake(2, 0.5f);
         }
+        stages[2] = true;
+        // blast
+        ElementalBlast.activate(hero, false);
+        hero.sprite.remove(CharSprite.State.INVISIBLE);
+        hero.sprite.operate(hero.pos,()->{});
         // now do mage
-        if(stages[1] = MageArmor.doMoltenEarth()) {
+        /*if(stages[1] = MageArmor.doMoltenEarth()) {
             Dungeon.observe();
             hero.sprite.remove(CharSprite.State.INVISIBLE); // you still benefit from initial invisibiilty, even if you can't see it visually.
             hero.sprite.operate(hero.pos,()->{}); // handled.
             MageArmor.playMoltenEarthFX();
-        }
+        }*/
         // warrior. this is delayed so the burst burning damage doesn't cancel this out instantly.
         if(stages[0]) for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
             Char mob = Actor.findChar(hero.pos + PathFinder.NEIGHBOURS8[i]);

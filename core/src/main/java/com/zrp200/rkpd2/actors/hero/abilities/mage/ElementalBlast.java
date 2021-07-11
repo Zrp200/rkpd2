@@ -112,8 +112,7 @@ public class ElementalBlast extends ArmorAbility {
 		baseChargeUse = 35f;
 	}
 
-	@Override
-	protected void activate(ClassArmor armor, Hero hero, Integer target) {
+	public static void activate(Hero hero, boolean endTurn) {
 		Ballistica aim;
 		//Basically the direction of the aim only matters if it goes outside the map
 		//So we just ensure it won't do that.
@@ -132,7 +131,8 @@ public class ElementalBlast extends ArmorAbility {
 			return;
 		}
 
-		int aoeSize = /*4*/5 + hero.pointsInTalent(Talent.BLAST_RADIUS);
+		int aoeSize = (!hero.hasTalent(Talent.BLAST_RADIUS) ? 4 : 5)
+				+ hero.pointsInTalent(Talent.BLAST_RADIUS, Talent.RAT_BLAST);
 
 		int projectileProps = Ballistica.STOP_SOLID | Ballistica.STOP_TARGET;
 
@@ -162,7 +162,9 @@ public class ElementalBlast extends ArmorAbility {
 			);
 		}
 
-		final float effectMulti = 1f + (0.15f*hero.pointsInTalent(Talent.ELEMENTAL_POWER))*1.5f;
+		final float effectMulti = 1f + 0.15f*hero.byTalent(
+				Talent.ELEMENTAL_POWER,1.5f,
+				Talent.RAT_BLAST,1f);
 
 		//cast a ray 2/3 the way, and do effects
 		Class<? extends Wand> finalWandCls = wandCls == WandOfFirebolt.class ? WandOfFireblast.class : wandCls;
@@ -378,24 +380,28 @@ public class ElementalBlast extends ArmorAbility {
 						}
 
 						charsHit = Math.min(5, charsHit);
-						if (charsHit > 0 && hero.hasTalent(Talent.REACTIVE_BARRIER)){
-							Buff.affect(hero, Barrier.class).setShield(charsHit*/*2*/3*hero.pointsInTalent(Talent.REACTIVE_BARRIER));
+						if (charsHit > 0 && hero.hasTalent(Talent.REACTIVE_BARRIER, Talent.RAT_BLAST)){
+							Buff.affect(hero, Barrier.class).setShield(charsHit*(int)hero.byTalent(Talent.REACTIVE_BARRIER, 3, Talent.RAT_BLAST, 2));
 						}
 
-						hero.spendAndNext(Actor.TICK);
+						if(endTurn) hero.spendAndNext(Actor.TICK);
 					}
 				}
 		);
 
-		hero.sprite.operate( hero.pos );
-		Invisibility.dispel();
 		hero.busy();
+
+		Sample.INSTANCE.play( Assets.Sounds.CHARGEUP );
+	}
+	@Override
+	protected void activate(ClassArmor armor, Hero hero, Integer target) {
+		activate(hero, true);
+
+		Invisibility.dispel();
+		hero.sprite.operate(hero.pos);
 
 		armor.charge -= chargeUse(hero);
 		armor.updateQuickslot();
-
-		Sample.INSTANCE.play( Assets.Sounds.CHARGEUP );
-
 	}
 
 	@Override
