@@ -1193,7 +1193,7 @@ public class Hero extends Char {
 					if(staff == wep || Random.Int(5) < pointsInTalent(Talent.SORCERY)) {
 						staff.procBM();
 					}
-					if(staff == wep || Random.Int(3) < pointsInTalent())
+					if(staff == wep || Random.Int(3) < pointsInTalent(Talent.SORCERY))
 						if (buff(Talent.EmpoweredStrikeTracker.class) != null) {
 							buff(Talent.EmpoweredStrikeTracker.class).detach();
 							damage = Math.round(damage * (1f + Math.max(
