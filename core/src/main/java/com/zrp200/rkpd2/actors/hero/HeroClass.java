@@ -79,7 +79,7 @@ public enum HeroClass {
 
 	WARRIOR(BERSERKER, GLADIATOR),
 	MAGE(BATTLEMAGE, WARLOCK) {
-		@Override public int getBonus(Item item) { return item instanceof Wand ? 2 : 0; }
+		@Override public int getBonus(Item item) { return item instanceof Wand ? MAGE_WAND_BOOST : 0; }
 	},
 	ROGUE(ASSASSIN, FREERUNNER) {
 		//@Override public int getBonus(Item item) { return item instanceof Weapon ? 1 : 0; }

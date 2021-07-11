@@ -67,6 +67,7 @@ import com.zrp200.rkpd2.actors.buffs.Vertigo;
 import com.zrp200.rkpd2.actors.buffs.Vulnerable;
 import com.zrp200.rkpd2.actors.buffs.Weakness;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.rogue.DeathMark;
@@ -323,15 +324,19 @@ public abstract class Char extends Actor {
 			if (block != null)  dr += block.blockingRoll();
 
 			if (this instanceof Hero){
-				Hero h = (Hero)this;
-				KindOfWeapon wep = h.belongings.weapon;
-				if(h.hasTalent(Talent.WARLOCKS_TOUCH)) {
+				Hero hero = (Hero)this;
+				KindOfWeapon wep = hero.belongings.weapon;
+				// 17%/33%/50% for this to work.
+				if(Random.Int(6) < hero.pointsInTalent(Talent.WARLOCKS_TOUCH)) {
 					// warlock can soul mark by simply attacking with warlock's touch.
-					SoulMark.process(enemy,(wep != null ? wep.buffedLvl():0)+Math.max(0,h.pointsInTalent(Talent.WARLOCKS_TOUCH)-1),1,Random.Int(4) >= h.pointsInTalent(Talent.WARLOCKS_TOUCH));
+					int lvl = wep != null ? wep.buffedLvl() : 0;
+					// it's treated as a wand, so apply wand boost if applicable.
+					if(hero.heroClass == HeroClass.MAGE) lvl += HeroClass.MAGE_WAND_BOOST;
+					SoulMark.process(enemy,lvl,1,true);
 				}
-				if (h.belongings.weapon() instanceof MissileWeapon
-						&& (h.subClass == HeroSubClass.SNIPER || h.subClass == HeroSubClass.KING)
-						&& !Dungeon.level.adjacent(h.pos, enemy.pos)){
+				if (hero.belongings.weapon() instanceof MissileWeapon
+						&& (hero.subClass == HeroSubClass.SNIPER || hero.subClass == HeroSubClass.KING)
+						&& !Dungeon.level.adjacent(hero.pos, enemy.pos)){
 					dr = 0;
 				}
 			}
