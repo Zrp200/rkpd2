@@ -73,17 +73,19 @@ import com.zrp200.rkpd2.messages.Messages;
 
 import java.util.Locale;
 
+import static com.zrp200.rkpd2.actors.hero.HeroSubClass.*;
+
 public enum HeroClass {
 
-	WARRIOR(HeroSubClass.BERSERKER, HeroSubClass.GLADIATOR),
-	MAGE(HeroSubClass.BATTLEMAGE, HeroSubClass.WARLOCK) {
+	WARRIOR(BERSERKER, GLADIATOR),
+	MAGE(BATTLEMAGE, WARLOCK) {
 		@Override public int getBonus(Item item) { return item instanceof Wand ? 2 : 0; }
 	},
-	ROGUE(HeroSubClass.ASSASSIN, HeroSubClass.FREERUNNER) {
+	ROGUE(ASSASSIN, FREERUNNER) {
 		//@Override public int getBonus(Item item) { return item instanceof Weapon ? 1 : 0; }
 	},
-	HUNTRESS(HeroSubClass.SNIPER, HeroSubClass.WARDEN),
-	RAT_KING (HeroSubClass.KING);
+	HUNTRESS(SNIPER, WARDEN),
+	RAT_KING (KING);
 
 	private HeroSubClass[] subClasses;
 
