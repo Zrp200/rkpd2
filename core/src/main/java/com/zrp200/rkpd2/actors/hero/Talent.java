@@ -22,7 +22,6 @@
 package com.zrp200.rkpd2.actors.hero;
 
 import com.watabou.noosa.Image;
-import com.watabou.utils.Reflection;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.GamesInProgress;
@@ -79,8 +78,6 @@ import com.zrp200.rkpd2.utils.GLog;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-
-import static com.watabou.utils.Reflection.newInstance;
 
 public enum Talent {
 
