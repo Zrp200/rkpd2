@@ -89,6 +89,16 @@ public class RKPD2Changes {
         v010 = {
             new ChangeInfo("v0.1.0", true, TITLE_COLOR, ""),
 
+            new ChangeInfo("v0.1.0b", false, TITLE_COLOR, "",
+                    bugFixes(list(2,
+                            "Sorcery not giving BM effects on non-staff melee attacks",
+                            "Berserking Stamina not level-shifted in terms of berserk recovery speed.",
+                            "Confusing typo in Berserking Stamina description",
+                            "Spectral blades being able to attack NPCs (actually a shattered bug)",
+                            "Fan of Blades dealing more damage to additional targets than intended.",
+                            "Projecting Blades giving more wall penetration for the initial target than additional targets.")
+                    )
+            ),
             new ChangeInfo("v0.1.0a", false, TITLE_COLOR, "",
                     new ChangeButton(new ItemSprite(new KingsCrown()), "Ability adjustments",list(2,
                             "Death mark now gives +33% damage, up from +25%.",
