@@ -392,13 +392,13 @@ public class ElementalBlast extends ArmorAbility {
 
 		hero.busy();
 
-		Sample.INSTANCE.play( Assets.Sounds.CHARGEUP );
 		return true;
 	}
 	@Override
 	protected void activate(ClassArmor armor, Hero hero, Integer target) {
 		activate(hero, () -> hero.spendAndNext(Actor.TICK) );
 
+		Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);
 		Invisibility.dispel();
 		hero.sprite.operate(hero.pos);
 

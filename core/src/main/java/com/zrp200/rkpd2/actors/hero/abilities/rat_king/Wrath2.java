@@ -1,11 +1,12 @@
 package com.zrp200.rkpd2.actors.hero.abilities.rat_king;
 
+import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Point;
+import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -17,7 +18,6 @@ import com.zrp200.rkpd2.actors.hero.abilities.warrior.Shockwave;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.mechanics.ConeAOE;
-import com.zrp200.rkpd2.sprites.CharSprite;
 
 import java.util.HashSet;
 
@@ -110,7 +110,9 @@ public class Wrath2 extends ArmorAbility {
                 next);
     }
     private void doBlast(Callback next) {
-        stages[1] = ElementalBlast.activate(hero, next);
+        if(stages[1] = ElementalBlast.activate(hero, next)) {
+            Sample.INSTANCE.play(Assets.Sounds.CHARGEUP,0.5f); // this sound is disproportionately loud.
+        };
         hero.sprite.operate(hero.pos,()->{});
     }
     private void doSpectralBlades() { // fixme this code....aaaaaaaaaaaaaaaaaaaaaaa
