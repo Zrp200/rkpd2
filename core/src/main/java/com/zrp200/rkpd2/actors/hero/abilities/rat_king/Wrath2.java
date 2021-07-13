@@ -24,9 +24,6 @@ import java.util.HashSet;
 import static com.zrp200.rkpd2.actors.hero.Talent.AFTERSHOCK;
 import static com.zrp200.rkpd2.actors.hero.Talent.SEA_OF_BLADES;
 import static com.zrp200.rkpd2.actors.hero.Talent.SMOKE_AND_MIRRORS;
-// elemental blast talent lines up perfectly so there's no need to have specific logic for it.
-
-// here we fucking go. this is a legacy ability to correspond with the previous mechanics.
 
 public class Wrath2 extends ArmorAbility {
 
@@ -34,14 +31,20 @@ public class Wrath2 extends ArmorAbility {
         baseChargeUse = 50;
     }
 
-    @Override
-    public String targetingPrompt() {
+    @Override public String targetingPrompt() {
         return new SmokeBomb().targetingPrompt();
     }
 
-    @Override
-    public Talent[] talents() {
+    @Override public Talent[] talents() {
         return new Talent[]{AFTERSHOCK, Talent.RAT_BLAST,SMOKE_AND_MIRRORS,SEA_OF_BLADES};
+    }
+
+    @Override public float chargeUse(Hero hero) {
+        if (hero.hasTalent(SMOKE_AND_MIRRORS) && hero.invisible > 0){
+            // shadow step: reduced charge use by 24%/42%/56%/67%
+            return (float)(super.chargeUse(hero) * Math.pow(SmokeBomb.SHADOW_STEP_REDUCTION, hero.pointsInTalent(SMOKE_AND_MIRRORS)));
+        }
+        return super.chargeUse(hero);
     }
 
     private static final float JUMP_DELAY=1f;
@@ -51,17 +54,7 @@ public class Wrath2 extends ArmorAbility {
     private int target;
     private boolean[] stages;
 
-    @Override
-    public float chargeUse(Hero hero) {
-        if (hero.hasTalent(SMOKE_AND_MIRRORS) && hero.invisible > 0){
-            // shadow step: reduced charge use by 24%/42%/56%/67%
-            return (float)(super.chargeUse(hero) * Math.pow(SmokeBomb.SHADOW_STEP_REDUCTION, hero.pointsInTalent(SMOKE_AND_MIRRORS)));
-        }
-        return super.chargeUse(hero);
-    }
-
-    @Override
-    protected void activate(ClassArmor armor, Hero hero, Integer target) {
+    @Override protected void activate(ClassArmor armor, Hero hero, Integer target) {
         if(target == null) return;
         this.armor = armor;
         this.hero = hero;
@@ -78,7 +71,6 @@ public class Wrath2 extends ArmorAbility {
 
         // smoke bomb should happen 'instantly'
 
-        // *technically* it should actually go nowhere, at +4 its range is 1.5 lol. but for the sake of sanity I'm making it 1/2/3/4/5
         hero.sprite.doAfterAnim( () ->
                 doShockwave( () ->
                         doBlast(this::doSpectralBlades)
@@ -105,11 +97,13 @@ public class Wrath2 extends ArmorAbility {
     private void doShockwave(Callback next) {
         // TODO find a way to do "half" distance intervals, like rogue searching.
         stages[2] = true; // todo do I want to tie this to the jump?
+        // *technically* it should actually go nowhere, at +4 its range is 1.5 lol. but for the sake of sanity I'm making it 1/2/3/4/5
         Shockwave.activate(hero, hero.pos,
                 360, 1 + hero.pointsInTalent(AFTERSHOCK),
                 next);
     }
     private void doBlast(Callback next) {
+        // elemental blast talent lines up almost perfectly so there's very little additional logic for it.
         if(stages[1] = ElementalBlast.activate(hero, next)) {
             Sample.INSTANCE.play(Assets.Sounds.CHARGEUP,0.5f); // this sound is disproportionately loud.
         };
@@ -127,6 +121,7 @@ public class Wrath2 extends ArmorAbility {
                 targets.add(toAdd);
             }
         }
+        // todo should I have it proc enchant at boosted rate to better reflect actual spectral blades?
         // 1x/1.5x/2x/2.5x/3x total effectiveness
         final float mult = Math.min(1,
                 (1 + .5f * hero.pointsInTalent(SEA_OF_BLADES)) / targets.size());
