@@ -3,6 +3,7 @@ package com.zrp200.rkpd2.actors.hero.abilities.rat_king;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Point;
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
@@ -71,9 +72,9 @@ public class Wrath2 extends ArmorAbility {
 
         // smoke bomb should happen 'instantly'
 
-        hero.sprite.doAfterAnim( () ->
-                doShockwave( () ->
-                        doBlast(this::doSpectralBlades)
+        hero.sprite.doAfterAnim(
+                () -> doShockwave(
+                        () -> doBlast(this::doSpectralBlades)
                 )
         );
     }
@@ -95,11 +96,12 @@ public class Wrath2 extends ArmorAbility {
         return true;
     }
     private void doShockwave(Callback next) {
-        // TODO find a way to do "half" distance intervals, like rogue searching.
         stages[2] = true; // todo do I want to tie this to the jump?
-        // *technically* it should actually go nowhere, at +4 its range is 1.5 lol. but for the sake of sanity I'm making it 1/2/3/4/5
+        // *technically* it should actually go nowhere, at +4 its range is 1.5 lol.
+        // but for the sake of sanity I'm roughly doubling it, thus 1/1-2/2/2-3/3
+        // TODO find a way to do "half" distance intervals, like rogue searching, the randomness can be a put-off.
         Shockwave.activate(hero, hero.pos,
-                360, 1 + hero.pointsInTalent(AFTERSHOCK),
+                360, Random.round((2+hero.pointsInTalent(AFTERSHOCK))/2f),
                 next);
     }
     private void doBlast(Callback next) {
