@@ -528,7 +528,7 @@ public enum Talent {
 
 	public static void onItemCollected( Hero hero, Item item ){
 		if(item.isIdentified()) return;
-		boolean id = false;
+		boolean id = false, curseID = false;
 		if (hero.heroClass == HeroClass.ROGUE || hero.hasTalent(THIEFS_INTUITION,ROYAL_INTUITION)){
 			int points = hero.pointsInTalent(THIEFS_INTUITION,ROYAL_INTUITION);
 			if(hero.heroClass == HeroClass.ROGUE) points++;
@@ -541,9 +541,7 @@ public enum Talent {
 					&& (item instanceof Ring || item instanceof Artifact)
 					&& !item.collected && item.cursed && !item.cursedKnown
 					&& Random.Int(2) == 0) {
-				item.cursedKnown = true;
-				id = true;
-				GLog.n(String.format("The %s is cursed!",item.name()));
+				id = curseID = item.cursedKnown = true;
 			}
 		}
 		if (hero.pointsInTalent(ARMSMASTERS_INTUITION) == 2 && Random.Int(2) == 0 && !item.collected &&
@@ -552,14 +550,20 @@ public enum Talent {
 			id = true;
 		}
 		if(!item.collected && !item.cursedKnown && (item instanceof EquipableItem && !(item instanceof MissileWeapon) || item instanceof Wand) && Random.Int(5) < hero.pointsInTalent(SURVIVALISTS_INTUITION)){
-			item.cursedKnown = true;
-			id = true;
+			id = curseID = item.cursedKnown = true;
 		}
 		if( (item instanceof Scroll || item instanceof Potion) && !item.isIdentified() && hero.hasTalent(SCHOLARS_INTUITION) ) {
 			if(!item.collected && Random.Int(4-hero.pointsInTalent(SCHOLARS_INTUITION)) == 0) {
 				item.identify();
 				id = true;
 			}
+		}
+
+		if(curseID) {
+			// fixme this doesn't use .properties file.
+			GLog.w("The %s is %s",
+					item.name(),
+					item.visiblyCursed() ? "cursed!" : "free of malevolent magic.");
 		}
 		if(id && hero.sprite.emitter() != null) hero.sprite.emitter().burst(Speck.factory(Speck.QUESTION),1);
 
