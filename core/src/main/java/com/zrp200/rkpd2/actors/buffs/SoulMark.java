@@ -25,7 +25,6 @@ import com.zrp200.rkpd2.actors.hero.Talent;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
-import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.effects.Speck;
@@ -45,17 +44,21 @@ public class SoulMark extends FlavourBuff {
 	}
 
 	public static void process(Char defender, int level, int chargesUsed, boolean afterDamage) {
+		//standard 1 - 0.92^x chance, plus 7%. Starts at 15%
+		process(defender, level, (float)Math.pow(0.92f, (level * chargesUsed) + 1) - 0.07f, afterDamage);
+	}
+
+	public static void process(Char defender, int bonusDuration, float chance, boolean afterDamage ) {
 		// warlock's touch can cancel an afterDamage argument with 20%/30%/40% chance.
 		afterDamage = afterDamage && hero.hasTalent(Talent.WARLOCKS_TOUCH)
 				// this is GREATER THAN because we're checking if the proc failed, not succeeded.
 				&& Random.Float() > .1f*(1+hero.pointsInTalent(Talent.WARLOCKS_TOUCH));
 
-		//standard 1 - 0.92^x chance, plus 7%. Starts at 15%
 		if (defender != hero
-				&& (hero.subClass == HeroSubClass.WARLOCK || Dungeon.hero.subClass == HeroSubClass.KING)
-				&& Random.Float() > (Math.pow(0.92f, (level * chargesUsed) + 1) - 0.07f)) {
+				&& (hero.subClass == HeroSubClass.WARLOCK || hero.subClass == HeroSubClass.KING)
+				&& Random.Float() > chance) {
 			DelayedMark mark = affect(defender,DelayedMark.class);
-			mark.duration = DURATION+level;
+			mark.duration = DURATION+bonusDuration;
 			if(!afterDamage) mark.activate(); // is active immediately, which means that if damage is taken directly afterwards it'll be processed.
 			// see Char#damage
 		}

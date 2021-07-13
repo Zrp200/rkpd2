@@ -326,8 +326,9 @@ public abstract class Char extends Actor {
 			if (this instanceof Hero){
 				Hero hero = (Hero)this;
 				KindOfWeapon wep = hero.belongings.weapon;
-				// 17%/33%/50% for this to work.
-				if(Random.Int(6) < hero.pointsInTalent(Talent.WARLOCKS_TOUCH)) {
+				// fixme should I let allies be able to soul mark?
+				// 20%/40%/60% for this to work.
+				if(Random.Int(5) < hero.pointsInTalent(Talent.WARLOCKS_TOUCH)) {
 					// warlock can soul mark by simply attacking with warlock's touch.
 					int lvl = wep != null ? wep.buffedLvl() : 0;
 					// it's treated as a wand, so apply wand boost if applicable.
@@ -531,6 +532,14 @@ public abstract class Char extends Actor {
 			damage *= buff.meleeDamageFactor();
 			buff.onAttackProc( enemy );
 		}
+
+		if(alignment == Alignment.ALLY && Dungeon.hero.hasTalent(Talent.WARLOCKS_TOUCH)) {
+			// warlock+allies can soul mark by simply attacking, via warlock's touch.
+			SoulMark.process(enemy,
+					-5, .1f*Dungeon.hero.pointsInTalent(Talent.WARLOCKS_TOUCH),
+					true);
+		}
+
 		return damage;
 	}
 	
