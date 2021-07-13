@@ -150,7 +150,7 @@ public class Wrath extends ArmorAbility {
         });
     }
     public static class SpectralBladesTracker extends Talent.SpiritBladesTracker {
-        public int effectiveness;
+        public float effectiveness;
     }
 
     private void finish() {

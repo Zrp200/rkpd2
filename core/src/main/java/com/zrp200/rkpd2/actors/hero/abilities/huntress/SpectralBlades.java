@@ -26,10 +26,13 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.Combo;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
+import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath;
 import com.zrp200.rkpd2.actors.mobs.npcs.NPC;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
@@ -138,8 +141,17 @@ public class SpectralBlades extends ArmorAbility {
 	{
 		Callback callback = new Callback() {
 			@Override public void call() {
-				if (hero.hasTalent(spiritBlades)) Buff.affect(hero, trackerClass, 0f);
-				hero.attack( ch, dmgMulti, 0, accMulti );
+				if (hero.hasTalent(spiritBlades)) {
+					Buff tracker = Buff.affect(hero, trackerClass, 0f);
+					if(tracker instanceof Wrath.SpectralBladesTracker) { // annoyed I have to put the logic here.
+						((Wrath.SpectralBladesTracker)tracker).effectiveness = dmgMulti;
+					}
+				}
+				if(hero.attack( ch, dmgMulti, 0, accMulti )
+						&& hero.subClass == HeroSubClass.KING && Random.Float() < dmgMulti) {
+					// this isn't going to be added otherwise.
+					Buff.affect(hero, Combo.class).hit(ch);
+				};
 				callbacks.remove( this );
 				if (callbacks.isEmpty()) onComplete.call();
 			}
