@@ -216,37 +216,43 @@ public class Ratmogrify extends ArmorAbility {
 	}
 
 	// summons.
-	private static double getModifier() { return Math.max(1, Dungeon.depth/5d); }
+	private static float getModifier() { return Math.max(1, Dungeon.depth/5f)*.8f; }
 	public static class SummonedRat extends Rat {
 		{
-			HP = HT *= getModifier();
+			HP = HT = (int)Math.ceil( HT * getModifier() );
 
 			damageRange[0] *= getModifier();
 			damageRange[1] *= getModifier();
+
 			armorRange[0] *= getModifier();
 			armorRange[1] *= getModifier();
+		}
 
-			defenseSkill *= getModifier();
+		@Override public int defenseSkill(Char enemy) {
+			return Random.round( super.defenseSkill(enemy) * getModifier() );
 		}
 
 		@Override public int attackSkill(Char target) {
-			return (int)( super.attackSkill(target) * getModifier() );
+			return Random.round( super.attackSkill(target) * getModifier() );
 		}
 	}
 	public static class SummonedAlbino extends Albino {
 		{
-			HP = HT *= getModifier();
+			HP = HT = (int)Math.ceil( HT * getModifier() );
 
 			damageRange[0] *= getModifier();
 			damageRange[1] *= getModifier();
+
 			armorRange[0] *= getModifier();
 			armorRange[1] *= getModifier();
+		}
 
-			defenseSkill *= getModifier();
+		@Override public int defenseSkill(Char enemy) {
+			return Random.round( super.defenseSkill(enemy) * getModifier() );
 		}
 
 		@Override public int attackSkill(Char target) {
-			return (int)( super.attackSkill(target) * getModifier() );
+			return Random.round( super.attackSkill(target) * getModifier() );
 		}
 	}
 }
