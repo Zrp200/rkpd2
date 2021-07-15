@@ -22,7 +22,6 @@
 package com.zrp200.rkpd2.items.scrolls.exotic;
 
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -33,10 +32,6 @@ import com.zrp200.rkpd2.items.scrolls.Scroll;
 import com.zrp200.rkpd2.items.stones.StoneOfEnchantment;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.Weapon;
-import com.zrp200.rkpd2.items.weapon.enchantments.Blocking;
-import com.zrp200.rkpd2.items.weapon.enchantments.Explosive;
-import com.zrp200.rkpd2.items.weapon.enchantments.Grim;
-import com.zrp200.rkpd2.items.weapon.enchantments.Lucky;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSprite;
@@ -60,31 +55,19 @@ public class ScrollOfEnchantment extends ExoticScroll {
 		GameScene.selectItem( itemSelector, WndBag.Mode.ENCHANTABLE, Messages.get(this, "inv_title"));
 	}
 
-	private static Class<? extends Weapon.Enchantment>[] generateIgnoreList(Weapon weapon, Class<?extends Weapon.Enchantment>... existing) {
-		if(!(weapon instanceof SpiritBow)) return existing;
-		Class<?extends Weapon.Enchantment>[] toIgnore = new Class[existing.length+SpiritBow.REMOVED_ENCHANTS.length];
-		int i=0;
-		for(Class enchantClass : existing) toIgnore[i++] = enchantClass;
-		// 33% for it to be ignored and thus making it impossible to be replaced.
-		for(Class enchantClass : SpiritBow.REMOVED_ENCHANTS) if(Random.Int(2) == 0) toIgnore[i++] = enchantClass;
-		return toIgnore;
-	}
-
+	@SuppressWarnings("unchecked")
 	public void enchantWeapon(Weapon weapon) {
 		final Weapon.Enchantment enchants[] = new Weapon.Enchantment[3];
 
 		Class<? extends Weapon.Enchantment> existing = weapon.enchantment != null ? weapon.enchantment.getClass() : null;
-		enchants[0] = Weapon.Enchantment.randomCommon(generateIgnoreList(weapon,existing));
-		enchants[1] = Weapon.Enchantment.randomUncommon(generateIgnoreList(weapon,existing));
-		enchants[2] = Weapon.Enchantment.random( generateIgnoreList( weapon, existing, enchants[0].getClass(), enchants[1].getClass() ) );
-		if(weapon instanceof SpiritBow) {
-			// essentially a find and replace with priorities.
-			// this means that they're all technically obtainable (aside from blocking)
-			// overall effect here is that blocking and lucky are removed from the pool.
-			if(enchants[1] instanceof Blocking || enchants[1] instanceof Lucky) enchants[1] = new Explosive();
-			// if they show up in the third slot they are replaced with grim
-			if(enchants[2] instanceof Blocking || enchants[2] instanceof Lucky) enchants[2] = Random.Int(3) == 0 || enchants[1] instanceof Explosive ? new Grim() : new Explosive();
-		}
+		enchants[0] = Weapon.Enchantment.randomCommon(existing);
+		enchants[1] = weapon instanceof SpiritBow
+				? SpiritBow.randomUncommonEnchant(existing)
+				: Weapon.Enchantment.randomUncommon(existing);
+		Class[] toIgnore = {existing, enchants[0].getClass(), enchants[1].getClass()};
+		enchants[2] = weapon instanceof SpiritBow
+				? SpiritBow.randomEnchantment(toIgnore)
+				: Weapon.Enchantment.random(toIgnore);
 
 				GameScene.show(new WndOptions(new ItemSprite(ScrollOfEnchantment.this),
 						Messages.titleCase(ScrollOfEnchantment.this.name()),

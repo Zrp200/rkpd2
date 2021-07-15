@@ -59,7 +59,7 @@ import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
-import java.util.ArrayList;
+import java.util.*;
 
 public class SpiritBow extends Weapon {
 	
@@ -75,8 +75,43 @@ public class SpiritBow extends Weapon {
 		bones = false;
 	}
 
-	// storing this here
-	public static final Class<?extends Enchantment>[] REMOVED_ENCHANTS = new Class[] {Blocking.class, Lucky.class};
+	/// enchanting logic ///
+	public static final Set<Class<? extends Enchantment>> REMOVED_ENCHANTS = Collections.unmodifiableSet(new HashSet(Arrays.asList(
+			Blocking.class, Lucky.class
+	)));
+
+	private final static float[] typeChances = { 50, 40, 15 }; // +50% rare enchants
+	public static Enchantment randomUncommonEnchant(Class<?extends Enchantment>... toIgnore) { // an override for the static Weapon.randomUncommon.
+		boolean addExplosive = true;
+		for(Class cls : toIgnore) if(cls == Explosive.class) {
+			addExplosive = false;
+			break;
+		}
+		while(true) {
+			Enchantment enchantment = Enchantment.randomUncommon(toIgnore);
+			if(REMOVED_ENCHANTS.contains(enchantment.getClass())) {
+				if(addExplosive && Random.Int(2) == 0) return new Explosive();
+				else continue;
+			}
+			return enchantment;
+		}
+	}
+
+	// an override for Weapon.Enchantment.random()
+	public static Enchantment randomEnchantment(Class<? extends Enchantment>... toIgnore) {
+		switch ( Random.chances(typeChances) ) {
+			case 0: return Enchantment.randomCommon(toIgnore);
+			case 1: return randomUncommonEnchant(toIgnore); // using the custom logic.
+			default: return Enchantment.randomRare(toIgnore);
+		}
+	}
+
+	@Override public Weapon enchant() {
+		@SuppressWarnings("unchecked")
+		Enchantment newEnchant = randomEnchantment(enchantment != null ? enchantment.getClass() : null);
+		return enchant(newEnchant);
+	}
+	///
 
 	@Override
 	public ArrayList<String> actions(Hero hero) {
