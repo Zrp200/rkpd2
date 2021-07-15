@@ -77,6 +77,7 @@ import com.zrp200.rkpd2.utils.GLog;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public enum Talent {
@@ -139,7 +140,7 @@ public enum Talent {
 	//Huntress T3
 	POINT_BLANK(105, 3), SEER_SHOT(106, 3),
 	//Sniper T3
-	FARSIGHT(107, 3), SHARED_ENCHANTMENT(108, 3), SHARED_UPGRADES(109, 3), MULTISHOT(137,3),
+	FARSIGHT(107, 3), SHARED_ENCHANTMENT(108, 3), SHARED_UPGRADES(109, 3), MULTISHOT(137,3) {{aliases = new String[]{"RANGER"};}},
 	//Warden T3
 	DURABLE_TIPS(110, 3), BARKSKIN(111, 3), SHIELDING_DEW(112, 3), NATURES_BETTER_AID(102,3),
 	//Spectral Blades T4
@@ -193,6 +194,8 @@ public enum Talent {
 	PURSUIT(98), // durable projectiles (5),silent steps(4),lethal momentum (3),shield battery(5), uses FUS
 	// Rat King T3
 	RK_BERSERKER(11,3), RK_GLADIATOR(16,3), RK_BATTLEMAGE(43,3), RK_WARLOCK(47,3), RK_ASSASSIN(75,3), RK_FREERUNNER(78,3), RK_SNIPER(109,3), RK_WARDEN(102,3);
+
+	protected String[] aliases = new String[0];
 
 	public static abstract class Cooldown extends FlavourBuff {
 		public static <T extends Cooldown> void affectHero(Class<T> cls) {
@@ -805,13 +808,22 @@ public enum Talent {
 
 			if (tierBundle != null){
 				for (Talent talent : tier.keySet()){
-					if (tierBundle.contains(talent.name())){
-						tier.put(talent, Math.min(tierBundle.getInt(talent.name()), talent.maxPoints()));
-					}
-					if(tierBundle.contains("ranger")) tier.put(MULTISHOT, Math.min(tierBundle.getInt(talent.name()), MULTISHOT.maxPoints));
+					restoreTalentFromBundle(tierBundle,tier,talent);
 				}
 			}
 		}
+	}
+	private static void restoreTalentFromBundle(Bundle tierBundle, HashMap<Talent, Integer> tier, Talent talent) {
+		if(!restoreTalentFromBundle(tierBundle, tier, talent, talent.name())) {
+			for(String alias : talent.aliases) if(restoreTalentFromBundle(tierBundle, tier, talent, alias)) return;
+		};
+	}
+	private static boolean restoreTalentFromBundle(Bundle tierBundle, HashMap<Talent, Integer> tier, Talent talent, String alias) {
+		if (tierBundle.contains(alias)) {
+			tier.put(talent, Math.min(tierBundle.getInt(alias), talent.maxPoints()));
+			return true;
+		}
+		return false;
 	}
 
 }
