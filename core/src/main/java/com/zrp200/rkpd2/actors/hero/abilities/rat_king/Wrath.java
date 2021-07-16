@@ -1,5 +1,6 @@
 package com.zrp200.rkpd2.actors.hero.abilities.rat_king;
 
+import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Point;
@@ -16,9 +17,12 @@ import com.zrp200.rkpd2.actors.hero.abilities.huntress.SpectralBlades;
 import com.zrp200.rkpd2.actors.hero.abilities.mage.ElementalBlast;
 import com.zrp200.rkpd2.actors.hero.abilities.rogue.SmokeBomb;
 import com.zrp200.rkpd2.actors.hero.abilities.warrior.Shockwave;
+import com.zrp200.rkpd2.effects.particles.BlastParticle;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
+import com.zrp200.rkpd2.levels.features.Chasm;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.mechanics.ConeAOE;
+import com.zrp200.rkpd2.sprites.MobSprite;
 
 import java.util.HashSet;
 
@@ -83,7 +87,10 @@ public class Wrath extends ArmorAbility {
         if( !SmokeBomb.isValidTarget(hero, target) ) return false;
 
         boolean shadowStepping = hero.invisible > 0 && hero.hasTalent(SMOKE_AND_MIRRORS);
-        if(!shadowStepping) SmokeBomb.blindAdjacentMobs(hero);
+        if(!shadowStepping) {
+            SmokeBomb.blindAdjacentMobs(hero);
+            SmokeBomb.doBodyReplacement(hero, SMOKE_AND_MIRRORS, RatStatue.class);
+        }
         SmokeBomb.throwSmokeBomb(hero, target);
 
         if(shadowStepping) {
@@ -173,5 +180,47 @@ public class Wrath extends ArmorAbility {
 
         hero.spendAndNext(delay);
         for(boolean stage : stages) if(stage) { armor.charge -= chargeUse(hero); return; }
+    }
+
+    public static class RatStatue extends SmokeBomb.NinjaLog {
+        { spriteClass = Sprite.class; }
+
+
+        @Override
+        public void die(Object cause) {
+            sprite();
+            super.die(cause);
+            if(cause != null && cause != Chasm.class && sprite.exists && sprite.isVisible()) {
+                // because I don't want to invent more than one frame, this is the death 'animation'.
+                sprite.emitter().burst(BlastParticle.FACTORY, 10);
+                Sample.INSTANCE.play(Assets.Sounds.BLAST, 0.5f, 2/3f);
+                sprite.killAndErase();
+            }
+        }
+
+        public static class Sprite extends MobSprite {
+            // there's literally only one frame, and it is 'null'
+            private final static Object[] NULL = {null};
+
+            public Sprite() {
+                texture( Assets.Sprites.RAT_STATUE );
+
+                TextureFilm frames = new TextureFilm( texture );
+
+                idle = new Animation( 0, true );
+                idle.frames( frames, NULL );
+
+                run = attack = zap = idle;
+
+                die = new Animation( 1, false);
+                die.frames( frames, NULL );
+
+                play( idle );
+
+            }
+
+            @Override public void showAlert() {/*do nothing*/}
+            @Override public int blood() { return 0xFFcdcdb7; }
+        }
     }
 }

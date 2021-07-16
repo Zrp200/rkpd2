@@ -278,7 +278,8 @@ public class Assets {
 		public static final String PYLON	= "sprites/pylon.png";
 		public static final String DM200	= "sprites/dm200.png";
 		public static final String LOTUS	= "sprites/lotus.png";
-		public static final String NINJA_LOG= "sprites/ninja_log.png";
+		public static final String NINJA_LOG= "sprites/ninja_log.png",
+				RAT_STATUE="sprites/rat_statue.png";
 		public static final String SPIRIT_HAWK= "sprites/spirit_hawk.png";
 	}
 }

@@ -50,6 +50,8 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
+import static com.watabou.utils.Reflection.newInstance;
+
 public class SmokeBomb extends ArmorAbility {
 
 	@Override
@@ -99,6 +101,19 @@ public class SmokeBomb extends ArmorAbility {
 		GameScene.updateFog();
 	}
 
+	public static <T extends Mob> void doBodyReplacement(Hero hero, Talent talent, Class<T> ninjaLogClass) {
+		if(!hero.hasTalent(talent)) return;
+		for (Char ch : Actor.chars()){
+			if (ninjaLogClass.isInstance(ch)){
+				ch.die(null);
+			}
+		}
+
+		T n = newInstance(ninjaLogClass);
+		n.pos = hero.pos;
+		GameScene.add(n);
+	}
+
 	@Override
 	protected void activate(ClassArmor armor, Hero hero, Integer target) {
 		if (target != null) {
@@ -110,19 +125,7 @@ public class SmokeBomb extends ArmorAbility {
 
 			if (!shadowStepping) {
 				blindAdjacentMobs(hero);
-
-				if (hero.hasTalent(Talent.BODY_REPLACEMENT)) {
-					for (Char ch : Actor.chars()){
-						if (ch instanceof NinjaLog){
-							ch.die(null);
-						}
-					}
-
-					NinjaLog n = new NinjaLog();
-					n.pos = hero.pos;
-					GameScene.add(n);
-				}
-
+				doBodyReplacement(hero, Talent.BODY_REPLACEMENT, NinjaLog.class);
 				applyHastyRetreat(hero);
 			}
 
@@ -162,13 +165,13 @@ public class SmokeBomb extends ArmorAbility {
 
 			alignment = Alignment.ALLY;
 
-			HP = HT = 20*Dungeon.hero.pointsInTalent(Talent.BODY_REPLACEMENT);
+			HP = HT = 20*Dungeon.hero.pointsInTalent(Talent.BODY_REPLACEMENT, Talent.SMOKE_AND_MIRRORS);
 		}
 
 		@Override
 		public int drRoll() {
-			return Random.NormalIntRange(Dungeon.hero.pointsInTalent(Talent.BODY_REPLACEMENT),
-					3*Dungeon.hero.pointsInTalent(Talent.BODY_REPLACEMENT));
+			return Random.NormalIntRange(Dungeon.hero.pointsInTalent(Talent.BODY_REPLACEMENT, Talent.SMOKE_AND_MIRRORS),
+					3*Dungeon.hero.pointsInTalent(Talent.BODY_REPLACEMENT, Talent.SMOKE_AND_MIRRORS));
 		}
 
 	}
