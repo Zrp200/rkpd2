@@ -21,46 +21,10 @@
 
 package com.zrp200.rkpd2.items.armor;
 
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Random;
-import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.Burning;
-import com.zrp200.rkpd2.actors.buffs.Roots;
-import com.zrp200.rkpd2.actors.mobs.Mob;
-import com.zrp200.rkpd2.effects.particles.ElmoParticle;
-import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
+import static com.zrp200.rkpd2.sprites.ItemSpriteSheet.ARMOR_MAGE;
 
 public class MageArmor extends ClassArmor {
-	
 	{
-		image = ItemSpriteSheet.ARMOR_MAGE;
+		image = ARMOR_MAGE;
 	}
-
-
-	// legacy functionality used by RatKingArmor.java
-	public static boolean doMoltenEarth() {
-		boolean success = false;
-		for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
-			if (Dungeon.level.heroFOV[mob.pos]
-					&& mob.alignment != Char.Alignment.ALLY) {
-				success = true;
-				Buff.affect( mob, Burning.class ).reignite( mob );
-				Buff.prolong( mob, Roots.class, Roots.DURATION );
-				mob.damage(Random.NormalIntRange(4, 16 + Dungeon.depth), new Burning());
-			}
-		}
-		return success;
-	}
-	public static void playMoltenEarthFX() {
-		curUser.busy();
-
-		curUser.sprite.emitter().start( ElmoParticle.FACTORY, 0.025f, 20 );
-		Sample.INSTANCE.play( Assets.Sounds.BURNING );
-		Sample.INSTANCE.play( Assets.Sounds.BURNING );
-		Sample.INSTANCE.play( Assets.Sounds.BURNING );
-	}
-
 }
