@@ -52,7 +52,7 @@ public class Wrath extends ArmorAbility {
         return super.chargeUse(hero);
     }
 
-    private static final float JUMP_DELAY=1f;
+    private static final float JUMP_DELAY=2f;
 
     private ClassArmor armor;
     private Hero hero;
@@ -65,7 +65,7 @@ public class Wrath extends ArmorAbility {
         this.hero = hero;
         this.target = target;
 
-        stages = new boolean[4]; // jump/molten/blades
+        stages = new boolean[3]; // jump/blast/blades
 
         // smoke bomb -> shockwave aoe -> blast -> blades
         if(target == hero.pos) stages[0] = false;
@@ -74,13 +74,15 @@ public class Wrath extends ArmorAbility {
 
         Invisibility.dispel();
 
-        // smoke bomb should happen 'instantly'
-
-        hero.sprite.doAfterAnim(
-                () -> doShockwave(
-                        () -> doBlast(this::doSpectralBlades)
-                )
-        );
+        if(stages[0]) {
+            hero.sprite.doAfterAnim(
+                    () -> doShockwave(
+                            () -> doBlast(this::doSpectralBlades)
+                    ));
+        }
+        else {
+            doBlast(this::doSpectralBlades);
+        }
     }
 
     private boolean doSmokeBomb() {
@@ -103,7 +105,6 @@ public class Wrath extends ArmorAbility {
         return true;
     }
     private void doShockwave(Callback next) {
-        stages[2] = true; // todo do I want to tie this to the jump?
         // *technically* it should actually go nowhere, at +4 its range is 1.5 lol.
         // but for the sake of sanity I'm roughly doubling it, thus 1/1-2/2/2-3/3
         // TODO find a way to do "half" distance intervals, like rogue searching, the randomness can be a put-off.
@@ -137,8 +138,8 @@ public class Wrath extends ArmorAbility {
 
         final HashSet<Callback> callbacks = new HashSet<>();
 
-        stages[3] = !targets.isEmpty();
-        if(!stages[3]) {
+        stages[2] = !targets.isEmpty();
+        if(!stages[2]) {
             finish();
             return;
         }
@@ -165,18 +166,21 @@ public class Wrath extends ArmorAbility {
         hero.sprite.doAfterAnim(hero.sprite::idle);
 
         int delay = 0;
-        if(stages[1]) delay++;
-        if(stages[2]) delay++;
-        if(stages[3]) delay += hero.attackDelay();
-        if(stages[0] && hero.hasTalent(SMOKE_AND_MIRRORS)) Actor.addDelayed(new Actor() {
-            { actPriority = HERO_PRIO; } // this is basically the hero acting.
-            @Override
-            protected boolean act() {
-                SmokeBomb.applyHastyRetreat(hero);
-                remove(this);
-                return true;
+        if(stages[1]) delay++; // blast
+        if(stages[2]) delay += hero.attackDelay(); // spectral blades
+        if(stages[0]) {
+            if(hero.hasTalent(SMOKE_AND_MIRRORS)) {
+                Actor.addDelayed(new Actor() {
+                    { actPriority = HERO_PRIO; } // this is basically the hero acting.
+                    @Override protected boolean act() {
+                        SmokeBomb.applyHastyRetreat(hero);
+                        remove(this);
+                        return true;
+                    }
+                },(delay += JUMP_DELAY)-1);
             }
-        },(delay += JUMP_DELAY)-1);
+            else delay += JUMP_DELAY;
+        }
 
         hero.spendAndNext(delay);
         for(boolean stage : stages) if(stage) { armor.useCharge(); return; }
