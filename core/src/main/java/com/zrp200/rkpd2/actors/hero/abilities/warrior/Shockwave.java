@@ -33,8 +33,8 @@ import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
+import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath;
 import com.zrp200.rkpd2.effects.MagicMissile;
-import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.mechanics.ConeAOE;
@@ -103,15 +103,19 @@ public class Shockwave extends ArmorAbility {
 							if (ch != null && ch.alignment != hero.alignment){
 								int scalingStr = hero.STR()-10;
 								int damage = Random.NormalIntRange(5 + scalingStr, 10 + 2*scalingStr);
-								damage = Math.round(damage * (1f + 0.2f*hero.shiftedPoints(SHOCK_FORCE,AFTERSHOCK)));
+								float modifier = (1f + 0.2f*hero.shiftedPoints(SHOCK_FORCE,AFTERSHOCK));
+								if(hero.armorAbility instanceof Wrath) {
+									// damage is reduced by 20%
+									modifier *= .8f;
+								}
+								damage = Math.round(damage * modifier);
 								damage -= ch.drRoll();
 
 								if (hero.pointsInTalent(Talent.STRIKING_WAVE) == 4){
 									Buff.affect(hero, Talent.StrikingWaveTracker.class, 0f);
 								}
 
-								if (Random.Int(10) < 3*hero.pointsInTalent(STRIKING_WAVE)
-										|| Random.Int(4) < hero.pointsInTalent(AFTERSHOCK)){
+								if (Random.Int(10) < 3*hero.pointsInTalent(STRIKING_WAVE, AFTERSHOCK)){
 									damage = hero.attackProc(ch, damage);
 									ch.damage(damage, hero);
 									switch (hero.subClass) {
@@ -152,8 +156,7 @@ public class Shockwave extends ArmorAbility {
 				60 + 15*hero.shiftedPoints(EXPANDING_WAVE),
 				5 + hero.shiftedPoints(EXPANDING_WAVE),
 				null);
-		armor.charge -= chargeUse(hero);
-		Item.updateQuickslot();
+		armor.useCharge();
 	}
 
 	@Override

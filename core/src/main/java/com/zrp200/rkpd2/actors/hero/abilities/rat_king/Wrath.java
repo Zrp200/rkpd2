@@ -108,6 +108,7 @@ public class Wrath extends ArmorAbility {
         // *technically* it should actually go nowhere, at +4 its range is 1.5 lol.
         // but for the sake of sanity I'm roughly doubling it, thus 1/1-2/2/2-3/3
         // TODO find a way to do "half" distance intervals, like rogue searching, the randomness can be a put-off.
+        // note that I've nerfed most of its mechanics by ~20% to try to compensate for the range liberties.
         Shockwave.activate(hero, hero.pos,
                 360, Random.round((2+hero.pointsInTalent(AFTERSHOCK))/2f),
                 next);
