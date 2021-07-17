@@ -424,10 +424,10 @@ public abstract class RegularLevel extends Level {
 			}
 		}
 
-		//cached rations try to drop in a special room on floors 2/3/4/6/7/8, to a max of 4/6
+		//cached rations try to drop in a special room on floors 2/3/4/6/7/8, to a max of 4/6 (3/5 for rogue, but actual rations)
 		if (Dungeon.hero.hasTalent(Talent.CACHED_RATIONS,Talent.ROYAL_PRIVILEGE)){
 			Talent.CachedRationsDropped dropped = Buff.affect(Dungeon.hero, Talent.CachedRationsDropped.class);
-			if (dropped.count() < 2 + 2*Dungeon.hero.pointsInTalent(Talent.CACHED_RATIONS,Talent.ROYAL_PRIVILEGE)){
+			if (dropped.count() < (Dungeon.hero.hasTalent(Talent.CACHED_RATIONS) ? 1 : 2) + 2*Dungeon.hero.pointsInTalent(Talent.CACHED_RATIONS, Talent.ROYAL_PRIVILEGE)){
 				int cell;
 				do {
 					cell = randomDropCell(SpecialRoom.class);
