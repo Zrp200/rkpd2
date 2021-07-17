@@ -105,10 +105,12 @@ public class DeathMark extends ArmorAbility {
 
 	}
 
-	public static void processFearTheReaper( Char ch ){
+	public static void processFearTheReaper( Char ch, boolean killingBlow ){
 		if (ch.HP > 0 || ch.buff(DeathMarkTracker.class) == null){
 			return;
 		}
+
+		if(killingBlow) Talent.LethalMomentumTracker.process();
 
 		if (hero.hasTalent(Talent.FEAR_THE_REAPER)) {
 			if (hero.pointsInTalent(Talent.FEAR_THE_REAPER) >= 2) {

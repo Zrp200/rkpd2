@@ -654,11 +654,7 @@ public abstract class Mob extends Char {
 
 		if (alignment == Alignment.ENEMY){
 			rollToDropLoot();
-
-			if (cause == Dungeon.hero
-					&& Dungeon.hero.hasTalent(Talent.LETHAL_MOMENTUM,Talent.PURSUIT,Talent.LETHAL_MOMENTUM_2)
-					&& Random.Float() < ((Dungeon.hero.hasTalent(Talent.LETHAL_MOMENTUM)?2:1)+Dungeon.hero.pointsInTalent(Talent.LETHAL_MOMENTUM,Talent.PURSUIT,Talent.LETHAL_MOMENTUM_2))/(Dungeon.hero.hasTalent(Talent.PURSUIT)?3f:4f))
-				Buff.affect(Dungeon.hero, Talent.LethalMomentumTracker.class, 1f);
+			if (cause == Dungeon.hero) Talent.LethalMomentumTracker.process();
 		}
 
 		if (Dungeon.hero.isAlive() && !Dungeon.level.heroFOV[pos]) {

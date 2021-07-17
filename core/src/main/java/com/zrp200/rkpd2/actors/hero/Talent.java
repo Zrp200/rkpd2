@@ -215,7 +215,18 @@ public enum Talent {
 		public int icon() { return BuffIndicator.TIME; }
 		public void tintIcon(Image icon) { icon.hardlight(0.15f, 0.2f, 0.5f); }
 	};
-	public static class LethalMomentumTracker extends FlavourBuff{};
+	public static class LethalMomentumTracker extends FlavourBuff{
+		public static void process() {
+			Hero hero = Dungeon.hero;
+			if(hero.hasTalent(LETHAL_MOMENTUM,PURSUIT,LETHAL_MOMENTUM_2)
+					&& Random.Float() < (
+							( hero.hasTalent(LETHAL_MOMENTUM) ? 2 : 1 )
+									+hero.pointsInTalent(LETHAL_MOMENTUM,PURSUIT,LETHAL_MOMENTUM_2))
+						/(hero.hasTalent(PURSUIT)?3f:4f)
+			)
+			Buff.affect(hero, LethalMomentumTracker.class, 1f);
+		}
+	};
 	public static class WandPreservationCounter extends CounterBuff{};
 	public static class EmpoweredStrikeTracker extends FlavourBuff{};
 	public static class BountyHunterTracker extends FlavourBuff{};

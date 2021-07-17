@@ -384,7 +384,7 @@ public abstract class Char extends Actor {
 				} else {
 					//helps with triggering any on-damage effects that need to activate
 					enemy.damage(-1, this);
-					DeathMark.processFearTheReaper(enemy);
+					DeathMark.processFearTheReaper(enemy, true);
 				}
 				enemy.sprite.showStatus(CharSprite.NEGATIVE, Messages.get(Preparation.class, "assassinated"));
 			}
@@ -595,6 +595,7 @@ public abstract class Char extends Actor {
 		return dmg;
 	}
 	protected void onDamage(int dmg, Object src) {
+		int initialHP = HP;
 		// TODO change?
 		if(!(src instanceof Char) && Dungeon.hero.hasTalent(Talent.SOUL_SIPHON)) { // character damage is already handled before damage is dealt.
 			SoulMark soulMark = buff(SoulMark.class);
@@ -651,7 +652,7 @@ public abstract class Char extends Actor {
 		if (!isAlive()) {
 			die( src );
 		} else if (HP == 0 && buff(DeathMark.DeathMarkTracker.class) != null){
-			DeathMark.processFearTheReaper(this);
+			DeathMark.processFearTheReaper(this, initialHP != 0);
 		}
 	}
 
