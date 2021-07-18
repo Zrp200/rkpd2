@@ -81,7 +81,7 @@ public class Splash {
 	
 	private static final SplashFactory FACTORY = new SplashFactory();
 			
-	private static class SplashFactory extends Emitter.Factory {
+	private static class SplashFactory implements Emitter.Factory {
 
 		public int color;
 		public float dir;

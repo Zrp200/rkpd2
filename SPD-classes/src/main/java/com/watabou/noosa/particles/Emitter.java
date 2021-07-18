@@ -174,11 +174,11 @@ public class Emitter extends Group {
 		}
 	}
 	
-	abstract public static class Factory {
+	public interface Factory {
 		
-		abstract public void emit( Emitter emitter, int index, float x, float y );
+		void emit( Emitter emitter, int index, float x, float y );
 		
-		public boolean lightMode() {
+		default boolean lightMode() {
 			return false;
 		}
 	}
