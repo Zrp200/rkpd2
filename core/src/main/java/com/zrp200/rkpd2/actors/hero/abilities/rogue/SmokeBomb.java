@@ -51,6 +51,7 @@ import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import static com.watabou.utils.Reflection.newInstance;
+import static com.zrp200.rkpd2.Dungeon.hero;
 
 public class SmokeBomb extends ArmorAbility {
 
@@ -59,15 +60,19 @@ public class SmokeBomb extends ArmorAbility {
 		return Messages.get(this, "prompt");
 	}
 
+	//reduced charge use by 20%/36%/50%/60%
 	public static final double SHADOW_STEP_REDUCTION = 0.795;
+	public static boolean isShadowStep(Hero hero) {
+		return hero != null
+				&& hero.hasTalent(Talent.SHADOW_STEP, Talent.SMOKE_AND_MIRRORS) && hero.invisible > 0;
+	}
 	@Override
 	public float chargeUse(Hero hero) {
-		if (!hero.hasTalent(Talent.SHADOW_STEP) || hero.invisible <= 0){
-			return super.chargeUse(hero);
-		} else {
-			//reduced charge use by 20%/36%/50%/60%
-			return (float)(super.chargeUse(hero) * Math.pow(SHADOW_STEP_REDUCTION, hero.pointsInTalent(Talent.SHADOW_STEP)));
+		float chargeUse = super.chargeUse(hero);
+		if(isShadowStep(hero)) {
+			chargeUse *= Math.pow(SHADOW_STEP_REDUCTION, hero.pointsInTalent(Talent.SHADOW_STEP));
 		}
+		return chargeUse;
 	}
 
 	public static boolean isValidTarget(Hero hero, int target) {
@@ -118,19 +123,16 @@ public class SmokeBomb extends ArmorAbility {
 	protected void activate(ClassArmor armor, Hero hero, Integer target) {
 		if (target != null) {
 			if(!isValidTarget(hero, target)) return;
-			armor.charge -= chargeUse(hero);
-			Item.updateQuickslot();
+			armor.useCharge();
 
-			boolean shadowStepping = hero.invisible > 0 && hero.hasTalent(Talent.SHADOW_STEP);
-
-			if (!shadowStepping) {
+			if (!isShadowStep(hero)) {
 				blindAdjacentMobs(hero);
 				doBodyReplacement(hero, Talent.BODY_REPLACEMENT, NinjaLog.class);
 				applyHastyRetreat(hero);
 			}
 
 			throwSmokeBomb(hero, target);
-			if (!shadowStepping) {
+			if (!isShadowStep(hero)) {
 				hero.spendAndNext(Actor.TICK);
 			} else {
 				hero.next();
@@ -165,13 +167,13 @@ public class SmokeBomb extends ArmorAbility {
 
 			alignment = Alignment.ALLY;
 
-			HP = HT = 20*Dungeon.hero.pointsInTalent(Talent.BODY_REPLACEMENT, Talent.SMOKE_AND_MIRRORS);
+			HP = HT = 20* hero.pointsInTalent(Talent.BODY_REPLACEMENT, Talent.SMOKE_AND_MIRRORS);
 		}
 
 		@Override
 		public int drRoll() {
-			return Random.NormalIntRange(Dungeon.hero.pointsInTalent(Talent.BODY_REPLACEMENT, Talent.SMOKE_AND_MIRRORS),
-					3*Dungeon.hero.pointsInTalent(Talent.BODY_REPLACEMENT, Talent.SMOKE_AND_MIRRORS));
+			return Random.NormalIntRange(hero.pointsInTalent(Talent.BODY_REPLACEMENT, Talent.SMOKE_AND_MIRRORS),
+					3*hero.pointsInTalent(Talent.BODY_REPLACEMENT, Talent.SMOKE_AND_MIRRORS));
 		}
 
 	}

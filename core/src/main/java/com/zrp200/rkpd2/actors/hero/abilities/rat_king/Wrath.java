@@ -22,6 +22,7 @@ import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.levels.features.Chasm;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.mechanics.ConeAOE;
+import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.MobSprite;
 
 import java.util.HashSet;
@@ -45,11 +46,18 @@ public class Wrath extends ArmorAbility {
     }
 
     @Override public float chargeUse(Hero hero) {
-        if (hero.hasTalent(SMOKE_AND_MIRRORS) && hero.invisible > 0){
+        float chargeUse = super.chargeUse(hero);
+        if (SmokeBomb.isShadowStep(hero)){
             // shadow step: reduced charge use by 24%/42%/56%/67%
-            return (float)(super.chargeUse(hero) * Math.pow(SmokeBomb.SHADOW_STEP_REDUCTION, hero.pointsInTalent(SMOKE_AND_MIRRORS)));
+            chargeUse *= Math.pow(SmokeBomb.SHADOW_STEP_REDUCTION, hero.pointsInTalent(SMOKE_AND_MIRRORS));
         }
-        return super.chargeUse(hero);
+        return chargeUse;
+    }
+
+    @Override
+    public String shortDesc() {
+        if(SmokeBomb.isShadowStep(Dungeon.hero)) return Messages.get(this, "desc_shadow_step");
+        return super.shortDesc();
     }
 
     private static final float JUMP_DELAY=2f;
@@ -88,14 +96,14 @@ public class Wrath extends ArmorAbility {
     private boolean doSmokeBomb() {
         if( !SmokeBomb.isValidTarget(hero, target) ) return false;
 
-        boolean shadowStepping = hero.invisible > 0 && hero.hasTalent(SMOKE_AND_MIRRORS);
-        if(!shadowStepping) {
+        boolean isShadowStep = SmokeBomb.isShadowStep(hero);
+        if(!isShadowStep) {
             SmokeBomb.blindAdjacentMobs(hero);
             SmokeBomb.doBodyReplacement(hero, SMOKE_AND_MIRRORS, RatStatue.class);
         }
         SmokeBomb.throwSmokeBomb(hero, target);
 
-        if(shadowStepping) {
+        if(isShadowStep) {
             // shadow step: end the whole thing right here.
             armor.useCharge();
             hero.next();
