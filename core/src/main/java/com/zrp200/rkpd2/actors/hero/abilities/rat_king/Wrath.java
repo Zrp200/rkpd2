@@ -17,7 +17,7 @@ import com.zrp200.rkpd2.actors.hero.abilities.huntress.SpectralBlades;
 import com.zrp200.rkpd2.actors.hero.abilities.mage.ElementalBlast;
 import com.zrp200.rkpd2.actors.hero.abilities.rogue.SmokeBomb;
 import com.zrp200.rkpd2.actors.hero.abilities.warrior.Shockwave;
-import com.zrp200.rkpd2.effects.particles.BlastParticle;
+import com.zrp200.rkpd2.effects.particles.BloodParticle;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.levels.features.Chasm;
 import com.zrp200.rkpd2.mechanics.Ballistica;
@@ -200,14 +200,11 @@ public class Wrath extends ArmorAbility {
 
         @Override
         public void die(Object cause) {
-            sprite();
-            super.die(cause);
-            if(cause != null && cause != Chasm.class && sprite.exists && sprite.isVisible()) {
-                // because I don't want to invent more than one frame, this is the death 'animation'.
-                sprite.emitter().burst(BlastParticle.FACTORY, 10);
-                Sample.INSTANCE.play(Assets.Sounds.BLAST, 0.5f, 2/3f);
-                sprite.killAndErase();
+            if(cause != null && cause != Chasm.class && sprite.isVisible()) {
+                Sample.INSTANCE.play(Assets.Sounds.SHATTER, 1, 1.4f);
+                // see Sprite#die
             }
+            super.die(cause);
         }
 
         public static class Sprite extends MobSprite {
@@ -229,6 +226,18 @@ public class Wrath extends ArmorAbility {
 
                 play( idle );
 
+            }
+
+            @Override public void die() {
+                super.die();
+                // this plays instead of a standard death animation.
+                emitter().burst( (emitter, index, x, y) -> {
+                    BloodParticle blood = emitter.recycle(BloodParticle.class);
+                    blood.color( blood() );
+                    blood.resetBurst(x,y);
+                }, 25);
+                // TODO should I instead have it fade out when despawning?
+                killAndErase();
             }
 
             @Override public void showAlert() {/*do nothing*/}
