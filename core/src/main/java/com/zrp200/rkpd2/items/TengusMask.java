@@ -86,6 +86,11 @@ public class TengusMask extends Item {
 	public boolean isIdentified() {
 		return true;
 	}
+
+	public static void choose( Hero hero, HeroSubClass way) {
+		hero.subClass = way;
+		Talent.initSubclassTalents(hero);
+	}
 	
 	public void choose( HeroSubClass way ) {
 		
@@ -94,8 +99,7 @@ public class TengusMask extends Item {
 		curUser.spend( Actor.TICK );
 		curUser.busy();
 		
-		curUser.subClass = way;
-		Talent.initSubclassTalents(curUser);
+		choose(curUser, way);
 		
 		curUser.sprite.operate( curUser.pos );
 		Sample.INSTANCE.play( Assets.Sounds.MASTERY );
