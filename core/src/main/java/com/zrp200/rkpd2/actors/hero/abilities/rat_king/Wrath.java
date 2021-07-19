@@ -83,10 +83,7 @@ public class Wrath extends ArmorAbility {
         Invisibility.dispel();
 
         if(stages[0]) {
-            hero.sprite.doAfterAnim(
-                    () -> doShockwave(
-                            () -> doBlast(this::doSpectralBlades)
-                    ));
+            doShockwave( () -> doBlast(this::doSpectralBlades) );
         }
         else {
             doBlast(this::doSpectralBlades);
