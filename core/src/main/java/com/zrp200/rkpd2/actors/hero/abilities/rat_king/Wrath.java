@@ -122,11 +122,10 @@ public class Wrath extends ArmorAbility {
                 next);
     }
     private void doBlast(Callback next) {
-        // elemental blast talent lines up almost perfectly so there's very little additional logic for it.
+        // elemental blast talent lines up almost perfectly so there's very little additional logic for it, aside from the custom fx.
         if(stages[1] = ElementalBlast.activate(hero, next)) {
             Sample.INSTANCE.play(Assets.Sounds.CHARGEUP,0.5f); // this sound is disproportionately loud.
-        };
-        hero.sprite.operate(hero.pos,()->{});
+        }
     }
     private void doSpectralBlades() { // fixme this code....aaaaaaaaaaaaaaaaaaaaaaa
         Ballistica b = new Ballistica(hero.pos, target, Ballistica.WONT_STOP);
@@ -171,7 +170,7 @@ public class Wrath extends ArmorAbility {
     }
 
     private void finish() {
-        // because I overrode the default behavior I need to do this.
+        // make sure the hero ends up idling.
         hero.sprite.doAfterAnim(hero.sprite::idle);
 
         int delay = 0;

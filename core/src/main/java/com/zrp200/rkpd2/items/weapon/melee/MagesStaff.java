@@ -288,6 +288,11 @@ public class MagesStaff extends MeleeWeapon {
 		return wand != null ? wand.getClass() : null;
 	}
 
+	public static Class<?extends Wand> getWandClass() {
+		MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
+		return staff != null ? staff.wandClass() : null;
+	}
+
 	@Override
 	public Item upgrade(boolean enchant) {
 		super.upgrade( enchant );

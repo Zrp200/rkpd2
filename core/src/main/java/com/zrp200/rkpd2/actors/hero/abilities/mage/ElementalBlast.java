@@ -122,10 +122,7 @@ public class ElementalBlast extends ArmorAbility {
 			aim = new Ballistica(hero.pos, hero.pos + 1, Ballistica.WONT_STOP);
 		}
 
-		Class<? extends Wand> wandCls = null;
-		if (hero.belongings.getItem(MagesStaff.class) != null) {
-			wandCls = hero.belongings.getItem(MagesStaff.class).wandClass();
-		}
+		Class<? extends Wand> wandCls = MagesStaff.getWandClass();
 
 		if (wandCls == null){
 			next.call();
@@ -389,18 +386,19 @@ public class ElementalBlast extends ArmorAbility {
 					}
 				}
 		);
-
+		hero.sprite.operate( hero.pos );
 		hero.busy();
 
 		return true;
 	}
 	@Override
 	protected void activate(ClassArmor armor, Hero hero, Integer target) {
+		if(MagesStaff.getWandClass() == null) return; // prevents the callback by catching it now.
+
 		activate(hero, () -> hero.spendAndNext(Actor.TICK) );
 
 		Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);
 		Invisibility.dispel();
-		hero.sprite.operate(hero.pos);
 
 		armor.charge -= chargeUse(hero);
 		armor.updateQuickslot();
