@@ -199,11 +199,10 @@ public class Wrath extends ArmorAbility {
 
         @Override
         public void die(Object cause) {
-            if(cause != null && cause != Chasm.class && sprite.isVisible()) {
-                Sample.INSTANCE.play(Assets.Sounds.SHATTER, 1, 1.4f);
-                // see Sprite#die
-            }
             super.die(cause);
+            if(cause != Chasm.class) {
+                ( (Sprite) sprite ).playDieFX(cause != null);
+            }
         }
 
         public static class Sprite extends MobSprite {
@@ -227,15 +226,17 @@ public class Wrath extends ArmorAbility {
 
             }
 
-            @Override public void die() {
-                super.die();
-                // this plays instead of a standard death animation.
+            private void playDieFX(final boolean burst) {
+                if( !isVisible() ) return;
+
+                if(burst) Sample.INSTANCE.play(Assets.Sounds.SHATTER, 1, 1.4f);
+
                 emitter().burst( (emitter, index, x, y) -> {
                     BloodParticle blood = emitter.recycle(BloodParticle.class);
                     blood.color( blood() );
-                    blood.resetBurst(x,y);
-                }, 25);
-                // TODO should I instead have it fade out when despawning?
+                    if(burst) blood.resetBurst(x,y); else blood.reset(x,y);
+                }, 20);
+
                 killAndErase();
             }
 
