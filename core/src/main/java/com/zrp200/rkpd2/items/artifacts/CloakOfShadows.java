@@ -22,6 +22,8 @@
 package com.zrp200.rkpd2.items.artifacts;
 
 
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
@@ -42,8 +44,6 @@ import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.utils.GLog;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundle;
 
 import java.util.ArrayList;
 
@@ -175,8 +175,8 @@ public class CloakOfShadows extends Artifact {
 	@Override
 	public void charge(Hero target, float amount) {
 		if (charge < chargeCap) {
-			if (!isEquipped(target)) amount *= target.pointsInTalent(Talent.LIGHT_CLOAK,Talent.RK_FREERUNNER)*
-					(target.hasTalent(Talent.LIGHT_CLOAK)?.25f:0.4f/3f); // moved previous "equip for free" mechanic to light cloak.
+			// moved previous equip for free mechanic to light cloak
+			if (!isEquipped(target)) amount *= target.byTalent(Talent.LIGHT_CLOAK, .25f, Talent.RK_FREERUNNER, 0.4f/3f);
 			if(target.heroClass == HeroClass.ROGUE) amount *= ROGUE_BOOST;
 			partialCharge += 0.25f*amount;
 			if (partialCharge >= 1){
@@ -234,8 +234,9 @@ public class CloakOfShadows extends Artifact {
 					turnsToCharge /= RingOfEnergy.artifactChargeMultiplier(target);
 					float chargeToGain = (1f / turnsToCharge);
 					if (!isEquipped(Dungeon.hero)){
-						chargeToGain *= (Dungeon.hero.hasTalent(Talent.LIGHT_CLOAK) ? 1/3f : 0.1f) *
-								Dungeon.hero.pointsInTalent(Talent.LIGHT_CLOAK,Talent.RK_FREERUNNER);
+						chargeToGain *= Dungeon.hero.byTalent(
+								Talent.LIGHT_CLOAK, 1/3f,
+								Talent.RK_FREERUNNER, 0.13f);
 					}
 					partialCharge += chargeToGain;
 				}
