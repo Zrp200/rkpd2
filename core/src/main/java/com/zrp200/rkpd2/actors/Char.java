@@ -21,6 +21,11 @@
 
 package com.zrp200.rkpd2.actors;
 
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundlable;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.blobs.Blob;
@@ -101,11 +106,6 @@ import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.utils.BArray;
 import com.zrp200.rkpd2.utils.GLog;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundlable;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Random;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -750,15 +750,19 @@ public abstract class Char extends Actor {
 	}
 	
 	@SuppressWarnings("unchecked")
-	//returns all buffs assignable from the given buff class
-	public synchronized <T extends Buff> HashSet<T> buffs( Class<T> c ) {
+	//returns all buffs assignable from the given buff class if not strict, or of the class if strict.
+	public synchronized <T extends Buff> HashSet<T> buffs( Class<T> c, boolean strict ) {
 		HashSet<T> filtered = new HashSet<>();
 		for (Buff b : buffs) {
-			if (c.isInstance( b )) {
+			if (strict ? b.getClass() == c : c.isInstance( b )) {
 				filtered.add( (T)b );
 			}
 		}
 		return filtered;
+	}
+
+	public synchronized <T extends Buff> HashSet<T> buffs( Class<T> c ) {
+		return buffs(c, false);
 	}
 
 	@SuppressWarnings("unchecked")
