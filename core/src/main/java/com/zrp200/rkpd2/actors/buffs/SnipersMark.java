@@ -246,17 +246,9 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		return new ItemSprite(ItemSpriteSheet.SPIRIT_BOW, null);
 	}
 
+	// only one action handler can be active at a time.
 	private static ActionHandler actionHandler;
-	private static class ActionHandler {
-		static void call() {
-			if(actionHandler != null) {
-				actionHandler.doAction();
-			}
-			actionHandler = new ActionHandler();
-			if(actionHandler.bow != null && actionHandler.bow.knockArrow() != null) actionHandler.next();
-			else actionHandler = null;
-		}
-
+	private class ActionHandler { // this is an inner class to keep access to the original buff.
 		SnipersMark running = null;
 
 		final HashMap<SnipersMark, Char> actionMap = new HashMap();
@@ -291,6 +283,13 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
 			// now we add the standard buffs for processing, first.
 			for( SnipersMark mark : hero.buffs(SnipersMark.class, true) ) queue.push(mark);
+
+			// this ensures that the 'skip' button consistently works the way I want it to.
+			if(queue.size() > 1
+					&& SnipersMark.this instanceof FreeTarget // otherwise we could get a bug where free target is processed before standard mark.
+					&& queue.peek() == SnipersMark.this) {
+				queue.push( queue.remove(1) );
+			}
 		}
 
 		void doAction() {
@@ -325,10 +324,12 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	public void doAction() {
 		if (hero == null) return;
 		if(actionHandler == null) {
-			ActionHandler.call();
+			actionHandler = new ActionHandler();
+			if(actionHandler.bow != null && actionHandler.bow.knockArrow() != null)
+				actionHandler.next();
+			else
+				actionHandler = null;
 		}
-		// this isn't perfect, but if it does end up happening that the caller wasn't called first, not much bad will happen
-		// more like some weird confusion will happen, which is still a bug but not THAT bad.
 		else if(actionHandler.running != this) { // in other words it's been started again.
 			// this should always be the case
 			if(actionHandler.running instanceof FreeTarget) {
@@ -359,12 +360,6 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	public static class FreeTarget extends SnipersMark {
 
 		private CellSelector.TargetedListener listener;
-
-		@Override
-		public boolean usable() {
-			// it will never override actual snipers marks, because they play nicer with ActionHandler
-			return !(ActionIndicator.action instanceof SnipersMark);
-		}
 
 		public static void apply(int level) {
 			if(!hero.hasTalent(Talent.MULTISHOT)) return;
