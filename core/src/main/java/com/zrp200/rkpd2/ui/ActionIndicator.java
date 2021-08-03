@@ -21,6 +21,8 @@
 
 package com.zrp200.rkpd2.ui;
 
+import com.watabou.input.GameAction;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Button;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.SPDAction;
@@ -30,8 +32,6 @@ import com.zrp200.rkpd2.actors.buffs.Momentum;
 import com.zrp200.rkpd2.actors.buffs.Preparation;
 import com.zrp200.rkpd2.actors.buffs.SnipersMark;
 import com.zrp200.rkpd2.scenes.PixelScene;
-import com.watabou.input.GameAction;
-import com.watabou.noosa.Image;
 
 public class ActionIndicator extends Tag {
 
@@ -118,7 +118,7 @@ public class ActionIndicator extends Tag {
 	};
 
 	public static boolean setAction(Action action){
-		if(!action.usable() || ActionIndicator.action == action) return false;
+		if(action == null || !action.usable() || ActionIndicator.action == action) return false;
 		ActionIndicator.action = action;
 		updateIcon();
 		return true;
@@ -132,15 +132,19 @@ public class ActionIndicator extends Tag {
 		if(cycle) while(++start < actionBuffClasses.length && !actionBuffClasses[start].isInstance(action));
 
 		for(int i = (start+1)%actionBuffClasses.length; i != start && i < actionBuffClasses.length; i++) {
-			Buff b = Dungeon.hero.buff(actionBuffClasses[i]);
-			if(b != null && setAction((Action)b)) return true;
+			for(Buff b : Dungeon.hero.buffs(actionBuffClasses[i])) {
+				if( setAction( (Action) b ) ) return true;
+			}
 			if(cycle && i+1 == actionBuffClasses.length) i = -1;
 		}
 		return false;
 	}
 
 	public static void clearAction(Action action){
-		if(ActionIndicator.action == action && !findAction(false)) ActionIndicator.action = null;
+		if(ActionIndicator.action == action) {
+			ActionIndicator.action = null;
+			findAction(false);
+		}
 	}
 
 	public static void updateIcon(){
