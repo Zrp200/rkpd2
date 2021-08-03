@@ -21,6 +21,10 @@
 
 package com.zrp200.rkpd2.windows;
 
+import com.watabou.gltextures.SmartTexture;
+import com.watabou.gltextures.TextureCache;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.TextureFilm;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.messages.Messages;
@@ -30,10 +34,6 @@ import com.zrp200.rkpd2.ui.ActionIndicator;
 import com.zrp200.rkpd2.ui.RedButton;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
 import com.zrp200.rkpd2.ui.Window;
-import com.watabou.gltextures.SmartTexture;
-import com.watabou.gltextures.TextureCache;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.TextureFilm;
 
 public class WndInfoBuff extends Window {
 
@@ -60,7 +60,7 @@ public class WndInfoBuff extends Window {
 
 		float bottom = txtInfo.bottom()+2;
 
-		if(buff instanceof ActionIndicator.Action && ActionIndicator.action != buff && ((ActionIndicator.Action)buff).usable()) {
+		if(buff instanceof ActionIndicator.Action && ((ActionIndicator.Action)buff).isSelectable()) {
 			RedButton button = new RedButton("Set Active") {
 				@Override
 				protected void onClick() {

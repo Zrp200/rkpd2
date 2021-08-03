@@ -169,7 +169,7 @@ public class ActionIndicator extends Tag {
 		public void doAction();
 
 		default boolean usable() { return true; }
-
+		default boolean isSelectable() { return action != this && usable(); }
 	}
 
 }

@@ -324,6 +324,8 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		if(actionHandler == null) {
 			ActionHandler.call();
 		}
+		// this isn't perfect, but if it does end up happening that the caller wasn't called first, not much bad will happen
+		// more like some weird confusion will happen, which is still a bug but not THAT bad.
 		else if(actionHandler.running != this) { // in other words it's been started again.
 			actionHandler.doAction();
 		} else {
@@ -339,12 +341,21 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		actionHandler.next();
 	}
 
-	// yes it's not usable
-	@Override public boolean usable() {
-		return ActionIndicator.action == this || !(ActionIndicator.action instanceof SnipersMark);
+	@Override public boolean isSelectable() {
+		return ActionIndicator.Action.super.isSelectable()
+				// kinda weird to be able to select identical actions.
+				&& !(ActionIndicator.action instanceof SnipersMark);
 	}
 
 	public static class FreeTarget extends SnipersMark {
+
+		private CellSelector.TargetedListener listener;
+
+		@Override
+		public boolean usable() {
+			// it will never override actual snipers marks, because they play nicer with ActionHandler
+			return !(ActionIndicator.action instanceof SnipersMark);
+		}
 
 		public static void apply(int level) {
 			if(!hero.hasTalent(Talent.MULTISHOT)) return;
