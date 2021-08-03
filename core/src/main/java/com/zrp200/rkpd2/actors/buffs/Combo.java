@@ -41,7 +41,6 @@ import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
-import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.ActionIndicator;
@@ -52,7 +51,6 @@ import com.zrp200.rkpd2.utils.GLog;
 import com.zrp200.rkpd2.windows.WndCombo;
 
 import java.util.HashMap;
-import java.util.List;
 
 public class Combo extends Buff implements ActionIndicator.Action {
 	
@@ -480,6 +478,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 
 		@Override
 		protected void onInvalid(int cell) {
+			if(cell == -1) return;
 			GLog.w(Messages.get(Combo.class, "bad_target"));
 		}
 

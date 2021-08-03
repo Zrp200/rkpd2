@@ -22,6 +22,10 @@
 package com.zrp200.rkpd2.actors.buffs;
 
 import com.badlogic.gdx.utils.IntIntMap;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.PathFinder;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
@@ -36,17 +40,11 @@ import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
-import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.ActionIndicator;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.utils.BArray;
 import com.zrp200.rkpd2.utils.GLog;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.PathFinder;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -309,6 +307,7 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 		@Override
 		protected void onInvalid(int cell) {
 			// this just..guesses. it just checks the conditions until it gets a reasonable result.
+			if(cell == -1) return;
 			GLog.w(Messages.get(Preparation.class,
 					canAttack(findChar(cell)) ? "out_of_reach" : "no_target"));
 		}
