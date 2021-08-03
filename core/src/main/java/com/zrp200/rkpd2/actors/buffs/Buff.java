@@ -59,6 +59,9 @@ public class Buff extends Actor {
 	public HashSet<Class> immunities() {
 		return new HashSet<>(immunities);
 	}
+
+	// used during restoring, when true, is not attached afterwards.
+	public boolean attachAfterRestore = true;
 	
 	public boolean attachTo( Char target ) {
 

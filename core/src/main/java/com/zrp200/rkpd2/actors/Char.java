@@ -272,21 +272,25 @@ public abstract class Char extends Actor {
 		bundle.put( TAG_HT, HT );
 		bundle.put( BUFFS, buffs );
 	}
-	
+
+	public static Char restoring = null; // get a reference to the current character while restoring them.
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
-		
+
 		super.restoreFromBundle( bundle );
+
+		restoring = this;
 		
 		pos = bundle.getInt( POS );
 		HP = bundle.getInt( TAG_HP );
 		HT = bundle.getInt( TAG_HT );
-		
+
 		for (Bundlable b : bundle.getCollection( BUFFS )) {
-			if (b != null) {
+			if (b != null && ((Buff)b).attachAfterRestore) {
 				((Buff)b).attachTo( this );
 			}
 		}
+		restoring = null;
 	}
 
 	final public boolean attack( Char enemy ){

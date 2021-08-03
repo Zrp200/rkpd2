@@ -185,8 +185,8 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 			int[] objects = bundle.getIntArray(OBJECTS);
 			if(objects.length == 0) {
 				// restore as freetarget
-				Buff.affect(hero, FreeTarget.class, cooldown()).level = level;
-				detach();
+				Buff.affect(Char.restoring, FreeTarget.class, cooldown()).level = level;
+				attachAfterRestore = false;
 				return;
 			}
 
@@ -200,7 +200,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 			object = objects[0];
 
 			for(int i=1; i < objects.length; i++) {
-				SnipersMark mark = Buff.append(hero, SnipersMark.class, cooldown());
+				SnipersMark mark = Buff.append(Char.restoring, SnipersMark.class, cooldown());
 				mark.object = objects[i];
 				mark.level = levels[i];
 			}
@@ -208,7 +208,8 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		else {
 			// idk where the object went?!
 			// this probably never runs but just in case.
-			Buff.affect(hero, FreeTarget.class, cooldown()).level = level;
+			Buff.append(Char.restoring, FreeTarget.class, cooldown()).level = level;
+			attachAfterRestore = false;
 		}
 	}
 
