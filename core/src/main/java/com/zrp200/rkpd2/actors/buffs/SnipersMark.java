@@ -230,11 +230,12 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	@Override
 	public String desc() {
 		HeroSubClass sub = Dungeon.hero.subClass;
-		String[] args = new String[4];
+		String[] args = new String[5];
 		args[0] = sub.title();
 		args[1] = sub == HeroSubClass.SNIPER ? "she" : "he";
 		args[2] = Messages.capitalize(args[1]);
 		args[3] = sub == HeroSubClass.SNIPER ? "her" : "his";
+		args[4] = dispTurns();
 		return Messages.get(this, "desc", (Object[])args);
 	}
 	
@@ -371,7 +372,12 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
 		@Override
 		public void tintIcon(Image icon) {
-			icon.hardlight(.5f,.5f,.5f); // shrug
+			icon.tint(0,1f,0,1/4f);
+		}
+
+		@Override
+		public String desc() {
+			return super.desc() + "\n\n" + Messages.get(this,"bonus_desc");
 		}
 
 		@Override
