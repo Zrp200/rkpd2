@@ -46,6 +46,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -328,6 +329,12 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		// this isn't perfect, but if it does end up happening that the caller wasn't called first, not much bad will happen
 		// more like some weird confusion will happen, which is still a bug but not THAT bad.
 		else if(actionHandler.running != this) { // in other words it's been started again.
+			// this should always be the case
+			if(actionHandler.running instanceof FreeTarget) {
+				// mimic the effect of a similar quickslot-based override if at all possible.
+				List<Char> highlighted = ((FreeTarget)actionHandler.running).listener.getHighlightedTargets();
+				if(highlighted.size() == 1) actionHandler.select( actionHandler.running, highlighted.get(0) );
+			}
 			actionHandler.doAction();
 		} else {
 			queueAction();
@@ -382,7 +389,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
 		@Override
 		protected void queueAction() {
-			GameScene.selectCell(new CellSelector.TargetedListener() {
+			GameScene.selectCell(listener = new CellSelector.TargetedListener() {
 				{
 					conflictTolerance = actionHandler.queue.size();
 					promptIfNoTargets = false;

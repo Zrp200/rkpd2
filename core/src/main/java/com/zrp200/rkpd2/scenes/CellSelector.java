@@ -377,7 +377,9 @@ public class CellSelector extends ScrollArea {
 					skippable = skippable && canIgnore(ch);
 				}
 			}
-		} public final List<Char> getTargets() { // lazily evaluated
+		}
+
+		public final List<Char> getTargets() { // lazily evaluated
 			if(targets == null) findTargets();
 			return targets;
 		}
@@ -404,6 +406,14 @@ public class CellSelector extends ScrollArea {
 
 		protected abstract void action(Char ch);
 
+		public final List<Char> getHighlightedTargets() {
+			List<Char> l = new ArrayList();
+			for(Char c : getTargets()) {
+				if( canAutoTarget(c) ) l.add(c);
+			}
+			return l;
+		}
+
 		// if there's only one target, this skips the actual selecting.
 		protected final boolean action() {
 			if( getTargets().isEmpty() ) {
@@ -414,11 +424,9 @@ public class CellSelector extends ScrollArea {
 			if( !skippable ) return false;
 
 			Char target = null;
-			for(Char ch : getTargets()) {
-				if( canAutoTarget(ch) ) {
-					if(target != null && conflictTolerance-- == 0) return false; // more than one possible target, force manual targeting. conflict targeting will bypass this, used for when this is used multiple times in quick succession.
-					target = ch;
-				}
+			for(Char ch : getHighlightedTargets()) {
+				if(target != null && conflictTolerance-- == 0) return false;
+				target = ch;
 			}
 			if(target == null) return false; // no targets
 
