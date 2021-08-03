@@ -134,17 +134,6 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	private static int maxObjects() {
 		return Math.max(1,1+hero.pointsInTalent(Talent.MULTISHOT)-1);
 	}
-	// this is basically a garbage collect. This may have weird behavior when you change floors, idk.
-	/*private boolean pruneObjects() {
-		boolean result = false;
-		for(int i=0; i < objects.size; i++) {
-			if(Actor.findById(objects.get(i)) == null) {
-				removeIndex(i--);
-				result = true;
-			}
-		}
-		return result;
-	}*/
 
 	public float duration() { return duration(level); }
 	// todo implement extended time again.
