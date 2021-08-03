@@ -64,81 +64,6 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		FreeTarget.apply(mark.level);
 	}
 
-	private static ActionHandler actionHandler;
-	private static class ActionHandler {
-		static void call() {
-			if(actionHandler != null) {
-				actionHandler.doAction();
-			}
-			actionHandler = new ActionHandler();
-			if(actionHandler.bow != null && actionHandler.bow.knockArrow() != null) actionHandler.next();
-			else actionHandler = null;
-		}
-
-		SnipersMark running = null;
-
-		final HashMap<SnipersMark, Char> actionMap = new HashMap();
-		final SpiritBow bow = hero.belongings.getItem(SpiritBow.class);
-
-		/* this will be needed if I try to let multishot pierce marked targets. {
-			for(SnipersMark mark : hero.buffs(SnipersMark.class, true)) {
-				Char ch = (Char)Actor.findById(mark.object);
-				if(isValidTarget(ch)) {
-					actionMap.put(mark, ch);
-				}
-			}
-		}*/
-
-		HashSet<SelectableCell> selected = new HashSet();
-		void select(SnipersMark m, Char ch) {
-			SelectableCell c = new SelectableCell(ch.sprite);
-			c.hardlight(1,0,0);
-			selected.add(c);
-
-			actionMap.put(m,ch);
-		}
-		void destroy() {
-			actionHandler = null;
-			for(SelectableCell c : selected) c.killAndErase();
-			GameScene.ready();
-		}
-
-		final LinkedList<SnipersMark> queue = new LinkedList( hero.buffs(FreeTarget.class) );
-		{
-			Collections.sort(queue, (a, b) -> Float.compare( a.cooldown(), b.cooldown() ) );
-
-			// now we add the standard buffs for processing, first.
-			for( SnipersMark mark : hero.buffs(SnipersMark.class, true) ) queue.push(mark);
-		}
-
-		void doAction() {
-			destroy();
-			if ( actionMap.isEmpty() ) return;
-			bow.shotCount = actionMap.size();
-			hero.busy();
-			for (Map.Entry<SnipersMark, Char> mapping : actionMap.entrySet()) {
-				SnipersMark mark = mapping.getKey(); Char ch = mapping.getValue();
-				mark.doSniperSpecial( hero, bow, ch );
-			}
-		}
-
-		void next() {
-			running = queue.poll();
-			if(running == null) doAction();
-			else {
-				GameScene.clearCellSelector(true);
-				running.doAction();
-			}
-		}
-
-		boolean isTargeting(Char ch) {
-			return actionMap.containsValue(ch);
-		}
-		boolean isValidTarget(Char ch) {
-			return !isTargeting(ch) && canDoSniperSpecial(bow, ch);
-		}
-	}
-
 	// retrieves all the info needed to work with all the buffs at the same time.
 	// needs to be updated every time relevant info is changed.
 	// also this is probably wasteful.
@@ -328,7 +253,82 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	public Image getIcon() {
 		return new ItemSprite(ItemSpriteSheet.SPIRIT_BOW, null);
 	}
-	
+
+	private static ActionHandler actionHandler;
+	private static class ActionHandler {
+		static void call() {
+			if(actionHandler != null) {
+				actionHandler.doAction();
+			}
+			actionHandler = new ActionHandler();
+			if(actionHandler.bow != null && actionHandler.bow.knockArrow() != null) actionHandler.next();
+			else actionHandler = null;
+		}
+
+		SnipersMark running = null;
+
+		final HashMap<SnipersMark, Char> actionMap = new HashMap();
+		final SpiritBow bow = hero.belongings.getItem(SpiritBow.class);
+
+		/* this will be needed if I try to let multishot pierce marked targets. {
+			for(SnipersMark mark : hero.buffs(SnipersMark.class, true)) {
+				Char ch = (Char)Actor.findById(mark.object);
+				if(isValidTarget(ch)) {
+					actionMap.put(mark, ch);
+				}
+			}
+		}*/
+
+		HashSet<SelectableCell> selected = new HashSet();
+		void select(SnipersMark m, Char ch) {
+			SelectableCell c = new SelectableCell(ch.sprite);
+			c.hardlight(1,0,0);
+			selected.add(c);
+
+			actionMap.put(m,ch);
+		}
+		void destroy() {
+			actionHandler = null;
+			for(SelectableCell c : selected) c.killAndErase();
+			GameScene.ready();
+		}
+
+		final LinkedList<SnipersMark> queue = new LinkedList( hero.buffs(FreeTarget.class) );
+		{
+			Collections.sort(queue, (a, b) -> Float.compare( a.cooldown(), b.cooldown() ) );
+
+			// now we add the standard buffs for processing, first.
+			for( SnipersMark mark : hero.buffs(SnipersMark.class, true) ) queue.push(mark);
+		}
+
+		void doAction() {
+			destroy();
+			if ( actionMap.isEmpty() ) return;
+			bow.shotCount = actionMap.size();
+			hero.busy();
+			for (Map.Entry<SnipersMark, Char> mapping : actionMap.entrySet()) {
+				SnipersMark mark = mapping.getKey(); Char ch = mapping.getValue();
+				mark.doSniperSpecial( hero, bow, ch );
+			}
+		}
+
+		void next() {
+			running = queue.poll();
+			if(running == null) doAction();
+			else {
+				GameScene.clearCellSelector(true);
+				running.doAction();
+			}
+		}
+
+		boolean isTargeting(Char ch) {
+			return actionMap.containsValue(ch);
+		}
+		boolean isValidTarget(Char ch) {
+			return !isTargeting(ch) && canDoSniperSpecial(bow, ch);
+		}
+	}
+
 	@Override
 	public void doAction() {
 		if (hero == null) return;
