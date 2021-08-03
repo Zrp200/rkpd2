@@ -709,9 +709,10 @@ public abstract class Char extends Actor {
 			if (ch.buff(Terror.class) != null && ch.buff(Terror.class).object == id()){
 				ch.buff(Terror.class).detach();
 			}
-			SnipersMark snipersMark = ch.buff(SnipersMark.class);
-			if (snipersMark != null) snipersMark.remove(id());
 		}
+		// the current setup makes it impossible for anyone but Dungeon.hero to use Sniper's Mark properly.
+		// If it were to be given to multiple characters it would need another refactor.
+		SnipersMark.remove(this);
 	}
 	
 	public void die( Object src ) {

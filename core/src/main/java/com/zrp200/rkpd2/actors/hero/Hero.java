@@ -21,6 +21,14 @@
 
 package com.zrp200.rkpd2.actors.hero;
 
+import com.watabou.noosa.Camera;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Callback;
+import com.watabou.utils.GameMath;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Bones;
@@ -53,6 +61,9 @@ import com.zrp200.rkpd2.actors.buffs.Paralysis;
 import com.zrp200.rkpd2.actors.buffs.Regeneration;
 import com.zrp200.rkpd2.actors.buffs.SnipersMark;
 import com.zrp200.rkpd2.actors.buffs.Vertigo;
+import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
+import com.zrp200.rkpd2.actors.hero.abilities.huntress.NaturesPower;
+import com.zrp200.rkpd2.actors.hero.abilities.warrior.Endure;
 import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.Monk;
@@ -67,6 +78,7 @@ import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.items.Heap.Type;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.KindOfWeapon;
+import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.items.armor.glyphs.AntiMagic;
 import com.zrp200.rkpd2.items.armor.glyphs.Brimstone;
 import com.zrp200.rkpd2.items.armor.glyphs.Viscosity;
@@ -133,18 +145,6 @@ import com.zrp200.rkpd2.windows.WndHero;
 import com.zrp200.rkpd2.windows.WndMessage;
 import com.zrp200.rkpd2.windows.WndResurrect;
 import com.zrp200.rkpd2.windows.WndTradeItem;
-import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
-import com.zrp200.rkpd2.actors.hero.abilities.huntress.NaturesPower;
-import com.zrp200.rkpd2.actors.hero.abilities.warrior.Endure;
-import com.zrp200.rkpd2.items.armor.ClassArmor;
-import com.watabou.noosa.Camera;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.Callback;
-import com.watabou.utils.GameMath;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1236,9 +1236,7 @@ public class Hero extends Char {
 					protected boolean act() {
 						if (enemy.isAlive() || hasTalent(Talent.MULTISHOT)) {
 							int level = hasTalent(Talent.RK_SNIPER) || canHaveTalent(Talent.SHARED_UPGRADES) ? wep.buffedLvl() : 0;
-							SnipersMark mark = Buff.affect(Hero.this, SnipersMark.class);
-							mark.set(enemy.id(), level);
-							if(!enemy.isAlive()) mark.remove(enemy.id()); // this lets it trigger ranger
+							SnipersMark.add(enemy, level); // handles dead as well.
 						}
 						Actor.remove(this);
 						return true;

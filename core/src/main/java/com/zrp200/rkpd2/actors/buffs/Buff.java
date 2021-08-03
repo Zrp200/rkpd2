@@ -21,11 +21,11 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
+import com.watabou.noosa.Image;
+import com.watabou.utils.Reflection;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.ui.BuffIndicator;
-import com.watabou.noosa.Image;
-import com.watabou.utils.Reflection;
 
 import java.text.DecimalFormat;
 import java.util.HashSet;
@@ -91,6 +91,7 @@ public class Buff extends Actor {
 
 	@Override // need to be public, alternatively could have prolong/affect affect all instances instead of just one.
 	public void postpone(float time) { super.postpone(time); }
+	@Override public void spend(float time) { super.spend(time); }
 
 	public int icon() {
 		return BuffIndicator.NONE;

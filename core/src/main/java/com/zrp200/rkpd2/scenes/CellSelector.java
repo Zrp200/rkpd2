@@ -21,6 +21,16 @@
 
 package com.zrp200.rkpd2.scenes;
 
+import com.watabou.input.GameAction;
+import com.watabou.input.KeyBindings;
+import com.watabou.input.KeyEvent;
+import com.watabou.input.PointerEvent;
+import com.watabou.input.ScrollEvent;
+import com.watabou.noosa.Camera;
+import com.watabou.noosa.ScrollArea;
+import com.watabou.utils.GameMath;
+import com.watabou.utils.PointF;
+import com.watabou.utils.Signal;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.SPDAction;
 import com.zrp200.rkpd2.SPDSettings;
@@ -32,16 +42,6 @@ import com.zrp200.rkpd2.effects.SelectableCell;
 import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.tiles.DungeonTilemap;
-import com.watabou.input.GameAction;
-import com.watabou.input.KeyBindings;
-import com.watabou.input.KeyEvent;
-import com.watabou.input.PointerEvent;
-import com.watabou.input.ScrollEvent;
-import com.watabou.noosa.Camera;
-import com.watabou.noosa.ScrollArea;
-import com.watabou.utils.GameMath;
-import com.watabou.utils.PointF;
-import com.watabou.utils.Signal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -151,7 +151,7 @@ public class CellSelector extends ScrollArea {
 		if (enabled && listener != null && cell != -1) {
 			
 			listener.onSelect( cell );
-			GameScene.ready();
+			if( !( listener instanceof TargetedListener && !((TargetedListener) listener ).readyOnSelect) ) GameScene.ready();
 			
 		} else {
 			
@@ -351,6 +351,12 @@ public class CellSelector extends ScrollArea {
 
 	public static abstract class TargetedListener implements Listener {
 		private boolean skippable = true;
+
+		// stuff that allows this to work with Multishot
+		protected int conflictTolerance = 0;
+		protected boolean promptIfNoTargets = true;
+		protected boolean readyOnSelect = true;
+
 		private final List<SelectableCell> selectableCells = new ArrayList();
 		public final void highlightCells() {
 			for(Char c : getTargets()) {
@@ -386,7 +392,7 @@ public class CellSelector extends ScrollArea {
 		}
 		// whether this character can be 'safely' skipped for purposes of, well, skipping. usually overlaps with auto-target.
 		// Sometimes we want to be given the option to choose our move even if there is only one valid target.
-		private boolean canIgnore(Char ch) {
+		protected boolean canIgnore(Char ch) {
 			switch (ch.alignment) {
 				case ALLY: return true;
 				case NEUTRAL: if(ch instanceof NPC) return true;
@@ -400,11 +406,17 @@ public class CellSelector extends ScrollArea {
 
 		// if there's only one target, this skips the actual selecting.
 		protected final boolean action() {
-			if(getTargets().isEmpty() || !skippable) return false;
+			if( getTargets().isEmpty() ) {
+				if(promptIfNoTargets) return false;
+				onCancel();
+				return true;
+			}
+			if( !skippable ) return false;
+
 			Char target = null;
 			for(Char ch : getTargets()) {
 				if( canAutoTarget(ch) ) {
-					if(target != null) return false; // more than one possible target, force manual targeting
+					if(target != null && conflictTolerance-- == 0) return false; // more than one possible target, force manual targeting. conflict targeting will bypass this, used for when this is used multiple times in quick succession.
 					target = ch;
 				}
 			}
@@ -425,13 +437,17 @@ public class CellSelector extends ScrollArea {
 			for(SelectableCell c : selectableCells) c.killAndErase();
 			selectableCells.clear();
 
-			if(cell == null) return;
+			if(cell == null) {
+				onCancel();
+				return;
+			}
 
 			Char c = Actor.findChar(cell);
 			if(c != null && getTargets().contains(c)) action(c);
 			else onInvalid(cell);
 		}
 
-		protected void onInvalid(int cell) {/* do nothing */}
+		protected void onInvalid(int cell) { onCancel(); }
+		protected void onCancel() {/* do nothing */}
 	}
 }

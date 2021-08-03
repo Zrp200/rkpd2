@@ -21,6 +21,20 @@
 
 package com.zrp200.rkpd2.scenes;
 
+import com.watabou.glwrap.Blending;
+import com.watabou.noosa.Camera;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.Gizmo;
+import com.watabou.noosa.Group;
+import com.watabou.noosa.NoosaScript;
+import com.watabou.noosa.NoosaScriptNoLighting;
+import com.watabou.noosa.SkinnedBlock;
+import com.watabou.noosa.Visual;
+import com.watabou.noosa.audio.Music;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.noosa.particles.Emitter;
+import com.watabou.utils.GameMath;
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Challenges;
@@ -72,20 +86,6 @@ import com.zrp200.rkpd2.tiles.*;
 import com.zrp200.rkpd2.ui.*;
 import com.zrp200.rkpd2.utils.GLog;
 import com.zrp200.rkpd2.windows.*;
-import com.watabou.glwrap.Blending;
-import com.watabou.noosa.Camera;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.Gizmo;
-import com.watabou.noosa.Group;
-import com.watabou.noosa.NoosaScript;
-import com.watabou.noosa.NoosaScriptNoLighting;
-import com.watabou.noosa.SkinnedBlock;
-import com.watabou.noosa.Visual;
-import com.watabou.noosa.audio.Music;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.noosa.particles.Emitter;
-import com.watabou.utils.GameMath;
-import com.watabou.utils.Random;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -1043,10 +1043,16 @@ public class GameScene extends PixelScene {
 			selectCell((CellSelector.Listener)listener); // default logic
 		}
 	}
-	public static void selectCell( CellSelector.Listener listener ) {
-		if (cellSelector.listener != null && cellSelector.listener != defaultCellListener){
+
+	public static void clearCellSelector(boolean force) {
+		if (!force && cellSelector.listener != null && cellSelector.listener != defaultCellListener){
 			cellSelector.listener.onSelect(null);
 		}
+		cellSelector.listener = defaultCellListener;
+	}
+
+	public static void selectCell( CellSelector.Listener listener ) {
+		clearCellSelector(false);
 		cellSelector.listener = listener;
 		if (scene != null)
 			scene.prompt( listener.prompt() );
