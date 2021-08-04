@@ -34,7 +34,7 @@ import static com.zrp200.rkpd2.actors.hero.Talent.SMOKE_AND_MIRRORS;
 public class Wrath extends ArmorAbility {
 
     {
-        baseChargeUse = 50;
+        baseChargeUse = 60;
     }
 
     @Override public String targetingPrompt() {
@@ -42,7 +42,7 @@ public class Wrath extends ArmorAbility {
     }
 
     @Override public Talent[] talents() {
-        return new Talent[]{AFTERSHOCK, Talent.RAT_BLAST,SMOKE_AND_MIRRORS,SEA_OF_BLADES};
+        return new Talent[]{AFTERSHOCK, Talent.RAT_BLAST, SMOKE_AND_MIRRORS, SEA_OF_BLADES};
     }
 
     @Override public float chargeUse(Hero hero) {
