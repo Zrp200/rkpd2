@@ -41,13 +41,18 @@ import com.zrp200.rkpd2.ui.Icons;
 import java.util.ArrayList;
 
 import static com.zrp200.rkpd2.Assets.Interfaces.TALENT_ICONS;
-import static com.zrp200.rkpd2.actors.hero.HeroClass.*;
+import static com.zrp200.rkpd2.actors.hero.HeroClass.HUNTRESS;
+import static com.zrp200.rkpd2.actors.hero.HeroClass.MAGE;
+import static com.zrp200.rkpd2.actors.hero.HeroClass.RAT_KING;
+import static com.zrp200.rkpd2.actors.hero.HeroClass.ROGUE;
+import static com.zrp200.rkpd2.actors.hero.HeroClass.WARRIOR;
 import static com.zrp200.rkpd2.messages.Messages.get;
 import static com.zrp200.rkpd2.sprites.CharSprite.NEGATIVE;
 import static com.zrp200.rkpd2.sprites.CharSprite.POSITIVE;
 import static com.zrp200.rkpd2.sprites.CharSprite.WARNING;
 import static com.zrp200.rkpd2.sprites.HeroSprite.avatar;
-import static com.zrp200.rkpd2.sprites.ItemSpriteSheet.*;
+import static com.zrp200.rkpd2.sprites.ItemSpriteSheet.CROWN;
+import static com.zrp200.rkpd2.sprites.ItemSpriteSheet.KIT;
 import static com.zrp200.rkpd2.ui.Icons.DEPTH;
 import static com.zrp200.rkpd2.ui.Icons.INFO;
 import static com.zrp200.rkpd2.ui.Icons.TARGET;
@@ -65,6 +70,37 @@ public class RKPD2Changes {
     private static ChangeButton misc(String message) {
         return new ChangeButton(get(Icons.PREFS), get(ChangesScene.class,"misc"), message);
     }
+
+    // section types
+    private static ChangeInfo NewContent(ChangeButton... buttons) {
+        return new ChangeInfo(
+                Messages.get(ChangesScene.class, "new"),
+                false, TITLE_COLOR,
+                "",
+                buttons);
+    }
+    private static ChangeInfo Buffs(ChangeButton... buttons) {
+        return new ChangeInfo(
+                Messages.get(ChangesScene.class, "buffs"),
+                false, POSITIVE,
+                "",
+                buttons);
+    }
+    private static ChangeInfo Changes(ChangeButton... buttons) {
+        return new ChangeInfo(
+                Messages.get(ChangesScene.class, "changes"),
+                false, WARNING, "",
+                buttons);
+    }
+    private static ChangeInfo Nerfs(ChangeButton... buttons) {
+        return new ChangeInfo(
+                Messages.get(ChangesScene.class, "nerfs"),
+                false, NEGATIVE,
+                "",
+                buttons);
+    }
+
+    // more utils
 
     /** makes a list in the standard PD style.
      * [lineSpace] determines the number of spaces between each list item.
@@ -118,7 +154,7 @@ public class RKPD2Changes {
                             "Missing text for certain Rat King's Wrath interactions",
                             "String formatting failure in Enhanced Scrolls",
                             "Various typos in talent and subclass descriptions."))),
-            new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, TITLE_COLOR, "",
+            NewContent(
                 new ChangeButton(Icons.get(INFO), "Developer Commentary",
                     "I regret the relatively long wait for a v0.9.3 implementation, but RKPD2 is now updated to Shattered v0.9.3c! Enjoy smaller levels, some quality of life improvements, and even more buffs to your favorite heroes."
                     + "\n\nI'm currently messing with a new method with which to buff talents and heroes: _point shifting_. Point shifting means that I make +1 effects +0 effects, +2 effects +1 effects, and so on. This results in an immediate power bump when the particular talents are obtained, though it can be slightly confusing on the first time (or with tier 2 talents)."
@@ -150,7 +186,7 @@ public class RKPD2Changes {
                 )
             ),
 
-            new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, WARNING, "",
+            Changes(
                 new ChangeButton(HeroSprite.avatar(RAT_KING, 6), "Rat King", ""
                         +"Shattered balance changes have been directly implemented to Rat King's mechanics, for better or for worse:"
                         +"\n\n"+list(2,
@@ -189,7 +225,7 @@ public class RKPD2Changes {
                         "Fixed some talent description typos."))
             ),
 
-            new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, POSITIVE, "",
+            Buffs(
                 new ChangeButton(HeroSprite.avatar(HUNTRESS, 6), "Huntress Subclasses and T3",
                     "I'm leaning harder on giving subclasses access to talents without upgrading them, and _Warden_ is an excellent place to start:"
                     +"\n"+list(1,
@@ -222,7 +258,7 @@ public class RKPD2Changes {
                         "Shops sell upgraded items for cheaper (again)."
                 ))
             ),
-            new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, NEGATIVE, "",
+            Nerfs(
                 new ChangeButton(new Image(TALENT_ICONS, 16*3,0,16,16), "Iron Will",
                     "I've decided to take the opportunity to yank Iron Will's bonus upgrade mechanics. It's really unfun to use and it kinda warps the game to a large extent."
                             +"\n\n_-_ Iron Will no longer gives bonus upgrades to the seal."
