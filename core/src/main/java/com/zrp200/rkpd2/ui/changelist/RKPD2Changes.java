@@ -32,7 +32,6 @@ import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.enchantments.Explosive;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.ChangesScene;
-import com.zrp200.rkpd2.sprites.HeroSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.KingSprite;
 import com.zrp200.rkpd2.ui.HeroIcon;
@@ -41,23 +40,27 @@ import com.zrp200.rkpd2.ui.Icons;
 import java.util.ArrayList;
 
 import static com.zrp200.rkpd2.Assets.Interfaces.TALENT_ICONS;
-import static com.zrp200.rkpd2.actors.hero.HeroClass.HUNTRESS;
-import static com.zrp200.rkpd2.actors.hero.HeroClass.MAGE;
-import static com.zrp200.rkpd2.actors.hero.HeroClass.RAT_KING;
-import static com.zrp200.rkpd2.actors.hero.HeroClass.ROGUE;
-import static com.zrp200.rkpd2.actors.hero.HeroClass.WARRIOR;
+
+import static com.zrp200.rkpd2.actors.hero.HeroClass.*;
+
 import static com.zrp200.rkpd2.messages.Messages.get;
+
 import static com.zrp200.rkpd2.sprites.CharSprite.NEGATIVE;
 import static com.zrp200.rkpd2.sprites.CharSprite.POSITIVE;
 import static com.zrp200.rkpd2.sprites.CharSprite.WARNING;
+
 import static com.zrp200.rkpd2.sprites.HeroSprite.avatar;
+
 import static com.zrp200.rkpd2.sprites.ItemSpriteSheet.CROWN;
 import static com.zrp200.rkpd2.sprites.ItemSpriteSheet.KIT;
+
 import static com.zrp200.rkpd2.ui.Icons.DEPTH;
 import static com.zrp200.rkpd2.ui.Icons.INFO;
 import static com.zrp200.rkpd2.ui.Icons.TARGET;
 import static com.zrp200.rkpd2.ui.Icons.get;
+
 import static com.zrp200.rkpd2.ui.Window.TITLE_COLOR;
+
 import static java.util.Arrays.asList;
 
 // TODO should I have a separate section for shattered changes?
@@ -187,7 +190,7 @@ public class RKPD2Changes {
             ),
 
             Changes(
-                new ChangeButton(HeroSprite.avatar(RAT_KING, 6), "Rat King", ""
+                new ChangeButton(avatar(RAT_KING, 6), "Rat King", ""
                         +"Shattered balance changes have been directly implemented to Rat King's mechanics, for better or for worse:"
                         +"\n\n"+list(2,
                             "Noble Cause nerfed, gives less shielding when the staff runs out of charge.",
@@ -226,7 +229,7 @@ public class RKPD2Changes {
             ),
 
             Buffs(
-                new ChangeButton(HeroSprite.avatar(HUNTRESS, 6), "Huntress Subclasses and T3",
+                new ChangeButton(avatar(HUNTRESS, 6), "Huntress Subclasses and T3",
                     "I'm leaning harder on giving subclasses access to talents without upgrading them, and _Warden_ is an excellent place to start:"
                     +"\n"+list(1,
                         "Tipped Darts shifted, now gives 2x/3x/4x/5x durability.",
@@ -242,7 +245,7 @@ public class RKPD2Changes {
                     //+"\n_TODO_ Multishot free shot can stack with standard marking."
                     //+"\n"
                 ),
-                new ChangeButton(HeroSprite.avatar(WARRIOR,6), "Warrior", list(2,
+                new ChangeButton(avatar(WARRIOR,6), "Warrior", list(2,
                         "Cleave buffed from 0/10/20/30 (was bugged) to 15/30/45/60.",
                         "Endless Rage buffed from +15%/30%/45% to +20%/40%/60%",
                         "Enraged Catalyst buffed from 17%/33%/50% to 20%/40%/60%.",
