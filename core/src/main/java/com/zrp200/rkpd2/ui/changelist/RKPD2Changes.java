@@ -140,7 +140,15 @@ public class RKPD2Changes {
                                 "Molten Earth effect replaced with Elemental Blast.",
                                 "Wrath's leap no longer stuns adjacent foes, instead sends out a 360 degree AOE Shockwave that covers a small area.",
                                 "Spectral Blades retains the ability to hit all targets in sight (removing the need to target it), but deals less damage and has reduced chances to proc on-hit effects when attacking many targets.")
-                            + "\nOverall, Wrath should now have much higher burst damage and slightly less crowd control potential (though this can be rectified via talents), be slightly more risky due to being bound to fixed ranges, and be a tiny bit less spammable. Once talents are invested in, however, it should be very very powerful...")
+                            + "\nOverall, Wrath should now have much higher burst damage and slightly less crowd control potential (though this can be rectified via talents), be slightly more risky due to being bound to fixed ranges, and be a tiny bit less spammable. Once talents are invested in, however, it should be very very powerful..."),
+                    new ChangeButton(new ItemSprite(ItemSpriteSheet.STONE_ENCHANT), "Enchanting Logic",
+                            list(1, "The chance for rare weapon enchantments to appear has been increased by ~50%.")
+                                    + "_\n\nSpirit Bow only:_" + list(2,
+                                    "Stones of Enchantment can no longer roll Lucky or Blocking.",
+                                    "Explosive Enchantment can now be rolled by Stones of Enchantment.",
+                                    "Explosive is now exactly as common as a standard uncommon enchantment in Shattered Pixel Dungeon. "
+                                        + "Other uncommon enchants are now slightly more common to compensate.",
+                                    "Grim no longer has specifically boosted chances to appear."))
             )
         },
             // v0.1.0
