@@ -33,6 +33,7 @@ import com.zrp200.rkpd2.items.weapon.enchantments.Explosive;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.ChangesScene;
 import com.zrp200.rkpd2.sprites.ItemSprite;
+import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.sprites.KingSprite;
 import com.zrp200.rkpd2.ui.HeroIcon;
 import com.zrp200.rkpd2.ui.Icons;
@@ -127,6 +128,21 @@ public class RKPD2Changes {
     // in this case I made it so you could add buttons in the ChangeInfo constructor; this is 'lustrous' style
 
     final ChangeInfo[][] changes = {
+        {
+            new ChangeInfo("v0.1.1 INDEV", true, TITLE_COLOR, "",
+                    new ChangeButton(new ItemSprite(ItemSpriteSheet.ARMOR_RAT_KING), "Rat King's Wrath Redesign!", "I've finally gotten around to updating Rat King's Wrath to reflect v0.9.3 reworks to armor abilities!"
+                            + "\n\nWhile the previous Wrath was a combination of all armor abilities, the prospect of combining 13 different abilities into one proved to be too much of a hassle, so I have instead decided to pick the ones that have similar functionality to each part of the previous Wrath: _Smoke Bomb, Shockwave, Elemental Blast, and Spectral Blades._"
+                            + "\nNote, however, that Wrath is not a perfect mirror of these abilities, though all their mechanics are there in some form."
+                            + "\n" + list(1,
+                                "Energy cost increased to 60 from 35.",
+                                "Added four new talents to Wrath. Each new talent corresponds as closely as possible to the talents of the respective armor ability. Wrath does not have Heroic Energy.",
+                                "Smoke Bomb mechanics now match up with v0.9.3 Smoke Bomb.",
+                                "Molten Earth effect replaced with Elemental Blast.",
+                                "Wrath's leap no longer stuns adjacent foes, instead sends out a 360 degree AOE Shockwave that covers a small area.",
+                                "Spectral Blades retains the ability to hit all targets in sight (removing the need to target it), but deals less damage and has reduced chances to proc on-hit effects when attacking many targets.")
+                            + "\nOverall, Wrath should now have much higher burst damage and slightly less crowd control potential (though this can be rectified via talents), be slightly more risky due to being bound to fixed ranges, and be a tiny bit less spammable. Once talents are invested in, however, it should be very very powerful...")
+            )
+        },
             // v0.1.0
         {
             new ChangeInfo("v0.1.0", true, TITLE_COLOR, ""),
