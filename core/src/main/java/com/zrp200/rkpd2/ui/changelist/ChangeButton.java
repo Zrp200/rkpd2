@@ -44,7 +44,7 @@ public class ChangeButton extends Component {
 		add(this.icon);
 		
 		this.title = Messages.titleCase(title);
-		this.message = message;
+		this.message = message.trim();
 		
 		layout();
 	}
