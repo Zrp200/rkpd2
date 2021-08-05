@@ -130,17 +130,36 @@ public class RKPD2Changes {
     final ChangeInfo[][] changes = {
         {
             new ChangeInfo("v0.1.1 INDEV", true, TITLE_COLOR, "",
+                    new ChangeButton(avatar(HUNTRESS, 6), "Huntress", list(2,
+                            "Added a _secret subclass_ to Huntress, accessible by a secret interaction while choosing a subclass.")
+                            + "_Multishot:_" + list(1,
+                            "Now uses multiple buffs to show that more than one target is marked.",
+                            "Allows stacking of free-targeted marks instead of overriding them when a new target is marked.",
+                            "Has changed free-targeting logic (thanks to smart-targeting) to make these new interactions smoother; enemies that are already targeted will be highlighted while manually targeting.")
+                    ),
+                    new ChangeButton(HeroSubClass.WARLOCK.icon(), "Warlock's Touch", list(2,
+                            "Proc chance on physical attacks is now a fixed 15/25/35% chance at +1/+2/+3 respectively.",
+                            "Proc duration of mark is now a fixed 6 turns, instead of being 10 + weapon level",
+                            "Allies can now benefit from Warlock's Touch.",
+                            "Chance for proccing soul mark with the attack that inflicts it is 20/30/40%, down from 25/50/75%, but now applies to wands if Soul Siphon is upgraded.")),
+                    new ChangeButton(avatar(ROGUE,6), "Rogue Balance", ""
+                            + "Mending Shadows turned out to have exploits, so it's (very unfortunately) being largely scrapped:"
+                            + list(1,
+                            "Now provides shielding every 2/1 turns, up to 3/5 max shielding (Shattered Protective Shadows).",
+                            "Healing rate reduced to every 4/2 turns, and it no longer works while starving.")
+                            + "\n\nOther changes:" + list(2,
+                            "Cached Rations now gives 3/5 rations, down from 4/6",
+                            "TODO Mystical Meal now appends new mystical recharge buffs instead of simply extending the duration of the existing one")),
                     new ChangeButton(new ItemSprite(ItemSpriteSheet.ARMOR_RAT_KING), "Rat King's Wrath Redesign!", "I've finally gotten around to updating Rat King's Wrath to reflect v0.9.3 reworks to armor abilities!"
-                            + "\n\nWhile the previous Wrath was a combination of all armor abilities, the prospect of combining 13 different abilities into one proved to be too much of a hassle, so I have instead decided to pick the ones that have similar functionality to each part of the previous Wrath: _Smoke Bomb, Shockwave, Elemental Blast, and Spectral Blades._"
+                            + "\n\nWhile the previous Wrath was a combination of all armor abilities, the prospect of combining 13 different abilities into one isn't possible under the Wrath design, so I have instead decided to adapt the ones that have similar functionality to each part of the previous Wrath: _Smoke Bomb, Shockwave, Elemental Blast, and Spectral Blades._"
                             + "\nNote, however, that Wrath is not a perfect mirror of these abilities, though all their mechanics are there in some form."
                             + "\n" + list(1,
                                 "Energy cost increased to 60 from 35.",
                                 "Added four new talents to Wrath. Each new talent corresponds as closely as possible to the talents of the respective armor ability. Wrath does not have Heroic Energy.",
-                                "Smoke Bomb mechanics now match up with v0.9.3 Smoke Bomb.",
+                                "Smoke Bomb no longer grants invisibility, mechanic instead moved to corresponding talent.",
                                 "Molten Earth effect replaced with Elemental Blast.",
-                                "Wrath's leap no longer stuns adjacent foes, instead sends out a 360 degree AOE Shockwave that covers a small area.",
-                                "Spectral Blades retains the ability to hit all targets in sight (removing the need to target it), but deals less damage and has reduced chances to proc on-hit effects when attacking many targets.")
-                            + "\nOverall, Wrath should now have much higher burst damage and slightly less crowd control potential (though this can be rectified via talents), be slightly more risky due to being bound to fixed ranges, and be a tiny bit less spammable. Once talents are invested in, however, it should be very very powerful..."),
+                                "Wrath's leap no longer stuns adjacent foes, instead sends out a 360 degree AOE Shockwave that covers a 3x3 area.",
+                                "Spectral Blades retains the ability to hit all targets in sight (removing the need to target it), but deals less damage and has reduced chances to proc on-hit effects when attacking many targets.")),
                     new ChangeButton(new ItemSprite(ItemSpriteSheet.STONE_ENCHANT), "Enchanting Logic",
                             list(1, "The chance for rare weapon enchantments to appear has been increased by ~50%.")
                                     + "_\n\nSpirit Bow only:_" + list(2,
@@ -148,8 +167,15 @@ public class RKPD2Changes {
                                     "Explosive Enchantment can now be rolled by Stones of Enchantment.",
                                     "Explosive is now exactly as common as a standard uncommon enchantment in Shattered Pixel Dungeon. "
                                         + "Other uncommon enchants are now slightly more common to compensate.",
-                                    "Grim no longer has specifically boosted chances to appear."))
-            )
+                                    "Grim no longer has specifically boosted chances to appear.")),
+                    misc(list(2,
+                            "Reduced Ratforcement stats by ~20%",
+                            "Talents that identify curses now declare whether an item is cursed when activated.",
+                            "TODO Energizing Meal I now adds new recharging buffs instead of stacking on existing ones.")),
+                    bugFixes(list(2,
+                            "Lethal Momentum not working with Death Mark.",
+                            "Fixed a mistake when updating Ranger to Multi-shot talent.",
+                            "Rat King's Wrath sometimes freezing Rat King's sprite after use.")))
         },
             // v0.1.0
         {
