@@ -139,7 +139,7 @@ public class Wandmaker extends NPC {
 			
 		} else {
 
-			String msg1 = Messages.get(this, "intro_" + Dungeon.hero.heroClass.name(), Dungeon.hero.name());
+			String msg1 = Messages.get(this, "intro", Dungeon.hero.name());
 			String msg2 = "";
 
 			msg1 += Messages.get(this, "intro_1");

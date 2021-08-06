@@ -33,6 +33,8 @@ import java.util.HashSet;
 import java.util.IllegalFormatException;
 import java.util.Locale;
 
+import static com.zrp200.rkpd2.GamesInProgress.selectedClass; // for class specific messages
+
 /*
 	Simple wrapper class for libGDX I18NBundles.
 
@@ -104,6 +106,12 @@ public class Messages {
 		if (c != null){
 			key = c.getName().replace("com.zrp200.rkpd2.", "");
 			key += "." + k;
+			// this allows me to change messages by character class, currently this is only done in actors
+			if(selectedClass != null && key.startsWith("actors")) {
+				String byClass = get(key + "_" + selectedClass.name(), args);
+				//noinspection StringEquality
+				if(byClass != NULL) return byClass;
+			}
 		} else
 			key = k;
 

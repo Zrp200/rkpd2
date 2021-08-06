@@ -114,7 +114,7 @@ public class Imp extends NPC {
 			}
 			
 		} else {
-			tell( Messages.get(this, "greeting"+(Dungeon.hero.heroClass == HeroClass.RAT_KING ? "_rk" : ""))+"\n"+
+			tell( Messages.get(this, "greeting")+"\n"+
 					(Quest.alternative ? Messages.get(this, "monks_1") : Messages.get(this, "golems_1")) );
 			Quest.given = true;
 			Quest.completed = false;

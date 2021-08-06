@@ -72,8 +72,7 @@ import static com.zrp200.rkpd2.actors.hero.HeroClass.RAT_KING;
 
 public class DwarfKing extends Mob implements Hero.DeathCommentator {
 	@Override public void sayHeroKilled() {
-		if(Dungeon.hero.heroClass == RAT_KING) yell("I am truly the superior king...");
-		else yell("Let Rat King take this as a lesson...");
+		yell( Messages.get(this, "hero_killed") );
 		Sample.INSTANCE.play(CHALLENGE);
 	}
 
@@ -186,7 +185,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 	@Override
 	protected boolean act() {
 		if(state == HUNTING && yellSpecialNotice && paralysed == 0) { // takes him a hot second to realize who he's fighting.
-			yell(Messages.get(this, "notice_" + (Dungeon.hero.heroClass == RAT_KING ? "ratking" : "default")));
+			yell(Messages.get(this, "notice2"));
 			yellSpecialNotice = false;
 			Sample.INSTANCE.play(CHALLENGE);
 		}
@@ -622,7 +621,14 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 			beacon.upgrade();
 		}
 
-		yell( Messages.get(this, "defeated_" + (Random.Int(2)+(Dungeon.hero.heroClass == RAT_KING?0:1)) ) );
+		String defeated = Messages.get(this, "defeated");
+		int MAX_QUOTES = 2;
+		// the special quote is more likely to appear if one is defined, but not guaranteed.
+		//noinspection StringEquality
+		if(defeated == Messages.NULL || Random.Int(MAX_QUOTES) != 0) {
+			defeated = Messages.get(this, "defeated_" + Random.Int(1, MAX_QUOTES));
+		}
+		yell( defeated );
 	}
 
 	@Override
@@ -666,6 +672,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 		}
 	}
 
+	@SuppressWarnings("StringEquality")
 	public static class Summoning extends Buff {
 
 		private int delay;
@@ -737,7 +744,8 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 					}
 					if(firstSummon) {
 						king.yell(Messages.get(king(), "first_summon"));
-						if(Dungeon.hero.heroClass == RAT_KING) king.yell(Messages.get(king, "summon_rk"));
+						String outmatched = Messages.get(king, "outmatched");
+						if(outmatched != Messages.NULL) king.yell(outmatched);
 					}
 					if(strong && king.yellStrong) {
 						king.yell(Messages.get(king, "strong"));
@@ -745,9 +753,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 					}
 					if(m instanceof Golem && king.phase < 3 && !king.golemSpawned) {
 						king.golemSpawned = true;
-						String k = "golem";
-						if(Dungeon.hero.heroClass == RAT_KING) k += "_rk";
-						king.yell(Messages.get(king, k));
+						king.yell(Messages.get(king, "golem"));
 					}
 				} else {
 					Char ch = Actor.findChar(pos);
