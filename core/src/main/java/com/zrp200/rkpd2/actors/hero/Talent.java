@@ -292,7 +292,10 @@ public enum Talent {
 	}
 
 	public String desc(){
-		return Messages.get(this, name() + ".desc");
+		String desc = Messages.get(this, name() + ".desc");
+		String comment = Messages.get(this, name() + ".comment");
+		//noinspection StringEquality
+		return comment == Messages.NULL ? desc : desc + "\n\n" + comment;
 	}
 
 	public static void onTalentUpgraded( Hero hero, Talent talent){
