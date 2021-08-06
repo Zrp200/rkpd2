@@ -524,9 +524,10 @@ public abstract class Char extends Actor {
 		}
 
 		if(alignment == Alignment.ALLY && Dungeon.hero.hasTalent(Talent.WARLOCKS_TOUCH)) {
-			// warlock+allies can soul mark by simply attacking, via warlock's touch.
+			// warlock+allies can soul mark by simply attacking via warlock's touch.
 			SoulMark.process(enemy,
-					-5, .1f*Dungeon.hero.pointsInTalent(Talent.WARLOCKS_TOUCH),
+					-4, // 10 - 4 = 6 turns
+					.05f+.1f*Dungeon.hero.pointsInTalent(Talent.WARLOCKS_TOUCH),
 					true);
 		}
 
