@@ -50,6 +50,13 @@ public class Component extends Group {
 		
 		return this;
 	}
+
+	public Component setWidth( float width ) {
+		this.width = width;
+		layout();
+
+		return this;
+	}
 	
 	public Component setRect( float x, float y, float width, float height ) {
 		this.x = x;
