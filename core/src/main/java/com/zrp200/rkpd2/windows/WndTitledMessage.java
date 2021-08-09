@@ -21,11 +21,12 @@
 
 package com.zrp200.rkpd2.windows;
 
-import com.zrp200.rkpd2.scenes.PixelScene;
-import com.zrp200.rkpd2.ui.RenderedTextBlock;
-import com.zrp200.rkpd2.ui.Window;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
+import com.zrp200.rkpd2.scenes.PixelScene;
+import com.zrp200.rkpd2.ui.RenderedTextBlock;
+import com.zrp200.rkpd2.ui.ScrollPane;
+import com.zrp200.rkpd2.ui.Window;
 
 public class WndTitledMessage extends Window {
 
@@ -38,6 +39,8 @@ public class WndTitledMessage extends Window {
 		this( new IconTitle( icon, title ), message );
 
 	}
+
+	ScrollPane sp;
 	
 	public WndTitledMessage( Component titlebar, String message ) {
 
@@ -51,7 +54,6 @@ public class WndTitledMessage extends Window {
 		RenderedTextBlock text = PixelScene.renderTextBlock( 6 );
 		text.text( message, width );
 		text.setPos( titlebar.left(), titlebar.bottom() + 2*GAP );
-		add( text );
 
 		while (PixelScene.landscape()
 				&& text.bottom() > (PixelScene.MIN_HEIGHT_L - 10)
@@ -61,7 +63,14 @@ public class WndTitledMessage extends Window {
 			text.setPos( titlebar.left(), titlebar.bottom() + 2*GAP );
 			text.maxWidth(width);
 		}
+		Component comp = new Component();
+		comp.add(text);
+		text.setPos(0,GAP);
+		comp.setSize(text.width(),text.height()+GAP*2);
+		resize( width, (int)Math.min((int)comp.bottom()+2+titlebar.height()+GAP, (int)(PixelScene.uiCamera.height*0.9)) );
 
-		resize( width, (int)text.bottom() + 2 );
+		add( sp = new ScrollPane(comp) );
+		sp.setRect(titlebar.left(),titlebar.bottom() + GAP,comp.width(),Math.min((int)comp.bottom()+2, (int)(PixelScene.uiCamera.height*0.9)-titlebar.bottom()-GAP));
+
 	}
 }
