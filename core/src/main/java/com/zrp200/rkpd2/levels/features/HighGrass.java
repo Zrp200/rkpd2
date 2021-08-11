@@ -50,6 +50,22 @@ public class HighGrass {
 	//yes this is a bit ugly, oh well.
 	private static boolean freezeTrample = false;
 
+	public static boolean plant(int cell) {
+		int t = Dungeon.level.map[cell];
+		if ((t == Terrain.EMPTY || t == Terrain.EMPTY_DECO || t == Terrain.EMBERS
+				|| t == Terrain.GRASS || t == Terrain.FURROWED_GRASS)
+				&& Dungeon.level.plants.get(cell) == null){
+			Level.set(cell, Terrain.HIGH_GRASS);
+			GameScene.updateMap(cell);
+			return true;
+		}
+		return false;
+	}
+
+	public static void playVFX(int pos) {
+		CellEmitter.get(pos).burst(LeafParticle.LEVEL_SPECIFIC, 4);
+	}
+
 	public static void trample( Level level, int pos ) {
 		
 		if (freezeTrample) return;
@@ -146,7 +162,7 @@ public class HighGrass {
 		if (ShatteredPixelDungeon.scene() instanceof GameScene) {
 			GameScene.updateMap(pos);
 			
-			CellEmitter.get(pos).burst(LeafParticle.LEVEL_SPECIFIC, 4);
+			playVFX(pos);
 			if (Dungeon.level.heroFOV[pos]) Dungeon.observe();
 		}
 	}

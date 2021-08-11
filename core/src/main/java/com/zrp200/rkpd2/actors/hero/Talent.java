@@ -470,7 +470,7 @@ public enum Talent {
 					Level.set(cell, Terrain.GRASS);
 					GameScene.updateMap(cell);
 				}
-				CellEmitter.get(cell).burst(LeafParticle.LEVEL_SPECIFIC, 4);
+				HighGrass.playVFX(cell);
 			}
 			if (hero.pointsInTalent(RESTORED_NATURE,RESTORATION) == 1){
 				grassCells.remove(0);

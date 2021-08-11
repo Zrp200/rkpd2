@@ -55,6 +55,7 @@ import com.zrp200.rkpd2.items.wands.*;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.levels.Level;
 import com.zrp200.rkpd2.levels.Terrain;
+import com.zrp200.rkpd2.levels.features.HighGrass;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.mechanics.ConeAOE;
 import com.zrp200.rkpd2.messages.Messages;
@@ -230,12 +231,7 @@ public class ElementalBlast extends ArmorAbility {
 								//TODO: spend 3 charges worth of regrowth energy from staff?
 								int t = Dungeon.level.map[cell];
 								if (Random.Float() < 0.33f*effectMulti) {
-									if ((t == Terrain.EMPTY || t == Terrain.EMPTY_DECO || t == Terrain.EMBERS
-											|| t == Terrain.GRASS || t == Terrain.FURROWED_GRASS)
-											&& Dungeon.level.plants.get(cell) == null) {
-										Level.set(cell, Terrain.HIGH_GRASS);
-										GameScene.updateMap(cell);
-									}
+									HighGrass.plant(cell);
 								}
 							}
 
