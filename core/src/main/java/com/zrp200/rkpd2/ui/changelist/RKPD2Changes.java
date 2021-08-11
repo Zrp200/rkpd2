@@ -163,17 +163,17 @@ public class RKPD2Changes {
                             "Allies can now benefit from Warlock's Touch.",
                             "Chance for proccing soul mark with the attack that inflicts it is 20/30/40%, down from 25/50/75%, but now applies to wands if Soul Siphon is upgraded.")),
                     new ChangeButton(avatar(ROGUE,6), "Rogue Balance", ""
-                            + "Mending Shadows turned out to have exploits, so it's (very unfortunately) being largely scrapped:"
+                            + "_Mending Shadows_ turned out to have exploits, so it's (very unfortunately) being largely scrapped:"
                             + list(1,
                             "Now provides shielding every 2/1 turns, up to 3/5 max shielding (Shattered Protective Shadows).",
                             "Healing rate reduced to every 4/2 turns, and it no longer works while starving.")
                             + "\n\nOther changes:" + list(2,
-                            "Cached Rations now gives 3/5 rations, down from 4/6",
-                            "TODO Mystical Meal now appends new mystical recharge buffs instead of simply extending the duration of the existing one")),
+                            "_Cached Rations_ now gives 3/5 rations, down from 4/6",
+                            "TODO _Mystical Meal_ now appends new mystical recharge buffs instead of simply extending the duration of the existing one")),
                     misc(list(2,
-                            "Reduced Ratforcement stats by ~20%",
-                            "Talents that identify curses now declare whether an item is cursed when activated.",
-                            "TODO Energizing Meal I now adds new recharging buffs instead of stacking on existing ones.")),
+                            "Reduced _Ratforcements_ stats by ~20%",
+                            "TODO _Energizing Meal I_ now adds new recharging buffs instead of stacking on existing ones.",
+                            "Talents that identify curses now declare whether an item is cursed when activated.")),
                     bugFixes(list(2,
                             "Lethal Momentum not working with Death Mark.",
                             "Fixed a mistake when updating Ranger to Multi-shot talent.",
