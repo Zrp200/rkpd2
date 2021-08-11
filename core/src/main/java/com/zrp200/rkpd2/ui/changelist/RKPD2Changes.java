@@ -141,11 +141,13 @@ public class RKPD2Changes {
                             "Wrath's leap no longer stuns adjacent foes, instead sends out a 360 degree AOE Shockwave that covers a 3x3 area.",
                             "Spectral Blades retains the ability to hit all targets in sight (removing the need to target it), but deals less damage and has reduced chances to proc on-hit effects when attacking many targets.")),
                     new ChangeButton(avatar(HUNTRESS, 6), "Huntress", list(2,
-                            "Added a _secret subclass_ to Huntress, accessible by a secret interaction while choosing a subclass.")
-                            + "_Multishot:_" + list(1,
+                            "Added a _secret subclass_ to Huntress, accessible by a secret interaction while choosing a subclass.",
+                            "_Restored Nature_ root duration reverted to 2/3, down from 4/6, but it now also causes health potions and related alchemy products to be used instantly.")
+                            + "_Multi-shot:_" + list(1,
                             "Now uses multiple buffs to show that more than one target is marked.",
                             "Allows stacking of free-targeted marks instead of overriding them when a new target is marked.",
                             "Has changed free-targeting logic (thanks to smart-targeting) to make these new interactions smoother; enemies that are already targeted will be highlighted while manually targeting.")
+                            + "\nMulti-shot should now be more complex, but in exchange it should (somewhat ironically) be easier to use and understand. It's also much more flexible with its free-targeted sniper special functionality."
                     ),
                     new ChangeButton(new ItemSprite(ItemSpriteSheet.STONE_ENCHANT), "Enchanting Logic",
                             list(1, "The chance for rare weapon enchantments to appear has been increased by ~50%.")
