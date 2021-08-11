@@ -177,7 +177,7 @@ public class Messages {
 		if (lang == Languages.ENGLISH){
 			String result = "";
 			//split by any unicode space character
-			for (String word : str.split("(?<=\\p{Zs})")){
+			for (String word : str.split("(?<=[\\p{Zs}-])")){
 				if (noCaps.contains(word.trim().toLowerCase(Locale.ENGLISH).replaceAll(":|[0-9]", ""))){
 					result += word;
 				} else {
