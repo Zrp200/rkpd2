@@ -85,7 +85,7 @@ public class Potion extends Item {
 	//used internally for potions that can be drunk or thrown
 	public static final String AC_CHOOSE = "CHOOSE";
 
-	private static final float TIME_TO_DRINK = 1f;
+	public static final float TIME_TO_DRINK = 1f;
 
 	private static final HashMap<String, Integer> colors = new HashMap<String, Integer>() {
 		{

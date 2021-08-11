@@ -65,6 +65,7 @@ import com.zrp200.rkpd2.items.weapon.melee.MeleeWeapon;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.levels.Level;
 import com.zrp200.rkpd2.levels.Terrain;
+import com.zrp200.rkpd2.levels.features.HighGrass;
 import com.zrp200.rkpd2.messages.Languages;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
@@ -452,6 +453,12 @@ public enum Talent {
 			}
 		}
 		if (hero.hasTalent(RESTORED_NATURE,RESTORATION)){
+
+			if(hero.hasTalent(RESTORED_NATURE)) {
+				float time = Math.min(hero.cooldown(), Potion.TIME_TO_DRINK);
+				if(time > 0) hero.spend(-time);
+			}
+
 			ArrayList<Integer> grassCells = new ArrayList<>();
 			for (int i : PathFinder.NEIGHBOURS8){
 				grassCells.add(hero.pos+i);
@@ -461,7 +468,7 @@ public enum Talent {
 				Char ch = Actor.findChar(cell);
 				if (ch != null && ch.alignment == Char.Alignment.ENEMY){
 					int duration = 1+hero.pointsInTalent(RESTORED_NATURE,RESTORATION);
-					if(hero.heroClass == HeroClass.HUNTRESS) duration *= 2; // 4/6 root, for whatever it's worth.
+					// please do note that this can be stacked, assuming you throw away healing or shielding, of course.
 					Buff.affect(ch, Roots.class, duration);
 				}
 				if (Dungeon.level.map[cell] == Terrain.EMPTY ||
@@ -472,18 +479,15 @@ public enum Talent {
 				}
 				HighGrass.playVFX(cell);
 			}
-			if (hero.pointsInTalent(RESTORED_NATURE,RESTORATION) == 1){
-				grassCells.remove(0);
-				grassCells.remove(0);
-				grassCells.remove(0);
+			int grassToSpawn = 2 + 3*hero.pointsInTalent(RESTORED_NATURE, RESTORATION); // 5/8
+			if( hero.hasTalent(RESTORED_NATURE) ) {
+				grassCells.add(hero.pos); // it can spawn in the hero's position if huntress's talent.
 			}
 			for (int cell : grassCells){
-				int t = Dungeon.level.map[cell];
-				if ((t == Terrain.EMPTY || t == Terrain.EMPTY_DECO || t == Terrain.EMBERS
-						|| t == Terrain.GRASS || t == Terrain.FURROWED_GRASS)
-						&& Dungeon.level.plants.get(cell) == null){
-					Level.set(cell, Terrain.HIGH_GRASS);
-					GameScene.updateMap(cell);
+				if(grassToSpawn == 0) break;
+				if( HighGrass.plant(cell) ) {
+					grassToSpawn--;
+					if(cell == hero.pos) HighGrass.playVFX(cell); // it wasn't played before.
 				}
 			}
 			Dungeon.observe();
