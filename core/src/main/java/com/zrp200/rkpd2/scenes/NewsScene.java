@@ -326,9 +326,8 @@ public class NewsScene extends PixelScene {
 					DeviceCompat.openURI(link);
 				}
 			};
-			link.setRect(0, height + 2, width, BTN_HEIGHT);
-			add(link);
-			resize(width, (int) link.bottom());
+			link.setHeight(BTN_HEIGHT);
+			addToBottom(link);
 		}
 
 

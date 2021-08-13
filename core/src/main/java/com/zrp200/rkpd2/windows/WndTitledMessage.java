@@ -30,19 +30,28 @@ import com.zrp200.rkpd2.ui.Window;
 
 public class WndTitledMessage extends Window {
 
+	protected static int maxHeight() { return (int)(PixelScene.uiCamera.height*0.9); }
+
 	protected static final int WIDTH_MIN    = 120;
 	protected static final int WIDTH_MAX    = 220;
 	protected static final int GAP	= 2;
 
 	public WndTitledMessage( Image icon, String title, String message ) {
+
+		this(icon, title, message, WIDTH_MAX);
+
+	}
+
+	public WndTitledMessage( Image icon, String title, String message, int maxWidth ) {
 		
-		this( new IconTitle( icon, title ), message );
+		this( new IconTitle( icon, title ), message, maxWidth );
 
 	}
 
 	ScrollPane sp;
-	
-	public WndTitledMessage( Component titlebar, String message ) {
+
+	public WndTitledMessage( Component titlebar, String message) { this(titlebar, message, WIDTH_MAX); }
+	public WndTitledMessage( Component titlebar, String message, int maxWidth ) {
 
 		super();
 
@@ -57,7 +66,7 @@ public class WndTitledMessage extends Window {
 
 		while (PixelScene.landscape()
 				&& text.bottom() > (PixelScene.MIN_HEIGHT_L - 10)
-				&& width < WIDTH_MAX){
+				&& width < maxWidth){
 			width += 20;
 			titlebar.setRect(0, 0, width, 0);
 			text.setPos( titlebar.left(), titlebar.bottom() + 2*GAP );
@@ -70,10 +79,24 @@ public class WndTitledMessage extends Window {
 		comp.add(text);
 		text.setPos(0,GAP);
 		comp.setSize(text.width(),text.height()+GAP*2);
-		resize( width, (int)Math.min((int)comp.bottom()+2+titlebar.height()+GAP, (int)(PixelScene.uiCamera.height*0.9)) );
+		resize( width, (int)Math.min((int)comp.bottom()+2+titlebar.height()+GAP, maxHeight()) );
 
 		add( sp = new ScrollPane(comp) );
-		sp.setRect(titlebar.left(),titlebar.bottom() + GAP,comp.width(),Math.min((int)comp.bottom()+2, (int)(PixelScene.uiCamera.height*0.9)-titlebar.bottom()-GAP));
+		sp.setRect(titlebar.left(), titlebar.bottom() + GAP, comp.width(), Math.min((int)comp.bottom()+2, maxHeight()-titlebar.bottom()-GAP));
+	}
 
+
+	// adds to the bottom of a titled message, below the message itself.
+	// this only works ONCE currently.
+	public final void addToBottom(Component c) { addToBottom(c, 5); }
+	public void addToBottom(Component c, float gap) {
+		c.setRect(0, height+gap, width, c.height());
+		setHeight( Math.min( (int) c.bottom(), maxHeight() ) );
+		add(c);
+
+		c.setPos(0, height - c.height());
+		sp.setRect(0, sp.top(), width, height - (c.height()+2*gap)*1.5f);
+
+		setHeight( (int) c.bottom() );
 	}
 }
