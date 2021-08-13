@@ -136,14 +136,14 @@ public class RKPD2Changes {
                             + "\n" + list(1,
                             "Energy cost increased to 60 from 35.",
                             "Added four new talents to Wrath. Each new talent corresponds as closely as possible to the talents of the respective armor ability. Wrath does not have Heroic Energy.",
-                            "Smoke Bomb no longer grants invisibility, mechanic instead moved to corresponding talent.",
+                            "Smoke Bomb no longer grants invisibility, mechanic instead moved to corresponding talent. Range is reduced to 6, from 8.",
                             "Molten Earth effect replaced with Elemental Blast.",
                             "Wrath's leap no longer stuns adjacent foes, instead sends out a 360 degree AOE Shockwave that covers a 3x3 area.",
                             "Spectral Blades retains the ability to hit all targets in sight (removing the need to target it), but deals less damage and has reduced chances to proc on-hit effects when attacking many targets.")),
                     new ChangeButton(avatar(HUNTRESS, 6), "Huntress", list(2,
                             "Added a _secret subclass_ to Huntress, accessible by a secret interaction while choosing a subclass.",
                             "_Restored Nature_ root duration reverted to 2/3, down from 4/6, but it now also causes health potions and related alchemy products to be used instantly.")
-                            + "_Multi-shot:_" + list(1,
+                            + "_Multi-Shot:_" + list(1,
                             "Now uses multiple buffs to show that more than one target is marked.",
                             "Allows stacking of free-targeted marks instead of overriding them when a new target is marked.",
                             "Has changed free-targeting logic (thanks to smart-targeting) to make these new interactions smoother; enemies that are already targeted will be highlighted while manually targeting.")
@@ -162,6 +162,8 @@ public class RKPD2Changes {
                             "Proc duration of mark is now a fixed 6 turns, instead of being 10 + weapon level",
                             "Allies can now benefit from Warlock's Touch.",
                             "Chance for proccing soul mark with the attack that inflicts it is 20/30/40%, down from 25/50/75%, but now applies to wands if Soul Siphon is upgraded.")),
+                    new ChangeButton(avatar(WARRIOR, 6), "Warrior", "TODO:"
+                            + list(2, "")),
                     new ChangeButton(avatar(ROGUE,6), "Rogue Balance", ""
                             + "_Mending Shadows_ turned out to have exploits, so it's (very unfortunately) being largely scrapped:"
                             + list(1,
@@ -169,11 +171,16 @@ public class RKPD2Changes {
                             "Healing rate reduced to every 4/2 turns, and it no longer works while starving.")
                             + "\n\nOther changes:" + list(2,
                             "_Cached Rations_ now gives 3/5 rations, down from 4/6",
+                            "TODO Projectile Momentum no longer awards a wand bonus at +0, instead gives +0/1/2/3 down from +1/2/3/4",
                             "TODO _Mystical Meal_ now appends new mystical recharge buffs instead of simply extending the duration of the existing one")),
                     misc(list(2,
+                            // gameplay related
                             "Reduced _Ratforcements_ stats by ~20%",
                             "TODO _Energizing Meal I_ now adds new recharging buffs instead of stacking on existing ones.",
-                            "Talents that identify curses now declare whether an item is cursed when activated.")),
+                            "Talents that identify curses now declare whether an item is cursed when activated\n.",
+                            // ui
+                            "Most windows now scroll if they would not fit on the screen. Item descriptions are currently not supported, however.",
+                            "Changed capitalization logic, hyphenated titles now have both words capitalized.")),
                     bugFixes(list(2,
                             "Lethal Momentum not working with Death Mark.",
                             "Fixed a mistake when updating Ranger to Multi-shot talent.",
