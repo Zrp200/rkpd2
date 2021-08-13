@@ -116,6 +116,9 @@ public class Window extends Group implements Signal.Listener<KeyEvent> {
 
 		KeyEvent.addKeyListener( this );
 	}
+
+	public final void setWidth(int width)   { resize(width, height); }
+	public final void setHeight(int height) { resize(width, height); }
 	
 	public void resize( int w, int h ) {
 		this.width = w;
