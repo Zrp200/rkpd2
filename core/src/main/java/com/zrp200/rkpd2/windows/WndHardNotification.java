@@ -52,7 +52,7 @@ public class WndHardNotification extends WndTitledMessage{
 			}
 		};
 		btnOkay.enable(false);
-		addToBottom(btnOkay, GAP);
+		addToBottom(btnOkay, GAP, 2);
 	}
 
 	@Override

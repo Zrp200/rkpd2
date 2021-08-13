@@ -88,14 +88,14 @@ public class WndTitledMessage extends Window {
 
 	// adds to the bottom of a titled message, below the message itself.
 	// this only works ONCE currently.
-	public final void addToBottom(Component c) { addToBottom(c, 5); }
-	public void addToBottom(Component c, float gap) {
+	public final void addToBottom(Component c) { addToBottom(c, 5, 1.5f); }
+	public void addToBottom(Component c, float gap, float factor) {
 		c.setRect(0, height+gap, width, c.height());
 		setHeight( Math.min( (int) c.bottom(), maxHeight() ) );
 		add(c);
 
 		c.setPos(0, height - c.height());
-		sp.setRect(0, sp.top(), width, height - (c.height()+2*gap)*1.5f);
+		sp.setRect(0, sp.top(), width, height - c.height()*factor);
 
 		setHeight( (int) c.bottom() );
 	}

@@ -45,7 +45,7 @@ public class WndInfoTalent extends WndTitledMessage {
 					icon(Icons.get(Icons.TALENT));
 					setHeight(18);
 				}
-			}, 2*GAP);
+			}, 2*GAP, 2);
 			setHeight(height+1);
 		}
 

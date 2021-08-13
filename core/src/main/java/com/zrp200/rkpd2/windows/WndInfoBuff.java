@@ -40,7 +40,7 @@ public class WndInfoBuff extends WndTitledMessage {
 				{
 					setHeight(16);
 				}
-			}, GAP);
+			}, GAP, 2);
 		}
 	}
 }
