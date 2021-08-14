@@ -62,6 +62,15 @@ public class IconTitle extends Component {
 		icon.view( heap );
 	}
 
+	public IconTitle( Item item, int color) {
+		this(item);
+		color(color);
+	}
+	public IconTitle( Heap heap, int color) {
+		this(heap);
+		color(color);
+	}
+
 	public IconTitle( Image icon, String label ) {
 		super();
 
