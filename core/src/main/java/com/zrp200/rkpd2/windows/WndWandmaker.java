@@ -173,7 +173,6 @@ public class WndWandmaker extends Window {
 				}
 			};
 			btnConfirm.setRect(0, height+2, width/2-1, 16);
-			add(btnConfirm);
 
 			RedButton btnCancel = new RedButton(Messages.get(WndSadGhost.class, "cancel")){
 				@Override
@@ -182,9 +181,8 @@ public class WndWandmaker extends Window {
 				}
 			};
 			btnCancel.setRect(btnConfirm.right()+2, height+2, btnConfirm.width(), 16);
-			add(btnCancel);
 
-			resize(width, (int)btnCancel.bottom());
+			addToBottom(btnConfirm, btnCancel);
 		}
 	}
 

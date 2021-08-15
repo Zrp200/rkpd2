@@ -112,4 +112,28 @@ public class WndTitledMessage extends Window {
 		// scrollbar height is reduced to respect top spacing
 		sp.setRect(0, sp.top(), width, y - sp.top() - gapBefore);
 	}
+
+	// note this wrapper component is very unable to moved after it's placed. If I need to move it again, I won't be able to.
+	public Component addToBottom(int gapBefore, int gapAfter, Component... components) {
+		// this ensures that things are formatted correctly vertically.
+		Component wrapper = new Component();
+		if(components.length == 0) return wrapper;
+		float top=Float.MAX_VALUE, bottom=Float.MIN_VALUE;
+		for(Component c : components) {
+			top = Math.min(top, c.top());
+			bottom = Math.max(bottom, c.bottom());
+			wrapper.add(c);
+		}
+		wrapper.setRect(0, top, width, bottom-top);
+		addToBottom(wrapper, gapBefore, gapAfter);
+
+		top -= wrapper.top();
+
+		for(Component c : components) c.setY(c.top() - top);
+
+		return wrapper;
+	}
+	// yes the order is different. deal with it.
+	public Component addToBottom(int gap, Component... components) { return addToBottom(gap, 0, components); }
+	public Component addToBottom(Component... components) { return addToBottom(GAP, components); }
 }

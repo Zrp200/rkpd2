@@ -33,6 +33,8 @@ import com.zrp200.rkpd2.items.artifacts.MasterThievesArmband;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.RedButton;
 
+import java.util.ArrayList;
+
 public class WndTradeItem extends WndInfoItem {
 
 	private static final float GAP		= 2;
@@ -60,8 +62,8 @@ public class WndTradeItem extends WndInfoItem {
 					hide();
 				}
 			};
-			btnSell.setRect( 0, pos + GAP, width, BTN_HEIGHT );
-			add( btnSell );
+			btnSell.setHeight( BTN_HEIGHT );
+			addToBottom( btnSell );
 
 			pos = btnSell.bottom();
 
@@ -76,7 +78,6 @@ public class WndTradeItem extends WndInfoItem {
 				}
 			};
 			btnSell1.setRect( 0, pos + GAP, width, BTN_HEIGHT );
-			add( btnSell1 );
 			RedButton btnSellAll = new RedButton( Messages.get(this, "sell_all", priceAll ) ) {
 				@Override
 				protected void onClick() {
@@ -85,13 +86,13 @@ public class WndTradeItem extends WndInfoItem {
 				}
 			};
 			btnSellAll.setRect( 0, btnSell1.bottom() + 1, width, BTN_HEIGHT );
-			add( btnSellAll );
+			addToBottom(btnSell1, btnSellAll);
 
 			pos = btnSellAll.bottom();
 
 		}
 
-		resize( width, (int)pos );
+		//resize( width, (int)pos );
 	}
 
 	//buying
@@ -105,6 +106,8 @@ public class WndTradeItem extends WndInfoItem {
 
 		final int price = Shopkeeper.sellPrice( item );
 
+		ArrayList<RedButton> buttons = new ArrayList();
+
 		RedButton btnBuy = new RedButton( Messages.get(this, "buy", price) ) {
 			@Override
 			protected void onClick() {
@@ -114,7 +117,7 @@ public class WndTradeItem extends WndInfoItem {
 		};
 		btnBuy.setRect( 0, pos + GAP, width, BTN_HEIGHT );
 		btnBuy.enable( price <= Dungeon.gold );
-		add( btnBuy );
+		buttons.add(btnBuy);
 
 		pos = btnBuy.bottom();
 
@@ -145,13 +148,13 @@ public class WndTradeItem extends WndInfoItem {
 				}
 			};
 			btnSteal.setRect(0, pos + 1, width, BTN_HEIGHT);
-			add(btnSteal);
+			buttons.add(btnSteal);
 
 			pos = btnSteal.bottom();
 
 		}
 
-		resize(width, (int) pos);
+		addToBottom( buttons.toArray(new RedButton[0]) );
 	}
 	
 	@Override

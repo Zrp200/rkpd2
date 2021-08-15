@@ -28,43 +28,22 @@ import com.zrp200.rkpd2.ui.ItemSlot;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
 import com.zrp200.rkpd2.ui.Window;
 
-public class WndInfoItem extends Window {
-	
-	private static final float GAP	= 2;
-
-	private static final int WIDTH_MIN = 120;
-	private static final int WIDTH_MAX = 220;
+public class WndInfoItem extends WndTitledMessage {
 
 	//only one WndInfoItem can appear at a time
 	private static WndInfoItem INSTANCE;
 
-	public WndInfoItem( Heap heap ) {
-
-		super();
-
-		if (INSTANCE != null){
-			INSTANCE.hide();
-		}
+	{
+		if(INSTANCE != null) INSTANCE.hide();
 		INSTANCE = this;
-
-		if (heap.type == Heap.Type.HEAP) {
-			fillFields( heap.peek() );
-
-		} else {
-			fillFields( heap );
-
-		}
 	}
-	
-	public WndInfoItem( Item item ) {
-		super();
 
-		if (INSTANCE != null){
-			INSTANCE.hide();
-		}
-		INSTANCE = this;
-		
-		fillFields( item );
+	public WndInfoItem( Heap heap ) {
+		super(getTitlebar(heap), heap.type == Heap.Type.HEAP ? heap.peek().desc() : heap.info());
+	}
+
+	public WndInfoItem( Item item ) {
+		super(getTitlebar(item), item.info());
 	}
 
 	@Override
@@ -75,17 +54,12 @@ public class WndInfoItem extends Window {
 		}
 	}
 
-	private void fillFields(Heap heap ) {
-		
-		IconTitle titlebar = new IconTitle( heap );
-		titlebar.color( TITLE_COLOR );
-		
-		RenderedTextBlock txtInfo = PixelScene.renderTextBlock( heap.info(), 6 );
-
-		layoutFields(titlebar, txtInfo);
+	private static IconTitle getTitlebar(Heap heap ) {
+		return heap.type == Heap.Type.HEAP
+				? getTitlebar( heap.peek() )
+				: new IconTitle( heap, TITLE_COLOR );
 	}
-	
-	private void fillFields( Item item ) {
+	private static IconTitle getTitlebar( Item item ) {
 		
 		int color = TITLE_COLOR;
 		if (item.levelKnown && item.level() > 0) {
@@ -94,15 +68,11 @@ public class WndInfoItem extends Window {
 			color = ItemSlot.DEGRADED;
 		}
 
-		IconTitle titlebar = new IconTitle( item );
-		titlebar.color( color );
-		
-		RenderedTextBlock txtInfo = PixelScene.renderTextBlock( item.info(), 6 );
-		
-		layoutFields(titlebar, txtInfo);
+		return new IconTitle( item, color );
 	}
 
-	private void layoutFields(IconTitle title, RenderedTextBlock info){
+	// this is unneeded.
+	/*private void layoutFields(IconTitle title, RenderedTextBlock info){
 		int width = WIDTH_MIN;
 
 		info.maxWidth(width);
@@ -122,5 +92,5 @@ public class WndInfoItem extends Window {
 		add( info );
 
 		resize( width, (int)(info.bottom() + 2) );
-	}
+	}*/
 }
