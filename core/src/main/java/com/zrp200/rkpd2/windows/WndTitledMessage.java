@@ -30,73 +30,86 @@ import com.zrp200.rkpd2.ui.Window;
 
 public class WndTitledMessage extends Window {
 
-	protected static int maxHeight() { return (int)(PixelScene.uiCamera.height*0.9); }
+	protected static int maxHeight() {
+		return (int) (PixelScene.uiCamera.height * 0.9);
+	}
 
-	protected static final int WIDTH_MIN    = 120;
-	protected static final int WIDTH_MAX    = 220;
-	protected static final int GAP	= 2;
+	protected static final int WIDTH_MIN = 120;
+	protected static final int WIDTH_MAX = 220;
+	protected static final int GAP = 2;
 
-	public WndTitledMessage( Image icon, String title, String message ) {
+	public WndTitledMessage(Image icon, String title, String message) {
 
 		this(icon, title, message, WIDTH_MAX);
 
 	}
 
-	public WndTitledMessage( Image icon, String title, String message, int maxWidth ) {
-		
-		this( new IconTitle( icon, title ), message, maxWidth );
+	public WndTitledMessage(Image icon, String title, String message, int maxWidth) {
+
+		this(new IconTitle(icon, title), message, maxWidth);
 
 	}
 
 	ScrollPane sp;
 
-	public WndTitledMessage( Component titlebar, String message) { this(titlebar, message, WIDTH_MAX); }
-	public WndTitledMessage( Component titlebar, String message, int maxWidth ) {
+	public WndTitledMessage(Component titlebar, String message) {
+		this(titlebar, message, WIDTH_MAX);
+	}
+
+	public WndTitledMessage(Component titlebar, String message, int maxWidth) {
 
 		super();
 
 		int width = WIDTH_MIN;
 
-		titlebar.setRect( 0, 0, width, 0 );
+		titlebar.setRect(0, 0, width, 0);
 		add(titlebar);
 
-		RenderedTextBlock text = PixelScene.renderTextBlock( 6 );
-		text.text( message, width );
-		text.setPos( titlebar.left(), titlebar.bottom() + 2*GAP );
+		RenderedTextBlock text = PixelScene.renderTextBlock(6);
+		text.text(message, width);
+		text.setPos(titlebar.left(), titlebar.bottom() + 2 * GAP);
 
 		while (PixelScene.landscape()
 				&& text.bottom() > (PixelScene.MIN_HEIGHT_L - 10)
-				&& width < maxWidth){
+				&& width < maxWidth) {
 			width += 20;
 			titlebar.setRect(0, 0, width, 0);
 			text.setPos( titlebar.left(), titlebar.bottom() + 2*GAP );
 			text.maxWidth(width);
 
 			titlebar.setWidth(width);
-			text.setPos( titlebar.left(), titlebar.bottom() + 2*GAP );
+			text.setPos(titlebar.left(), titlebar.bottom() + 2 * GAP);
 		}
 		Component comp = new Component();
 		comp.add(text);
-		text.setPos(0,GAP);
-		comp.setSize(text.width(),text.height()+GAP*2);
-		resize( width, (int)Math.min((int)comp.bottom()+2+titlebar.height()+GAP, maxHeight()) );
+		text.setPos(0, GAP);
+		comp.setSize(text.width(), text.height() + GAP * 2);
+		resize(width, (int) Math.min((int) comp.bottom() + 2 + titlebar.height() + GAP, maxHeight()));
 
-		add( sp = new ScrollPane(comp) );
-		sp.setRect(titlebar.left(), titlebar.bottom() + GAP, comp.width(), Math.min((int)comp.bottom()+2, maxHeight()-titlebar.bottom()-GAP));
+		add(sp = new ScrollPane(comp));
+		sp.setRect(titlebar.left(), titlebar.bottom() + GAP, comp.width(), Math.min((int) comp.bottom() + 2, maxHeight() - titlebar.bottom() - GAP));
 	}
 
 
 	// adds to the bottom of a titled message, below the message itself.
 	// this only works ONCE currently.
-	public final void addToBottom(Component c) { addToBottom(c, 5, 1.5f); }
-	public void addToBottom(Component c, float gap, float factor) {
-		c.setRect(0, height+gap, width, c.height());
-		setHeight( Math.min( (int) c.bottom(), maxHeight() ) );
+	public final void addToBottom(Component c) {
+		addToBottom(c, GAP);
+	}
+
+	public final void addToBottom(Component c, int gap) {
+		addToBottom(c, gap, 0);
+	}
+
+	public void addToBottom(Component c, int gapBefore, int gapAfter) {
+		// attempt to place normally.
+		c.setRect(0, height + gapBefore, width, c.height() + gapAfter); // assumes there is space at the bottom first. note that I'm baking in the bottom spacing into the component itself
 		add(c);
-
-		c.setPos(0, height - c.height());
-		sp.setRect(0, sp.top(), width, height - c.height()*factor);
-
-		setHeight( (int) c.bottom() );
+		// in order to make things fit, we need to change the size of the scrollbar to make the component fit properly.
+		// fixme even though it *feels* like I should be able to stop here if everything fits, I can't. why?
+		setHeight((int) Math.min(c.bottom(), maxHeight()));
+		float y; c.setY(y = height - c.height()); // put the component into its final position.
+		// scrollbar height is reduced to respect top spacing
+		sp.setRect(0, sp.top(), width, y - sp.top() - gapBefore);
 	}
 }

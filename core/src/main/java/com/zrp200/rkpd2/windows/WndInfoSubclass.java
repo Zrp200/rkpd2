@@ -21,7 +21,7 @@ public class WndInfoSubclass extends WndTitledMessage {
 
 		TalentsPane.TalentTierPane talentPane = new TalentsPane.TalentTierPane(talentList.get(2), 3, false);
 		talentPane.title.text( Messages.titleCase(Messages.get(WndHeroInfo.class, "talents")));
-		addToBottom(talentPane);
+		addToBottom(talentPane, 5, 0);
 
 	}
 
