@@ -172,12 +172,15 @@ public class CloakOfShadows extends Artifact {
 	protected ArtifactBuff activeBuff( ) {
 		return new cloakStealth();
 	}
-	
+
+	public static final float LC_FACTOR =.2f, LC_FACTOR_RK =.13f;
 	@Override
 	public void charge(Hero target, float amount) {
 		if (charge < chargeCap) {
 			// moved previous equip for free mechanic to light cloak
-			if (!isEquipped(target)) amount *= target.byTalent(Talent.LIGHT_CLOAK, .25f, Talent.RK_FREERUNNER, 0.4f/3f);
+			if (!isEquipped(target)) amount *= target.byTalent(
+					Talent.LIGHT_CLOAK, LC_FACTOR,
+					Talent.RK_FREERUNNER, LC_FACTOR_RK);
 			if(target.heroClass == HeroClass.ROGUE) amount *= ROGUE_BOOST;
 			partialCharge += 0.25f*amount;
 			if (partialCharge >= 1){
@@ -236,8 +239,8 @@ public class CloakOfShadows extends Artifact {
 					float chargeToGain = (1f / turnsToCharge);
 					if (!isEquipped(Dungeon.hero)){
 						chargeToGain *= Dungeon.hero.byTalent(
-								Talent.LIGHT_CLOAK, 1/3f,
-								Talent.RK_FREERUNNER, 0.13f);
+								Talent.LIGHT_CLOAK, LC_FACTOR,
+								Talent.RK_FREERUNNER, LC_FACTOR_RK);
 					}
 					partialCharge += chargeToGain;
 				}
