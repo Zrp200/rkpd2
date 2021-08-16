@@ -316,8 +316,8 @@ public enum Talent {
 					}
 				}
 				break;
-			case LIGHT_CLOAK:
-				if (hero.pointsInTalent(LIGHT_CLOAK) == 1) {
+			case LIGHT_CLOAK: case RK_FREERUNNER:
+				if (hero.pointsInTalent(LIGHT_CLOAK, RK_FREERUNNER) == 1) {
 					for (Item item : Dungeon.hero.belongings.backpack) {
 						if (item instanceof CloakOfShadows) {
 							((CloakOfShadows) item).activate(Dungeon.hero);
