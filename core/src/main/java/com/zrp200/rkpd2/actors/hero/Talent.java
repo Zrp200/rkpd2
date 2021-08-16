@@ -420,25 +420,26 @@ public enum Talent {
 		{ actPriority = HERO_PRIO+1; }
 	}
 
+	// additive instead of multiplicative due to the presence of rk
 	public static float itemIDSpeedFactor( Hero hero, Item item ){
-		// 1.75x/2.5x speed with huntress talent
-		float factor = 1f + hero.pointsInTalent(ROYAL_INTUITION,SURVIVALISTS_INTUITION) *0.75f;
-		if(hero.pointsInTalent(SURVIVALISTS_INTUITION) > 0) factor *= 1.5;
+		float factor = 1f;
+
+		// +75% speed with royal intuition talent across the board
+		factor += hero.pointsInTalent(ROYAL_INTUITION,SURVIVALISTS_INTUITION) * 0.75f;
+		if( hero.hasTalent(SURVIVALISTS_INTUITION) ) factor *= 1.5f; // this is multiplicative to avoid nerfing huntress right now.
 
 		// 2x/instant for Warrior (see onItemEquipped)
 		if (item instanceof MeleeWeapon || item instanceof Armor){
-			int points = hero.pointsInTalent(ROYAL_INTUITION,ARMSMASTERS_INTUITION);
-			// basically an innate +1 for armsmaster
-			if(hero.hasTalent(ARMSMASTERS_INTUITION)) points++;
-			factor *= 1f + points;
+			factor += hero.shiftedPoints(ARMSMASTERS_INTUITION,ROYAL_INTUITION);
 		}
 		// 3x/instant for mage (see Wand.wandUsed()), 4.5x/instant for rk
+		// not shifted for mage right now.
 		if (item instanceof Wand){
-			factor *= 1f + 2*(hero.pointsInTalent(SCHOLARS_INTUITION) + hero.pointsInTalent(ROYAL_INTUITION));
+			factor += 2*hero.pointsInTalent(SCHOLARS_INTUITION, ROYAL_INTUITION);
 		}
 		// 2x/instant for rogue (see onItemEqupped), also id's type on equip/on pickup
 		if (item instanceof Ring){
-			factor *= 1f + (Dungeon.hero.heroClass == HeroClass.ROGUE ? 1 : 0) + hero.pointsInTalent(THIEFS_INTUITION, ROYAL_INTUITION);
+			factor += hero.shiftedPoints(THIEFS_INTUITION, ROYAL_INTUITION);
 		}
 		return factor;
 	}
