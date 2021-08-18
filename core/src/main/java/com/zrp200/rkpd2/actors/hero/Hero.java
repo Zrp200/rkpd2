@@ -53,7 +53,7 @@ import com.zrp200.rkpd2.actors.buffs.Paralysis;
 import com.zrp200.rkpd2.actors.buffs.Regeneration;
 import com.zrp200.rkpd2.actors.buffs.SnipersMark;
 import com.zrp200.rkpd2.actors.buffs.Vertigo;
-import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath2;
+import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.Monk;
 import com.zrp200.rkpd2.actors.mobs.Snake;
@@ -1190,8 +1190,8 @@ public class Hero extends Char {
 		KindOfWeapon wep = belongings.weapon();
 
 		Talent.SpiritBladesTracker tracker = buff(Talent.SpiritBladesTracker.class);
-		float mult = tracker instanceof Wrath2.SpectralBladesTracker
-				? ((Wrath2.SpectralBladesTracker)tracker).effectiveness
+		float mult = tracker instanceof Wrath.SpectralBladesTracker
+				? ((Wrath.SpectralBladesTracker)tracker).effectiveness
 				: 1f;
 
 		// subclass logic here

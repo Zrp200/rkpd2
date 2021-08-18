@@ -71,7 +71,7 @@ public class TalentsPane extends ScrollPane {
 			}
 			if (tiersAvailable > 2 && Dungeon.hero.subClass == HeroSubClass.NONE){
 				tiersAvailable = 2;
-			} else if (tiersAvailable > 3 && Dungeon.hero.armorAbility == null || tiersAvailable > 3 && Dungeon.hero.armorAbility instanceof Wrath){
+			} else if (tiersAvailable > 3 && Dungeon.hero.armorAbility == null){
 				tiersAvailable = 3;
 			}
 		}

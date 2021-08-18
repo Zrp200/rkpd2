@@ -30,7 +30,7 @@ import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
-import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath2;
+import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.KindOfWeapon;
 import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
@@ -110,8 +110,8 @@ abstract public class Weapon extends KindOfWeapon {
 	public int proc( Char attacker, Char defender, int damage) {
 
 		Talent.SpiritBladesTracker tracker = attacker.buff(Talent.SpiritBladesTracker.class);
-		float mult = tracker instanceof Wrath2.SpectralBladesTracker
-				? ((Wrath2.SpectralBladesTracker)tracker).effectiveness
+		float mult = tracker instanceof Wrath.SpectralBladesTracker
+				? ((Wrath.SpectralBladesTracker)tracker).effectiveness
 				: 1f;
 		if (enchantment != null && attacker.buff(MagicImmune.class) == null
 				&& (mult == 1 || Random.Float() < mult)) {
