@@ -86,7 +86,7 @@ public enum HeroSubClass {
 	SNIPER(HeroIcon.SNIPER),
 	WARDEN(HeroIcon.WARDEN),
 
-	KING(HeroIcon.NONE); // fixme this needs icon
+	KING(HeroIcon.KING);
 
 
 	public final int icon;

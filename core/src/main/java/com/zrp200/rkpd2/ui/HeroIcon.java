@@ -23,7 +23,8 @@ public class HeroIcon extends Image {
 	public static final int ASSASSIN    = 4;
 	public static final int FREERUNNER  = 5;
 	public static final int SNIPER      = 6;
-	public static final int WARDEN      = 7;
+	public static final int WARDEN      = 7,
+							KING		= 22; // wrath will just use the same icon. fixme icon is super lazy.
 
 	//abilities
 	public static final int HEROIC_LEAP     = 8;
