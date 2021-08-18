@@ -156,7 +156,7 @@ public class SpectralBlades extends ArmorAbility {
 				if (callbacks.isEmpty()) onComplete.call();
 			}
 		};
-		MissileSprite m = ((MissileSprite)hero.sprite.parent.recycle( MissileSprite.class ));
+		MissileSprite m = hero.sprite.parent.recycle( MissileSprite.class );
 		m.reset( hero.sprite, ch.pos, PROTO, callback );
 		m.hardlight(0.6f, 1f, 1f);
 		m.alpha(0.8f);
@@ -167,20 +167,11 @@ public class SpectralBlades extends ArmorAbility {
 		for (int cell : path.path){
 			Char ch = Actor.findChar(cell);
 			if (ch != null){
-				if (ch == hero || existingTargets.contains(ch) || ch.alignment == Char.Alignment.ALLY){
-					continue;
-				} else if (ch.alignment != Char.Alignment.ALLY && !(ch instanceof NPC)){
-					return ch;
-				} else {
-					return ch;
-				}
+				if (ch == hero || existingTargets.contains(ch)
+						|| ch.alignment == Char.Alignment.ALLY || ch instanceof NPC) continue;
+				else return ch;
 			}
-			if (Dungeon.level.solid[cell]){
-				wallPenetration--;
-				if (wallPenetration < 0){
-					return null;
-				}
-			}
+			if (Dungeon.level.solid[cell] && --wallPenetration < 0) return null;
 		}
 		return null;
 	}

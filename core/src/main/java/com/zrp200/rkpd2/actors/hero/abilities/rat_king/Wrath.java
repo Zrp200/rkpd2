@@ -91,7 +91,7 @@ public class Wrath extends ArmorAbility {
     }
 
     private boolean doSmokeBomb() {
-        if( !SmokeBomb.isValidTarget(hero, target) ) return false;
+        if( !SmokeBomb.isValidTarget(hero, target, 8) ) return false;
 
         boolean isShadowStep = SmokeBomb.isShadowStep(hero);
         if(!isShadowStep) {

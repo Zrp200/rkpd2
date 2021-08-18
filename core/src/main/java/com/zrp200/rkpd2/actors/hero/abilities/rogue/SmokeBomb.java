@@ -75,8 +75,8 @@ public class SmokeBomb extends ArmorAbility {
 		return chargeUse;
 	}
 
-	public static boolean isValidTarget(Hero hero, int target) {
-		PathFinder.buildDistanceMap(hero.pos, BArray.not(Dungeon.level.solid,null), 6);
+	public static boolean isValidTarget(Hero hero, int target, int limit) {
+		PathFinder.buildDistanceMap(hero.pos, BArray.not(Dungeon.level.solid,null), limit);
 
 		if ( PathFinder.distance[target] == Integer.MAX_VALUE ||
 				!Dungeon.level.heroFOV[target] ||
@@ -122,7 +122,7 @@ public class SmokeBomb extends ArmorAbility {
 	@Override
 	protected void activate(ClassArmor armor, Hero hero, Integer target) {
 		if (target != null) {
-			if(!isValidTarget(hero, target)) return;
+			if(isValidTarget(hero, target, 6)) return;
 			armor.useCharge();
 
 			if (!isShadowStep(hero)) {

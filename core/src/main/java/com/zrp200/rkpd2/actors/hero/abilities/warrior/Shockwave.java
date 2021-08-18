@@ -76,7 +76,7 @@ public class Shockwave extends ArmorAbility {
 
 		//cast to cells at the tip, rather than all cells, better performance.
 		for (Ballistica ray : cone.outerRays){
-			((MagicMissile)hero.sprite.parent.recycle( MagicMissile.class )).reset(
+			hero.sprite.parent.recycle( MagicMissile.class ).reset(
 					MagicMissile.FORCE_CONE,
 					hero.sprite,
 					ray.path.get(ray.dist),
@@ -93,55 +93,54 @@ public class Shockwave extends ArmorAbility {
 				MagicMissile.FORCE_CONE,
 				hero.sprite,
 				cone.coreRay.path.get(dist * 2 / 3),
-				new Callback() {
-					@Override
-					public void call() {
+				() -> {
+					for (int cell : cone.cells){
 
-						for (int cell : cone.cells){
-
-							Char ch = Actor.findChar(cell);
-							if (ch != null && ch.alignment != hero.alignment){
-								int scalingStr = hero.STR()-10;
-								int damage = Random.NormalIntRange(5 + scalingStr, 10 + 2*scalingStr);
-								float modifier = (1f + 0.2f*hero.shiftedPoints(SHOCK_FORCE,AFTERSHOCK));
-								if(hero.armorAbility instanceof Wrath) {
-									// damage is reduced by 20%
-									modifier *= .8f;
-								}
-								damage = Math.round(damage * modifier);
-								damage -= ch.drRoll();
-
-								if (hero.pointsInTalent(Talent.STRIKING_WAVE) == 4){
-									Buff.affect(hero, Talent.StrikingWaveTracker.class, 0f);
-								}
-
-								if (Random.Int(10) < 3*hero.pointsInTalent(STRIKING_WAVE, AFTERSHOCK)){
-									damage = hero.attackProc(ch, damage);
-									ch.damage(damage, hero);
-									switch (hero.subClass) {
-										case KING: case GLADIATOR:
-											Buff.affect( hero, Combo.class ).hit( ch );
-									}
-								} else {
-									ch.damage(damage, hero);
-								}
-								if (ch.isAlive()){
-									if (Random.Int(4) < hero.pointsInTalent(SHOCK_FORCE,AFTERSHOCK)){
-										Buff.affect(ch, Paralysis.class, 5f);
-									} else {
-										Buff.affect(ch, Cripple.class, 5f);
-									}
-								}
-
+						Char ch = Actor.findChar(cell);
+						if (ch != null && ch.alignment != hero.alignment){
+							int scalingStr = hero.STR()-10;
+							int damage = Random.NormalIntRange(5 + scalingStr, 10 + 2*scalingStr);
+							float modifier = (1f + 0.2f*hero.shiftedPoints(SHOCK_FORCE,AFTERSHOCK));
+							if(hero.armorAbility instanceof Wrath) {
+								// damage is reduced by 20%
+								modifier *= .8f;
 							}
+							damage = Math.round(damage * modifier);
+							damage -= ch.drRoll();
+
+							// note I'm not giving this to aftershock.
+							if (hero.pointsInTalent(Talent.STRIKING_WAVE) == 4){
+								Buff.affect(hero, Talent.StrikingWaveTracker.class, 0f);
+							}
+
+							if (Random.Int(10) < hero.byTalent(
+									STRIKING_WAVE, 3,
+									AFTERSHOCK, 2)){
+								damage = hero.attackProc(ch, damage);
+								ch.damage(damage, hero);
+								switch (hero.subClass) {
+									case KING: case GLADIATOR:
+										Buff.affect( hero, Combo.class ).hit( ch );
+								}
+							} else {
+								ch.damage(damage, hero);
+							}
+							if (ch.isAlive()){
+								if (Random.Int(hero.hasTalent(SHOCK_FORCE) ? 4 : 5) < hero.pointsInTalent(SHOCK_FORCE,AFTERSHOCK)){
+									Buff.affect(ch, Paralysis.class, 5f);
+								} else {
+									Buff.affect(ch, Cripple.class, 5f);
+								}
+							}
+
 						}
-
-						if(endTurn) {
-							Invisibility.dispel();
-							hero.spendAndNext(Actor.TICK);
-						} else next.call();
-
 					}
+
+					if(endTurn) {
+						Invisibility.dispel();
+						hero.spendAndNext(Actor.TICK);
+					} else next.call();
+
 				});
 	}
 	protected void activate(ClassArmor armor, Hero hero, Integer target) {
