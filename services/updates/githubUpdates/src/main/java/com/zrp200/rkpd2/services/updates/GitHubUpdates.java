@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 
 import javax.net.ssl.SSLProtocolException;
 
-public class GitHubUpdates extends UpdateService {
+public class GitHubUpdates implements UpdateService {
 
 	private static Pattern descPattern = Pattern.compile("(.*?)(\r\n|\n|\r)(\r\n|\n|\r)---", Pattern.DOTALL + Pattern.MULTILINE);
 	private static Pattern versionCodePattern = Pattern.compile("internal version number: ([0-9]*)", Pattern.CASE_INSENSITIVE);

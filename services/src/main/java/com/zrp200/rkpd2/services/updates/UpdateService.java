@@ -23,37 +23,37 @@ package com.zrp200.rkpd2.services.updates;
 
 //TODO with install and review functionality, this service is less and less just about updates
 // perhaps rename to PlatformService, StoreService, DistributionService, etc?
-public abstract class UpdateService {
+public interface UpdateService {
 
-	public interface UpdateResultCallback {
+	interface UpdateResultCallback {
 		void onUpdateAvailable( AvailableUpdateData update );
 		void onNoUpdateFound();
 		void onConnectionFailed();
 	}
 
 	//whether the app is updateable via an ingame prompt (e.g. not a demo or an android instant app)
-	public abstract boolean isUpdateable();
+	boolean isUpdateable();
 
 	//whether the service supports an opt-in channel for betas
-	public abstract boolean supportsBetaChannel();
+	boolean supportsBetaChannel();
 
-	public abstract void checkForUpdate( boolean useMetered, boolean includeBetas, UpdateResultCallback callback );
+	void checkForUpdate( boolean useMetered, boolean includeBetas, UpdateResultCallback callback );
 
-	public abstract void initializeUpdate( AvailableUpdateData update );
+	void initializeUpdate( AvailableUpdateData update );
 
 	//whether the app installable via an ingame prompt (e.g. a demo, or an android instant app)
-	public abstract boolean isInstallable();
+	boolean isInstallable();
 
-	public abstract void initializeInstall();
+	void initializeInstall();
 
-	public interface ReviewResultCallback {
+	interface ReviewResultCallback {
 		void onComplete();
 	}
 
-	public abstract boolean supportsReviews();
+	boolean supportsReviews();
 
-	public abstract void initializeReview( ReviewResultCallback callback );
+	void initializeReview(ReviewResultCallback callback);
 
-	public abstract void openReviewURI();
+	void openReviewURI();
 
 }

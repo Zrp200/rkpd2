@@ -25,7 +25,7 @@ package com.zrp200.rkpd2.services.updates;
 import com.watabou.noosa.Game;
 import com.watabou.utils.DeviceCompat;
 
-public class DebugUpdates extends UpdateService {
+public class DebugUpdates implements UpdateService {
 
 	private static AvailableUpdateData debugUpdateInfo;
 
