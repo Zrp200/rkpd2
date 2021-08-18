@@ -57,13 +57,14 @@ public class SmokeBomb extends ArmorAbility {
 		return Messages.get(this, "prompt");
 	}
 
+	public static final double SHADOW_STEP_REDUCTION = 0.795;
 	@Override
 	public float chargeUse(Hero hero) {
 		if (!hero.hasTalent(Talent.SHADOW_STEP) || hero.invisible <= 0){
 			return super.chargeUse(hero);
 		} else {
 			//reduced charge use by 20%/36%/50%/60%
-			return (float)(super.chargeUse(hero) * Math.pow(0.795, hero.pointsInTalent(Talent.SHADOW_STEP)));
+			return (float)(super.chargeUse(hero) * Math.pow(SHADOW_STEP_REDUCTION, hero.pointsInTalent(Talent.SHADOW_STEP)));
 		}
 	}
 
@@ -122,11 +123,7 @@ public class SmokeBomb extends ArmorAbility {
 					GameScene.add(n);
 				}
 
-				if (hero.hasTalent(Talent.HASTY_RETREAT)){
-					int duration = hero.pointsInTalent(Talent.HASTY_RETREAT);
-					Buff.affect(hero, Haste.class, duration);
-					Buff.affect(hero, Invisibility.class, duration);
-				}
+				applyHastyRetreat(hero);
 			}
 
 			throwSmokeBomb(hero, target);
@@ -136,6 +133,13 @@ public class SmokeBomb extends ArmorAbility {
 				hero.next();
 			}
 		}
+	}
+
+	public static void applyHastyRetreat(Hero hero) {
+		int duration = hero.shiftedPoints(Talent.HASTY_RETREAT, Talent.SMOKE_AND_MIRRORS);
+		if(duration == 0) return;
+		Buff.affect(hero, Haste.class, duration);
+		Buff.affect(hero, Invisibility.class, duration);
 	}
 
 	@Override

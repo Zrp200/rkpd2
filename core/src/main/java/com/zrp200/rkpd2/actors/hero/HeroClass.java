@@ -269,7 +269,7 @@ public enum HeroClass {
 			case HUNTRESS:
 				return new ArmorAbility[]{new SpectralBlades(), new NaturesPower(), new SpiritHawk()};
 			case RAT_KING:
-				return new ArmorAbility[]{new Wrath(), new Ratmogrify()/*, new OmniAbility()*/};
+				return new ArmorAbility[]{new Wrath(), new Ratmogrify(),/*, new OmniAbility()*/};
 		}
 	}
 

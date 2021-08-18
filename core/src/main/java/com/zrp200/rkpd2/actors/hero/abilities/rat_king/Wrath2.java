@@ -21,12 +21,17 @@ import com.zrp200.rkpd2.sprites.CharSprite;
 
 import java.util.HashSet;
 
+import static com.zrp200.rkpd2.actors.hero.Talent.AFTERSHOCK;
+import static com.zrp200.rkpd2.actors.hero.Talent.SEA_OF_BLADES;
+import static com.zrp200.rkpd2.actors.hero.Talent.SMOKE_AND_MIRRORS;
+// elemental blast talent lines up perfectly so there's no need to have specific logic for it.
+
 // here we fucking go. this is a legacy ability to correspond with the previous mechanics.
 
 public class Wrath2 extends ArmorAbility {
 
     {
-        baseChargeUse = 35;
+        baseChargeUse = 50;
     }
 
     @Override
@@ -36,7 +41,7 @@ public class Wrath2 extends ArmorAbility {
 
     @Override
     public Talent[] talents() {
-        return new Talent[]{Talent.AFTERSHOCK,Talent.RAT_BLAST,Talent.SMOKE_AND_MIRRORS,Talent.SEA_OF_BLADES};
+        return new Talent[]{AFTERSHOCK, Talent.RAT_BLAST,SMOKE_AND_MIRRORS,SEA_OF_BLADES};
     }
 
     private static final float JUMP_DELAY=1f;
@@ -45,6 +50,15 @@ public class Wrath2 extends ArmorAbility {
     private Hero hero;
     private int target;
     private boolean[] stages;
+
+    @Override
+    public float chargeUse(Hero hero) {
+        if (hero.hasTalent(SMOKE_AND_MIRRORS) && hero.invisible > 0){
+            // shadow step: reduced charge use by 24%/42%/56%/67%
+            return (float)(super.chargeUse(hero) * Math.pow(SmokeBomb.SHADOW_STEP_REDUCTION, hero.pointsInTalent(SMOKE_AND_MIRRORS)));
+        }
+        return super.chargeUse(hero);
+    }
 
     @Override
     protected void activate(ClassArmor armor, Hero hero, Integer target) {
@@ -59,6 +73,9 @@ public class Wrath2 extends ArmorAbility {
         if(target == hero.pos) stages[0] = false;
         else if(!doSmokeBomb()) return;
         else stages[0] = true;
+
+        Invisibility.dispel();
+
         // smoke bomb should happen 'instantly'
 
         // *technically* it should actually go nowhere, at +4 its range is 1.5 lol. but for the sake of sanity I'm making it 1/2/3/4/5
@@ -72,20 +89,28 @@ public class Wrath2 extends ArmorAbility {
     private boolean doSmokeBomb() {
         if( !SmokeBomb.isValidTarget(hero, target) ) return false;
 
-        SmokeBomb.blindAdjacentMobs(hero);
+        boolean shadowStepping = hero.invisible > 0 && hero.hasTalent(SMOKE_AND_MIRRORS);
+        if(!shadowStepping) SmokeBomb.blindAdjacentMobs(hero);
         SmokeBomb.throwSmokeBomb(hero, target);
+
+        if(shadowStepping) {
+            // shadow step: end the whole thing right here.
+            armor.charge -= chargeUse(hero);
+            hero.next();
+            return false;
+        }
+
         return true;
     }
     private void doShockwave(Callback next) {
         // TODO find a way to do "half" distance intervals, like rogue searching.
         stages[2] = true; // todo do I want to tie this to the jump?
         Shockwave.activate(hero, hero.pos,
-                360, 1 + hero.pointsInTalent(Talent.AFTERSHOCK),
+                360, 1 + hero.pointsInTalent(AFTERSHOCK),
                 next);
     }
     private void doBlast(Callback next) {
         stages[1] = ElementalBlast.activate(hero, next);
-        hero.sprite.remove(CharSprite.State.INVISIBLE);
         hero.sprite.operate(hero.pos,()->{});
     }
     private void doSpectralBlades() { // fixme this code....aaaaaaaaaaaaaaaaaaaaaaa
@@ -95,14 +120,14 @@ public class Wrath2 extends ArmorAbility {
         ConeAOE cone = new ConeAOE(b, 360);
         for (Ballistica ray : cone.rays) {
             Char toAdd = SpectralBlades.findChar(ray, hero,
-                    2 * hero.pointsInTalent(Talent.SEA_OF_BLADES), targets);
+                    2 * hero.pointsInTalent(SEA_OF_BLADES), targets);
             if (toAdd != null && toAdd.isAlive() && hero.fieldOfView[toAdd.pos]) {
                 targets.add(toAdd);
             }
         }
         // 1x/1.5x/2x/2.5x/3x total effectiveness
         final float mult = Math.min(1,
-                (1 + .5f * hero.pointsInTalent(Talent.SEA_OF_BLADES)) / targets.size());
+                (1 + .5f * hero.pointsInTalent(SEA_OF_BLADES)) / targets.size());
 
         final HashSet<Callback> callbacks = new HashSet<>();
 
@@ -119,8 +144,8 @@ public class Wrath2 extends ArmorAbility {
             Callback onComplete = this::finish;
             for (Char ch : targets) SpectralBlades.shoot(
                     hero, ch,
-                    mult, 1 + 1/4f * hero.pointsInTalent(Talent.SEA_OF_BLADES),
-                    Talent.SEA_OF_BLADES, SpectralBladesTracker.class,
+                    mult, 1 + 1/4f * hero.pointsInTalent(SEA_OF_BLADES),
+                    SEA_OF_BLADES, SpectralBladesTracker.class,
                     callbacks, onComplete);
             hero.busy();
         });
@@ -131,20 +156,17 @@ public class Wrath2 extends ArmorAbility {
 
     private void finish() {
         // because I overrode the default behavior I need to do this.
-        hero.sprite.doAfterAnim(() -> {
-            Invisibility.dispel();
-            hero.sprite.idle();
-        });
+        hero.sprite.doAfterAnim(hero.sprite::idle);
 
         int delay = 0;
         if(stages[1]) delay++;
         if(stages[2]) delay++;
         if(stages[3]) delay += hero.attackDelay();
-        if(stages[0]) Actor.addDelayed(new Actor() {
+        if(stages[0] && hero.hasTalent(SMOKE_AND_MIRRORS)) Actor.addDelayed(new Actor() {
             { actPriority = HERO_PRIO; } // this is basically the hero acting.
             @Override
             protected boolean act() {
-                Buff.prolong(hero, Invisibility.class, Invisibility.DURATION/2f);
+                SmokeBomb.applyHastyRetreat(hero);
                 remove(this);
                 return true;
             }
