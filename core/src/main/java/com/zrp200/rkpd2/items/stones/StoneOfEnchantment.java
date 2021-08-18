@@ -21,23 +21,29 @@
 
 package com.zrp200.rkpd2.items.stones;
 
+import com.zrp200.rkpd2.actors.hero.Belongings;
 import com.zrp200.rkpd2.effects.Enchanting;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.Armor;
+import com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfEnchantment;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
-import com.zrp200.rkpd2.windows.WndBag;
 
 public class StoneOfEnchantment extends InventoryStone {
 	
 	{
-		mode = WndBag.Mode.ENCHANTABLE;
+		preferredBag = Belongings.Backpack.class;
 		image = ItemSpriteSheet.STONE_ENCHANT;
 
 		unique = true;
+	}
+
+	@Override
+	protected boolean usableOnItem(Item item) {
+		return ScrollOfEnchantment.enchantable(item);
 	}
 	
 	@Override

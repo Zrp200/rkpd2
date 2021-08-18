@@ -28,10 +28,12 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Hunger;
+import com.zrp200.rkpd2.actors.hero.Belongings;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.SpellSprite;
 import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.food.Blandfruit;
 import com.zrp200.rkpd2.items.food.Food;
 import com.zrp200.rkpd2.items.rings.RingOfEnergy;
@@ -64,8 +66,6 @@ public class HornOfPlenty extends Artifact {
 
 	public static final String AC_EAT = "EAT";
 	public static final String AC_STORE = "STORE";
-
-	protected WndBag.Mode mode = WndBag.Mode.FOOD;
 
 	@Override
 	public ArrayList<String> actions( Hero hero ) {
@@ -125,7 +125,7 @@ public class HornOfPlenty extends Artifact {
 
 		} else if (action.equals(AC_STORE)){
 
-			GameScene.selectItem(itemSelector, mode, Messages.get(this, "prompt"));
+			GameScene.selectItem(itemSelector);
 
 		}
 	}
@@ -264,7 +264,23 @@ public class HornOfPlenty extends Artifact {
 
 	}
 
-	protected static WndBag.Listener itemSelector = new WndBag.Listener() {
+	protected static WndBag.ItemSelector itemSelector = new WndBag.ItemSelector() {
+
+		@Override
+		public String textPrompt() {
+			return Messages.get(HornOfPlenty.class, "prompt");
+		}
+
+		@Override
+		public Class<?extends Bag> preferredBag(){
+			return Belongings.Backpack.class;
+		}
+
+		@Override
+		public boolean itemSelectable(Item item) {
+			return item instanceof Food;
+		}
+
 		@Override
 		public void onSelect( Item item ) {
 			if (item != null && item instanceof Food) {

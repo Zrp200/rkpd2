@@ -46,8 +46,8 @@ public class MirrorImage extends AbstractMirrorImage {
 	@Override
 	public int damageRoll() {
 		int damage;
-		if (hero.belongings.weapon != null){
-			damage = hero.belongings.weapon.damageRoll(this);
+		if (hero.belongings.weapon() != null){
+			damage = hero.belongings.weapon().damageRoll(this);
 		} else {
 			damage = hero.damageRoll(); //handles ring of force
 		}
@@ -61,13 +61,13 @@ public class MirrorImage extends AbstractMirrorImage {
 	
 	@Override
 	public boolean canAttack(Char enemy) {
-		return super.canAttack(enemy) || (hero.belongings.weapon != null && hero.belongings.weapon.canReach(this, enemy.pos));
+		return super.canAttack(enemy) || (hero.belongings.weapon() != null && hero.belongings.weapon().canReach(this, enemy.pos));
 	}
 	
 	@Override
 	public int drRoll() {
-		if (hero != null && hero.belongings.weapon != null){
-			return Random.NormalIntRange(0, hero.belongings.weapon.defenseFactor(this)/2);
+		if (hero != null && hero.belongings.weapon() != null){
+			return Random.NormalIntRange(0, hero.belongings.weapon().defenseFactor(this)/2);
 		} else {
 			return 0;
 		}
@@ -80,8 +80,8 @@ public class MirrorImage extends AbstractMirrorImage {
 			buff.detach();
 		}
 		damage = super.attackProc(enemy, damage);
-		if (hero.belongings.weapon != null){
-			damage = hero.belongings.weapon.proc( this, enemy, damage );
+		if (hero.belongings.weapon() != null){
+			damage = hero.belongings.weapon().proc( this, enemy, damage );
 			if (!enemy.isAlive() && enemy == Dungeon.hero){
 				Dungeon.fail(getClass());
 				GLog.n( Messages.capitalize(Messages.get(Char.class, "kill", name())) );

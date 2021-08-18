@@ -38,6 +38,7 @@ import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.mechanics.ConeAOE;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.MissileSprite;
+import com.zrp200.rkpd2.ui.HeroIcon;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.utils.Callback;
 
@@ -145,12 +146,12 @@ public class SpectralBlades extends ArmorAbility {
 		for (int cell : path.path){
 			Char ch = Actor.findChar(cell);
 			if (ch != null){
-				if (ch == hero || existingTargets.contains(ch)){
+				if (ch == hero || existingTargets.contains(ch) || ch.alignment == Char.Alignment.ALLY){
 					continue;
 				} else if (ch.alignment != Char.Alignment.ALLY && !(ch instanceof NPC)){
 					return ch;
 				} else {
-					return null;
+					return ch;
 				}
 			}
 			if (Dungeon.level.solid[cell]){
@@ -161,6 +162,11 @@ public class SpectralBlades extends ArmorAbility {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public int icon() {
+		return HeroIcon.SPECTRAL_BLADES;
 	}
 
 	@Override

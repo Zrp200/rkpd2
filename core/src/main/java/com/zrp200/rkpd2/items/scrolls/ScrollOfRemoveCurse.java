@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.items.scrolls;
 
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.buffs.Degrade;
+import com.zrp200.rkpd2.actors.hero.Belongings;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.effects.Flare;
 import com.zrp200.rkpd2.effects.particles.ShadowParticle;
@@ -34,15 +35,33 @@ import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
-import com.zrp200.rkpd2.windows.WndBag;
 
 public class ScrollOfRemoveCurse extends InventoryScroll {
 
 	{
 		icon = ItemSpriteSheet.Icons.SCROLL_REMCURSE;
-		mode = WndBag.Mode.UNCURSABLE;
+		preferredBag = Belongings.Backpack.class;
 	}
-	
+
+	@Override
+	protected boolean usableOnItem(Item item) {
+		return uncursable(item);
+	}
+
+	public static boolean uncursable( Item item ){
+		if (item.isEquipped(Dungeon.hero) && Dungeon.hero.buff(Degrade.class) != null) {
+			return true;
+		} if ((item instanceof EquipableItem || item instanceof Wand) && ((!item.isIdentified() && !item.cursedKnown) || item.cursed)){
+			return true;
+		} else if (item instanceof Weapon){
+			return ((Weapon)item).hasCurseEnchant();
+		} else if (item instanceof Armor){
+			return ((Armor)item).hasCurseGlyph();
+		} else {
+			return false;
+		}
+	}
+
 	@Override
 	protected void onItemSelected(Item item) {
 		new Flare( 6, 32 ).show( curUser.sprite, 2f ) ;
@@ -95,20 +114,6 @@ public class ScrollOfRemoveCurse extends InventoryScroll {
 		}
 		
 		return procced;
-	}
-	
-	public static boolean uncursable( Item item ){
-		if (item.isEquipped(Dungeon.hero) && Dungeon.hero.buff(Degrade.class) != null) {
-			return true;
-		} if ((item instanceof EquipableItem || item instanceof Wand) && ((!item.isIdentified() && !item.cursedKnown) || item.cursed)){
-			return true;
-		} else if (item instanceof Weapon){
-			return ((Weapon)item).hasCurseEnchant();
-		} else if (item instanceof Armor){
-			return ((Armor)item).hasCurseGlyph();
-		} else {
-			return false;
-		}
 	}
 	
 	@Override

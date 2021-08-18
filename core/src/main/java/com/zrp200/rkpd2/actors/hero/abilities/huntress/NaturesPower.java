@@ -33,6 +33,7 @@ import com.zrp200.rkpd2.effects.particles.LeafParticle;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
+import com.zrp200.rkpd2.ui.HeroIcon;
 import com.watabou.noosa.audio.Sample;
 
 public class NaturesPower extends ArmorAbility {
@@ -55,6 +56,11 @@ public class NaturesPower extends ArmorAbility {
 		Invisibility.dispel();
 		hero.spendAndNext(Actor.TICK);
 
+	}
+
+	@Override
+	public int icon() {
+		return HeroIcon.NATURES_POWER;
 	}
 
 	@Override

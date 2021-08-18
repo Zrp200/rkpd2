@@ -37,6 +37,7 @@ import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
+import com.zrp200.rkpd2.ui.HeroIcon;
 import com.zrp200.rkpd2.utils.BArray;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.audio.Sample;
@@ -64,9 +65,8 @@ public class DeathMark extends ArmorAbility {
 	public float chargeUse( Hero hero ) {
 		float chargeUse = super.chargeUse(hero);
 		if (hero.buff(DoubleMarkTracker.class) != null){
-			// FIXME should this really be level shifted? Leaving this in right now because I don't know what else to do with it, but it's pretty confusing.
-			//reduced charge use by 33%/55%/70%/80/86%
-			chargeUse *= Math.pow(0.67, hero.shiftedPoints(Talent.DOUBLE_MARK));
+			//reduced charge use by 30%/50%/65%/75%
+			chargeUse *= Math.pow(0.707, hero.pointsInTalent(Talent.DOUBLE_MARK));
 		}
 		return chargeUse;
 	}
@@ -136,6 +136,11 @@ public class DeathMark extends ArmorAbility {
 	}
 
 	public static class DoubleMarkTracker extends FlavourBuff{};
+
+	@Override
+	public int icon() {
+		return HeroIcon.DEATH_MARK;
+	}
 
 	@Override
 	public Talent[] talents() {

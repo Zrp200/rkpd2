@@ -35,6 +35,7 @@ import com.zrp200.rkpd2.actors.buffs.CounterBuff;
 import com.zrp200.rkpd2.actors.buffs.EnhancedRings;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.buffs.Haste;
+import com.zrp200.rkpd2.actors.buffs.LostInventory;
 import com.zrp200.rkpd2.actors.buffs.Recharging;
 import com.zrp200.rkpd2.actors.buffs.RevealedArea;
 import com.zrp200.rkpd2.actors.buffs.Roots;
@@ -227,10 +228,12 @@ public enum Talent {
 			Buff.affect(hero, LethalMomentumTracker.class, 1f);
 		}
 	};
+	public static class StrikingWaveTracker extends FlavourBuff{};
 	public static class WandPreservationCounter extends CounterBuff{};
 	public static class EmpoweredStrikeTracker extends FlavourBuff{};
 	public static class BountyHunterTracker extends FlavourBuff{};
 	public static class RejuvenatingStepsCooldown extends Cooldown{
+		{ revivePersists = true; }
 		@Override public float duration() {
 			int points = Dungeon.hero.pointsInTalent(REJUVENATING_STEPS, POWER_WITHIN);
 			if(Dungeon.hero.pointsInTalent(Talent.REJUVENATING_STEPS) > 0) points++;
@@ -320,7 +323,9 @@ public enum Talent {
 				if (hero.pointsInTalent(LIGHT_CLOAK, RK_FREERUNNER) == 1) {
 					for (Item item : Dungeon.hero.belongings.backpack) {
 						if (item instanceof CloakOfShadows) {
-							((CloakOfShadows) item).activate(Dungeon.hero);
+							if (hero.buff(LostInventory.class) == null || item.keptThoughLostInvent) {
+								((CloakOfShadows) item).activate(Dungeon.hero);
+							}
 						}
 					}
 				}
@@ -340,8 +345,8 @@ public enum Talent {
 
 	}
 
-	public static class CachedRationsDropped extends CounterBuff{};
-	public static class NatureBerriesAvailable extends CounterBuff{};
+	public static class CachedRationsDropped extends CounterBuff{{revivePersists = true;}};
+	public static class NatureBerriesAvailable extends CounterBuff{{revivePersists = true;}};
 
 	public static void onFoodEaten( Hero hero, float foodVal, Item foodSource ){
 		if (hero.hasTalent(HEARTY_MEAL,ROYAL_PRIVILEGE)){
@@ -616,7 +621,7 @@ public enum Talent {
 		}
 
 		if (hero.hasTalent(Talent.FOLLOWUP_STRIKE,KINGS_WISDOM)) {
-			if (hero.belongings.weapon instanceof MissileWeapon) {
+			if (hero.belongings.weapon() instanceof MissileWeapon) {
 				Buff.affect(enemy, FollowupStrikeTracker.class);
 			} else if (enemy.buff(FollowupStrikeTracker.class) != null){
 				int bonus = 1 + hero.pointsInTalent(FOLLOWUP_STRIKE,KINGS_WISDOM); // 2/3

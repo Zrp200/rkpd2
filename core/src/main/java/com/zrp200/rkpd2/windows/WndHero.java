@@ -21,17 +21,9 @@
 
 package com.zrp200.rkpd2.windows;
 
-import com.zrp200.rkpd2.ShatteredPixelDungeon;
-import com.zrp200.rkpd2.ui.IconButton;
-import com.zrp200.rkpd2.ui.Icons;
-import com.watabou.gltextures.SmartTexture;
-import com.watabou.gltextures.TextureCache;
-import com.watabou.noosa.Group;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.TextureFilm;
-import com.watabou.noosa.ui.Component;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.ShatteredPixelDungeon;
 import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.hero.Hero;
@@ -39,12 +31,21 @@ import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.sprites.HeroSprite;
+import com.zrp200.rkpd2.ui.BuffIcon;
 import com.zrp200.rkpd2.ui.BuffIndicator;
+import com.zrp200.rkpd2.ui.IconButton;
+import com.zrp200.rkpd2.ui.Icons;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
 import com.zrp200.rkpd2.ui.ScrollPane;
 import com.zrp200.rkpd2.ui.StatusPane;
 import com.zrp200.rkpd2.ui.TalentsPane;
 import com.zrp200.rkpd2.ui.Window;
+import com.watabou.gltextures.SmartTexture;
+import com.watabou.gltextures.TextureCache;
+import com.watabou.noosa.Group;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.TextureFilm;
+import com.watabou.noosa.ui.Component;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -142,9 +143,11 @@ public class WndHero extends WndTabbed {
 
 			pos = title.bottom() + 2*GAP;
 
-			statSlot( Messages.get(this, "str"), hero.STR() );
-			if (hero.shielding() > 0) statSlot( Messages.get(this, "health"), hero.HP + "+" + hero.shielding() + "/" + hero.HT );
-			else statSlot( Messages.get(this, "health"), (hero.HP) + "/" + hero.HT );
+			int strBonus = hero.STR() - hero.STR;
+			if (strBonus > 0)   statSlot( Messages.get(this, "str"), hero.STR + "+" + strBonus );
+			else                statSlot( Messages.get(this, "str"), hero.STR() );
+			if (hero.shielding() > 0)   statSlot( Messages.get(this, "health"), hero.HP + "+" + hero.shielding() + "/" + hero.HT );
+			else                        statSlot( Messages.get(this, "health"), (hero.HP) + "/" + hero.HT );
 			statSlot( Messages.get(this, "exp"), hero.exp + "/" + hero.maxExp() );
 
 			pos += GAP;
@@ -200,9 +203,6 @@ public class WndHero extends WndTabbed {
 	private class BuffsTab extends Component {
 		
 		private static final int GAP = 2;
-
-		private SmartTexture icons;
-		private TextureFilm film;
 		
 		private float pos;
 		private ScrollPane buffList;
@@ -210,8 +210,6 @@ public class WndHero extends WndTabbed {
 
 		@Override
 		protected void createChildren() {
-			icons = TextureCache.get( Assets.Interfaces.BUFFS_LARGE );
-			film = new TextureFilm( icons, 16, 16 );
 
 			super.createChildren();
 
@@ -260,11 +258,8 @@ public class WndHero extends WndTabbed {
 			public BuffSlot( Buff buff ){
 				super();
 				this.buff = buff;
-				int index = buff.icon();
 
-				icon = new Image( icons );
-				icon.frame( film.get( index ) );
-				buff.tintIcon(icon);
+				icon = new BuffIcon(buff, true);
 				icon.y = this.y;
 				add( icon );
 

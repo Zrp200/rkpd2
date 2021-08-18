@@ -43,6 +43,7 @@ public class GrimTrap extends Trap {
 		shape = LARGE_DOT;
 		
 		canBeHidden = false;
+		avoidsHallways = true;
 	}
 
 	@Override

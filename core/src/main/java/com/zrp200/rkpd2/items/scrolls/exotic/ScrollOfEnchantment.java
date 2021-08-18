@@ -21,17 +21,18 @@
 
 package com.zrp200.rkpd2.items.scrolls.exotic;
 
-import com.watabou.noosa.audio.Sample;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.hero.Belongings;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.Enchanting;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.Armor;
-import com.zrp200.rkpd2.items.scrolls.Scroll;
+import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.stones.StoneOfEnchantment;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.Weapon;
+import com.zrp200.rkpd2.items.weapon.melee.MeleeWeapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSprite;
@@ -39,6 +40,7 @@ import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
 import com.zrp200.rkpd2.windows.WndBag;
 import com.zrp200.rkpd2.windows.WndOptions;
+import com.watabou.noosa.audio.Sample;
 
 public class ScrollOfEnchantment extends ExoticScroll {
 	
@@ -52,7 +54,11 @@ public class ScrollOfEnchantment extends ExoticScroll {
 	public void doRead() {
 		identify();
 		
-		GameScene.selectItem( itemSelector, WndBag.Mode.ENCHANTABLE, Messages.get(this, "inv_title"));
+		GameScene.selectItem( itemSelector );
+	}
+
+	public static boolean enchantable( Item item ){
+		return (item instanceof MeleeWeapon || item instanceof SpiritBow || item instanceof Armor);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -69,8 +75,8 @@ public class ScrollOfEnchantment extends ExoticScroll {
 				? SpiritBow.randomEnchantment(toIgnore)
 				: Weapon.Enchantment.random(toIgnore);
 
-				GameScene.show(new WndOptions(new ItemSprite(ScrollOfEnchantment.this),
-						Messages.titleCase(ScrollOfEnchantment.this.name()),
+		GameScene.show(new WndOptions(new ItemSprite(ScrollOfEnchantment.this),
+				Messages.titleCase(ScrollOfEnchantment.this.name()),
 				Messages.get(ScrollOfEnchantment.class, "weapon") +
 						"\n\n" +
 						Messages.get(ScrollOfEnchantment.class, "cancel_warn"),
@@ -84,7 +90,7 @@ public class ScrollOfEnchantment extends ExoticScroll {
 				if (index < 3) {
 					weapon.enchant(enchants[index]);
 					GLog.p(Messages.get(StoneOfEnchantment.class, "weapon"));
-					((Scroll)curItem).readAnimation();
+					((ScrollOfEnchantment)curItem).readAnimation();
 
 					Sample.INSTANCE.play( Assets.Sounds.READ );
 					Enchanting.show(curUser, weapon);
@@ -98,8 +104,24 @@ public class ScrollOfEnchantment extends ExoticScroll {
 			}
 		});
 	}
-	
-	protected WndBag.Listener itemSelector = new WndBag.Listener() {
+
+	protected WndBag.ItemSelector itemSelector = new WndBag.ItemSelector() {
+
+		@Override
+		public String textPrompt() {
+			return Messages.get(ScrollOfEnchantment.class, "inv_title");
+		}
+
+		@Override
+		public Class<?extends Bag> preferredBag(){
+			return Belongings.Backpack.class;
+		}
+
+		@Override
+		public boolean itemSelectable(Item item) {
+			return enchantable(item);
+		}
+
 		@Override
 		public void onSelect(final Item item) {
 			

@@ -70,6 +70,7 @@ import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.ui.QuickSlotButton;
 import com.zrp200.rkpd2.utils.BArray;
 import com.zrp200.rkpd2.utils.DungeonSeed;
+import com.zrp200.rkpd2.windows.WndResurrect;
 import com.watabou.noosa.Game;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
@@ -377,7 +378,7 @@ public class Dungeon {
 		hero.viewDistance = light == null ? level.viewDistance : Math.max( Light.DISTANCE, level.viewDistance );
 		
 		hero.curAction = hero.lastAction = null;
-		
+
 		observe();
 		try {
 			saveAll();
@@ -527,7 +528,7 @@ public class Dungeon {
 	}
 	
 	public static void saveAll() throws IOException {
-		if (hero != null && hero.isAlive()) {
+		if (hero != null && (hero.isAlive() || WndResurrect.instance != null)) {
 			
 			Actor.fixTime();
 			saveGame( GamesInProgress.curSlot );
@@ -677,7 +678,7 @@ public class Dungeon {
 	}
 	
 	public static void fail( Class cause ) {
-		if (hero.belongings.getItem( Ankh.class ) == null) {
+		if (WndResurrect.instance == null) {
 			Rankings.INSTANCE.submit( false, cause );
 		}
 	}

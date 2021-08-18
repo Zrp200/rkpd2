@@ -28,7 +28,6 @@ import com.zrp200.rkpd2.items.MerchantsBeacon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
-import com.zrp200.rkpd2.windows.WndBag;
 
 import java.util.ArrayList;
 
@@ -36,9 +35,8 @@ public class MagicalPorter extends InventorySpell {
 	
 	{
 		image = ItemSpriteSheet.MAGIC_PORTER;
-		mode = WndBag.Mode.NOT_EQUIPPED;
 	}
-	
+
 	@Override
 	protected void onCast(Hero hero) {
 		if (Dungeon.depth >= 25){
@@ -47,7 +45,12 @@ public class MagicalPorter extends InventorySpell {
 			super.onCast(hero);
 		}
 	}
-	
+
+	@Override
+	protected boolean usableOnItem(Item item) {
+		return !item.isEquipped(Dungeon.hero);
+	}
+
 	@Override
 	protected void onItemSelected(Item item) {
 		

@@ -24,13 +24,12 @@ package com.zrp200.rkpd2.actors.buffs;
 import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.QuickSlot;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.Speck;
-import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.ActionIndicator;
+import com.zrp200.rkpd2.ui.BuffIcon;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
@@ -192,7 +191,7 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 
 	@Override
 	public Image getIcon() {
-		Image im = new Image(Assets.Interfaces.BUFFS_LARGE, 144, 32, 16, 16);
+		Image im = new BuffIcon(BuffIndicator.HASTE, true);
 		im.hardlight(0x99992E);
 		return im;
 	}

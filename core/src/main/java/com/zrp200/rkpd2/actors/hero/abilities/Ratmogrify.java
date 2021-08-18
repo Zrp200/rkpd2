@@ -19,6 +19,7 @@ import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.RatSprite;
+import com.zrp200.rkpd2.ui.HeroIcon;
 import com.zrp200.rkpd2.ui.TargetHealthIndicator;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.audio.Sample;
@@ -125,6 +126,11 @@ public class Ratmogrify extends ArmorAbility {
 	}
 
 	@Override
+	public int icon() {
+		return HeroIcon.RATMOGRIFY;
+	}
+
+	@Override
 	public Talent[] talents() {
 		return new Talent[]{ Talent.RATSISTANCE, Talent.RATLOMACY, Talent.RATFORCEMENTS, Talent.HEROIC_ENERGY};
 	}
@@ -133,8 +139,6 @@ public class Ratmogrify extends ArmorAbility {
 
 		{
 			spriteClass = RatSprite.class;
-
-			maxLvl = -2;
 		}
 
 		private Mob original;
@@ -149,6 +153,7 @@ public class Ratmogrify extends ArmorAbility {
 			defenseSkill = original.defenseSkill;
 
 			EXP = original.EXP;
+			maxLvl = original.maxLvl;
 
 			if (original.state == original.SLEEPING) {
 				state = SLEEPING;
@@ -160,9 +165,36 @@ public class Ratmogrify extends ArmorAbility {
 
 		}
 
+		private float timeLeft = 6f;
+
+		@Override
+		protected boolean act() {
+			if (timeLeft <= 0){
+				original.HP = HP;
+				original.pos = pos;
+				original.clearTime();
+				GameScene.add(original);
+
+				destroy();
+				sprite.killAndErase();
+				CellEmitter.get(original.pos).burst(Speck.factory(Speck.WOOL), 4);
+				Sample.INSTANCE.play(Assets.Sounds.PUFF);
+				return true;
+			} else {
+				return super.act();
+			}
+		}
+
+		@Override
+		protected void spend(float time) {
+			if (!allied) timeLeft -= time;
+			super.spend(time);
+		}
+
 		public void makeAlly() {
 			allied = true;
 			alignment = Alignment.ALLY;
+			timeLeft = Float.POSITIVE_INFINITY;
 		}
 
 		public int attackSkill(Char target) {
@@ -173,11 +205,13 @@ public class Ratmogrify extends ArmorAbility {
 			return original.drRoll();
 		}
 
+		private static final float RESIST_FACTOR=.85f; // .9 in shpd
+
 		@Override
 		public int damageRoll() {
 			int damage = original.damageRoll();
 			if (!allied && Dungeon.hero.hasTalent(Talent.RATSISTANCE)){
-				damage = Math.round(damage * (1f - .15f*Dungeon.hero.pointsInTalent(Talent.RATSISTANCE)));
+				damage *= Math.pow(RESIST_FACTOR, Dungeon.hero.pointsInTalent(Talent.RATSISTANCE));
 			}
 			return damage;
 		}
@@ -185,6 +219,11 @@ public class Ratmogrify extends ArmorAbility {
 		@Override
 		public float attackDelay() {
 			return original.attackDelay();
+		}
+
+		@Override
+		public void rollToDropLoot() {
+			original.rollToDropLoot();
 		}
 
 		@Override

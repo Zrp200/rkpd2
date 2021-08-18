@@ -35,6 +35,7 @@ import com.zrp200.rkpd2.scenes.ChangesScene;
 import com.zrp200.rkpd2.sprites.HeroSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.KingSprite;
+import com.zrp200.rkpd2.ui.HeroIcon;
 import com.zrp200.rkpd2.ui.Icons;
 
 import java.util.ArrayList;
@@ -106,7 +107,7 @@ public class RKPD2Changes {
                             "Fan of blades now affects 1/2-3/4/5-6/7 targets in a 30/45/90/135/180 degree AOE cone, from 1/2/3/4/5 targets in a 30/60/90/120/150 degree cone AOE.",
                             "Growing power no longer has a +0 effect, overall point effectiveness increased to compensate.",
                             "Nerfed Nature's Wrath to be 10%/20%/30%/40%, down from 13%/25%/38%/50%")),
-                    new ChangeButton(HeroSubClass.BERSERKER.icon(), "Berserker", "I don't think level-shifting talents is what berserker needs. I'll explore different avenues for changes here later, but in the meantime I've reverted most of the levelshifting here and lightly buffed the affected talents instead."
+                    new ChangeButton(avatar(WARRIOR, 6), "Berserker", "I don't think level-shifting talents is what berserker needs. I'll explore different avenues for changes here later, but in the meantime I've reverted most of the levelshifting here and lightly buffed the affected talents instead."
                             + "\n\n"+list(2,
                             "Endless rage now gives +20%/40%/60% maximum rage instead of +15/30/45/60 rage. This is still up from v0.0.1, because endless rage is such a crappy talent that's only somewhat salvaged by the fact I made it cause you to gain more rage at low HP.",
                             "Enraged Catalyst now gives +0/+20/40/60% enchant proc rate at full rage, instead of +17/+33/+50/+66",
@@ -211,7 +212,7 @@ public class RKPD2Changes {
                         "Enraged Catalyst buffed from 17%/33%/50% to 20%/40%/60%.",
                         "Berserking Stamina level-shifted.",
                         "Improvised projectiles is not nerfed.")),
-                new ChangeButton(HeroSubClass.BATTLEMAGE.icon(), "Battlemage", "Battlemage is currently a bit 'weaker' than warlock, and thus it's getting a power spike after subclassing."
+                new ChangeButton(avatar(MAGE, 6), "Battlemage", "Battlemage is currently a bit 'weaker' than warlock, and thus it's getting a power spike after subclassing."
                     +"\n\n_-_ Mystical Charge recharging now .5/1/1.5/2 instead of 0/.75/1.5/2.25 at +0/1/2/3 respectively."
                     +"\n\n_-_ Excess Charge proc chance is now 20/40/60/80 at +0/1/2/3, up from 0/25/50/75."),
                 misc(list(2,

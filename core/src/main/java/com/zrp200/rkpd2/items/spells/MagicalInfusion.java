@@ -26,7 +26,6 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.buffs.Degrade;
 import com.zrp200.rkpd2.actors.hero.Talent;
-import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfUpgrade;
@@ -34,17 +33,20 @@ import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
-import com.zrp200.rkpd2.windows.WndBag;
 
 public class MagicalInfusion extends InventorySpell {
 	
 	{
-		mode = WndBag.Mode.UPGRADEABLE;
 		image = ItemSpriteSheet.MAGIC_INFUSE;
 
 		unique = true;
 	}
-	
+
+	@Override
+	protected boolean usableOnItem(Item item) {
+		return item.isUpgradable();
+	}
+
 	@Override
 	protected void onItemSelected( Item item ) {
 
@@ -52,9 +54,9 @@ public class MagicalInfusion extends InventorySpell {
 
 		Degrade.detach( curUser, Degrade.class );
 
-		if (item instanceof Weapon && ((Weapon) item).enchantment != null && !((Weapon) item).hasCurseEnchant()) {
+		if (item instanceof Weapon && ((Weapon) item).enchantment != null) {
 			((Weapon) item).upgrade(true);
-		} else if (item instanceof Armor && ((Armor) item).glyph != null && !((Armor) item).hasCurseGlyph()) {
+		} else if (item instanceof Armor && ((Armor) item).glyph != null) {
 			((Armor) item).upgrade(true);
 		} else {
 			item.upgrade();

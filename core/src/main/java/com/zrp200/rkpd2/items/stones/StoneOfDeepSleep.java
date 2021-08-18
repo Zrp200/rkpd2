@@ -25,36 +25,36 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.Charm;
+import com.zrp200.rkpd2.actors.buffs.MagicalSleep;
+import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PathFinder;
 
-public class StoneOfAffection extends Runestone {
+public class StoneOfDeepSleep extends Runestone {
 	
 	{
-		image = ItemSpriteSheet.STONE_AFFECTION;
+		image = ItemSpriteSheet.STONE_SLEEP;
 	}
 	
 	@Override
 	protected void activate(int cell) {
-		
-		for (int i : PathFinder.NEIGHBOURS9){
-			
-			CellEmitter.center(cell + i).start( Speck.factory( Speck.HEART ), 0.2f, 5 );
-			
-			
-			Char ch = Actor.findChar( cell + i );
-			
-			if (ch != null && ch.alignment == Char.Alignment.ENEMY){
-				Buff.prolong(ch, Charm.class, Charm.DURATION).object = curUser.id();
+
+		if (Actor.findChar(cell) != null) {
+
+			Char c = Actor.findChar(cell);
+
+			if (c instanceof Mob){
+
+				Buff.affect(c, MagicalSleep.class);
+
 			}
+
 		}
 		
-		Sample.INSTANCE.play( Assets.Sounds.CHARMS );
+		Sample.INSTANCE.play( Assets.Sounds.LULLABY );
 		
 	}
-	
 }

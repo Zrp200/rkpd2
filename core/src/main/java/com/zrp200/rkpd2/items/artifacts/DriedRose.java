@@ -21,9 +21,51 @@
 
 package com.zrp200.rkpd2.items.artifacts;
 
+import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.ShatteredPixelDungeon;
+import com.zrp200.rkpd2.actors.Actor;
+import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.blobs.CorrosiveGas;
+import com.zrp200.rkpd2.actors.blobs.ToxicGas;
+import com.zrp200.rkpd2.actors.buffs.Burning;
+import com.zrp200.rkpd2.actors.buffs.Corruption;
+import com.zrp200.rkpd2.actors.buffs.LockedFloor;
+import com.zrp200.rkpd2.actors.hero.Belongings;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.actors.mobs.Wraith;
 import com.zrp200.rkpd2.actors.mobs.npcs.DirectableAlly;
+import com.zrp200.rkpd2.actors.mobs.npcs.Ghost;
+import com.zrp200.rkpd2.effects.CellEmitter;
+import com.zrp200.rkpd2.effects.Speck;
+import com.zrp200.rkpd2.effects.particles.ShaftParticle;
+import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.armor.Armor;
+import com.zrp200.rkpd2.items.armor.glyphs.AntiMagic;
+import com.zrp200.rkpd2.items.armor.glyphs.Brimstone;
+import com.zrp200.rkpd2.items.bags.Bag;
+import com.zrp200.rkpd2.items.rings.RingOfEnergy;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfRetribution;
+import com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfPsionicBlast;
+import com.zrp200.rkpd2.items.weapon.Weapon;
+import com.zrp200.rkpd2.items.weapon.melee.MeleeWeapon;
+import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.scenes.PixelScene;
+import com.zrp200.rkpd2.sprites.GhostSprite;
+import com.zrp200.rkpd2.sprites.ItemSprite;
+import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
+import com.zrp200.rkpd2.ui.BossHealthBar;
+import com.zrp200.rkpd2.ui.RenderedTextBlock;
+import com.zrp200.rkpd2.ui.Window;
+import com.zrp200.rkpd2.utils.GLog;
+import com.zrp200.rkpd2.windows.IconTitle;
+import com.zrp200.rkpd2.windows.WndBag;
+import com.zrp200.rkpd2.windows.WndBlacksmith;
+import com.zrp200.rkpd2.windows.WndQuest;
+import com.zrp200.rkpd2.windows.WndUseItem;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
@@ -479,6 +521,16 @@ public class DriedRose extends Artifact {
 			}
 		}
 
+		@Override
+		public boolean isUpgradable() {
+			return false;
+		}
+
+		@Override
+		public boolean isIdentified() {
+			return true;
+		}
+
 	}
 
 	public static class GhostHero extends DirectableAlly implements Hero.DeathCommentator {
@@ -836,7 +888,23 @@ public class DriedRose extends Artifact {
 						}
 						rose.weapon = null;
 					} else {
-						GameScene.selectItem(new WndBag.Listener() {
+						GameScene.selectItem(new WndBag.ItemSelector() {
+
+							@Override
+							public String textPrompt() {
+								return Messages.get(WndGhostHero.class, "weapon_prompt");
+							}
+
+							@Override
+							public Class<?extends Bag> preferredBag(){
+								return Belongings.Backpack.class;
+							}
+
+							@Override
+							public boolean itemSelectable(Item item) {
+								return item instanceof MeleeWeapon;
+							}
+
 							@Override
 							public void onSelect(Item item) {
 								if (!(item instanceof MeleeWeapon)) {
@@ -864,7 +932,7 @@ public class DriedRose extends Artifact {
 								}
 								
 							}
-						}, WndBag.Mode.WEAPON, Messages.get(WndGhostHero.class, "weapon_prompt"));
+						});
 					}
 				}
 			};
@@ -886,7 +954,23 @@ public class DriedRose extends Artifact {
 						}
 						rose.armor = null;
 					} else {
-						GameScene.selectItem(new WndBag.Listener() {
+						GameScene.selectItem(new WndBag.ItemSelector() {
+
+							@Override
+							public String textPrompt() {
+								return Messages.get(WndGhostHero.class, "armor_prompt");
+							}
+
+							@Override
+							public Class<?extends Bag> preferredBag(){
+								return Belongings.Backpack.class;
+							}
+
+							@Override
+							public boolean itemSelectable(Item item) {
+								return item instanceof Armor;
+							}
+
 							@Override
 							public void onSelect(Item item) {
 								if (!(item instanceof Armor)) {
@@ -914,7 +998,7 @@ public class DriedRose extends Artifact {
 								}
 								
 							}
-						}, WndBag.Mode.ARMOR, Messages.get(WndGhostHero.class, "armor_prompt"));
+						});
 					}
 				}
 			};

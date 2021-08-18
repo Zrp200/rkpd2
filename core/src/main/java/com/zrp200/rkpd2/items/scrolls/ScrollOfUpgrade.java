@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.buffs.Degrade;
+import com.zrp200.rkpd2.actors.hero.Belongings;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.Speck;
@@ -37,17 +38,21 @@ import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
-import com.zrp200.rkpd2.windows.WndBag;
 
 public class ScrollOfUpgrade extends InventoryScroll {
 	
 	{
 		icon = ItemSpriteSheet.Icons.SCROLL_UPGRADE;
-		mode = WndBag.Mode.UPGRADEABLE;
+		preferredBag = Belongings.Backpack.class;
 
 		unique = true;
 	}
-	
+
+	@Override
+	protected boolean usableOnItem(Item item) {
+		return item.isUpgradable();
+	}
+
 	@Override
 	protected void onItemSelected( Item item ) {
 

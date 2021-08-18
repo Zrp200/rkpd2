@@ -37,10 +37,12 @@ import com.zrp200.rkpd2.items.food.ChargrilledMeat;
 import com.zrp200.rkpd2.items.food.FrozenCarpaccio;
 import com.zrp200.rkpd2.items.food.MysteryMeat;
 import com.zrp200.rkpd2.items.journal.DocumentPage;
+import com.zrp200.rkpd2.items.journal.Guidebook;
 import com.zrp200.rkpd2.items.potions.Potion;
 import com.zrp200.rkpd2.items.rings.RingOfWealth;
 import com.zrp200.rkpd2.items.scrolls.Scroll;
 import com.zrp200.rkpd2.items.wands.Wand;
+import com.zrp200.rkpd2.journal.Document;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
@@ -153,8 +155,9 @@ public class Heap implements Bundlable {
 			items.remove( item );
 			
 		}
-		
-		if (item.dropsDownHeap && type != Type.FOR_SALE) {
+
+		//lost backpack must always be on top of a heap
+		if ((item.dropsDownHeap && type != Type.FOR_SALE) || peek() instanceof LostBackpack) {
 			items.add( item );
 		} else {
 			items.addFirst( item );
@@ -410,8 +413,11 @@ public class Heap implements Bundlable {
 		//remove any document pages that either don't exist anymore or that the player already has
 		for (Item item : items.toArray(new Item[0])){
 			if (item instanceof DocumentPage
-					&& ( !((DocumentPage) item).document().pages().contains(((DocumentPage) item).page())
-					||    ((DocumentPage) item).document().hasPage(((DocumentPage) item).page()))){
+					&& ( !((DocumentPage) item).document().pageNames().contains(((DocumentPage) item).page())
+					||    ((DocumentPage) item).document().isPageFound(((DocumentPage) item).page()))){
+				items.remove(item);
+			}
+			if (item instanceof Guidebook && Document.ADVENTURERS_GUIDE.isPageRead(0)){
 				items.remove(item);
 			}
 		}

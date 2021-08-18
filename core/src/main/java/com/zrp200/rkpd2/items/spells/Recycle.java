@@ -23,6 +23,8 @@ package com.zrp200.rkpd2.items.spells;
 
 import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.effects.Speck;
+import com.zrp200.rkpd2.effects.Transmuting;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.potions.Potion;
@@ -37,16 +39,22 @@ import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.plants.Plant;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
-import com.zrp200.rkpd2.windows.WndBag;
 import com.watabou.utils.Reflection;
 
 public class Recycle extends InventorySpell {
 	
 	{
 		image = ItemSpriteSheet.RECYCLE;
-		mode = WndBag.Mode.RECYCLABLE;
 	}
-	
+
+	@Override
+	protected boolean usableOnItem(Item item) {
+		return (item instanceof Potion && !(item instanceof Elixir || item instanceof Brew)) ||
+				item instanceof Scroll ||
+				item instanceof Plant.Seed ||
+				item instanceof Runestone;
+	}
+
 	@Override
 	protected void onItemSelected(Item item) {
 		Item result;
@@ -74,13 +82,6 @@ public class Recycle extends InventorySpell {
 			Dungeon.level.drop(result, curUser.pos).sprite.drop();
 		}
 		//TODO visuals
-	}
-	
-	public static boolean isRecyclable(Item item){
-		return (item instanceof Potion && !(item instanceof Elixir || item instanceof Brew)) ||
-				item instanceof Scroll ||
-				item instanceof Plant.Seed ||
-				item instanceof Runestone;
 	}
 	
 	@Override

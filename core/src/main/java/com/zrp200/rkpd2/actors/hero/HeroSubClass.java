@@ -23,6 +23,11 @@ package com.zrp200.rkpd2.actors.hero;
 
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
+import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.ui.HeroIcon;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.zrp200.rkpd2.Dungeon;
@@ -32,18 +37,15 @@ import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.sprites.ItemSprite;
-import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
 public enum HeroSubClass {
 
-	NONE,
-	
-	GLADIATOR,
-	BERSERKER,
+	NONE(HeroIcon.NONE),
 
-	WARLOCK,
-	BATTLEMAGE {
+	BERSERKER(HeroIcon.BERSERKER),
+	GLADIATOR(HeroIcon.GLADIATOR),
+
+	BATTLEMAGE(HeroIcon.BATTLEMAGE) {
 		@Override public int getBonus(Item item) {
 			// mage boost now also applies to staff...
 			return item instanceof MagesStaff ? 2 : 0;
@@ -62,14 +64,15 @@ public enum HeroSubClass {
 			return desc;
 		}
 	},
+	WARLOCK(HeroIcon.WARLOCK),
 
-	ASSASSIN {
+	ASSASSIN(HeroIcon.ASSASSIN) {
 		@Override public int getBonus(Item item) {
 			// +2 to melee / +2 to thrown. total boosts = 4
 			return item instanceof Weapon ? 2 : 0;
 		}
 	},
-	FREERUNNER {
+	FREERUNNER(HeroIcon.FREERUNNER) {
 		@Override
 		public int getBonus(Item item) {
 			// +1 to wands* (+freerun bonus), +2 to missiles, +1 to anything with reach. total boosts = 4 before other modifiers. note that freerunner has easy access to gamebreaking mechanics.
@@ -79,15 +82,22 @@ public enum HeroSubClass {
 					: 0;
 		}
 	},
-	
-	SNIPER,
-	WARDEN,
 
-	KING;
+	SNIPER(HeroIcon.SNIPER),
+	WARDEN(HeroIcon.WARDEN),
+
+	KING(HeroIcon.NONE); // fixme this needs icon
+
+
+	public final int icon;
+
+	HeroSubClass(int icon){
+		this.icon = icon;
+	}
 
 	// this corresponds to the one in HeroClass
 	public int getBonus(Item item) { return 0; }
-	
+
 	public String title() {
 		return Messages.get(this, name());
 	}
@@ -100,40 +110,10 @@ public enum HeroSubClass {
 		return Messages.get(this, name() + "_desc");
 	}
 
-	//FIXME shouldn't hardcode these, probably want to just have a BuffIcon class
-	// TO EVAN: please do this, thanks.
-	public Image icon(){
-		switch (this){
-			case GLADIATOR: default:
-				return new Image(Assets.Interfaces.BUFFS_LARGE, 16, 16, 16, 16);
-			case BERSERKER:
-				return new Image(Assets.Interfaces.BUFFS_LARGE, 32, 16, 16, 16);
+	public int icon(){
+		return icon;
 
-			case WARLOCK:
-				return new Image(Assets.Interfaces.BUFFS_LARGE, 64, 32, 16, 16);
-			case BATTLEMAGE:
-				Image im = new Image(Assets.Interfaces.BUFFS_LARGE, 32, 48, 16, 16);
-				im.hardlight(1f, 1f, 0f);
-				return im;
-
-			case ASSASSIN:
-				im = new Image(Assets.Interfaces.BUFFS_LARGE, 160, 32, 16, 16);
-				im.hardlight(1f, 0f, 0f);
-				return im;
-			case FREERUNNER:
-				im = new Image(Assets.Interfaces.BUFFS_LARGE, 48, 48, 16, 16);
-				im.hardlight(1f, 1f, 0f);
-				return im;
-
-			case SNIPER:
-				return new Image(Assets.Interfaces.BUFFS_LARGE, 176, 16, 16, 16);
-			case WARDEN:
-				return new Image(Assets.Interfaces.BUFFS_LARGE, 208, 0, 16, 16);
-
-			case KING:
-				im = new ItemSprite(ItemSpriteSheet.ARMOR_RAT_KING);
-				return im;
-		}
+		// fixme KING: new ItemSprite(ItemSpriteSheet.ARMOR_RAT_KING);
 	}
 
 }

@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.scenes;
 
+import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Chrome;
@@ -29,15 +30,22 @@ import com.zrp200.rkpd2.Rankings;
 import com.zrp200.rkpd2.SPDSettings;
 import com.zrp200.rkpd2.ShatteredPixelDungeon;
 import com.zrp200.rkpd2.effects.BannerSprites;
+import com.zrp200.rkpd2.effects.Fireball;
+import com.zrp200.rkpd2.journal.Document;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.ui.Archs;
 import com.zrp200.rkpd2.ui.Icons;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
 import com.zrp200.rkpd2.ui.StyledButton;
 import com.watabou.glwrap.Blending;
 import com.watabou.noosa.Camera;
+import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.audio.Music;
 import com.watabou.utils.FileUtils;
+
+import java.util.ArrayList;
 
 public class WelcomeScene extends PixelScene {
 
@@ -54,13 +62,24 @@ public class WelcomeScene extends PixelScene {
 			return;
 		}
 
+		Music.INSTANCE.playTracks(
+				new String[]{Assets.Music.THEME_1, Assets.Music.THEME_2},
+				new float[]{1, 1},
+				false);
+
 		uiCamera.visible = false;
 
 		int w = Camera.main.width;
 		int h = Camera.main.height;
 
+		Archs archs = new Archs();
+		archs.setSize( w, h );
+		add( archs );
+
+		//darkens the arches
+		add(new ColorBlock(w, h, 0x88000000));
+
 		Image title = BannerSprites.get( BannerSprites.Type.PIXEL_DUNGEON );
-		title.brightness(0.6f);
 		add( title );
 
 		float topRegion = Math.max(title.height - 6, h*0.45f);
@@ -69,6 +88,9 @@ public class WelcomeScene extends PixelScene {
 		title.y = 2 + (topRegion - title.height()) / 2f;
 
 		align(title);
+
+		placeTorch(title.x + 22, title.y + 46);
+		placeTorch(title.x + title.width - 22, title.y + 46);
 
 		Image signs = new Image( BannerSprites.get( BannerSprites.Type.PIXEL_DUNGEON_SIGNS ) ) {
 			private float time = 0;
@@ -156,18 +178,22 @@ public class WelcomeScene extends PixelScene {
 
 	}
 
+	private void placeTorch( float x, float y ) {
+		Fireball fb = new Fireball();
+		fb.setPos( x, y );
+		add( fb );
+	}
+
 	private void updateVersion(int previousVersion){
 
 		//update rankings, to update any data which may be outdated
 		//FIXME this is set to true temporarily as we want to run this no matter what, to ensure the v0.9.0a- badges bug is fixed
 		if (previousVersion < LATEST_UPDATE){
-			int highestChalInRankings = 0;
 			try {
 				Rankings.INSTANCE.load();
 				for (Rankings.Record rec : Rankings.INSTANCE.records.toArray(new Rankings.Record[0])){
 					try {
 						Rankings.INSTANCE.loadGameData(rec);
-						if (rec.win) highestChalInRankings = Math.max(highestChalInRankings, Challenges.activeChallenges());
 						Rankings.INSTANCE.saveGameData(rec);
 					} catch (Exception e) {
 						//if we encounter a fatal per-record error, then clear that record
@@ -182,16 +208,26 @@ public class WelcomeScene extends PixelScene {
 				ShatteredPixelDungeon.reportException(e);
 			}
 
-			//fixes a bug from v0.9.0- where champion badges would rarely not save
-			if (highestChalInRankings > 0){
-				Badges.loadGlobal();
-				if (highestChalInRankings >= 1) Badges.addGlobal(Badges.Badge.CHAMPION_1);
-				if (highestChalInRankings >= 3) Badges.addGlobal(Badges.Badge.CHAMPION_2);
-				if (highestChalInRankings >= 6) Badges.addGlobal(Badges.Badge.CHAMPION_3);
-				Badges.saveGlobal();
+		}
+
+		//if the player has beaten Goo, automatically give all guidebook pages
+		if (previousVersion <= ShatteredPixelDungeon.v0_1_0) {
+			Badges.loadGlobal();
+			if (Badges.isUnlocked(Badges.Badge.BOSS_SLAIN_1)) {
+				for (String page : Document.ADVENTURERS_GUIDE.pageNames()) {
+					Document.ADVENTURERS_GUIDE.readPage(page);
+				}
 			}
 		}
-		
+		/*resetting language preference back to native for finnish speakers if they were on english
+		//This is because Finnish was unmaintained for quite a while
+		if ( previousVersion <= 500
+				&& Languages.matchLocale(Locale.getDefault()) == Languages.FINNISH
+				&& Messages.lang() == Languages.ENGLISH) {
+			SPDSettings.language(Languages.FINNISH);
+			Messages.setup(Languages.FINNISH);
+		}
+		*/
 		SPDSettings.version(ShatteredPixelDungeon.versionCode);
 	}
 	

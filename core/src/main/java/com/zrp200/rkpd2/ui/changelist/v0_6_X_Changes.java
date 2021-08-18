@@ -21,7 +21,6 @@
 
 package com.zrp200.rkpd2.ui.changelist;
 
-import com.watabou.noosa.Image;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.effects.BadgeBanner;
@@ -56,8 +55,11 @@ import com.zrp200.rkpd2.scenes.ChangesScene;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
+import com.zrp200.rkpd2.ui.BuffIcon;
+import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.ui.Icons;
 import com.zrp200.rkpd2.ui.Window;
+import com.watabou.noosa.Image;
 
 import java.util.ArrayList;
 
@@ -312,7 +314,7 @@ public class v0_6_X_Changes {
 		changes.hardlight( CharSprite.NEGATIVE );
 		changeInfos.add(changes);
 		
-		changes.addButton( new ChangeButton(new Image(Assets.Interfaces.BUFFS_LARGE, 64, 0, 16, 16), "Paralysis changes",
+		changes.addButton( new ChangeButton(new BuffIcon(BuffIndicator.PARALYSIS, true), "Paralysis changes",
 				"Paralysis is an extremely powerful debuff, and its ability to completely immobilize the player or an enemy while they are killed needs to be adjusted.\n" +
 				"\n" +
 				"Chance to resist paralysis is now based on all recent damage taken while paralyzed, instead of each specific instance of damage separately.\n" +
@@ -395,7 +397,7 @@ public class v0_6_X_Changes {
 		changes.hardlight( CharSprite.WARNING );
 		changeInfos.add(changes);
 		
-		changes.addButton( new ChangeButton(new Image(Assets.Interfaces.BUFFS_LARGE, 32, 0, 16, 16), "Changes to debuffs and resistances",
+		changes.addButton( new ChangeButton(new BuffIcon(BuffIndicator.FIRE, true), "Changes to debuffs and resistances",
 				"The game's resistance system has been totally overhauled, to allow for more flexibility and consistency.\n\n" +
 				"Previously, if a character was resistant to something, its effect would be reduced by a random amount between 0% and 100%.\n\n" +
 				"Now, resistances are much less random, applying a specific reduction to harmful effects. Currently all resistances are 50%.\n\n" +

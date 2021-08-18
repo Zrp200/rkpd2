@@ -74,6 +74,10 @@ public class HeavyBoomerang extends MissileWeapon {
 	}
 	
 	public static class CircleBack extends Buff {
+
+		{
+			revivePersists = true;
+		}
 		
 		private HeavyBoomerang boomerang;
 		private int thrownPos;

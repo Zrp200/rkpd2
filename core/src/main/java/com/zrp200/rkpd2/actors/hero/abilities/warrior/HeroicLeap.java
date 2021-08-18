@@ -37,6 +37,7 @@ import com.zrp200.rkpd2.items.wands.WandOfBlastWave;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.ui.HeroIcon;
 import com.watabou.noosa.Camera;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
@@ -57,8 +58,8 @@ public class HeroicLeap extends ArmorAbility {
 	public float chargeUse( Hero hero ) {
 		float chargeUse = super.chargeUse(hero);
 		if (hero.buff(DoubleJumpTracker.class) != null){
-			//reduced charge use by 24%/42%/56%/67%/75%
-			chargeUse *= Math.pow(0.76, hero.shiftedPoints(Talent.DOUBLE_JUMP));
+			//reduced charge use by 20%/36%/50%/60%/75%
+			chargeUse *= Math.pow(0.795, hero.shiftedPoints(Talent.DOUBLE_JUMP));
 		}
 		return chargeUse;
 	}
@@ -130,6 +131,11 @@ public class HeroicLeap extends ArmorAbility {
 	}
 
 	public static class DoubleJumpTracker extends FlavourBuff{};
+
+	@Override
+	public int icon() {
+		return HeroIcon.HEROIC_LEAP;
+	}
 
 	@Override
 	public Talent[] talents() {

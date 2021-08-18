@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.items.stones;
 
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.effects.Identification;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.potions.Potion;
@@ -40,21 +41,19 @@ import com.zrp200.rkpd2.ui.RenderedTextBlock;
 import com.zrp200.rkpd2.ui.Window;
 import com.zrp200.rkpd2.utils.GLog;
 import com.zrp200.rkpd2.windows.IconTitle;
-import com.zrp200.rkpd2.windows.WndBag;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 
 public class StoneOfIntuition extends InventoryStone {
-	
-	
+
 	{
-		mode = WndBag.Mode.INTUITIONABLE;
 		image = ItemSpriteSheet.STONE_INTUITION;
 	}
 
-	public static boolean isIntuitionable( Item item ){
+	@Override
+	protected boolean usableOnItem(Item item) {
 		if (item instanceof Ring){
 			return !((Ring) item).isKnown();
 		} else if (item instanceof Potion){
@@ -71,7 +70,9 @@ public class StoneOfIntuition extends InventoryStone {
 		GameScene.show( new WndGuess(item));
 		
 	}
-	
+
+	public static class IntuitionUseTracker extends Buff {{ revivePersists = true; }};
+
 	private static Class curGuess = null;
 	
 	public class WndGuess extends Window {
@@ -106,7 +107,18 @@ public class StoneOfIntuition extends InventoryStone {
 						}
 						GLog.p( Messages.get(WndGuess.class, "correct") );
 						curUser.sprite.parent.add( new Identification( curUser.sprite.center().offset( 0, -16 ) ) );
+
+						if (curUser.buff(IntuitionUseTracker.class) == null){
+							GLog.h( Messages.get(WndGuess.class, "preserved") );
+							new StoneOfIntuition().collect();
+							Buff.affect(curUser, IntuitionUseTracker.class);
+						} else {
+							curUser.buff(IntuitionUseTracker.class).detach();
+						}
 					} else {
+						if (curUser.buff(IntuitionUseTracker.class) != null) {
+							curUser.buff(IntuitionUseTracker.class).detach();
+						}
 						GLog.n( Messages.get(WndGuess.class, "incorrect") );
 					}
 					curGuess = null;

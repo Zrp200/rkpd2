@@ -135,8 +135,8 @@ public class PrismaticImage extends AbstractMirrorImage {
 	@Override
 	public int defenseProc(Char enemy, int damage) {
 		damage = super.defenseProc(enemy, damage);
-		if (hero != null && hero.belongings.armor != null){
-			return hero.belongings.armor.proc( enemy, this, damage );
+		if (hero != null && hero.belongings.armor() != null){
+			return hero.belongings.armor().proc( enemy, this, damage );
 		} else {
 			return damage;
 		}
@@ -146,9 +146,9 @@ public class PrismaticImage extends AbstractMirrorImage {
 	public void damage(int dmg, Object src) {
 		
 		//TODO improve this when I have proper damage source logic
-		if (hero != null && hero.belongings.armor != null && hero.belongings.armor.hasGlyph(AntiMagic.class, this)
+		if (hero != null && hero.belongings.armor() != null && hero.belongings.armor().hasGlyph(AntiMagic.class, this)
 				&& AntiMagic.RESISTS.contains(src.getClass())){
-			dmg -= AntiMagic.drRoll(hero.belongings.armor.buffedLvl());
+			dmg -= AntiMagic.drRoll(hero.belongings.armor().buffedLvl());
 		}
 		
 		super.damage(dmg, src);
@@ -156,8 +156,8 @@ public class PrismaticImage extends AbstractMirrorImage {
 	
 	@Override
 	public float speed() {
-		if (hero != null && hero.belongings.armor != null){
-			return hero.belongings.armor.speedFactor(this, super.speed());
+		if (hero != null && hero.belongings.armor() != null){
+			return hero.belongings.armor().speedFactor(this, super.speed());
 		}
 		return super.speed();
 	}
@@ -166,8 +166,8 @@ public class PrismaticImage extends AbstractMirrorImage {
 	public boolean isImmune(Class effect) {
 		if (effect == Burning.class
 				&& hero != null
-				&& hero.belongings.armor != null
-				&& hero.belongings.armor.hasGlyph(Brimstone.class, this)){
+				&& hero.belongings.armor() != null
+				&& hero.belongings.armor().hasGlyph(Brimstone.class, this)){
 			return true;
 		}
 		return super.isImmune(effect);

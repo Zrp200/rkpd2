@@ -28,6 +28,7 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Corruption;
 import com.zrp200.rkpd2.actors.buffs.Hunger;
+import com.zrp200.rkpd2.actors.buffs.LostInventory;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
@@ -64,7 +65,9 @@ public class PotionOfCleansing extends ExoticPotion {
 	
 	public static void cleanse(Char ch){
 		for (Buff b : ch.buffs()){
-			if (b.type == Buff.buffType.NEGATIVE && !(b instanceof Corruption)){
+			if (b.type == Buff.buffType.NEGATIVE
+					&& !(b instanceof Corruption)
+					&& !(b instanceof LostInventory)){
 				b.detach();
 			}
 			if (b instanceof Hunger){

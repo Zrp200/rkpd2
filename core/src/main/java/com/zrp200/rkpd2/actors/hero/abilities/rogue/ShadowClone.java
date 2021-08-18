@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.Corruption;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -37,6 +38,7 @@ import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.HeroSprite;
 import com.zrp200.rkpd2.sprites.MobSprite;
+import com.zrp200.rkpd2.ui.HeroIcon;
 import com.zrp200.rkpd2.utils.BArray;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.TextureFilm;
@@ -118,6 +120,11 @@ public class ShadowClone extends ArmorAbility {
 	}
 
 	@Override
+	public int icon() {
+		return HeroIcon.SHADOW_CLONE;
+	}
+
+	@Override
 	public Talent[] talents() {
 		return new Talent[]{Talent.SHADOW_BLADE, Talent.CLONED_ARMOR, Talent.PERFECT_COPY, Talent.HEROIC_ENERGY};
 	}
@@ -137,6 +144,8 @@ public class ShadowClone extends ArmorAbility {
 			spriteClass = ShadowSprite.class;
 
 			HP = HT = 100;
+
+			immunities.add(Corruption.class);
 		}
 
 		public ShadowAlly(){
@@ -145,7 +154,7 @@ public class ShadowClone extends ArmorAbility {
 
 		public ShadowAlly( int heroLevel ){
 			super();
-			int hpBonus = 20 + 5*heroLevel;
+			int hpBonus = 15 + 5*heroLevel;
 			hpBonus = Math.round(0.1f * Dungeon.hero.shiftedPoints(Talent.PERFECT_COPY) * hpBonus);
 			if (hpBonus > 0){
 				HT += hpBonus;
@@ -187,7 +196,7 @@ public class ShadowClone extends ArmorAbility {
 			int damage = Random.NormalIntRange(10, 20);
 			int heroDamage = Dungeon.hero.damageRoll();
 			heroDamage /= Dungeon.hero.attackDelay(); //normalize hero damage based on atk speed
-			heroDamage = Math.round(0.0625f * Dungeon.hero.shiftedPoints(Talent.SHADOW_BLADE) * heroDamage);
+			heroDamage = Math.round(0.075f * Dungeon.hero.shiftedPoints(Talent.SHADOW_BLADE) * heroDamage);
 			if (heroDamage > 0){
 				damage += heroDamage;
 			}
@@ -199,8 +208,8 @@ public class ShadowClone extends ArmorAbility {
 			damage = super.attackProc( enemy, damage );
 			// shifted to actually work.
 			if (Random.Int(/*4*/5) < Dungeon.hero.shiftedPoints(Talent.SHADOW_BLADE)
-					&& Dungeon.hero.belongings.weapon != null){
-				return Dungeon.hero.belongings.weapon.proc( this, enemy, damage );
+					&& Dungeon.hero.belongings.weapon() != null){
+				return Dungeon.hero.belongings.weapon().proc( this, enemy, damage );
 			} else {
 				return damage;
 			}
@@ -210,7 +219,7 @@ public class ShadowClone extends ArmorAbility {
 		public int drRoll() {
 			int dr = super.drRoll();
 			int heroRoll = Dungeon.hero.drRoll();
-			heroRoll = Math.round(0.125f * Dungeon.hero.shiftedPoints(Talent.CLONED_ARMOR) * heroRoll);
+			heroRoll = Math.round(0.15f * Dungeon.hero.shiftedPoints(Talent.CLONED_ARMOR) * heroRoll);
 			if (heroRoll > 0){
 				dr += heroRoll;
 			}
@@ -222,11 +231,23 @@ public class ShadowClone extends ArmorAbility {
 			damage = super.defenseProc(enemy, damage);
 			// shifted to work
 			if (Random.Int(/*4*/5) < Dungeon.hero.shiftedPoints(Talent.CLONED_ARMOR)
-					&& Dungeon.hero.belongings.armor != null){
-				return Dungeon.hero.belongings.armor.proc( enemy, this, damage );
+					&& Dungeon.hero.belongings.armor() != null){
+				return Dungeon.hero.belongings.armor().proc( enemy, this, damage );
 			} else {
 				return damage;
 			}
+		}
+
+		@Override
+		public float speed() {
+			float speed = super.speed();
+
+			//moves 2 tiles at a time when returning to the hero
+			if (state == WANDERING && defendingPos == -1){
+				speed *= 2;
+			}
+
+			return speed;
 		}
 
 		@Override

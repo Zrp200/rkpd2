@@ -753,7 +753,7 @@ public class PrisonBossLevel extends Level {
 	public static class ExitVisual extends CustomTilemap {
 		
 		{
-			texture = Assets.Environment.PRISON_EXIT_NEW;
+			texture = Assets.Environment.PRISON_EXIT;
 			
 			tileW = 14;
 			tileH = 11;
@@ -799,7 +799,7 @@ public class PrisonBossLevel extends Level {
 	public static class ExitVisualWalls extends CustomTilemap {
 		
 		{
-			texture = Assets.Environment.PRISON_EXIT_NEW;
+			texture = Assets.Environment.PRISON_EXIT;
 			
 			tileW = 14;
 			tileH = 22;

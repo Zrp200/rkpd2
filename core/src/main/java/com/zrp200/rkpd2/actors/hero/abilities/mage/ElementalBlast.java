@@ -49,24 +49,9 @@ import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.effects.MagicMissile;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.effects.particles.ShadowParticle;
-import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfMagicMapping;
-import com.zrp200.rkpd2.items.wands.Wand;
-import com.zrp200.rkpd2.items.wands.WandOfBlastWave;
-import com.zrp200.rkpd2.items.wands.WandOfCorrosion;
-import com.zrp200.rkpd2.items.wands.WandOfCorruption;
-import com.zrp200.rkpd2.items.wands.WandOfDisintegration;
-import com.zrp200.rkpd2.items.wands.WandOfFireblast;
-import com.zrp200.rkpd2.items.wands.WandOfFirebolt;
-import com.zrp200.rkpd2.items.wands.WandOfFrost;
-import com.zrp200.rkpd2.items.wands.WandOfLightning;
-import com.zrp200.rkpd2.items.wands.WandOfLivingEarth;
-import com.zrp200.rkpd2.items.wands.WandOfMagicMissile;
-import com.zrp200.rkpd2.items.wands.WandOfPrismaticLight;
-import com.zrp200.rkpd2.items.wands.WandOfRegrowth;
-import com.zrp200.rkpd2.items.wands.WandOfTransfusion;
-import com.zrp200.rkpd2.items.wands.WandOfWarding;
+import com.zrp200.rkpd2.items.wands.*;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.levels.Level;
 import com.zrp200.rkpd2.levels.Terrain;
@@ -75,6 +60,7 @@ import com.zrp200.rkpd2.mechanics.ConeAOE;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.CharSprite;
+import com.zrp200.rkpd2.ui.HeroIcon;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
@@ -255,7 +241,7 @@ public class ElementalBlast extends ArmorAbility {
 
 							//### Deal damage ###
 							Char mob = Actor.findChar(cell);
-							int damage = Math.round(Random.NormalIntRange(10, 20)
+							int damage = Math.round(Random.NormalIntRange(15, 25)
 									* effectMulti
 									* damageFactors.get(finalWandCls));
 
@@ -281,7 +267,7 @@ public class ElementalBlast extends ArmorAbility {
 								//*** Wand of Corrosion ***
 								} else if (finalWandCls == WandOfCorrosion.class){
 									if (mob.isAlive() && mob.alignment != Char.Alignment.ALLY) {
-										Buff.affect( mob, Corrosion.class ).set(3, Math.round(6*effectMulti));
+										Buff.affect( mob, Corrosion.class ).set(4, Math.round(6*effectMulti));
 										charsHit++;
 									}
 
@@ -339,7 +325,7 @@ public class ElementalBlast extends ArmorAbility {
 											charm.ignoreHeroAllies = true;
 											mob.sprite.centerEmitter().start(Speck.factory(Speck.HEART), 0.2f, 3);
 										} else {
-											damage = Math.round(Random.NormalIntRange(10, 20) * effectMulti);
+											damage = Math.round(Random.NormalIntRange(15, 25) * effectMulti);
 											mob.damage(damage, Reflection.newInstance(finalWandCls));
 											mob.sprite.emitter().start(ShadowParticle.UP, 0.05f, 10);
 										}
@@ -427,6 +413,11 @@ public class ElementalBlast extends ArmorAbility {
 		}
 		desc += "\n\n" + Messages.get(this, "cost", (int)baseChargeUse);
 		return desc;
+	}
+
+	@Override
+	public int icon() {
+		return HeroIcon.ELEMENTAL_BLAST;
 	}
 
 	@Override

@@ -31,6 +31,8 @@ import com.zrp200.rkpd2.levels.traps.BurningTrap;
 import com.zrp200.rkpd2.levels.traps.ConfusionTrap;
 import com.zrp200.rkpd2.levels.traps.CorrosionTrap;
 import com.zrp200.rkpd2.levels.traps.FrostTrap;
+import com.zrp200.rkpd2.levels.traps.GatewayTrap;
+import com.zrp200.rkpd2.levels.traps.GeyserTrap;
 import com.zrp200.rkpd2.levels.traps.GrippingTrap;
 import com.zrp200.rkpd2.levels.traps.GuardianTrap;
 import com.zrp200.rkpd2.levels.traps.PitfallTrap;
@@ -98,7 +100,7 @@ public class CavesLevel extends RegularLevel {
 		return new Class[]{
 				BurningTrap.class, PoisonDartTrap.class, FrostTrap.class, StormTrap.class, CorrosionTrap.class,
 				GrippingTrap.class, RockfallTrap.class,  GuardianTrap.class,
-				ConfusionTrap.class, SummoningTrap.class, WarpingTrap.class, PitfallTrap.class };
+				ConfusionTrap.class, SummoningTrap.class, WarpingTrap.class, PitfallTrap.class, GatewayTrap.class, GeyserTrap.class };
 	}
 
 	@Override
@@ -106,7 +108,7 @@ public class CavesLevel extends RegularLevel {
 		return new float[]{
 				4, 4, 4, 4, 4,
 				2, 2, 2,
-				1, 1, 1, 1};
+				1, 1, 1, 1, 1, 1 };
 	}
 	
 	@Override

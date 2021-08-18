@@ -33,6 +33,8 @@ import com.zrp200.rkpd2.levels.traps.BurningTrap;
 import com.zrp200.rkpd2.levels.traps.ChillingTrap;
 import com.zrp200.rkpd2.levels.traps.ConfusionTrap;
 import com.zrp200.rkpd2.levels.traps.FlockTrap;
+import com.zrp200.rkpd2.levels.traps.GatewayTrap;
+import com.zrp200.rkpd2.levels.traps.GeyserTrap;
 import com.zrp200.rkpd2.levels.traps.GrippingTrap;
 import com.zrp200.rkpd2.levels.traps.OozeTrap;
 import com.zrp200.rkpd2.levels.traps.PoisonDartTrap;
@@ -99,7 +101,7 @@ public class PrisonLevel extends RegularLevel {
 		return new Class[]{
 				ChillingTrap.class, ShockingTrap.class, ToxicTrap.class, BurningTrap.class, PoisonDartTrap.class,
 				AlarmTrap.class, OozeTrap.class, GrippingTrap.class,
-				ConfusionTrap.class, FlockTrap.class, SummoningTrap.class, TeleportationTrap.class, };
+				ConfusionTrap.class, FlockTrap.class, SummoningTrap.class, TeleportationTrap.class, GatewayTrap.class, GeyserTrap.class };
 	}
 
 	@Override
@@ -107,7 +109,7 @@ public class PrisonLevel extends RegularLevel {
 		return new float[]{
 				4, 4, 4, 4, 4,
 				2, 2, 2,
-				1, 1, 1, 1 };
+				1, 1, 1, 1, 1, 1 };
 	}
 
 	@Override

@@ -22,14 +22,31 @@
 package com.zrp200.rkpd2.scenes;
 
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.ui.Archs;
 import com.zrp200.rkpd2.windows.WndStory;
+import com.watabou.noosa.Camera;
+import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
 
 public class IntroScene extends PixelScene {
+
+	{
+		inGameScene = true;
+	}
 	
 	@Override
 	public void create() {
 		super.create();
+
+		int w = Camera.main.width;
+		int h = Camera.main.height;
+
+		Archs archs = new Archs();
+		archs.setSize( w, h );
+		add( archs );
+
+		//darkens the arches
+		add(new ColorBlock(w, h, 0x88000000));
 		
 		add( new WndStory( Messages.get(this, "text") ) {
 			@Override

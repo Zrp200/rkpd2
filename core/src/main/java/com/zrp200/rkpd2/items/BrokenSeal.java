@@ -21,13 +21,16 @@
 
 package com.zrp200.rkpd2.items;
 
+import static com.zrp200.rkpd2.Dungeon.hero;
+
 import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.buffs.ShieldBuff;
+import com.zrp200.rkpd2.actors.hero.Belongings;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.armor.Armor;
+import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSprite;
@@ -68,6 +71,14 @@ public class BrokenSeal extends Item {
 		this.glyph = glyph;
 	}
 
+	public int maxShield( int armTier, int armLvl ){
+		// iron will is 1 (0+1) / 3 (1+2) / 5 (2+3)
+		// noble cause is 0/1/2
+		// fixme verify that behavior has or hasn't changed.
+		int bonus = hero.pointsInTalent(Talent.NOBLE_CAUSE, Talent.IRON_WILL) + hero.shiftedPoints(Talent.IRON_WILL);
+		return armTier + armLvl + bonus;
+	}
+
 	@Override
 	public ItemSprite.Glowing glowing() {
 		return glyph != null ? glyph.glowing() : null;
@@ -87,7 +98,7 @@ public class BrokenSeal extends Item {
 
 		if (action.equals(AC_AFFIX)){
 			curItem = this;
-			GameScene.selectItem(armorSelector, WndBag.Mode.ARMOR, Messages.get(this, "prompt"));
+			GameScene.selectItem(armorSelector);
 		} else if (action.equals(AC_INFO)) {
 			GameScene.show(new WndUseItem(null, this));
 		}
@@ -99,7 +110,23 @@ public class BrokenSeal extends Item {
 		return level() == 0;
 	}
 
-	protected static WndBag.Listener armorSelector = new WndBag.Listener() {
+	protected static WndBag.ItemSelector armorSelector = new WndBag.ItemSelector() {
+
+		@Override
+		public String textPrompt() {
+			return  Messages.get(BrokenSeal.class, "prompt");
+		}
+
+		@Override
+		public Class<?extends Bag> preferredBag(){
+			return Belongings.Backpack.class;
+		}
+
+		@Override
+		public boolean itemSelectable(Item item) {
+			return item instanceof Armor;
+		}
+
 		@Override
 		public void onSelect( Item item ) {
 			BrokenSeal seal = (BrokenSeal) curItem;
@@ -116,7 +143,7 @@ public class BrokenSeal extends Item {
 						&& armor.glyph.getClass() != seal.getGlyph().getClass()) {
 					GameScene.show(new WndOptions(new ItemSprite(seal),
 							Messages.get(BrokenSeal.class, "choose_title"),
-							Messages.get(BrokenSeal.class, "choose_desc") + (Dungeon.hero.pointsInTalent(Talent.RUNIC_TRANSFERENCE) < 2 ? "\n\n" + Messages.get(BrokenSeal.class, "lose_warning"):""),
+							Messages.get(BrokenSeal.class, "choose_desc") + (hero.pointsInTalent(Talent.RUNIC_TRANSFERENCE) < 2 ? "\n\n" + Messages.get(BrokenSeal.class, "lose_warning"):""),
 							armor.glyph.name(),
 							seal.getGlyph().name()){
 						@Override
@@ -125,19 +152,19 @@ public class BrokenSeal extends Item {
 							//if index is 1 or runic transference is maxed, then the glyph transfer happens in affixSeal
 
 							GLog.p(Messages.get(BrokenSeal.class, "affix"));
-							Dungeon.hero.sprite.operate(Dungeon.hero.pos);
+							hero.sprite.operate(hero.pos);
 							Sample.INSTANCE.play(Assets.Sounds.UNLOCK);
 							armor.affixSeal(seal);
-							seal.detach(Dungeon.hero.belongings.backpack);
+							seal.detach(hero.belongings.backpack);
 						}
 					});
 
 				} else {
 					GLog.p(Messages.get(BrokenSeal.class, "affix"));
-					Dungeon.hero.sprite.operate(Dungeon.hero.pos);
+					hero.sprite.operate(hero.pos);
 					Sample.INSTANCE.play(Assets.Sounds.UNLOCK);
 					armor.affixSeal((BrokenSeal)curItem);
-					curItem.detach(Dungeon.hero.belongings.backpack);
+					curItem.detach(hero.belongings.backpack);
 				}
 			}
 		}
@@ -145,7 +172,7 @@ public class BrokenSeal extends Item {
 
 	@Override
 	public String desc() {
-		HeroClass heroClass = Dungeon.hero.heroClass;
+		HeroClass heroClass = hero.heroClass;
 		return Messages.get(this, "desc",
 				heroClass == HeroClass.WARRIOR ? " from the glorious king of rats" : "",
 				heroClass.title());
@@ -201,14 +228,8 @@ public class BrokenSeal extends Item {
 		}
 
 		public synchronized int maxShield() {
-			Hero hero = (Hero)target;
-			if (armor != null && armor.isEquipped(hero)) {
-				// iron will is 1 (0+1) / 3 (1+2) / 5 (2+3)
-				// noble cause is 0/1/2
-				int bonus = hero.pointsInTalent(Talent.NOBLE_CAUSE, Talent.IRON_WILL) + hero.shiftedPoints(Talent.IRON_WILL);
-				BrokenSeal brokenSeal = armor.checkSeal();
-				if(brokenSeal != null && brokenSeal.level() > 1) bonus -= brokenSeal.level()-1; // doesn't stack, sorry.
-				return armor.tier + armor.level() + bonus;
+			if (armor != null && armor.isEquipped((Hero)target) && armor.checkSeal() != null) {
+				return armor.checkSeal().maxShield(armor.tier, armor.level());
 			} else {
 				return 0;
 			}

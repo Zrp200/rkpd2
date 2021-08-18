@@ -21,9 +21,11 @@
 
 package com.zrp200.rkpd2.items.stones;
 
+import com.zrp200.rkpd2.actors.hero.Belongings;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfUpgrade;
+import com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfEnchantment;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
@@ -33,15 +35,19 @@ import com.zrp200.rkpd2.ui.RedButton;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
 import com.zrp200.rkpd2.ui.Window;
 import com.zrp200.rkpd2.windows.IconTitle;
-import com.zrp200.rkpd2.windows.WndBag;
 
 public class StoneOfAugmentation extends InventoryStone {
 	
 	{
-		mode = WndBag.Mode.ENCHANTABLE;
+		preferredBag = Belongings.Backpack.class;
 		image = ItemSpriteSheet.STONE_AUGMENTATION;
 	}
-	
+
+	@Override
+	protected boolean usableOnItem(Item item) {
+		return ScrollOfEnchantment.enchantable(item);
+	}
+
 	@Override
 	protected void onItemSelected(Item item) {
 		

@@ -23,6 +23,8 @@ package com.zrp200.rkpd2.items.scrolls;
 
 import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.effects.Speck;
+import com.zrp200.rkpd2.effects.Transmuting;
 import com.zrp200.rkpd2.items.EquipableItem;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Item;
@@ -46,7 +48,6 @@ import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.plants.Plant;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
-import com.zrp200.rkpd2.windows.WndBag;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
@@ -54,12 +55,12 @@ public class ScrollOfTransmutation extends InventoryScroll {
 	
 	{
 		icon = ItemSpriteSheet.Icons.SCROLL_TRANSMUTE;
-		mode = WndBag.Mode.TRANMSUTABLE;
 		
 		bones = true;
 	}
-	
-	public static boolean canTransmute(Item item){
+
+	@Override
+	protected boolean usableOnItem(Item item) {
 		return item instanceof MeleeWeapon ||
 				(item instanceof MissileWeapon && !(item instanceof Dart)) ||
 				(item instanceof Potion && !(item instanceof Elixir || item instanceof Brew || item instanceof AlchemicalCatalyst)) ||
@@ -74,29 +75,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 	@Override
 	protected void onItemSelected(Item item) {
 		
-		Item result;
-		
-		if (item instanceof MagesStaff) {
-			result = changeStaff( (MagesStaff)item );
-		} else if (item instanceof MeleeWeapon || item instanceof MissileWeapon) {
-			result = changeWeapon( (Weapon)item );
-		} else if (item instanceof Scroll) {
-			result = changeScroll( (Scroll)item );
-		} else if (item instanceof Potion) {
-			result = changePotion( (Potion)item );
-		} else if (item instanceof Ring) {
-			result = changeRing( (Ring)item );
-		} else if (item instanceof Wand) {
-			result = changeWand( (Wand)item );
-		} else if (item instanceof Plant.Seed) {
-			result = changeSeed((Plant.Seed) item);
-		} else if (item instanceof Runestone) {
-			result = changeStone((Runestone) item);
-		} else if (item instanceof Artifact) {
-			result = changeArtifact( (Artifact)item );
-		} else {
-			result = null;
-		}
+		Item result = changeItem(item);
 		
 		if (result == null){
 			//This shouldn't ever trigger
@@ -121,8 +100,32 @@ public class ScrollOfTransmutation extends InventoryScroll {
 		}
 		
 	}
+
+	public static Item changeItem( Item item ){
+		if (item instanceof MagesStaff) {
+			return changeStaff( (MagesStaff)item );
+		} else if (item instanceof MeleeWeapon || item instanceof MissileWeapon) {
+			return changeWeapon( (Weapon)item );
+		} else if (item instanceof Scroll) {
+			return changeScroll( (Scroll)item );
+		} else if (item instanceof Potion) {
+			return changePotion( (Potion)item );
+		} else if (item instanceof Ring) {
+			return changeRing( (Ring)item );
+		} else if (item instanceof Wand) {
+			return changeWand( (Wand)item );
+		} else if (item instanceof Plant.Seed) {
+			return changeSeed((Plant.Seed) item);
+		} else if (item instanceof Runestone) {
+			return changeStone((Runestone) item);
+		} else if (item instanceof Artifact) {
+			return changeArtifact( (Artifact)item );
+		} else {
+			return null;
+		}
+	}
 	
-	private MagesStaff changeStaff( MagesStaff staff ){
+	private static MagesStaff changeStaff( MagesStaff staff ){
 		Class<?extends Wand> wandClass = staff.wandClass();
 		
 		if (wandClass == null){
@@ -140,7 +143,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 		return staff;
 	}
 	
-	private Weapon changeWeapon( Weapon w ) {
+	private static Weapon changeWeapon( Weapon w ) {
 		
 		Weapon n;
 		Generator.Category c;
@@ -173,7 +176,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 		
 	}
 	
-	private Ring changeRing( Ring r ) {
+	private static Ring changeRing( Ring r ) {
 		Ring n;
 		do {
 			n = (Ring)Generator.random( Generator.Category.RING );
@@ -195,7 +198,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 		return n;
 	}
 	
-	private Artifact changeArtifact( Artifact a ) {
+	private static Artifact changeArtifact( Artifact a ) {
 		Artifact n = Generator.randomArtifact();
 		
 		if (n != null && !Challenges.isItemBlocked(n)){
@@ -209,7 +212,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 		return null;
 	}
 	
-	private Wand changeWand( Wand w ) {
+	private static Wand changeWand( Wand w ) {
 		
 		Wand n;
 		do {
@@ -219,17 +222,23 @@ public class ScrollOfTransmutation extends InventoryScroll {
 		n.level( 0 );
 		int level = w.level();
 		if (w.curseInfusionBonus) level--;
+		level -= w.resinBonus;
 		n.upgrade( level );
-		
+
 		n.levelKnown = w.levelKnown;
+		n.curChargeKnown = w.curChargeKnown;
 		n.cursedKnown = w.cursedKnown;
 		n.cursed = w.cursed;
 		n.curseInfusionBonus = w.curseInfusionBonus;
+		n.resinBonus = w.resinBonus;
+
+		n.curCharges =  w.curCharges;
+		n.updateLevel();
 		
 		return n;
 	}
 	
-	private Plant.Seed changeSeed( Plant.Seed s ) {
+	private static Plant.Seed changeSeed( Plant.Seed s ) {
 		
 		Plant.Seed n;
 		
@@ -240,7 +249,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 		return n;
 	}
 	
-	private Runestone changeStone( Runestone r ) {
+	private static Runestone changeStone( Runestone r ) {
 		
 		Runestone n;
 		
@@ -251,7 +260,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 		return n;
 	}
 	
-	private Scroll changeScroll( Scroll s ) {
+	private static Scroll changeScroll( Scroll s ) {
 		if (s instanceof ExoticScroll) {
 			return Reflection.newInstance(ExoticScroll.exoToReg.get(s.getClass()));
 		} else {
@@ -259,7 +268,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 		}
 	}
 	
-	private Potion changePotion( Potion p ) {
+	private static Potion changePotion( Potion p ) {
 		if	(p instanceof ExoticPotion) {
 			return Reflection.newInstance(ExoticPotion.exoToReg.get(p.getClass()));
 		} else {

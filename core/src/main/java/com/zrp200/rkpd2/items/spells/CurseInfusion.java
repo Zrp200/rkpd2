@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.particles.ShadowParticle;
+import com.zrp200.rkpd2.items.EquipableItem;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.quest.MetalShard;
@@ -34,17 +35,21 @@ import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.items.weapon.melee.MeleeWeapon;
+import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
-import com.zrp200.rkpd2.windows.WndBag;
 import com.watabou.noosa.audio.Sample;
 
 public class CurseInfusion extends InventorySpell {
 	
 	{
 		image = ItemSpriteSheet.CURSE_INFUSE;
-		mode = WndBag.Mode.CURSABLE;
 	}
-	
+
+	@Override
+	protected boolean usableOnItem(Item item) {
+		return ((item instanceof EquipableItem && !(item instanceof MissileWeapon)) || item instanceof Wand);
+	}
+
 	@Override
 	protected void onItemSelected(Item item) {
 		

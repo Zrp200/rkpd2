@@ -24,23 +24,14 @@ package com.zrp200.rkpd2.scenes;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.ShatteredPixelDungeon;
-import com.zrp200.rkpd2.effects.BadgeBanner;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.Archs;
+import com.zrp200.rkpd2.ui.BadgesGrid;
 import com.zrp200.rkpd2.ui.ExitButton;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
 import com.zrp200.rkpd2.ui.Window;
-import com.zrp200.rkpd2.windows.WndBadge;
 import com.watabou.noosa.Camera;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Music;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.noosa.ui.Button;
-import com.watabou.utils.Random;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class BadgesScene extends PixelScene {
 
@@ -49,7 +40,10 @@ public class BadgesScene extends PixelScene {
 
 		super.create();
 
-		Music.INSTANCE.play( Assets.Music.THEME, true );
+		Music.INSTANCE.playTracks(
+				new String[]{Assets.Music.THEME_1, Assets.Music.THEME_2},
+				new float[]{1, 1},
+				false);
 
 		uiCamera.visible = false;
 
@@ -60,7 +54,7 @@ public class BadgesScene extends PixelScene {
 		archs.setSize( w, h );
 		add( archs );
 
-		float left = 5;
+		float margin = 5;
 		float top = 20;
 
 		RenderedTextBlock title = PixelScene.renderTextBlock( Messages.get(this, "title"), 9 );
@@ -73,41 +67,9 @@ public class BadgesScene extends PixelScene {
 		add(title);
 
 		Badges.loadGlobal();
-
-		ArrayList<Badges.Badge> lockedBadges = new ArrayList<>();
-		for (Badges.Badge badge : Badges.Badge.values()){
-			if (badge.image != -1 && !Badges.isUnlocked(badge)){
-				lockedBadges.add(badge);
-			}
-		}
-		Badges.filterHigherIncrementalBadges(lockedBadges);
-
-		List<Badges.Badge> badges = Badges.filterReplacedBadges( true );
-
-		int totalBadges = lockedBadges.size() + badges.size();
-
-		//4-5 columns in portrait, 6-8 in landscape
-		int nCols = landscape() ? 6 : 4;
-		if (!landscape() && totalBadges > 32)   nCols++;
-		if (landscape() && totalBadges > 24)    nCols++;
-		if (landscape() && totalBadges > 35)    nCols++;
-
-		int nRows = (int) Math.ceil(totalBadges/(float)nCols);
-
-		float badgeWidth = (w - 2*left)/nCols;
-		float badgeHeight = (h - top - left)/nRows;
-
-		for (int i = 0; i < totalBadges; i++){
-			int row = i / nCols;
-			int col = i % nCols;
-			Badges.Badge b = i < badges.size() ? badges.get( i ) : lockedBadges.get( i - badges.size() );
-			BadgeButton button = new BadgeButton( b, i < badges.size() );
-			button.setPos(
-					left + col * badgeWidth + (badgeWidth - button.width()) / 2,
-					top + row * badgeHeight + (badgeHeight - button.height()) / 2);
-			align(button);
-			add( button );
-		}
+		BadgesGrid grid = new BadgesGrid(true);
+		grid.setRect(margin, top, w-(2*margin), h-top-margin);
+		add(grid);
 
 		ExitButton btnExit = new ExitButton();
 		btnExit.setPos( Camera.main.width - btnExit.width(), 0 );
@@ -129,49 +91,4 @@ public class BadgesScene extends PixelScene {
 		ShatteredPixelDungeon.switchNoFade( TitleScene.class );
 	}
 
-	private static class BadgeButton extends Button {
-
-		private Badges.Badge badge;
-		private boolean unlocked;
-
-		private Image icon;
-
-		public BadgeButton( Badges.Badge badge, boolean unlocked ) {
-			super();
-
-			this.badge = badge;
-			this.unlocked = unlocked;
-
-			icon = BadgeBanner.image(badge.image);
-			if (!unlocked) {
-				icon.brightness(0.4f);
-			}
-			add(icon);
-
-			setSize( icon.width(), icon.height() );
-		}
-
-		@Override
-		protected void layout() {
-			super.layout();
-
-			icon.x = x + (width - icon.width()) / 2;
-			icon.y = y + (height - icon.height()) / 2;
-		}
-
-		@Override
-		public void update() {
-			super.update();
-
-			if (unlocked && Random.Float() < Game.elapsed * 0.1) {
-				BadgeBanner.highlight( icon, badge.image );
-			}
-		}
-
-		@Override
-		protected void onClick() {
-			Sample.INSTANCE.play( Assets.Sounds.CLICK, 0.7f, 0.7f, 1.2f );
-			Game.scene().add( new WndBadge( badge, unlocked ) );
-		}
-	}
 }

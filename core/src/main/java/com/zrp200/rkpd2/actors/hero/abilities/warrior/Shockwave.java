@@ -39,6 +39,7 @@ import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.mechanics.ConeAOE;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.ui.HeroIcon;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.audio.Sample;
@@ -108,21 +109,24 @@ public class Shockwave extends ArmorAbility {
 							if (ch != null && ch.alignment != hero.alignment){
 								int scalingStr = hero.STR()-10;
 								int damage = Random.NormalIntRange(5 + scalingStr, 10 + 2*scalingStr);
-								damage = Math.round(damage * (1f + 0.15f*hero.shiftedPoints(Talent.SHOCK_FORCE)));
+								damage = Math.round(damage * (1f + 0.2f*hero.shiftedPoints(Talent.SHOCK_FORCE)));
 								damage -= ch.drRoll();
 
-								// 4 -> 5 for shift
-								if (Random.Int(5) < hero.shiftedPoints(Talent.STRIKING_WAVE)){
+								if (hero.pointsInTalent(Talent.STRIKING_WAVE) == 4){
+									Buff.affect(hero, Talent.StrikingWaveTracker.class, 0f);
+								}
+
+								if (Random.Int(10) < 3*hero.pointsInTalent(Talent.STRIKING_WAVE)){
 									damage = hero.attackProc(ch, damage);
 									ch.damage(damage, hero);
-									if (hero.subClass == HeroSubClass.GLADIATOR){
+									if (hero.subClass == HeroSubClass.GLADIATOR || hero.subClass == HeroSubClass.KING){
 										Buff.affect( hero, Combo.class ).hit( ch );
 									}
 								} else {
 									ch.damage(damage, hero);
 								}
 								if (ch.isAlive()){
-									if (Random.Int(5) < hero.shiftedPoints(Talent.SHOCK_FORCE)){
+									if (Random.Int(4) < hero.pointsInTalent(Talent.SHOCK_FORCE)){
 										Buff.affect(ch, Paralysis.class, 5f);
 									} else {
 										Buff.affect(ch, Cripple.class, 5f);
@@ -137,6 +141,11 @@ public class Shockwave extends ArmorAbility {
 
 					}
 				});
+	}
+
+	@Override
+	public int icon() {
+		return HeroIcon.SHOCKWAVE;
 	}
 
 	@Override

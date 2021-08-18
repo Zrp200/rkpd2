@@ -22,44 +22,34 @@
 package com.zrp200.rkpd2.items.stones;
 
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.MagicalSleep;
-import com.zrp200.rkpd2.actors.mobs.Mob;
-import com.zrp200.rkpd2.effects.CellEmitter;
-import com.zrp200.rkpd2.effects.Speck;
+import com.zrp200.rkpd2.actors.buffs.Terror;
+import com.zrp200.rkpd2.effects.Flare;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
+import com.zrp200.rkpd2.tiles.DungeonTilemap;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.PathFinder;
 
-public class StoneOfDeepenedSleep extends Runestone {
+public class StoneOfFear extends Runestone {
 	
 	{
-		image = ItemSpriteSheet.STONE_SLEEP;
+		image = ItemSpriteSheet.STONE_FEAR;
 	}
 	
 	@Override
 	protected void activate(int cell) {
-		
-		for (int i : PathFinder.NEIGHBOURS9){
-			
-			CellEmitter.get(cell + i).start( Speck.factory( Speck.NOTE ), 0.1f, 2 );
-			
-			if (Actor.findChar(cell + i) != null) {
-				
-				Char c = Actor.findChar(cell + i);
-				
-				if ((c instanceof Mob && ((Mob) c).state == ((Mob) c).SLEEPING)){
-					
-					Buff.affect(c, MagicalSleep.class);
-					
-				}
-				
-			}
+
+		Char ch = Actor.findChar( cell );
+
+		if (ch != null){
+			Buff.affect( ch, Terror.class, Terror.DURATION ).object = curUser.id();
 		}
-		
-		Sample.INSTANCE.play( Assets.Sounds.LULLABY );
+
+		new Flare( 5, 16 ).color( 0xFF0000, true ).show(Dungeon.hero.sprite.parent, DungeonTilemap.tileCenterToWorld(cell), 2f );
+		Sample.INSTANCE.play( Assets.Sounds.READ );
 		
 	}
+	
 }

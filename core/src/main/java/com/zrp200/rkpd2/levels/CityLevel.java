@@ -34,6 +34,8 @@ import com.zrp200.rkpd2.levels.traps.DisintegrationTrap;
 import com.zrp200.rkpd2.levels.traps.DistortionTrap;
 import com.zrp200.rkpd2.levels.traps.FlashingTrap;
 import com.zrp200.rkpd2.levels.traps.FrostTrap;
+import com.zrp200.rkpd2.levels.traps.GatewayTrap;
+import com.zrp200.rkpd2.levels.traps.GeyserTrap;
 import com.zrp200.rkpd2.levels.traps.GuardianTrap;
 import com.zrp200.rkpd2.levels.traps.PitfallTrap;
 import com.zrp200.rkpd2.levels.traps.RockfallTrap;
@@ -93,7 +95,7 @@ public class CityLevel extends RegularLevel {
 		return new Class[]{
 				FrostTrap.class, StormTrap.class, CorrosionTrap.class, BlazingTrap.class, DisintegrationTrap.class,
 				RockfallTrap.class, FlashingTrap.class, GuardianTrap.class, WeakeningTrap.class,
-				DisarmingTrap.class, SummoningTrap.class, WarpingTrap.class, CursingTrap.class, PitfallTrap.class, DistortionTrap.class };
+				DisarmingTrap.class, SummoningTrap.class, WarpingTrap.class, CursingTrap.class, PitfallTrap.class, DistortionTrap.class, GatewayTrap.class, GeyserTrap.class };
 	}
 
 	@Override
@@ -101,7 +103,7 @@ public class CityLevel extends RegularLevel {
 		return new float[]{
 				4, 4, 4, 4, 4,
 				2, 2, 2, 2,
-				1, 1, 1, 1, 1, 1 };
+				1, 1, 1, 1, 1, 1, 1, 1 };
 	}
 	
 	@Override

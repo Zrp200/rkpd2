@@ -27,6 +27,7 @@ import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.ui.HeroIcon;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
@@ -84,6 +85,10 @@ public abstract class ArmorAbility implements Bundlable {
 
 	public String desc(){
 		return Messages.get(this, "desc") + "\n\n" + Messages.get(this, "cost", (int)baseChargeUse);
+	}
+
+	public int icon(){
+		return HeroIcon.NONE;
 	}
 
 	public abstract Talent[] talents();

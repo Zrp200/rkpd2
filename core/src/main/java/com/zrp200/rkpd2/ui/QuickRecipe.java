@@ -23,8 +23,10 @@ package com.zrp200.rkpd2.ui;
 
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.ShatteredPixelDungeon;
+import com.zrp200.rkpd2.items.ArcaneResin;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.LiquidMetal;
 import com.zrp200.rkpd2.items.Recipe;
 import com.zrp200.rkpd2.items.bombs.Bomb;
 import com.zrp200.rkpd2.items.food.Blandfruit;
@@ -62,6 +64,8 @@ import com.zrp200.rkpd2.items.spells.ReclaimTrap;
 import com.zrp200.rkpd2.items.spells.Recycle;
 import com.zrp200.rkpd2.items.spells.WildEnergy;
 import com.zrp200.rkpd2.items.stones.Runestone;
+import com.zrp200.rkpd2.items.wands.Wand;
+import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.plants.Plant;
 import com.zrp200.rkpd2.scenes.AlchemyScene;
@@ -309,6 +313,22 @@ public class QuickRecipe extends Component {
 				}
 				return result;
 			case 4:
+				result.add(new QuickRecipe( new LiquidMetal.Recipe(),
+						new ArrayList<Item>(Arrays.asList(new MissileWeapon.PlaceHolder())),
+						new LiquidMetal()));
+				result.add(new QuickRecipe( new LiquidMetal.Recipe(),
+						new ArrayList<Item>(Arrays.asList(new MissileWeapon.PlaceHolder().quantity(2))),
+						new LiquidMetal()));
+				result.add(new QuickRecipe( new LiquidMetal.Recipe(),
+						new ArrayList<Item>(Arrays.asList(new MissileWeapon.PlaceHolder().quantity(3))),
+						new LiquidMetal()));
+				result.add(null);
+				result.add(null);
+				result.add(new QuickRecipe( new ArcaneResin.Recipe(),
+						new ArrayList<Item>(Arrays.asList(new Wand.PlaceHolder())),
+						new ArcaneResin()));
+				return result;
+			case 5:
 				r = new ExoticPotion.PotionToExotic();
 				for (Class<?> cls : Generator.Category.POTION.classes){
 					Potion pot = (Potion) Reflection.newInstance(cls);
@@ -316,7 +336,7 @@ public class QuickRecipe extends Component {
 					result.add(new QuickRecipe( r, in, r.sampleOutput(in)));
 				}
 				return result;
-			case 5:
+			case 6:
 				r = new ExoticScroll.ScrollToExotic();
 				for (Class<?> cls : Generator.Category.SCROLL.classes){
 					Scroll scroll = (Scroll) Reflection.newInstance(cls);
@@ -324,7 +344,7 @@ public class QuickRecipe extends Component {
 					result.add(new QuickRecipe( r, in, r.sampleOutput(in)));
 				}
 				return result;
-			case 6:
+			case 7:
 				result.add(new QuickRecipe(new AlchemicalCatalyst.Recipe(), new ArrayList<>(Arrays.asList(new Potion.PlaceHolder(), new Plant.Seed.PlaceHolder())), new AlchemicalCatalyst()));
 				result.add(new QuickRecipe(new AlchemicalCatalyst.Recipe(), new ArrayList<>(Arrays.asList(new Potion.PlaceHolder(), new Runestone.PlaceHolder())), new AlchemicalCatalyst()));
 				result.add(null);
@@ -332,7 +352,7 @@ public class QuickRecipe extends Component {
 				result.add(new QuickRecipe(new ArcaneCatalyst.Recipe(), new ArrayList<>(Arrays.asList(new Scroll.PlaceHolder(), new Runestone.PlaceHolder())), new ArcaneCatalyst()));
 				result.add(new QuickRecipe(new ArcaneCatalyst.Recipe(), new ArrayList<>(Arrays.asList(new Scroll.PlaceHolder(), new Plant.Seed.PlaceHolder())), new ArcaneCatalyst()));
 				return result;
-			case 7:
+			case 8:
 				result.add(new QuickRecipe(new CausticBrew.Recipe()));
 				result.add(new QuickRecipe(new InfernalBrew.Recipe()));
 				result.add(new QuickRecipe(new BlizzardBrew.Recipe()));
@@ -347,7 +367,7 @@ public class QuickRecipe extends Component {
 				result.add(new QuickRecipe(new ElixirOfToxicEssence.Recipe()));
 				result.add(new QuickRecipe(new ElixirOfArcaneArmor.Recipe()));
 				return result;
-			case 8:
+			case 9:
 				result.add(new QuickRecipe(new MagicalPorter.Recipe()));
 				result.add(new QuickRecipe(new PhaseShift.Recipe()));
 				result.add(new QuickRecipe(new WildEnergy.Recipe()));

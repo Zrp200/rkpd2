@@ -27,7 +27,10 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.MagicImmune;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.effects.particles.ShadowParticle;
+import com.zrp200.rkpd2.items.journal.Guidebook;
+import com.zrp200.rkpd2.journal.Document;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 
@@ -47,6 +50,19 @@ public abstract class EquipableItem extends Item {
 		ArrayList<String> actions = super.actions( hero );
 		actions.add( isEquipped( hero ) ? AC_UNEQUIP : AC_EQUIP );
 		return actions;
+	}
+
+	@Override
+	public boolean doPickUp(Hero hero) {
+		if (super.doPickUp(hero)){
+			if (!isIdentified() && !Document.ADVENTURERS_GUIDE.isPageRead(Document.GUIDE_IDING)){
+				GLog.p(Messages.get(Guidebook.class, "hint"));
+				GameScene.flashForDocument(Document.GUIDE_IDING);
+			}
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -111,12 +127,16 @@ public abstract class EquipableItem extends Item {
 			hero.spend( time2equip( hero ) );
 		}
 
+		//temporarily keep this item so it can be collected
+		boolean wasKept = keptThoughLostInvent;
+		keptThoughLostInvent = true;
 		if (!collect || !collect( hero.belongings.backpack )) {
 			onDetach();
 			Dungeon.quickslot.clearItem(this);
 			updateQuickslot();
 			if (collect) Dungeon.level.drop( this, hero.pos );
 		}
+		keptThoughLostInvent = wasKept;
 
 		return true;
 	}

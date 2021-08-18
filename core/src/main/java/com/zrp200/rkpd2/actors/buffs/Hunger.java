@@ -26,7 +26,10 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.items.artifacts.Artifact;
 import com.zrp200.rkpd2.items.artifacts.HornOfPlenty;
+import com.zrp200.rkpd2.items.journal.Guidebook;
+import com.zrp200.rkpd2.journal.Document;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.utils.Bundle;
@@ -93,6 +96,11 @@ public class Hunger extends Buff implements Hero.Doom {
 				} else if (newLevel >= HUNGRY && level < HUNGRY) {
 
 					GLog.w( Messages.get(this, "onhungry") );
+
+					if (!Document.ADVENTURERS_GUIDE.isPageRead(Document.GUIDE_FOOD)){
+						GLog.p(Messages.get(Guidebook.class, "hint"));
+						GameScene.flashForDocument(Document.GUIDE_FOOD);
+					}
 
 				}
 				level = newLevel;

@@ -27,6 +27,7 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Haste;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.mobs.Mob;
+import com.zrp200.rkpd2.levels.traps.Trap;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
@@ -114,14 +115,25 @@ public class Swiftthistle extends Plant {
 		}
 		
 		public void setDelayedPress(int cell){
-			if (!presses.contains(cell))
+			if (!presses.contains(cell)) {
 				presses.add(cell);
+			}
 		}
-		
-		private void triggerPresses(){
-			for (int cell : presses)
+
+		public void triggerPresses() {
+			for (int cell : presses) {
 				Dungeon.level.pressCell(cell);
-			
+			}
+
+			presses = new ArrayList<>();
+		}
+
+		public void disarmPressedTraps(){
+			for (int cell : presses){
+				Trap t = Dungeon.level.traps.get(cell);
+				if (t != null) t.disarm();
+			}
+
 			presses = new ArrayList<>();
 		}
 		

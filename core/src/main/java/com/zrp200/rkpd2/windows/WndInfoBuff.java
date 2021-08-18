@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.PixelScene;
+import com.zrp200.rkpd2.ui.BuffIcon;
 import com.zrp200.rkpd2.ui.ActionIndicator;
 import com.zrp200.rkpd2.ui.RedButton;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
@@ -40,20 +41,12 @@ public class WndInfoBuff extends Window {
 
 	private static final int WIDTH = 120;
 
-	private SmartTexture icons;
-	private TextureFilm film;
-
 	public WndInfoBuff(Buff buff){
 		super();
 
 		IconTitle titlebar = new IconTitle();
 
-		icons = TextureCache.get( Assets.Interfaces.BUFFS_LARGE );
-		film = new TextureFilm( icons, 16, 16 );
-
-		Image buffIcon = new Image( icons );
-		buffIcon.frame( film.get(buff.icon()) );
-		buff.tintIcon(buffIcon);
+		Image buffIcon = new BuffIcon( buff, true );
 
 		titlebar.icon( buffIcon );
 		titlebar.label( Messages.titleCase(buff.toString()), Window.TITLE_COLOR );

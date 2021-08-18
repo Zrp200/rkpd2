@@ -31,6 +31,7 @@ import com.zrp200.rkpd2.actors.buffs.Bleeding;
 import com.zrp200.rkpd2.actors.buffs.Blindness;
 import com.zrp200.rkpd2.actors.buffs.BlobImmunity;
 import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.Corruption;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -44,6 +45,7 @@ import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.BatSprite;
 import com.zrp200.rkpd2.sprites.MobSprite;
+import com.zrp200.rkpd2.ui.HeroIcon;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.utils.Bundle;
@@ -123,6 +125,11 @@ public class SpiritHawk extends ArmorAbility {
 	}
 
 	@Override
+	public int icon() {
+		return HeroIcon.SPIRIT_HAWK;
+	}
+
+	@Override
 	public Talent[] talents() {
 		return new Talent[]{Talent.EAGLE_EYE, Talent.GO_FOR_THE_EYES, Talent.SWIFT_SPIRIT, Talent.HEROIC_ENERGY};
 	}
@@ -142,7 +149,7 @@ public class SpiritHawk extends ArmorAbility {
 			spriteClass = HawkSprite.class;
 
 			HP = HT = 10;
-			defenseSkill = 50;
+			defenseSkill = 60;
 
 			flying = true;
 			viewDistance = (int)GameMath.gate(6, 6+Dungeon.hero.pointsInTalent(Talent.EAGLE_EYE), 8);
@@ -150,19 +157,21 @@ public class SpiritHawk extends ArmorAbility {
 			attacksAutomatically = false;
 
 			immunities.addAll(new BlobImmunity().immunities());
+			immunities.add(Corruption.class);
 		}
 
 		@Override
 		public int attackSkill(Char target) {
-			return 50;
+			return 60;
 		}
 
 		private int dodgesUsed = 0;
-		private float timeRemaining = 50f;
+		private float timeRemaining = 60f;
 
 		@Override
 		public int defenseSkill(Char enemy) {
-			if (dodgesUsed < Dungeon.hero.pointsInTalent(Talent.SWIFT_SPIRIT)){
+			if (Dungeon.hero.hasTalent(Talent.SWIFT_SPIRIT) &&
+					dodgesUsed < 1 + Dungeon.hero.pointsInTalent(Talent.SWIFT_SPIRIT)) {
 				dodgesUsed++;
 				return Char.INFINITE_EVASION;
 			}
@@ -178,7 +187,7 @@ public class SpiritHawk extends ArmorAbility {
 		public int attackProc(Char enemy, int damage) {
 			damage = super.attackProc( enemy, damage );
 			if (Dungeon.hero.hasTalent(Talent.GO_FOR_THE_EYES)) {
-				Buff.prolong( enemy, Blindness.class, 1 + Dungeon.hero.pointsInTalent(Talent.GO_FOR_THE_EYES) );
+				Buff.prolong( enemy, Blindness.class, 2*Dungeon.hero.pointsInTalent(Talent.GO_FOR_THE_EYES) );
 			}
 
 			return damage;

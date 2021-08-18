@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.actors.mobs;
 
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.Weapon.Enchantment;
@@ -108,6 +109,14 @@ public class Statue extends Mob {
 		return Random.NormalIntRange(0, Dungeon.depth + weapon.defenseFactor(this));
 	}
 	
+	@Override
+	public void add(Buff buff) {
+		super.add(buff);
+		if (state == PASSIVE && buff.type == Buff.buffType.NEGATIVE){
+			state = HUNTING;
+		}
+	}
+
 	@Override
 	public void damage( int dmg, Object src ) {
 

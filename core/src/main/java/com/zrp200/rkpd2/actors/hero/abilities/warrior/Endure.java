@@ -37,6 +37,7 @@ import com.zrp200.rkpd2.effects.SpellSprite;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
+import com.zrp200.rkpd2.ui.HeroIcon;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 
@@ -100,7 +101,7 @@ public class Endure extends ArmorAbility {
 
 		public int adjustDamageTaken(int damage){
 			if (enduring) {
-				damageBonus += damage/4;
+				damageBonus += damage/3;
 				return damage/2;
 			}
 			return damage;
@@ -180,6 +181,11 @@ public class Endure extends ArmorAbility {
 			hitsLeft = bundle.getInt(HITS_LEFT);
 		}
 	};
+
+	@Override
+	public int icon() {
+		return HeroIcon.ENDURE;
+	}
 
 	@Override
 	public Talent[] talents() {

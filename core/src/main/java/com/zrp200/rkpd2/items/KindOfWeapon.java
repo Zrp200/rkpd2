@@ -28,6 +28,7 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.ui.ActionIndicator;
 import com.zrp200.rkpd2.utils.BArray;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.audio.Sample;
@@ -43,7 +44,7 @@ abstract public class KindOfWeapon extends EquipableItem {
 	
 	@Override
 	public boolean isEquipped( Hero hero ) {
-		return hero.belongings.weapon == this || hero.belongings.stashedWeapon == this;
+		return hero.belongings.weapon() == this;
 	}
 	
 	@Override
@@ -56,6 +57,7 @@ abstract public class KindOfWeapon extends EquipableItem {
 			hero.belongings.weapon = this;
 			activate( hero );
 			Talent.onItemEquipped(hero, this);
+			ActionIndicator.updateIcon();
 			updateQuickslot();
 			
 			cursedKnown = true;
