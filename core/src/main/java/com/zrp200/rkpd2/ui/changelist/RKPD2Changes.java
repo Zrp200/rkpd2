@@ -114,6 +114,7 @@ public class RKPD2Changes {
     /** makes a list in the standard PD style.
      * [lineSpace] determines the number of spaces between each list item.
      * If you want to append extra spaces, you should do it at the end of the previous item, rather than at the start of that item.*/
+    private static String list(String... items) { return list(1, items); }
     private static String list(int lineSpace, String... items) {
         StringBuilder builder = new StringBuilder();
         for (int j=0; j < lineSpace; j++) builder.append('\n');
@@ -139,8 +140,7 @@ public class RKPD2Changes {
                 new ChangeButton(new ItemSprite(ItemSpriteSheet.ARMOR_RAT_KING), "Rat King's Wrath Redesign!", "I've finally gotten around to updating Rat King's Wrath to reflect v0.9.3 reworks to armor abilities!"
                         + "\n\nWhile the previous Wrath was a combination of all armor abilities, the prospect of combining 13 different abilities into one isn't possible under the Wrath design, so I have instead decided to adapt the ones that have similar functionality to each part of the previous Wrath: _Smoke Bomb, Shockwave, Elemental Blast, and Spectral Blades._"
                         + "\nNote, however, that Wrath is not a perfect mirror of these abilities, though all their mechanics are there in some form."
-                        + "\n" + list(1,
-                        "Energy cost increased to 60 from 35.",
+                        + "\n" + list("Energy cost increased to 60 from 35.",
                         "Added four new talents to Wrath. Each new talent corresponds as closely as possible to the talents of the respective armor ability. Wrath does not have Heroic Energy.",
                         "Smoke Bomb no longer grants invisibility, mechanic instead moved to corresponding talent. Range is reduced to 6, from 8.",
                         "Molten Earth effect replaced with Elemental Blast.",
@@ -149,14 +149,13 @@ public class RKPD2Changes {
                 new ChangeButton(HUNTRESS, list(2,
                         "Added a _secret subclass_ to Huntress, accessible by a secret interaction while choosing a subclass.",
                         "_Restored Nature_ root duration reverted to 2/3, down from 4/6, but it now also causes health potions and related alchemy products to be used instantly.")
-                        + "_Multi-Shot:_" + list(1,
-                        "Now uses multiple buffs to show that more than one target is marked.",
+                        + "_Multi-Shot:_" + list("Now uses multiple buffs to show that more than one target is marked.",
                         "Allows stacking of free-targeted marks instead of overriding them when a new target is marked.",
                         "Has changed free-targeting logic (thanks to smart-targeting) to make these new interactions smoother; enemies that are already targeted will be highlighted while manually targeting.")
                         + "\nMulti-shot should now be more complex, but in exchange it should (somewhat ironically) be easier to use and understand. It's also much more flexible with its free-targeted sniper special functionality.")),
             Changes(
                 new ChangeButton(new ItemSprite(ItemSpriteSheet.STONE_ENCHANT), "Enchanting Logic",
-                        list(1, "The chance for rare weapon enchantments to appear has been increased by ~50%.")
+                        list("The chance for rare weapon enchantments to appear has been increased by ~50%.")
                                 + "_\n\nSpirit Bow only:_" + list(2,
                                 "Stones of Enchantment can no longer roll Lucky or Blocking.",
                                 "Explosive Enchantment can now be rolled by Stones of Enchantment.",
@@ -180,8 +179,7 @@ public class RKPD2Changes {
             Nerfs(
                 new ChangeButton(ROGUE, ""
                         + "_Mending Shadows_ turned out to have exploits, so it's (very unfortunately) being largely scrapped:"
-                        + list(1,
-                        "Now provides shielding every 2/1 turns, up to 3/5 max shielding (Shattered Protective Shadows).",
+                        + list("Now provides shielding every 2/1 turns, up to 3/5 max shielding (Shattered Protective Shadows).",
                         "Healing rate reduced to every 4/2 turns, and it no longer works while starving.")
                         + "\n\nIn addition, I'm making these changes based on player feedback:" + list(2,
                         "_Cached Rations_ now gives 3/5 rations, down from 4/6.",
@@ -244,8 +242,7 @@ public class RKPD2Changes {
                         "You can still supercharge your armor if you have too low charge, don't worry, though I doubt it'll be as notable as before with the charging mechanic changes and Heroic Energy.",
                         "Rat King has two \"special\" abilities to choose from, currently, and one more will hopefully be added in future updates."
                     )
-                    + "_Ability Buffs_:" + list(1,
-                        "Heroic Energy, Elemental Power, Reactive Barrier, and Nature's Wrath are now more potent.",
+                    + "_Ability Buffs_:" + list("Heroic Energy, Elemental Power, Reactive Barrier, and Nature's Wrath are now more potent.",
                         "Ratforcements spawns scaled rats that are much stronger than standard rats. It can also summon scaled loyal albinos now.",
                         "Ratlomancy now gives 50% more adrenaline for 50% more fun.",
                         "Death Mark has been buffed heavily.",
@@ -301,12 +298,10 @@ public class RKPD2Changes {
 
             Buffs(
                 new ChangeButton(HUNTRESS, "I'm leaning harder on giving subclasses access to talents without upgrading them, and _Warden_ is an excellent place to start:"
-                    +list(1,
-                        "Tipped Darts shifted, now gives 2x/3x/4x/5x durability.",
+                    +list("Tipped Darts shifted, now gives 2x/3x/4x/5x durability.",
                         "v0.9.3 Barkskin implemented, but Barkskin now degrades every two turns instead of one and gets barkskin equal to 50/100/150/200% of her level at +0/1/2/3 respectively. Thus instead of nerfing it, I have buffed it ;)")
                     +"\nIt's also clear that _Sniper needs buffs._"
-                    +list(1,
-                        "Farsight shifted, now gives 25/50/75/100% bonus sight.",
+                    +list("Farsight shifted, now gives 25/50/75/100% bonus sight.",
                         "Shared Upgrades shifted (now 10/20/30/40), and the increasing duration aspect is given at +0.",
                         "New Sniper perk: +33 accuracy.")
                     //+"\n"
@@ -343,17 +338,14 @@ public class RKPD2Changes {
                             +"This change makes iron will recharge the seal super fast, even when not upgraded. At the very start of the game, the time to fully recharge two shield is halved!"
                 ),
                 new ChangeButton(STRONGMAN, "I've implemented and (obviously) buffed Shattered's Strongman (13%/21%/29% up from 8%/13%/18%), now that Evan has finally gotten his act together and realized that I was right all along."
-                        +"\n\n_+3:_"+list(1,
-                            ":14-:17 strength -> +4 -> 18/19/20/21 down from 19/20/21/22",
+                        +"\n\n_+3:_"+list(":14-:17 strength -> +4 -> 18/19/20/21 down from 19/20/21/22",
                             "12-13 strength -> +3 -> 15/16 down from 17/18",
                             "10-11 strength -> +2 -> 12/13 down from 15/16",
                             "It is effectively around the same starting around 15 strength (16 if you were using a greataxe), but is increasingly worse prior to that."
-                        ) + "\n_+2_:"+list(1,
-                            "Gives a worse boost (2 down from 3) before the hero naturally attains 15 strength.",
+                        ) + "\n_+2_:"+list("Gives a worse boost (2 down from 3) before the hero naturally attains 15 strength.",
                             "Gives a better boost once the hero has natural 20 strength"
                         )
-                        +"\n_+1_:"+list(1,
-                            "Gives +2 strength, up from its effective previous value of +1, once the hero naturally attains 16 strength."
+                        +"\n_+1_:"+list("Gives +2 strength, up from its effective previous value of +1, once the hero naturally attains 16 strength."
                         )
                         +"\nOverall Strongman is a bit worse at +3 and a bit better at +2 and +1. Its ability to be exploited is down due to now being reliant on having strength, but in return it also gives true strength bonuses (thus opening up synergies with rings of force and might...)"
                 ),
@@ -364,13 +356,11 @@ public class RKPD2Changes {
             new ChangeInfo("v0.0.1", true, TITLE_COLOR, "") {{
                 addButton(new ChangeButton(get(Icons.INFO), "Developer Commentary", "This update is mostly just bugfixes and balance adjustments. More substantial changes should come when SHPD v0.9.3 is released.\n\nDo note that while things are intended to be broken, I'm aiming for a state where things are 'evenly' overpowered such that you can play any class or do any build and be like 'that's really damn good' for everything, rather than resetting (or just choosing talents!) for that same broken build every time."));
                 addButton(new ChangeButton(WARRIOR, "This is intended to make Warrior (and Berserker) a little more balanced powerwise compared to other stuff in the game."
-                    + "\n\nGeneral:" + list(1,
-                        "Implemented buffed runic transference.",
+                    + "\n\nGeneral:" + list("Implemented buffed runic transference.",
                         "Nerfed Iron Stomach to be in line with SHPD.",
                         "Removed Iron Will charge speed increase and bonus shielding.",
                         "Strongman buffed to 1/3/5 from 1/2/3. It's good now I swear!")
-                    + "\nBerserker:" + list(1,
-                        "Fixed a bug that made it MUCH easier to get rage while recovering than intended.",
+                    + "\nBerserker:" + list("Fixed a bug that made it MUCH easier to get rage while recovering than intended.",
                         "Berserking Stamina recovery nerfed from 1.5/1/.5 to 1.67/1.33/1. Shielding unchanged.",
                         "Enraged Catalyst was bugged to be at shpd levels (17/33/50), but now that's intended.",
                         "One Man Army now only gives boost if you're in combat, rather than simply relying on line of sight.",
@@ -378,8 +368,7 @@ public class RKPD2Changes {
                         "Current HP weighting now refers to actual current HP, instead of current HP after damage is dealt.")
                 ));
                 addButton(new ChangeButton(ROGUE, "Of all the classes, Rogue has the most exploits and uneven gameplay. These changes are intended to make him seem less repetitive/unbalanced.\n"
-                    + list(1,
-                        "Removed Mystical Meal-Horn of Plenty exploit, it was WAY more potent than I'd thought it would be.",
+                    + list("Removed Mystical Meal-Horn of Plenty exploit, it was WAY more potent than I'd thought it would be.",
                         "Sucker punch now only works on the first surprise attack, numbers unchanged.",
                         "Marathon runner potency halved (is now 17%/33%/50%).",
                         "Mystical Upgrade is now more potent, gives instant 8/12 recharge to non-cloak artifacts, up from 5/8.",
@@ -396,8 +385,7 @@ public class RKPD2Changes {
                         "Overcharging is now standardized to +100% per overcharge, down from 200% for everyone but Rat King.",
                         "Rogue Garb now has no limit on the distance it can jump.",
                         "Huntress Spectral Blades now has no distance limit.")
-                    + "Rat King's Wrath:" + list(1,
-                        "jump takes an extra turn.",
+                    + "Rat King's Wrath:" + list("jump takes an extra turn.",
                         "Changed effects to make them more distinct (and fixed a couple omitted visual effects)",
                         "Changed the priority of the invisibility to actually cover the last turn of delay.")
                 ));
@@ -411,42 +399,35 @@ public class RKPD2Changes {
                     "Troll Blacksmith now transitions directly into the reforge window after initially talking to him.")
                 ));
                 addButton(bugFixes("Fixed many bugs involving soul marking that were directly impacting the power of soul mark:"
-                    + list(1,
-                        "Warlock's Touch can now actually provide its benefit immediately.",
+                    + list("Warlock's Touch can now actually provide its benefit immediately.",
                         "Fixed melee attacks proccing soul mark twice.",
                         "Fixed melee attacks coming from the hero being considered indirect damage and thus requiring Soul Siphon or Presence to work with soul mark at all.",
                         "Rare crashes when zapping the shopkeeper with a wand that can soul-mark.")
-                    + "\nOther fixes:" + list(1,
-                        "Huntress and Rat King getting more berries at +2 from their respective talents than intended.",
+                    + "\nOther fixes:" + list("Huntress and Rat King getting more berries at +2 from their respective talents than intended.",
                         "Being able to apply sniper's mark to multiple foes when it shouldn't be possible.",
                         "Typos")
                 ));
             }},
             new ChangeInfo("v0.0.1a", false, TITLE_COLOR, "",
                 new ChangeButton(avatar(HUNTRESS, 6), "Multishot and Warden", ""
-                    + "\nMultishot:" + list(1,
-                        "now has a unique icon.",
+                    + "\nMultishot:" + list("now has a unique icon.",
                         "levels for targets are now evaluated independently for the purposes of shared upgrades.",
                         "the total duration of sniper's mark is now the sum of the durations of each marked target.",
                         "free shot is now kept for 1/2/3x duration at +1/2/3.",
                         "Improved target handling between floors and when some targets cannot be shot.")
                     + "\nWarden's power seems to currently be concentrated in Nature's Better Aid:"
-                    + list(1,
-                        "NBA seed boost now +17/33/50% down from +33/66/100%",
+                    + list("NBA seed boost now +17/33/50% down from +33/66/100%",
                         "NBA dew boost now +8/17/25% down from +33/66/100%",
                         "Shielding Dew now also gives upfront shielding equal to 25%/50%/75% of the heal when not at full HP.")),
                 new ChangeButton(get(Icons.TALENT), "General Talents", ""
-                    + list(1,
-                        "Scholar's Intuition +2 now has a 50% chance to identify consumables when picking them up, down from 2/3",
+                    + list("Scholar's Intuition +2 now has a 50% chance to identify consumables when picking them up, down from 2/3",
                         "Scholar's Intuition +1 now identifies wand levels on the first zap.")
-                    + list(1, "Restored Nature now roots for 4/6 turns, up from 3/5")
-                    + list(1,
-                        "Seer Shot cooldown reduced from 20 to 5. (It was bugged to be 20 instead of 10)",
+                    + list("Restored Nature now roots for 4/6 turns, up from 3/5")
+                    + list("Seer Shot cooldown reduced from 20 to 5. (It was bugged to be 20 instead of 10)",
                         "Natural Dominance's Seer Shot cooldown increased to 20 from 10")
                     + "\n_-_ Fixed an oversight that caused Soul Siphon to cause wands to trigger soul mark at 200/300/400% effectiveness instead of 20/30/40%"
                 ),
-                misc(list(1,
-                        "The level at which enemies stop giving exp has been increased again by 1 (now +2 compared to shattered)",
+                misc(list("The level at which enemies stop giving exp has been increased again by 1 (now +2 compared to shattered)",
                         "The level at which enemies stop dropping stuff has been decreased by 1 to match this new value. (now same as shattered)"
                     ).trim() + list(2,
                         "explosive arrows can now proc on miss regardless of where they are shot.",
@@ -469,14 +450,11 @@ public class RKPD2Changes {
                             "Added a new class! Rat King is supposed to be a sort of 'omniclass', with the perks of all the shattered classes combined.\n\n"
                                     + "He also has his subclass implemented, which, in line with the above, is of course all subclasses in one. I'm pretty proud of this one, give it a shot!"));
                     addButton(new ChangeButton(WARRIOR,""
-                            + list(1,
-                                "Iron Will now increases the amount of upgrades the seal can store.",
+                            + list("Iron Will now increases the amount of upgrades the seal can store.",
                                 "All t1 talents buffed.")
-                            + "\n_Berserker_:" + list(1,
-                                "Rage gain now scales with HP as talents are upgraded",
+                            + "\n_Berserker_:" + list("Rage gain now scales with HP as talents are upgraded",
                                 "Added a new talent that makes him attack faster with more enemies around")
-                            + "\n_Gladiator_:" + list(1,
-                                "All finishers get an extra damage roll check for increased consistency via Skill talent")));
+                            + "\n_Gladiator_:" + list("All finishers get an extra damage roll check for increased consistency via Skill talent")));
                     addButton(new ChangeButton(MAGE, list(2,
                             "Mage now has intrinsic +2 level to all wands for purposes of power and recharge",
                             "Battlemage now has a new talent that lets him spread his staff effects to all his attacks",
@@ -504,8 +482,7 @@ public class RKPD2Changes {
                 }},
             new ChangeInfo("Misc", false, "") {{
                     addButton(new ChangeButton(new WandOfFirebolt(), "Added wand of firebolt."
-                            + '\n' + list(1,
-                                "Does 0-9 damage with +1/+6 scaling instead of its vanilla/early shattered 1-8 with exponential scaling.",
+                            + '\n' + list("Does 0-9 damage with +1/+6 scaling instead of its vanilla/early shattered 1-8 with exponential scaling.",
                                 "Is otherwise unchanged.")
                             + "\nThis should make it more consistently overpowered instead of requiring 10+ upgrades to reach actually astounding performance. I can probably call this my greatest mistake of all time. Oh well..."));
                     addButton(new ChangeButton(get(Icons.DEPTH),"Level gen changes", list(2,
@@ -527,8 +504,7 @@ public class RKPD2Changes {
                     addButton(new ChangeButton(new ItemSprite(new WarriorArmor()),"Class Armor","Who liked limits anyway? You can trade current HP for a full charge."));
                     addButton(new ChangeButton(get(Icons.LANGS),"Text Changes",
                             "I've changed some of the text in the game, including:"
-                            + list(1,
-                                "Class descriptions both ingame and in the select screen",
+                            + list("Class descriptions both ingame and in the select screen",
                                 "Some enemy descriptions",
                                 "Some boss quotes",
                                 "This changelog")
