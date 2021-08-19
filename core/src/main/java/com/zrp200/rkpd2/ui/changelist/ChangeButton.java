@@ -21,14 +21,24 @@
 
 package com.zrp200.rkpd2.ui.changelist;
 
+import static com.zrp200.rkpd2.sprites.HeroSprite.avatar;
+
 import com.watabou.utils.Reflection;
 import com.zrp200.rkpd2.ShatteredPixelDungeon;
+import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
+import com.zrp200.rkpd2.actors.hero.HeroSubClass;
+import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Component;
+import com.zrp200.rkpd2.ui.BuffIcon;
+import com.zrp200.rkpd2.ui.HeroIcon;
+import com.zrp200.rkpd2.ui.TalentIcon;
 
 //not actually a button, but functions as one.
 public class ChangeButton extends Component {
@@ -51,6 +61,21 @@ public class ChangeButton extends Component {
 	
 	public ChangeButton(Item item, String message ){
 		this( new ItemSprite(item), item.name(), message);
+	}
+	public ChangeButton(HeroClass heroClass, String message) {
+		this( avatar(heroClass, 6), heroClass.title(), message );
+	}
+	public ChangeButton(Talent talent, String message) {
+		this( new Image( new TalentIcon(talent) ), talent.title(), message);
+	}
+	public ChangeButton(HeroSubClass subClass, String message) {
+		this( new Image( new HeroIcon(subClass) ), subClass.title(), message);
+	}
+	public ChangeButton(ArmorAbility ability, String message) {
+		this( new Image( new HeroIcon(ability) ), ability.name(), message);
+	}
+	public ChangeButton(Buff buff, String message) {
+		this( new Image( new BuffIcon(buff,true) ), buff.toString(), message);
 	}
 	
 	protected void onClick() {
