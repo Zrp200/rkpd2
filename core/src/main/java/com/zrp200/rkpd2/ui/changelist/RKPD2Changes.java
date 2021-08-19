@@ -130,12 +130,46 @@ public class RKPD2Changes {
 
     final ChangeInfo[][] changes = {
         {
-            new ChangeInfo("v0.1.1 INDEV", true, TITLE_COLOR, ""),
+            new ChangeInfo("v0.2.0", true, TITLE_COLOR, ""),
             new ChangeInfo("From SHPD v1.0.0", false, SHPX_COLOR, "",
                     // alchemy stuff once it's added in.
-                    new ChangeButton(new ItemSprite(CROWN), "Armor Ability", ""),
-                    misc(""),
-                    bugFixes("")),
+                    new ChangeButton(new ItemSprite(CROWN), "Armor Ability", "Anything implemented here overrides the existing RKPD2 implementation."
+                        + "\n\n_Buffs:_\n"
+                        + list("_Endure_ bonus damage conversion rate up to 1/3 from 1/4.")
+                        + list("_Striking Wave_ effectiveness increased by 20%."/*,"_Shock Force_ now actually adds 20% damage per level as stated. Previously it only added 15%."*/)
+                        + list("_Wild Magic_ now boosts wand levels, instead of overriding them.","_Conserved Magic_ now has a chance to give each wand a 3rd shot.","_Conserved Magic_ charge cost reduction down to 33/55/70/80% from 44/69/82/90%.")
+                        + list("_Elemental Blast_ base damage increased to 15-25 from 10-20.")
+                        + list("_Remote Beacon_ range per level increased to 4, from 3.")
+                        + list("_Shadow Clone_ now follows the hero at 2x speed.","_Shadow Blade_ unshifted, damage per level increased to 7.5% from 6.25%.","_Cloned Armor_ unshifted, armor per level increased to 15% from 12.5%.")
+                        + list("_Spirit Hawk_ evasion, accuracy, and duration increased by 20%.","_Swift Spirit_ now gives 2/3/4/5 dodges, up from 1/2/3/4.","_Go for the Eyes_ now gives 2/4/6/8 turns of blind, up from 2/3/4/5.")
+                        + list("_Spirit Blades_ effectiveness increased by 20%.")
+                        + "\n\nNerfs:\n"
+                        + list("_Double Jump_ charge cost reduction down to 20/36/50/60%, from 24/42/56/67%.")
+                        + list("_Telefrag_ self damage increased to a flat 5 per level.")
+                        + "\nSmoke bomb nerfs are only applied to Wrath. Standard smoke bomb is left intact."
+                        + list("_Smoke Bomb_ max range reduced to 6 tiles from 8.", "_Body Replacement_ armor reduced to 1-3 per level, from 1-5.", "_Hasty Retreat_ turns of haste/invis reduced to 1/2/3/4 from 2/3/4/5","_Shadow Step_ charge cost reduction down to 20/36/50/60%, from 24/42/56/67%.")
+                        + list("_Double Mark_ balance changed in response to SHPD changes; charge cost reduction down to 16/40/58/70/79% (which is still up from shpd's 30/50/65/70), from 33/55/70/80%/87.")
+                        + list("_13th armor ability_ now only lasts for 6 turns, but also no longer prevents EXP or item drops.",
+                        "_resistance talent_ damage reduction, in a compromise, reduced to 15/28/39/48%, which is still well above shattered levels.")),
+                    new ChangeButton(get(DEPTH), "SHPD Additions and Changes", "Implemented:"
+                        + list("New music",
+                            "Geyser and Gateway traps",
+                            "Spectral Necromancers",
+                            "Liquid Metal and Arcane Resin alchemy recipes",
+                            "Unblessed Ankh rework",
+                            "Blessed Ankhs now give 3 turns of invulnerability",
+                            "Guidebook rework")
+                        +"\nRunestone buffs:"+list("All Scrolls now produce 2 runestones.","_Stone of Intuition_ can now be used a second time if the guess was correct.","_Stone of Flock_ AOE up to 5x5 from 3x3, sheep duration increased slightly.","_Stone of Deepened Sleep_ is now stone of deep sleep, instantly puts one enemy into magical sleep.","_Stone of Clairvoyance_ AOE up to 20x20, from 12x12.","_Stone of Aggression_ duration against enemies up 5, now works on bosses, and always forces attacking.","_Stone of Affection_ is now stone of fear, it fears one target for 20 turns.")),
+                    misc("Implemented:\n"
+                            + list("Various tech and stability improvements.", "Increased the minimum supported Android version to 4.0, from 2.3.", "Game versions that use github for update checking can now opt-in to beta updates within the game.")
+                            + list("Various minor UI improvements to the intro, welcome and about scenes.","Adjusted settings windows, removed some unnecessary elements.","Armor with the warrior's seal on it now states max shielding.","Bonus strength is now shown separately from base strength.")
+                            + list("'Improved' the exit visuals on floor 10.","Becoming magic immune now also cleanses existing magical buffs and debuffs.","Traps that spawn visible or that never deactivate can no longer appear in enclosed spaces")),
+                    bugFixes(""
+                        + list("Various rare crash bugs", "Various minor visual and text errors", "damage warn triggering when hero gains HP from being hit", "various rare bugs involving pitfall traps")
+                        + list("statues not becoming aggressive when debuffed", "swapping places with allies reducing momentum", "DK minions dropping imp quest tokens", "giant succubi teleporting into enclosed spaces", "spectral blades being blocked by allies", "Spirit Hawk and Shadow Clone being corruptible")
+                        + list("wands losing max charge on save/load in rare cases", "magical infusion clearing curses", "dewdrops stacking on each other in rare cases", "exploding skeletons not being blocked by transfusion shield in rare cases", "rare incorrect interactions between swiftthistle and golden lotus")
+                        + list("various minor errors with electricity effects", "soul mark not working properly on low HP enemies with shielding", "various rare errors with shadows buff", "errors with time freeze and inter-floor teleportation mechanics", "rooted characters not being immune to knockback effects")
+                        + list("gladiator combos dealing much more damage than intended in certain cases", "magical charge and scroll empower interacting incorrectly", "magical sight not working with farsight talent", "perfect copy talent giving very slightly more HP than intended", "wild magic using cursed wands as if they're normal"))),
             NewContent(
                 new ChangeButton(new ItemSprite(ItemSpriteSheet.ARMOR_RAT_KING), "Rat King's Wrath Redesign!", "I've finally gotten around to updating Rat King's Wrath to reflect v0.9.3 reworks to armor abilities!"
                         + "\n\nWhile the previous Wrath was a combination of all armor abilities, the prospect of combining 13 different abilities into one isn't possible under the Wrath design, so I have instead decided to adapt the ones that have similar functionality to each part of the previous Wrath: _Smoke Bomb, Shockwave, Elemental Blast, and Spectral Blades._"
@@ -145,14 +179,18 @@ public class RKPD2Changes {
                         "Smoke Bomb no longer grants invisibility, mechanic instead moved to corresponding talent. Range is reduced to 6, from 8.",
                         "Molten Earth effect replaced with Elemental Blast.",
                         "Wrath's leap no longer stuns adjacent foes, instead sends out a 360 degree AOE Shockwave that covers a 3x3 area.",
-                        "Spectral Blades retains the ability to hit all targets in sight (removing the need to target it), but deals less damage and has reduced chances to proc on-hit effects when attacking many targets.")),
+                        "Spectral Blades retains the ability to hit all targets in sight (removing the need to target it), but deals less damage and has reduced chances to proc on-hit effects when attacking many targets.")
+                + "\n_Currently Wrath lacks an icon, I'm working on that now and it should be done when I release v0.2.0._"),
                 new ChangeButton(HUNTRESS, list(2,
                         "Added a _secret subclass_ to Huntress, accessible by a secret interaction while choosing a subclass.",
                         "_Restored Nature_ root duration reverted to 2/3, down from 4/6, but it now also causes health potions and related alchemy products to be used instantly.")
                         + "_Multi-Shot:_" + list("Now uses multiple buffs to show that more than one target is marked.",
                         "Allows stacking of free-targeted marks instead of overriding them when a new target is marked.",
                         "Has changed free-targeting logic (thanks to smart-targeting) to make these new interactions smoother; enemies that are already targeted will be highlighted while manually targeting.")
-                        + "\nMulti-shot should now be more complex, but in exchange it should (somewhat ironically) be easier to use and understand. It's also much more flexible with its free-targeted sniper special functionality.")),
+                        + "\nMulti-shot should now be more complex, but in exchange it should (somewhat ironically) be easier to use and understand. It's also much more flexible with its free-targeted sniper special functionality."),
+                    new ChangeButton(KINGS_WISDOM, "New Talent Icons!", "Most of my added talents now have unique icons!"
+                            + " Some credit to _Trashbox Bobylev_ is needed."
+                            + "\n\nAlso, the new music and UI changes from SHPD v1.0.0 have been implemented into the game.")),
             Changes(
                 new ChangeButton(new ItemSprite(ItemSpriteSheet.STONE_ENCHANT), "Enchanting Logic",
                         list("The chance for rare weapon enchantments to appear has been increased by ~50%.")
@@ -163,9 +201,7 @@ public class RKPD2Changes {
                                     + "Other uncommon enchants are now slightly more common to compensate.",
                                 "Grim no longer has specifically boosted chances to appear.")),
                 misc(list(2,
-                        // gameplay related
-                        "Reduced _Ratforcements_ stats by ~20%",
-                        "TODO _Energizing Meal I_ now adds new recharging buffs instead of stacking on existing ones.",
+                        //"TODO _Energizing Meal I_ now adds new recharging buffs instead of stacking on existing ones.",
                         "Talents that identify curses now declare whether an item is cursed when activated\n.",
                         // ui
                         "Most windows now scroll if they would not fit on the screen.",
@@ -178,23 +214,25 @@ public class RKPD2Changes {
                         "Rat King's Wrath sometimes freezing Rat King's sprite after use."))),
             Nerfs(
                 new ChangeButton(ROGUE, ""
-                        + "_Mending Shadows_ turned out to have exploits, so it's (very unfortunately) being largely scrapped:"
+                        + "_Mending Shadows_ turned out to have exploits, so it's (very unfortunately) being largely scrapped, though the name remains for now:"
                         + list("Now provides shielding every 2/1 turns, up to 3/5 max shielding (Shattered Protective Shadows).",
                         "Healing rate reduced to every 4/2 turns, and it no longer works while starving.")
-                        + "\n\nIn addition, I'm making these changes based on player feedback:" + list(2,
-                        "_Cached Rations_ now gives 3/5 rations, down from 4/6.",
-                        "_Light Cloak_ effectiveness now 20%/40%/60%, down from 25/50/75.")),
-                new ChangeButton(Talent.WARLOCKS_TOUCH,""
+                        + "\nIn addition, I'm making these changes based on player feedback:"
+                        + list("_Cached Rations_ now gives 3/5 rations, down from 4/6.", "_Light Cloak_ effectiveness now 20%/40%/60%, down from 25/50/75.")),
+                new ChangeButton(RAT_KING, list(2,
+                        "The recent Strongman buff has turned Tactics into a monster, while Imperial Wrath is still rather niche in comparison. Thus, Imperial Wrath now has Strongman instead of Tactics.",
+                        "Royal Intuition's +1 effect is now additive with the SHPD Survialist's Intuition rather than multiplicative. It is now 2.75x/3.75x id speed, down from 3.5x/5.25x.",
+                        "Rat King is also affected by the v1.0.0 staff nerf.")),
+                new ChangeButton(WARLOCKS_TOUCH,""
                         + "Warlock's Touch is currently either extremely broken or extremely useless, so I've decided to try to rein in the brokenness while preserving its core concept and expanding it to apply in more cases."
                         + list(2,
                         "Proc chance on physical attacks is now a fixed 15/25/35% chance at +1/+2/+3 respectively.",
                         "Proc duration of mark is now a fixed 6 turns, instead of being 10 + weapon level",
                         "Allies can now inflict soul mark via Warlock's Touch.",
                         "Chance for proccing soul mark with the attack that inflicts it is 20/30/40%, down from 25/50/75%, but now applies to wands if Soul Siphon is upgraded.")),
-                new ChangeButton(RAT_KING, list(2,
-                        "The recent Strongman buff has turned Tactics into a monster, while Imperial Wrath is still rather niche in comparison. Thus, Imperial Wrath now has Strongman instead of Tactics.",
-                        "Royal Intuition's +1 effect is now additive with the SHPD Survialist's Intuition rather than multiplicative. It is now 2.75x/3.75x id speed, down from 3.5x/5.25x.",
-                        "Rat King is also affected by the v1.0.0 staff nerf."))),
+                new ChangeButton(RATFORCEMENTS,
+                        "I've successfully made Ratforcements the best talent Ratmogrify has. That said, it's so powerful now that it's making the other aspects of Ratmogrify much less useful."
+                                + list(2, "Ratforcements stats reduced by ~20% across the board.")))
         },
             // v0.1.0
         {

@@ -65,8 +65,11 @@ public class ChangeButton extends Component {
 	public ChangeButton(HeroClass heroClass, String message) {
 		this( avatar(heroClass, 6), heroClass.title(), message );
 	}
+	public ChangeButton(Talent talent, String title, String message) {
+		this( new Image( new TalentIcon(talent) ), title, message);
+	}
 	public ChangeButton(Talent talent, String message) {
-		this( new Image( new TalentIcon(talent) ), talent.title(), message);
+		this( talent, talent.title(), message);
 	}
 	public ChangeButton(HeroSubClass subClass, String message) {
 		this( new Image( new HeroIcon(subClass) ), subClass.title(), message);
