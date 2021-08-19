@@ -187,7 +187,7 @@ public class RKPD2Changes {
                         + "\n\nIn addition, I'm making these changes based on player feedback:" + list(2,
                         "_Cached Rations_ now gives 3/5 rations, down from 4/6.",
                         "_Light Cloak_ effectiveness now 20%/40%/60%, down from 25/50/75.")),
-                new ChangeButton(HeroSubClass.WARLOCK.icon(), "Warlock's Touch", ""
+                new ChangeButton(new HeroIcon(HeroSubClass.WARLOCK), "Warlock's Touch", ""
                         + "Warlock's Touch is currently either extremely broken or extremely useless, so I've decided to try to rein in the brokenness while preserving its core concept and expanding it to apply in more cases."
                         + list(2,
                         "Proc chance on physical attacks is now a fixed 15/25/35% chance at +1/+2/+3 respectively.",
