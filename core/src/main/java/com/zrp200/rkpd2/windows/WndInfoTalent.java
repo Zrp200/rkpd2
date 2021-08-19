@@ -21,56 +21,32 @@
 
 package com.zrp200.rkpd2.windows;
 
+import com.watabou.utils.Callback;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.ui.Icons;
 import com.zrp200.rkpd2.ui.RedButton;
-import com.zrp200.rkpd2.ui.RenderedTextBlock;
 import com.zrp200.rkpd2.ui.TalentIcon;
-import com.zrp200.rkpd2.ui.Window;
-import com.watabou.utils.Callback;
 
-public class WndInfoTalent extends Window {
-
-	private static final float GAP	= 2;
-
-	private static final int WIDTH = 120;
+public class WndInfoTalent extends WndTitledMessage {
 
 	public WndInfoTalent(Talent talent, int points, Callback onUpgradeButton){
-		super();
-
-		IconTitle titlebar = new IconTitle();
-
-		titlebar.icon( new TalentIcon( talent ) );
-		String title = Messages.titleCase(talent.title());
-		if (points > 0){
-			title += " +" + points;
-		}
-		titlebar.label( title, Window.TITLE_COLOR );
-		titlebar.setRect( 0, 0, WIDTH, 0 );
-		add( titlebar );
-
-		RenderedTextBlock txtInfo = PixelScene.renderTextBlock(talent.desc(), 6);
-		txtInfo.maxWidth(WIDTH);
-		txtInfo.setPos(titlebar.left(), titlebar.bottom() + 2*GAP);
-		add( txtInfo );
-
-		resize( WIDTH, (int)(txtInfo.bottom() + GAP) );
+		super( new TalentIcon( talent ), Messages.titleCase(talent.title() + (points > 0 ? " + " + points: "")), talent.desc(), WIDTH_MIN );
 
 		if (onUpgradeButton != null) {
-			RedButton upgrade = new RedButton( Messages.get(this, "upgrade") ) {
+			addToBottom(new RedButton( Messages.get(this, "upgrade") ) {
 				@Override
 				protected void onClick() {
 					super.onClick();
 					hide();
 					onUpgradeButton.call();
 				}
-			};
-			upgrade.icon(Icons.get(Icons.TALENT));
-			upgrade.setRect(0, txtInfo.bottom() + 2*GAP, WIDTH, 18);
-			add(upgrade);
-			resize( WIDTH, (int)upgrade.bottom()+1 );
+				{
+					icon(Icons.get(Icons.TALENT));
+					setHeight(18);
+				}
+			}, 2*GAP);
+			setHeight(height+1);
 		}
 
 	}

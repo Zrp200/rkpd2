@@ -21,58 +21,26 @@
 
 package com.zrp200.rkpd2.windows;
 
-import com.watabou.gltextures.SmartTexture;
-import com.watabou.gltextures.TextureCache;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.TextureFilm;
-import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.scenes.PixelScene;
-import com.zrp200.rkpd2.ui.BuffIcon;
 import com.zrp200.rkpd2.ui.ActionIndicator;
+import com.zrp200.rkpd2.ui.BuffIcon;
 import com.zrp200.rkpd2.ui.RedButton;
-import com.zrp200.rkpd2.ui.RenderedTextBlock;
-import com.zrp200.rkpd2.ui.Window;
 
-public class WndInfoBuff extends Window {
-
-	private static final float GAP	= 2;
-
-	private static final int WIDTH = 120;
+public class WndInfoBuff extends WndTitledMessage {
 
 	public WndInfoBuff(Buff buff){
-		super();
-
-		IconTitle titlebar = new IconTitle();
-
-		Image buffIcon = new BuffIcon( buff, true );
-
-		titlebar.icon( buffIcon );
-		titlebar.label( Messages.titleCase(buff.toString()), Window.TITLE_COLOR );
-		titlebar.setRect( 0, 0, WIDTH, 0 );
-		add( titlebar );
-
-		RenderedTextBlock txtInfo = PixelScene.renderTextBlock(buff.desc(), 6);
-		txtInfo.maxWidth(WIDTH);
-		txtInfo.setPos(titlebar.left(), titlebar.bottom() + 2*GAP);
-		add( txtInfo );
-
-		float bottom = txtInfo.bottom()+2;
+		super(new BuffIcon(buff, true), buff.toString(), buff.desc(), WIDTH_MIN);
 
 		if(buff instanceof ActionIndicator.Action && ((ActionIndicator.Action)buff).isSelectable()) {
-			RedButton button = new RedButton("Set Active") {
-				@Override
-				protected void onClick() {
+			addToBottom(new RedButton("Set Active") {
+				@Override protected void onClick() {
 					hide();
-					ActionIndicator.setAction((ActionIndicator.Action)buff);
+					ActionIndicator.setAction( (ActionIndicator.Action) buff );
 				}
-			};
-			button.setRect(0,bottom+2,WIDTH,16);
-			bottom = button.bottom()+2;
-			add(button);
+				{
+					setHeight(16);
+				}
+			}, GAP);
 		}
-
-		resize( WIDTH, (int)bottom );
 	}
 }
