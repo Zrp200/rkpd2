@@ -64,7 +64,6 @@ import com.zrp200.rkpd2.actors.buffs.Vertigo;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
 import com.zrp200.rkpd2.actors.hero.abilities.huntress.NaturesPower;
 import com.zrp200.rkpd2.actors.hero.abilities.warrior.Endure;
-import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.Monk;
 import com.zrp200.rkpd2.actors.mobs.Snake;
@@ -116,7 +115,6 @@ import com.zrp200.rkpd2.items.wands.WandOfLivingEarth;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.melee.Flail;
-import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.journal.Document;
@@ -1189,10 +1187,7 @@ public class Hero extends Char {
 		
 		KindOfWeapon wep = belongings.weapon();
 
-		Talent.SpiritBladesTracker tracker = buff(Talent.SpiritBladesTracker.class);
-		float mult = tracker instanceof Wrath.SpectralBladesTracker
-				? ((Wrath.SpectralBladesTracker)tracker).effectiveness
-				: 1f;
+		float mult = Talent.SpiritBladesTracker.getProcModifier();
 
 		// subclass logic here
 		switch(subClass) {
@@ -1214,8 +1209,7 @@ public class Hero extends Char {
 		}
 		if (wep != null) damage = wep.proc( this, enemy, damage );
 
-		if (tracker != null
-				&& Random.Int(10) < 3*pointsInTalent(Talent.SPIRIT_BLADES)){
+		if ( Random.Float() < 3*pointsInTalent(Talent.SPIRIT_BLADES, Talent.SEA_OF_BLADES) * mult ){
 			SpiritBow bow = belongings.getItem(SpiritBow.class);
 			if (bow != null) damage = bow.proc( this, enemy, damage );
 			buff(Talent.SpiritBladesTracker.class).detach();

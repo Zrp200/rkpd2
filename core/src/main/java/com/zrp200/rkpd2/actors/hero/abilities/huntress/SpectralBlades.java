@@ -142,13 +142,12 @@ public class SpectralBlades extends ArmorAbility {
 		Callback callback = new Callback() {
 			@Override public void call() {
 				if (hero.hasTalent(spiritBlades)) {
-					Buff tracker = Buff.affect(hero, trackerClass, 0f);
-					if(tracker instanceof Wrath.SpectralBladesTracker) { // annoyed I have to put the logic here.
-						((Wrath.SpectralBladesTracker)tracker).effectiveness = dmgMulti;
-					}
+					// todo should I have enchant effectiveness for sea of blades be seperate from dmgMulti? In that case it would be 200/300/400/500-550%. Currently it is 150/200/250/300-330.
+					Buff.affect(hero, trackerClass, 0f).setModifier(dmgMulti);
 				}
 				if(hero.attack( ch, dmgMulti, 0, accMulti )
-						&& hero.subClass == HeroSubClass.KING && Random.Float() < dmgMulti) {
+						&& hero.subClass == HeroSubClass.KING
+						&& Random.Float() < Talent.SpiritBladesTracker.getProcModifier()) {
 					// this isn't going to be added otherwise.
 					Buff.affect(hero, Combo.class).hit(ch);
 				};

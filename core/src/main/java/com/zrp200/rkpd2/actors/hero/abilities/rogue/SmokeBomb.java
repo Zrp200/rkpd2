@@ -60,8 +60,6 @@ public class SmokeBomb extends ArmorAbility {
 		return Messages.get(this, "prompt");
 	}
 
-	//reduced charge use by 20%/36%/50%/60%
-	public static final double SHADOW_STEP_REDUCTION = 0.795;
 	public static boolean isShadowStep(Hero hero) {
 		return hero != null
 				&& hero.hasTalent(Talent.SHADOW_STEP, Talent.SMOKE_AND_MIRRORS) && hero.invisible > 0;
@@ -70,7 +68,8 @@ public class SmokeBomb extends ArmorAbility {
 	public float chargeUse(Hero hero) {
 		float chargeUse = super.chargeUse(hero);
 		if(isShadowStep(hero)) {
-			chargeUse *= Math.pow(SHADOW_STEP_REDUCTION, hero.pointsInTalent(Talent.SHADOW_STEP));
+			//reduced charge use by 24%/42%/56%/67%
+			chargeUse *= Math.pow(0.76, hero.pointsInTalent(Talent.SHADOW_STEP));
 		}
 		return chargeUse;
 	}
@@ -173,7 +172,7 @@ public class SmokeBomb extends ArmorAbility {
 		@Override
 		public int drRoll() {
 			return Random.NormalIntRange(hero.pointsInTalent(Talent.BODY_REPLACEMENT, Talent.SMOKE_AND_MIRRORS),
-					3*hero.pointsInTalent(Talent.BODY_REPLACEMENT, Talent.SMOKE_AND_MIRRORS));
+					(int)hero.byTalent(Talent.BODY_REPLACEMENT, 5, Talent.SMOKE_AND_MIRRORS, 3));
 		}
 
 	}

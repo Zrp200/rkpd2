@@ -109,12 +109,8 @@ abstract public class Weapon extends KindOfWeapon {
 	@Override
 	public int proc( Char attacker, Char defender, int damage) {
 
-		Talent.SpiritBladesTracker tracker = attacker.buff(Talent.SpiritBladesTracker.class);
-		float mult = tracker instanceof Wrath.SpectralBladesTracker
-				? ((Wrath.SpectralBladesTracker)tracker).effectiveness
-				: 1f;
 		if (enchantment != null && attacker.buff(MagicImmune.class) == null
-				&& (mult == 1 || Random.Float() < mult)) {
+				&& (Random.Float() < Talent.SpiritBladesTracker.getProcModifier())) {
 			damage = enchantment.proc( this, attacker, defender, damage );
 		}
 		
@@ -385,10 +381,8 @@ abstract public class Weapon extends KindOfWeapon {
 						Talent.ENRAGED_CATALYST, 1/5f,
 						Talent.RK_BERSERKER, 1/6f);
 			}
-			if (attacker.buff(Talent.SpiritBladesTracker.class) != null
-					&& ((Hero)attacker).pointsInTalent(Talent.SPIRIT_BLADES) == 4){
-				multi += 0.1f;
-			}
+			// note I'm specifically preventing it from lowering the chance. I already handled that in Weapon#attackProc.
+			multi += Math.max(0, Talent.SpiritBladesTracker.getProcModifier()-1);
 			if (attacker.buff(Talent.StrikingWaveTracker.class) != null
 					&& ((Hero)attacker).pointsInTalent(Talent.STRIKING_WAVE) == 4){
 				multi += 0.2f;

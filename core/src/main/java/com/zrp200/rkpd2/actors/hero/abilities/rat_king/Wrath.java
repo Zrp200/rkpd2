@@ -48,8 +48,8 @@ public class Wrath extends ArmorAbility {
     @Override public float chargeUse(Hero hero) {
         float chargeUse = super.chargeUse(hero);
         if (SmokeBomb.isShadowStep(hero)){
-            // shadow step: reduced charge use by 24%/42%/56%/67%
-            chargeUse *= Math.pow(SmokeBomb.SHADOW_STEP_REDUCTION, hero.pointsInTalent(SMOKE_AND_MIRRORS));
+            // shadow step: reduced charge use by 20%/36%/50%/60%
+            chargeUse *= Math.pow(0.795, hero.pointsInTalent(SMOKE_AND_MIRRORS));
         }
         return chargeUse;
     }
@@ -157,13 +157,15 @@ public class Wrath extends ArmorAbility {
             for (Char ch : targets) SpectralBlades.shoot(
                     hero, ch,
                     mult, 1 + 1/4f * hero.pointsInTalent(SEA_OF_BLADES),
-                    SEA_OF_BLADES, SpectralBladesTracker.class,
+                    SEA_OF_BLADES, SeaOfBladesTracker.class,
                     callbacks, onComplete);
             hero.busy();
         });
     }
-    public static class SpectralBladesTracker extends Talent.SpiritBladesTracker {
-        public float effectiveness;
+    public static class SeaOfBladesTracker extends Talent.SpiritBladesTracker {
+        private float effectiveness;
+        @Override public float getModifier() { return super.getModifier() * effectiveness; }
+        @Override public void setModifier(float modifier) { effectiveness = modifier; }
     }
 
     private void finish() {
