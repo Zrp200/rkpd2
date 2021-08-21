@@ -65,8 +65,9 @@ public class DeathMark extends ArmorAbility {
 	public float chargeUse( Hero hero ) {
 		float chargeUse = super.chargeUse(hero);
 		if (hero.buff(DoubleMarkTracker.class) != null){
-			//reduced charge use by 30%/50%/65%/75%
-			chargeUse *= Math.pow(0.707, hero.pointsInTalent(Talent.DOUBLE_MARK));
+			//shpd: reduced charge use by 30%/50%/65%/75%
+			//rkpd: reduced charge use by 16/40/58/70/79%
+			chargeUse *= Math.pow(0.707, .5+hero.pointsInTalent(Talent.DOUBLE_MARK));
 		}
 		return chargeUse;
 	}
@@ -99,7 +100,7 @@ public class DeathMark extends ArmorAbility {
 
 		if (hero.buff(DoubleMarkTracker.class) != null){
 			hero.buff(DoubleMarkTracker.class).detach();
-		} else if (hero.hasTalent(Talent.DOUBLE_MARK)) {
+		} else if (hero.canHaveTalent(Talent.DOUBLE_MARK)) {
 			Buff.affect(hero, DoubleMarkTracker.class, 0.01f);
 		}
 
