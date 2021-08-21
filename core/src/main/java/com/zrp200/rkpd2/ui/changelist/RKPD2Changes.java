@@ -133,8 +133,8 @@ public class RKPD2Changes {
             new ChangeInfo("v0.2.0", true, TITLE_COLOR, ""),
             new ChangeInfo("From SHPD v1.0.0", false, SHPX_COLOR, "",
                     // alchemy stuff once it's added in.
-                    new ChangeButton(new ItemSprite(CROWN), "Armor Ability", "Anything implemented here overrides the existing RKPD2 implementation."
-                        + "\n\n_Buffs:_\n"
+                    new ChangeButton(new ItemSprite(CROWN), "Armor Ability Changes", ""
+                        + "_Buffs:_\n"
                         + list("_Endure_ bonus damage conversion rate up to 1/3 from 1/4.")
                         + list("_Striking Wave_ effectiveness increased by 20%."/*,"_Shock Force_ now actually adds 20% damage per level as stated. Previously it only added 15%."*/)
                         + list("_Wild Magic_ now boosts wand levels, instead of overriding them.","_Conserved Magic_ now has a chance to give each wand a 3rd shot.","_Conserved Magic_ charge cost reduction down to 33/55/70/80% from 44/69/82/90%.")
