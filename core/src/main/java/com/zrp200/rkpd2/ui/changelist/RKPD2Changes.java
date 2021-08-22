@@ -202,7 +202,7 @@ public class RKPD2Changes {
                                 "Grim no longer has specifically boosted chances to appear.")),
                 misc(list(2,
                         //"TODO _Energizing Meal I_ now adds new recharging buffs instead of stacking on existing ones.",
-                        "Talents that identify curses now declare whether an item is cursed when activated\n.",
+                        "Talents that identify curses now declare whether an item is cursed when activated.",
                         // ui
                         "Most windows now scroll if they would not fit on the screen.",
                         "Changed commentary on Rat King's tier 3 talents.",
