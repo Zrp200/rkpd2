@@ -100,11 +100,9 @@ public class Shockwave extends ArmorAbility {
 						if (ch != null && ch.alignment != hero.alignment){
 							int scalingStr = hero.STR()-10;
 							int damage = Random.NormalIntRange(5 + scalingStr, 10 + 2*scalingStr);
-							float modifier = (1f + 0.2f*hero.shiftedPoints(SHOCK_FORCE,AFTERSHOCK));
-							if(hero.armorAbility instanceof Wrath) {
-								// damage is reduced by 20%
-								modifier *= .8f;
-							}
+							float modifier = (1f + hero.byTalent(
+									SHOCK_FORCE, .25f,
+									AFTERSHOCK, .15f));
 							damage = Math.round(damage * modifier);
 							damage -= ch.drRoll();
 

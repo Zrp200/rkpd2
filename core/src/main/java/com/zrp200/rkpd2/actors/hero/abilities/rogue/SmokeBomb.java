@@ -75,11 +75,17 @@ public class SmokeBomb extends ArmorAbility {
 	}
 
 	public static boolean isValidTarget(Hero hero, int target, int limit) {
+		Char ch = Actor.findChar( target );
+		if(ch == hero) {
+			GLog.w( Messages.get(ArmorAbility.class, "self-target") );
+			return false;
+		}
+
 		PathFinder.buildDistanceMap(hero.pos, BArray.not(Dungeon.level.solid,null), limit);
 
 		if ( PathFinder.distance[target] == Integer.MAX_VALUE ||
 				!Dungeon.level.heroFOV[target] ||
-				Actor.findChar( target ) != null) {
+				ch != null) {
 
 			GLog.w( Messages.get(SmokeBomb.class, "fov") );
 			return false;
@@ -121,7 +127,7 @@ public class SmokeBomb extends ArmorAbility {
 	@Override
 	protected void activate(ClassArmor armor, Hero hero, Integer target) {
 		if (target != null) {
-			if(isValidTarget(hero, target, 6)) return;
+			if(isValidTarget(hero, target, 8)) return;
 			armor.useCharge();
 
 			if (!isShadowStep(hero)) {

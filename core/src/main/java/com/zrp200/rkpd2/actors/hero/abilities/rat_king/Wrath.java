@@ -76,7 +76,7 @@ public class Wrath extends ArmorAbility {
         stages = new boolean[3]; // jump/blast/blades
 
         // smoke bomb -> shockwave aoe -> blast -> blades
-        if(target == hero.pos) stages[0] = false;
+        if(!SmokeBomb.isShadowStep(hero) && target == hero.pos) stages[0] = false; // self-targeting skips the jump portion if not shadow-stepping.
         else if(!doSmokeBomb()) return;
         else stages[0] = true;
 
@@ -91,7 +91,7 @@ public class Wrath extends ArmorAbility {
     }
 
     private boolean doSmokeBomb() {
-        if( !SmokeBomb.isValidTarget(hero, target, 8) ) return false;
+        if( !SmokeBomb.isValidTarget(hero, target, 6) ) return false;
 
         boolean isShadowStep = SmokeBomb.isShadowStep(hero);
         if(!isShadowStep) {
