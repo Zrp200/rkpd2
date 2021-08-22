@@ -26,6 +26,7 @@ import com.badlogic.gdx.utils.I18NBundle;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.SPDSettings;
 import com.zrp200.rkpd2.ShatteredPixelDungeon;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,7 +34,9 @@ import java.util.HashSet;
 import java.util.IllegalFormatException;
 import java.util.Locale;
 
-import static com.zrp200.rkpd2.GamesInProgress.selectedClass; // for class specific messages
+// for class specific messages
+import static com.zrp200.rkpd2.Dungeon.hero;
+import static com.zrp200.rkpd2.GamesInProgress.selectedClass;
 
 /*
 	Simple wrapper class for libGDX I18NBundles.
@@ -107,8 +110,10 @@ public class Messages {
 			key = c.getName().replace("com.zrp200.rkpd2.", "");
 			key += "." + k;
 			// this allows me to change messages by character class, currently this is only done in actors
-			if(selectedClass != null && key.startsWith("actors")) {
-				String byClass = get(key + "_" + selectedClass.name(), args);
+			// I really don't understand why there is so much redundancy in heroclass, but it seems to be...needed?
+			HeroClass cls = selectedClass != null ? selectedClass : hero != null ? hero.heroClass : null;
+			if(cls != null && key.startsWith("actors")) {
+				String byClass = get(key + "_" + cls.name(), args);
 				//noinspection StringEquality
 				if(byClass != NULL) return byClass;
 			}
