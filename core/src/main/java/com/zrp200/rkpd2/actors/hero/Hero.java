@@ -1212,7 +1212,7 @@ public class Hero extends Char {
 		if ( Random.Float() < 3*pointsInTalent(Talent.SPIRIT_BLADES, Talent.SEA_OF_BLADES) * mult ){
 			SpiritBow bow = belongings.getItem(SpiritBow.class);
 			if (bow != null) damage = bow.proc( this, enemy, damage );
-			buff(Talent.SpiritBladesTracker.class).detach();
+			buff(Talent.SpiritBladesTracker.class, false).detach();
 		}
 
 		damage = Talent.onAttackProc( this, enemy, damage );

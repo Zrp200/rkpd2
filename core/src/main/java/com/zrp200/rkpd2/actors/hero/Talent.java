@@ -261,7 +261,7 @@ public enum Talent {
 		public void setModifier(float modifier) {/* ignored by default */}
 
 		public static float getProcModifier() {
-			SpiritBladesTracker tracker = hero.buff(SpiritBladesTracker.class);
+			SpiritBladesTracker tracker = hero.buff(SpiritBladesTracker.class, false);
 			return tracker != null ? tracker.getModifier() : 1f;
 		}
 	};
