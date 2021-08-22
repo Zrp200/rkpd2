@@ -211,7 +211,8 @@ public class WelcomeScene extends PixelScene {
 		}
 
 		//if the player has beaten Goo, automatically give all guidebook pages
-		if (previousVersion <= ShatteredPixelDungeon.v0_2_0) {
+		// v1_0_0 is higher than my previous versions so it's used still.
+		if (previousVersion <= ShatteredPixelDungeon.v1_0_0) {
 			Badges.loadGlobal();
 			if (Badges.isUnlocked(Badges.Badge.BOSS_SLAIN_1)) {
 				for (String page : Document.ADVENTURERS_GUIDE.pageNames()) {

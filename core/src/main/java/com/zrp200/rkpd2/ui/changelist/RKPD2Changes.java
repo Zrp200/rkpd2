@@ -131,6 +131,7 @@ public class RKPD2Changes {
     final ChangeInfo[][] changes = {
         {
             new ChangeInfo("v0.2.0", true, TITLE_COLOR, ""),
+            new ChangeInfo("BETA-2", false, TITLE_COLOR, "", bugFixes(list("Crash when using scroll of upgrade on Spirit Bow","Class-specific text not working.","Typos in Restoration description and changelog."))),
             new ChangeInfo("From SHPD v1.0.0", false, SHPX_COLOR, "",
                     // alchemy stuff once it's added in.
                     new ChangeButton(new ItemSprite(CROWN), "Armor Ability Changes", ""
