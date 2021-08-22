@@ -88,6 +88,10 @@ public enum HeroSubClass {
 
 	KING(HeroIcon.KING);
 
+	public static void set(Hero hero, HeroSubClass subClass) {
+		hero.subClass = subClass;
+		Talent.initSubclassTalents(hero);
+	}
 
 	public final int icon;
 

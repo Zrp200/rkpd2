@@ -87,10 +87,7 @@ public class TengusMask extends Item {
 		return true;
 	}
 
-	public static void choose( Hero hero, HeroSubClass way) {
-		hero.subClass = way;
-		Talent.initSubclassTalents(hero);
-	}
+	public static void choose( Hero hero, HeroSubClass way) { HeroSubClass.set(hero, way); }
 	
 	public void choose( HeroSubClass way ) {
 		
