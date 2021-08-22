@@ -130,8 +130,9 @@ public class RKPD2Changes {
     final ChangeInfo[][] changes = {
         {
             new ChangeInfo("v0.2.0", true, TITLE_COLOR, ""),
-            new ChangeInfo("BETA-3 and BETA-4", false, TITLE_COLOR, "", new ChangeButton(AFTERSHOCK, "Buffed aftershock's damage, previously it had a 0.8x modifier to damage, but reduced the effect of aftershock on it from +20% per level to +15%.\nRelatedly, Striking Force is no longer level shifted with regards to damage, but its boost is now +25/+50/+75/+100% damage."), bugFixes(list("Crash when attacking by any means after upgrading Spirit Blades or Sea of Blades.","Crash when using Wrath's blades at all.", "Smoke bomb having a range of 6 instead of the stated 8, and Wrath having a range of 8 instead of the stated 6."))),
-            new ChangeInfo("BETA-2", false, TITLE_COLOR, "", bugFixes(list("Crash when using scroll of upgrade on Spirit Bow","Class-specific text not working.","Typos in Restoration description and changelog."))),
+            new ChangeInfo("BETA-5", false, TITLE_COLOR, "", new ChangeButton(WARLOCKS_TOUCH, "I think there's room to add a thrown weapon synergy in with this nerf." + list(2,"Soul Mark chance of thrown weapons is increased to 25/40/55 from 15/25/35."))),
+            new ChangeInfo("BETA-2 - BETA-4", false, TITLE_COLOR, "", new ChangeButton(AFTERSHOCK, "Buffed aftershock's damage, previously it had a 0.8x modifier to damage, but reduced the effect of aftershock on it from +20% per level to +15%.\nRelatedly, Striking Force is no longer level shifted with regards to damage, but its boost is now +25/+50/+75/+100% damage."), bugFixes(list(2,"Crash when using scroll of upgrade on Spirit Bow","Class-specific text not working.","Typos in Restoration description and changelog.", "Crash when attacking by any means after upgrading Spirit Blades or Sea of Blades.","Crash when using Wrath's blades at all.", "Smoke bomb having a range of 6 instead of the stated 8, and Wrath having a range of 8 instead of the stated 6."))),
+            new ChangeInfo("BETA-2", false, TITLE_COLOR, "", bugFixes(list())),
             new ChangeInfo("From SHPD v1.0.0", false, SHPX_COLOR, "",
                     // alchemy stuff once it's added in.
                     new ChangeButton(new ItemSprite(CROWN), "Armor Ability Changes", ""
@@ -227,7 +228,8 @@ public class RKPD2Changes {
                 new ChangeButton(WARLOCKS_TOUCH,""
                         + "Warlock's Touch is currently either extremely broken or extremely useless, so I've decided to try to rein in the brokenness while preserving its core concept and expanding it to apply in more cases."
                         + list(2,
-                        "Proc chance on physical attacks is now a fixed 15/25/35% chance at +1/+2/+3 respectively.",
+                        "Proc chance on melee attacks is now a fixed 15/25/35% chance at +1/+2/+3 respectively.",
+                        "Proc chance on thrown weapons is buffed, now a fixed 25/40/55% chance at +1/+2/+3.",
                         "Proc duration of mark is now a fixed 6 turns, instead of being 10 + weapon level",
                         "Allies can now inflict soul mark via Warlock's Touch.",
                         "Chance for proccing soul mark with the attack that inflicts it is 20/30/40%, down from 25/50/75%, but now applies to wands if Soul Siphon is upgraded.")),

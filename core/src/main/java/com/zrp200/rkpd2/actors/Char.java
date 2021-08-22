@@ -21,6 +21,8 @@
 
 package com.zrp200.rkpd2.actors;
 
+import static com.zrp200.rkpd2.Dungeon.hero;
+
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
@@ -91,6 +93,7 @@ import com.zrp200.rkpd2.items.wands.WandOfFireblast;
 import com.zrp200.rkpd2.items.wands.WandOfFirebolt;
 import com.zrp200.rkpd2.items.wands.WandOfFrost;
 import com.zrp200.rkpd2.items.wands.WandOfLightning;
+import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.enchantments.Blazing;
 import com.zrp200.rkpd2.items.weapon.enchantments.Blocking;
 import com.zrp200.rkpd2.items.weapon.enchantments.Grim;
@@ -175,7 +178,7 @@ public abstract class Char extends Actor {
 			return true;
 		} else if (c instanceof Hero
 				&& alignment == Alignment.ALLY
-				&& Dungeon.level.distance(pos, c.pos) <= Math.max(4*Dungeon.hero.pointsInTalent(Talent.ALLY_WARP), 2*Dungeon.hero.pointsInTalent(Talent.RK_WARLOCK))){
+				&& Dungeon.level.distance(pos, c.pos) <= Math.max(4* hero.pointsInTalent(Talent.ALLY_WARP), 2* hero.pointsInTalent(Talent.RK_WARLOCK))){
 			return true;
 		} else {
 			return false;
@@ -200,7 +203,7 @@ public abstract class Char extends Actor {
 		int curPos = pos;
 
 		//warp instantly with allies in this case
-		if (c == Dungeon.hero && Dungeon.hero.hasTalent(Talent.ALLY_WARP,Talent.RK_WARLOCK)){
+		if (c == hero && hero.hasTalent(Talent.ALLY_WARP,Talent.RK_WARLOCK)){
 			PathFinder.buildDistanceMap(c.pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null));
 			if (PathFinder.distance[pos] == Integer.MAX_VALUE){
 				return true;
@@ -225,12 +228,12 @@ public abstract class Char extends Actor {
 		
 		c.spend( 1 / c.speed() );
 
-		if (c == Dungeon.hero){
-			if (Dungeon.hero.subClass == HeroSubClass.FREERUNNER){
-				Buff.affect(Dungeon.hero, Momentum.class).gainStack();
+		if (c == hero){
+			if (hero.subClass == HeroSubClass.FREERUNNER){
+				Buff.affect(hero, Momentum.class).gainStack();
 			}
 
-			Dungeon.hero.busy();
+			hero.busy();
 		}
 
 		return true;
@@ -341,8 +344,8 @@ public abstract class Char extends Actor {
 			while(rolls-- > 0) {
 				if (prep != null) {
 					dmg = Math.max(dmg, prep.damageRoll(this));
-					if (this == Dungeon.hero && Dungeon.hero.hasTalent(Talent.BOUNTY_HUNTER, Talent.RK_ASSASSIN)) {
-						Buff.affect(Dungeon.hero, Talent.BountyHunterTracker.class, 0.0f);
+					if (this == hero && hero.hasTalent(Talent.BOUNTY_HUNTER, Talent.RK_ASSASSIN)) {
+						Buff.affect(hero, Talent.BountyHunterTracker.class, 0.0f);
 					}
 				} else {
 					dmg = Math.max(dmg,damageRoll());
@@ -416,16 +419,16 @@ public abstract class Char extends Actor {
 			enemy.sprite.flash();
 
 			if (!enemy.isAlive() && visibleFight) {
-				if (enemy == Dungeon.hero) {
+				if (enemy == hero) {
 					
-					if (this == Dungeon.hero) {
+					if (this == hero) {
 						return true;
 					}
 
 					Dungeon.fail( getClass() );
 					GLog.n( Messages.capitalize(Messages.get(Char.class, "kill", name())) );
 					
-				} else if (this == Dungeon.hero) {
+				} else if (this == hero) {
 					GLog.i( Messages.capitalize(Messages.get(Char.class, "defeat", enemy.name())) );
 				}
 			}
@@ -527,11 +530,18 @@ public abstract class Char extends Actor {
 			buff.onAttackProc( enemy );
 		}
 
-		if(alignment == Alignment.ALLY && Dungeon.hero.hasTalent(Talent.WARLOCKS_TOUCH)) {
+		if(alignment == Alignment.ALLY && hero.hasTalent(Talent.WARLOCKS_TOUCH)) {
 			// warlock+allies can soul mark by simply attacking via warlock's touch.
+
+			float shift=.5f, scaling=.1f;
+			// 15/25/35 for melee and spirit bow, 20/35/50 for thrown weapons. Not sure if this is a good gimmick or if I'm forcing a synergy here.
+			if(this == hero && hero.belongings.thrownWeapon != null && !(hero.belongings.thrownWeapon instanceof SpiritBow.SpiritArrow) ) {
+				// thrown weapons have a slight boost.
+				scaling *= 1.5f;
+			}
 			SoulMark.process(enemy,
 					-4, // 10 - 4 = 6 turns
-					.05f+.1f*Dungeon.hero.pointsInTalent(Talent.WARLOCKS_TOUCH),
+					shift + scaling*hero.pointsInTalent(Talent.WARLOCKS_TOUCH),
 					true);
 		}
 
@@ -629,7 +639,7 @@ public abstract class Char extends Actor {
 	protected void onDamage(int dmg, Object src) {
 		int initialHP = HP;
 		// TODO change?
-		if(!(src instanceof Char) && Dungeon.hero.hasTalent(Talent.SOUL_SIPHON)) { // character damage is already handled before damage is dealt.
+		if(!(src instanceof Char) && hero.hasTalent(Talent.SOUL_SIPHON)) { // character damage is already handled before damage is dealt.
 			SoulMark soulMark = buff(SoulMark.class);
 			if(soulMark != null) soulMark.proc(src,this,dmg);
 		}
@@ -865,7 +875,7 @@ public abstract class Char extends Actor {
 
 		pos = step;
 		
-		if (this != Dungeon.hero) {
+		if (this != hero) {
 			sprite.visible = Dungeon.level.heroFOV[pos];
 		}
 		
