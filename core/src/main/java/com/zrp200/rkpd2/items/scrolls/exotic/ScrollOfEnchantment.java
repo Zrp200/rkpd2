@@ -90,7 +90,7 @@ public class ScrollOfEnchantment extends ExoticScroll {
 				if (index < 3) {
 					weapon.enchant(enchants[index]);
 					GLog.p(Messages.get(StoneOfEnchantment.class, "weapon"));
-					((ScrollOfEnchantment)curItem).readAnimation();
+					readAnimation();
 
 					Sample.INSTANCE.play( Assets.Sounds.READ );
 					Enchanting.show(curUser, weapon);
@@ -153,7 +153,7 @@ public class ScrollOfEnchantment extends ExoticScroll {
 						if (index < 3) {
 							((Armor) item).inscribe(glyphs[index]);
 							GLog.p(Messages.get(StoneOfEnchantment.class, "armor"));
-							((ScrollOfEnchantment)curItem).readAnimation();
+							readAnimation();
 							
 							Sample.INSTANCE.play( Assets.Sounds.READ );
 							Enchanting.show(curUser, item);
