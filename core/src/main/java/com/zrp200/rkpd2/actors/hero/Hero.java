@@ -1209,10 +1209,11 @@ public class Hero extends Char {
 		}
 		if (wep != null) damage = wep.proc( this, enemy, damage );
 
-		if ( Random.Float() < 3*pointsInTalent(Talent.SPIRIT_BLADES, Talent.SEA_OF_BLADES) * mult ){
+		Talent.SpiritBladesTracker tracker = buff(Talent.SpiritBladesTracker.class, false);
+		if ( tracker != null && Random.Float() < 3*pointsInTalent(Talent.SPIRIT_BLADES, Talent.SEA_OF_BLADES) * mult ){
 			SpiritBow bow = belongings.getItem(SpiritBow.class);
 			if (bow != null) damage = bow.proc( this, enemy, damage );
-			buff(Talent.SpiritBladesTracker.class, false).detach();
+			tracker.detach();
 		}
 
 		damage = Talent.onAttackProc( this, enemy, damage );
