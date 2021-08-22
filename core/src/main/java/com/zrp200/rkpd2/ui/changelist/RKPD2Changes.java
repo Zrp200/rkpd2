@@ -23,7 +23,6 @@ package com.zrp200.rkpd2.ui.changelist;
 
 import com.watabou.noosa.Image;
 import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.KingsCrown;
 import com.zrp200.rkpd2.items.armor.WarriorArmor;
 import com.zrp200.rkpd2.items.bags.VelvetPouch;
@@ -131,6 +130,7 @@ public class RKPD2Changes {
     final ChangeInfo[][] changes = {
         {
             new ChangeInfo("v0.2.0", true, TITLE_COLOR, ""),
+            new ChangeInfo("BETA-3", false, TITLE_COLOR, "", new ChangeButton(AFTERSHOCK, "Buffed aftershock's damage, previously it had a 0.8x modifier to damage, but reduced the effect of aftershock on it from +20% per level to +15%.\nRelatedly, Striking Force is no longer level shifted with regards to damage, but its boost is now +25/+50/+75/+100% damage."), bugFixes(list("Crash when using Wrath's blades.", "Smoke bomb having a range of 6 instead of the stated 8, and Wrath having a range of 8 instead of the stated 6."))),
             new ChangeInfo("BETA-2", false, TITLE_COLOR, "", bugFixes(list("Crash when using scroll of upgrade on Spirit Bow","Class-specific text not working.","Typos in Restoration description and changelog."))),
             new ChangeInfo("From SHPD v1.0.0", false, SHPX_COLOR, "",
                     // alchemy stuff once it's added in.
