@@ -130,9 +130,8 @@ public class RKPD2Changes {
     final ChangeInfo[][] changes = {
         {
             new ChangeInfo("v0.2.0", true, TITLE_COLOR, ""),
-            new ChangeInfo("BETA-5", false, TITLE_COLOR, "", new ChangeButton(WARLOCKS_TOUCH, "I think there's room to add a thrown weapon synergy in with this nerf." + list(2,"Soul Mark chance of thrown weapons is increased to 25/40/55 from 15/25/35."))),
+            new ChangeInfo("BETA-5", false, TITLE_COLOR, "", new ChangeButton(WARLOCKS_TOUCH, "I think there's room to add a thrown weapon synergy in." + list(2,"Soul Mark chance of thrown weapons is increased to 20/35/50 from 15/25/35.") + "It might not look like a lot, but even at +0 that's still +33% proc rate.")),
             new ChangeInfo("BETA-2 - BETA-4", false, TITLE_COLOR, "", new ChangeButton(AFTERSHOCK, "Buffed aftershock's damage, previously it had a 0.8x modifier to damage, but reduced the effect of aftershock on it from +20% per level to +15%.\nRelatedly, Striking Force is no longer level shifted with regards to damage, but its boost is now +25/+50/+75/+100% damage."), bugFixes(list(2,"Crash when using scroll of upgrade on Spirit Bow","Class-specific text not working.","Typos in Restoration description and changelog.", "Crash when attacking by any means after upgrading Spirit Blades or Sea of Blades.","Crash when using Wrath's blades at all.", "Smoke bomb having a range of 6 instead of the stated 8, and Wrath having a range of 8 instead of the stated 6."))),
-            new ChangeInfo("BETA-2", false, TITLE_COLOR, "", bugFixes(list())),
             new ChangeInfo("From SHPD v1.0.0", false, SHPX_COLOR, "",
                     // alchemy stuff once it's added in.
                     new ChangeButton(new ItemSprite(CROWN), "Armor Ability Changes", ""
@@ -194,6 +193,13 @@ public class RKPD2Changes {
                             + " Some credit to _Trashbox Bobylev_ is needed."
                             + "\n\nAlso, the new music and UI changes from SHPD v1.0.0 have been implemented into the game.")),
             Changes(
+                new ChangeButton(WARLOCKS_TOUCH, "Warlock's Touch is currently extremely situational and often requires giving up warlock's other gimmicks to work at its best. At the same time, when exploited it's incredibly overpowered. These changes are intended to instead generalize its use, increasing its versatility and amount of situations in which it is applicable."
+                    + list(2,
+                        "Proc chance on melee attacks is now a fixed 15/25/35% chance at +1/+2/+3 respectively.",
+                        "Proc chance on thrown weapons is buffed, now a fixed 25/40/55% chance at +1/+2/+3.",
+                        "Proc duration of mark is now a fixed 6 turns, instead of being 10 + weapon level",
+                        "Allies can now inflict soul mark via Warlock's Touch using melee mark chances.",
+                        "Chance for proccing soul mark with the attack that inflicts it is 20/30/40%, down from 25/50/75%, but now applies to wands if Soul Siphon is upgraded.")),
                 new ChangeButton(new ItemSprite(ItemSpriteSheet.STONE_ENCHANT), "Enchanting Logic",
                         list("The chance for rare weapon enchantments to appear has been increased by ~50%.")
                                 + "_\n\nSpirit Bow only:_" + list(2,
@@ -225,17 +231,7 @@ public class RKPD2Changes {
                         "The recent Strongman buff has turned Tactics into a monster, while Imperial Wrath is still rather niche in comparison. Thus, Imperial Wrath now has Strongman instead of Tactics.",
                         "Royal Intuition's +1 effect is now additive with the SHPD Survialist's Intuition rather than multiplicative. It is now 2.75x/3.75x id speed, down from 3.5x/5.25x.",
                         "Rat King is also affected by the v1.0.0 staff nerf.")),
-                new ChangeButton(WARLOCKS_TOUCH,""
-                        + "Warlock's Touch is currently either extremely broken or extremely useless, so I've decided to try to rein in the brokenness while preserving its core concept and expanding it to apply in more cases."
-                        + list(2,
-                        "Proc chance on melee attacks is now a fixed 15/25/35% chance at +1/+2/+3 respectively.",
-                        "Proc chance on thrown weapons is buffed, now a fixed 25/40/55% chance at +1/+2/+3.",
-                        "Proc duration of mark is now a fixed 6 turns, instead of being 10 + weapon level",
-                        "Allies can now inflict soul mark via Warlock's Touch.",
-                        "Chance for proccing soul mark with the attack that inflicts it is 20/30/40%, down from 25/50/75%, but now applies to wands if Soul Siphon is upgraded.")),
-                new ChangeButton(RATFORCEMENTS,
-                        "I've successfully made Ratforcements the best talent Ratmogrify has. That said, it's so powerful now that it's making the other aspects of Ratmogrify much less useful."
-                                + list(2, "Ratforcements stats reduced by ~20% across the board.")))
+                new ChangeButton(RATFORCEMENTS, "I've successfully made Ratforcements the best talent Ratmogrify has. That said, it's so powerful now that it's making the other aspects of Ratmogrify much less useful." + list(2, "Ratforcements stats reduced by ~20% across the board.") + "Don't be fooled though into thinking it's bad now, it is still VERY superior to Shattered's Ratforcements."))
         },
             // v0.1.0
         {
