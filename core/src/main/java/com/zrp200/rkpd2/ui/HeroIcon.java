@@ -24,7 +24,7 @@ public class HeroIcon extends Image {
 	public static final int FREERUNNER  = 5;
 	public static final int SNIPER      = 6;
 	public static final int WARDEN      = 7,
-							KING		= 22; // wrath will just use the same icon. fixme icon is super lazy.
+							KING		= 22;
 
 	//abilities
 	public static final int HEROIC_LEAP     = 8;
@@ -39,7 +39,8 @@ public class HeroIcon extends Image {
 	public static final int SPECTRAL_BLADES = 17;
 	public static final int NATURES_POWER   = 18;
 	public static final int SPIRIT_HAWK     = 19;
-	public static final int RATMOGRIFY      = 20;
+	public static final int RATMOGRIFY      = 20,
+		WRATH = 23;
 
 	public HeroIcon(HeroSubClass subCls){
 		super( Assets.Interfaces.HERO_ICONS );

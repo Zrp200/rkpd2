@@ -24,6 +24,7 @@ import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.mechanics.ConeAOE;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.MobSprite;
+import com.zrp200.rkpd2.ui.HeroIcon;
 
 import java.util.HashSet;
 
@@ -40,6 +41,8 @@ public class Wrath extends ArmorAbility {
     @Override public String targetingPrompt() {
         return new SmokeBomb().targetingPrompt();
     }
+
+    @Override public int icon() { return HeroIcon.WRATH; }
 
     @Override public Talent[] talents() {
         return new Talent[]{AFTERSHOCK, Talent.RAT_BLAST, SMOKE_AND_MIRRORS, SEA_OF_BLADES};
