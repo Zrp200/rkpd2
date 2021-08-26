@@ -104,11 +104,7 @@ public class AboutScene extends PixelScene {
 				"Developed by: _Evan Debenham_\nBased on Pixel Dungeon's open source",
 				"ShatteredPixel.com",
 				shpxLink);
-		if (landscape()){
-			shpx.setRect((w - fullWidth)/2f - 6, 10, 120, 0);
-		} else {
-			shpx.setRect(rkpd2.left(), (landscape() ? rkpd2 : pa).bottom()+8,120,0);
-		}
+		shpx.setRect(rkpd2.left(), (landscape() ? rkpd2 : pa).bottom()+8,120,0);
 		content.add(shpx);
 		addLine(shpx.top() - 4, content);
 
@@ -120,7 +116,9 @@ public class AboutScene extends PixelScene {
 				"https://www.alekskomitov.com");
 		alex.setSize(colWidth/2f, 0);
 		if (landscape()){
-			alex.setPos(shpx.right(), shpx.top() + (shpx.height() - alex.height()*2)/2f);
+			alex.setPos(shpx.right(), shpx.top());
+			// move shattered down instead of alex up.
+			shpx.setY(shpx.top() - (shpx.height() - alex.height() * 2)/2f);
 		} else {
 			alex.setPos(w/2f - colWidth/2f, shpx.bottom()+5);
 		}
