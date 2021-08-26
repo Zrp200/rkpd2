@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.actors.buffs;
 
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.hero.abilities.warrior.Shockwave.ShockForceStunHold;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.BuffIndicator;
@@ -49,7 +50,7 @@ public class Paralysis extends FlavourBuff {
 	}
 	
 	public void processDamage( int damage ){
-		if (target == null) return;
+		if (target == null || target.buff(ShockForceStunHold.class) != null) return;
 		ParalysisResist resist = target.buff(ParalysisResist.class);
 		if (resist == null){
 			resist = Buff.affect(target, ParalysisResist.class);

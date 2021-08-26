@@ -27,13 +27,12 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Combo;
 import com.zrp200.rkpd2.actors.buffs.Cripple;
+import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.buffs.Paralysis;
 import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
-import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath;
 import com.zrp200.rkpd2.effects.MagicMissile;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.mechanics.Ballistica;
@@ -124,8 +123,10 @@ public class Shockwave extends ArmorAbility {
 								ch.damage(damage, hero);
 							}
 							if (ch.isAlive()){
+								// fixme for wrath this should probably be delayed, though
 								if (Random.Int(hero.hasTalent(SHOCK_FORCE) ? 4 : 5) < hero.pointsInTalent(SHOCK_FORCE,AFTERSHOCK)){
 									Buff.affect(ch, Paralysis.class, 5f);
+									Buff.affect(ch, ShockForceStunHold.class, 0f);
 								} else {
 									Buff.affect(ch, Cripple.class, 5f);
 								}
@@ -141,6 +142,10 @@ public class Shockwave extends ArmorAbility {
 
 				});
 	}
+
+	// this prevents stun from being broken during wrath.
+	public static class ShockForceStunHold extends FlavourBuff {{ actPriority = VFX_PRIO; }}
+
 	protected void activate(ClassArmor armor, Hero hero, Integer target) {
 		if (target == null){
 			return;
