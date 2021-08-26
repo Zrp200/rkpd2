@@ -8,6 +8,7 @@ import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.bags.MagicalHolster;
 import com.zrp200.rkpd2.items.wands.Wand;
+import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
@@ -70,7 +71,8 @@ public class ArcaneResin extends Item {
 
 		@Override
 		public String textPrompt() {
-			return Messages.get(LiquidMetal.class, "prompt");
+			//FIXME give this its own prompt string
+			return Messages.get(MagesStaff.class, "prompt");
 		}
 
 		@Override

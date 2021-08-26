@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Hunger;
+import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.buffs.LockedFloor;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -256,6 +257,8 @@ public class TimekeepersHourglass extends Artifact {
 
 			if (super.attachTo(target)) {
 
+				Invisibility.dispel();
+
 				int usedCharge = Math.min(charge, 2);
 				//buffs always act last, so the stasis buff should end a turn early.
 				spend((5*usedCharge) - 1);
@@ -347,7 +350,7 @@ public class TimekeepersHourglass extends Artifact {
 		public void disarmPressedTraps(){
 			for (int cell : presses){
 				Trap t = Dungeon.level.traps.get(cell);
-				if (t != null) t.disarm();
+				if (t != null && t.disarmedByActivation) t.disarm();
 			}
 
 			presses = new ArrayList<>();

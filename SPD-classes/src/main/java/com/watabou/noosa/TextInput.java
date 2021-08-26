@@ -71,10 +71,23 @@ public class TextInput extends Component {
 				}
 			}
 		});
+
+		if (!multiline){
+			textField.setTextFieldListener( (textField, c) -> {
+				if (c == '\r' || c == '\n'){
+					enterPressed();
+				}
+			});
+		}
+
 		container.setActor(textField);
 		stage.setKeyboardFocus(textField);
 		Gdx.input.setOnscreenKeyboardVisible(true);
 	}
+
+	public void enterPressed(){
+		//do nothing by default
+	};
 
 	public void setText(String text){
 		textField.setText(text);

@@ -22,6 +22,8 @@
 package com.zrp200.rkpd2.windows;
 
 import com.zrp200.rkpd2.scenes.PixelScene;
+import com.zrp200.rkpd2.ui.IconButton;
+import com.zrp200.rkpd2.ui.Icons;
 import com.zrp200.rkpd2.ui.RedButton;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
 import com.zrp200.rkpd2.ui.Window;
@@ -91,8 +93,21 @@ public class WndOptions extends Window {
 				}
 			};
 			btn.enable(enabled(i));
-			btn.setRect( 0, pos, width, BUTTON_HEIGHT );
 			add( btn );
+
+			if (!hasInfo(i)) {
+				btn.setRect(0, pos, width, BUTTON_HEIGHT);
+			} else {
+				btn.setRect(0, pos, width - BUTTON_HEIGHT, BUTTON_HEIGHT);
+				IconButton info = new IconButton(Icons.get(Icons.INFO)){
+					@Override
+					protected void onClick() {
+						onInfo( index );
+					}
+				};
+				info.setRect(width-BUTTON_HEIGHT, pos, BUTTON_HEIGHT, BUTTON_HEIGHT);
+				add(info);
+			}
 
 			pos += BUTTON_HEIGHT + MARGIN;
 		}
@@ -105,4 +120,10 @@ public class WndOptions extends Window {
 	}
 	
 	protected void onSelect( int index ) {}
+
+	protected boolean hasInfo( int index) {
+		return false;
+	}
+
+	protected void onInfo( int index ) {}
 }

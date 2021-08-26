@@ -23,6 +23,8 @@ package com.zrp200.rkpd2.levels.traps;
 
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.levels.Level;
+import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.watabou.noosa.audio.Sample;
@@ -92,7 +94,7 @@ public abstract class Trap implements Bundlable {
 				Sample.INSTANCE.play(Assets.Sounds.TRAP);
 			}
 			if (disarmedByActivation) disarm();
-			reveal();
+			Dungeon.level.discover(pos);
 			activate();
 		}
 	}

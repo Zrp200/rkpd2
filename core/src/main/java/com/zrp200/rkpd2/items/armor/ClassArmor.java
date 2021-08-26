@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.items.armor;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.LockedFloor;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.tiles.DungeonTileSheet;
 import com.zrp200.rkpd2.windows.WndChooseAbility;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
@@ -203,13 +204,15 @@ abstract public class ClassArmor extends Armor {
 	public String desc() {
 		String desc = super.desc();
 
-		ArmorAbility ability = hero.armorAbility;
-		if (ability != null){
-			desc += "\n\n" + ability.shortDesc();
+		if (Dungeon.hero.belongings.contains(this)) {
+			ArmorAbility ability = hero.armorAbility;
+			if (ability != null) {
+				desc += "\n\n" + ability.shortDesc();
 			float chargeUse = ability.chargeUse(hero);
-			desc += " " + Messages.get(this, "charge_use", new DecimalFormat("#.##").format(chargeUse));
-		} else {
-			desc += "\n\n" + "_" + Messages.get(this, "no_ability") + "_";
+				desc += " " + Messages.get(this, "charge_use", new DecimalFormat("#.##").format(chargeUse));
+			} else {
+				desc += "\n\n" + "_" + Messages.get(this, "no_ability") + "_";
+			}
 		}
 
 		return desc;
