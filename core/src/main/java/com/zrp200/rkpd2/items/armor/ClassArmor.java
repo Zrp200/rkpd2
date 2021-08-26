@@ -204,7 +204,7 @@ abstract public class ClassArmor extends Armor {
 	public String desc() {
 		String desc = super.desc();
 
-		if (Dungeon.hero.belongings.contains(this)) {
+		if (hero.belongings.contains(this)) {
 			ArmorAbility ability = hero.armorAbility;
 			if (ability != null) {
 				desc += "\n\n" + ability.shortDesc();
