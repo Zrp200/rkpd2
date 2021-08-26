@@ -223,7 +223,9 @@ public class WandOfCorruption extends Wand {
 		// lvl 0 - 25%
 		// lvl 1 - 40%
 		// lvl 2 - 50%
-		if (Random.Int( buffedLvl() + 4 ) >= 3){
+		if (/*Random.Int( buffedLvl() + 4 ) >= 3*/
+				Random.Float() < ( 1f+buffedLvl() )/( 4f+buffedLvl() )
+						* Weapon.Enchantment.procChanceMultiplier(attacker)){
 			Buff.prolong( defender, Amok.class, 4+ buffedLvl()*2);
 		}
 	}

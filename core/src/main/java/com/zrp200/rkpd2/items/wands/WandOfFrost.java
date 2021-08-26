@@ -106,7 +106,8 @@ public class WandOfFrost extends DamageWand {
 	@Override
 	public void onHit(Weapon staff, Char attacker, Char defender, int damage) {
 		Chill chill = defender.buff(Chill.class);
-		if (chill != null && Random.IntRange(2, (int)Chill.DURATION) <= chill.cooldown()){
+		if (chill != null && /*Random.IntRange(2, (int)Chill.DURATION) <= chill.cooldown()*/
+				Weapon.Enchantment.proc(attacker, -1, chill.cooldown(), Chill.DURATION)){
 			//need to delay this through an actor so that the freezing isn't broken by taking damage from the staff hit.
 			new FlavourBuff(){
 				{actPriority = VFX_PRIO;}

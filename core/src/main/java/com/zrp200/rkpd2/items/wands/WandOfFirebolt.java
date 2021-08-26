@@ -76,7 +76,7 @@ public class WandOfFirebolt extends DamageWand {
         // lvl 1 - 50%
         // lvl 2 - 60%
         int level = Math.max(0,staff.buffedLvl());
-        if (Random.Float() < (level+1f)/(level+3f)* Weapon.Enchantment.procChanceMultiplier(attacker)) {
+        if (Weapon.Enchantment.proc(attacker, level, 1, 3)) {
 
             if (Random.Int( 2 ) == 0) {
                 Buff.affect( defender, Burning.class ).reignite( defender );

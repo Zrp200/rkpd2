@@ -227,7 +227,8 @@ public class WandOfRegrowth extends Wand {
 			// lvl 0 - 16%
 			// lvl 1 - 21%
 			// lvl 2 - 25%
-			int healing = Math.round(damage * (level + 2f) / (level + 6f) / 2f);
+			int healing = Math.round(damage * Weapon.Enchantment.procChanceMultiplier(attacker)
+					* (level + 2f) / (level + 6f) / 2f);
 			Buff.affect(attacker, Sungrass.Health.class).boost(healing);
 		}
 

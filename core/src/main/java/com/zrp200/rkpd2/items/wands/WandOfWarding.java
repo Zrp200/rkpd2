@@ -145,7 +145,7 @@ public class WandOfWarding extends Wand {
 		// lvl 0 - 20%
 		// lvl 1 - 33%
 		// lvl 2 - 43%
-		if (Random.Int( level + 5 ) >= 4) {
+		if (Weapon.Enchantment.proc(attacker, level, 1, 5)) {
 			for (Char ch : Actor.chars()){
 				if (ch instanceof Ward){
 					((Ward) ch).wandHeal(staff.buffedLvl());

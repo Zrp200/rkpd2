@@ -147,7 +147,7 @@ public class WandOfPrismaticLight extends DamageWand {
 	@Override
 	public void onHit(Weapon staff, Char attacker, Char defender, int damage) {
 		//cripples enemy
-		Buff.prolong( defender, Cripple.class, 1f+staff.buffedLvl());
+		Buff.prolong( defender, Cripple.class, ( 1f+staff.buffedLvl() )*Weapon.Enchantment.procChanceMultiplier(attacker));
 	}
 
 	@Override

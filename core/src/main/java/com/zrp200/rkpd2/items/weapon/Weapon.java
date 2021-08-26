@@ -30,7 +30,6 @@ import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
-import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.KindOfWeapon;
 import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
@@ -407,6 +406,12 @@ abstract public class Weapon extends KindOfWeapon {
 
 		public boolean curse() {
 			return false;
+		}
+
+		// just a faster way to get proc chances resolved while factoring in enchant modifiers.
+		// results in (N+L)/(D+L) * modifier chance of returning true.
+		public static boolean proc(Char attacker, int level, float numerator, float denominator) {
+			return Random.Float() < procChanceMultiplier(attacker) * (numerator+level)/(denominator+level);
 		}
 
 		@Override
