@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.ui.changelist;
 
 import com.watabou.noosa.Image;
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath;
 import com.zrp200.rkpd2.items.KingsCrown;
 import com.zrp200.rkpd2.items.armor.WarriorArmor;
 import com.zrp200.rkpd2.items.bags.VelvetPouch;
@@ -55,6 +56,7 @@ import static com.zrp200.rkpd2.sprites.ItemSpriteSheet.KIT;
 
 import static com.zrp200.rkpd2.ui.Icons.DEPTH;
 import static com.zrp200.rkpd2.ui.Icons.INFO;
+import static com.zrp200.rkpd2.ui.Icons.SHPX;
 import static com.zrp200.rkpd2.ui.Icons.TALENT;
 import static com.zrp200.rkpd2.ui.Icons.TARGET;
 import static com.zrp200.rkpd2.ui.Icons.get;
@@ -130,7 +132,11 @@ public class RKPD2Changes {
     final ChangeInfo[][] changes = {
         {
             new ChangeInfo("v0.2.0", true, TITLE_COLOR, ""),
-            new ChangeInfo("BETA-5", false, TITLE_COLOR, "", new ChangeButton(WARLOCKS_TOUCH, "I think there's room to add a thrown weapon synergy in." + list(2,"Soul Mark chance of thrown weapons is increased to 20/35/50 from 15/25/35.") + "It might not look like a lot, but even at +0 that's still +33% proc rate.")),
+            new ChangeInfo("BETA-5", false, TITLE_COLOR, "",
+                    new ChangeButton(get(SHPX), "Implemented Shattered Pixel Dungeon v1.0.1.", list("Added info buttons to the scroll of enchantment window.") + "\n" + "Fixed (caused by 1.0.0):" + list("Various rare crash bugs", "Various minor visual and textual errors", "Graphics hitching when music was enabled", "Enemies attacking the golden lotus, despite it being neutral.", "Remote Beacon talent not actually being buffed", "Ankhs still resurrecting the hero even if they lost their inventory", "Unbreakable traps breaking in rare cases", "Transmogrified enemies dropping items where they were transmogrified", "Potions/Scrolls never breaking due to frost/fire", "Sheep triggering traps before occupying space on them") + "\nFixed (existed prior to 1.0.0):" + list("Rings not being renamable if they weren't IDed", "Disarming traps opening chests", "Body replacement ally being vulnerable to various AI-related debuffs", "Some ranged enemies becoming frozen if they were attacked from out of their vision")),
+                    new ChangeButton(new Wrath(), "New Icons", "Added new icons for Wrath and its talents, as well as a basic icon for Rat King's subclass.\n\nTalent icons for Rat King's t3 talents will come at a later date."),
+                    new ChangeButton(WARLOCKS_TOUCH, "I think there's room to add a thrown weapon synergy in." + list(2,"Soul Mark chance of thrown weapons is increased to 20/35/50 from 15/25/35.") + "It might not look like a lot, but even at +0 that's still +33% proc rate."),
+                    misc(list(2,"Aftershock's stun should no longer be broken by rat bomb and sea of blades", "bm staff on-hit effects now respond to proc chance modifiers like Enraged Catalyst and Spirit Blades.", "Adjusted the description of some of Wrath's talents to hopefully be a bit more clear.", "Fixed landscape alignment mistakes in about scene."))),
             new ChangeInfo("BETA-2 - BETA-4", false, TITLE_COLOR, "", new ChangeButton(AFTERSHOCK, "Buffed aftershock's damage, previously it had a 0.8x modifier to damage, but reduced the effect of aftershock on it from +20% per level to +15%.\nRelatedly, Striking Force is no longer level shifted with regards to damage, but its boost is now +25/+50/+75/+100% damage."), bugFixes(list(2,"Crash when using scroll of upgrade on Spirit Bow","Class-specific text not working.","Typos in Restoration description and changelog.", "Crash when attacking by any means after upgrading Spirit Blades or Sea of Blades.","Crash when using Wrath's blades at all.", "Smoke bomb having a range of 6 instead of the stated 8, and Wrath having a range of 8 instead of the stated 6."))),
             new ChangeInfo("From SHPD v1.0.0", false, SHPX_COLOR, "",
                     // alchemy stuff once it's added in.
@@ -163,14 +169,14 @@ public class RKPD2Changes {
                         +"\nRunestone buffs:"+list("All Scrolls now produce 2 runestones.","_Stone of Intuition_ can now be used a second time if the guess was correct.","_Stone of Flock_ AOE up to 5x5 from 3x3, sheep duration increased slightly.","_Stone of Deepened Sleep_ is now stone of deep sleep, instantly puts one enemy into magical sleep.","_Stone of Clairvoyance_ AOE up to 20x20, from 12x12.","_Stone of Aggression_ duration against enemies up 5, now works on bosses, and always forces attacking.","_Stone of Affection_ is now stone of fear, it fears one target for 20 turns.")),
                     misc("Implemented:\n"
                             + list("Various tech and stability improvements.", "Increased the minimum supported Android version to 4.0, from 2.3.", "Game versions that use github for update checking can now opt-in to beta updates within the game.")
-                            + list("Various minor UI improvements to the intro, welcome and about scenes.","Adjusted settings windows, removed some unnecessary elements.","Armor with the warrior's seal on it now states max shielding.","Bonus strength is now shown separately from base strength.")
+                            + list("Various minor UI improvements to the intro, welcome and about scenes.","Adjusted settings windows, removed some unnecessary elements.","Armor with the warrior's seal on it now states max shielding.","Bonus strength is now shown separately from base strength.", "Added info buttons to the scroll of enchantment window.")
                             + list("'Improved' the exit visuals on floor 10.","Becoming magic immune now also cleanses existing magical buffs and debuffs.","Traps that spawn visible or that never deactivate can no longer appear in enclosed spaces")),
                     bugFixes(""
                         + list("Various rare crash bugs", "Various minor visual and text errors", "damage warn triggering when hero gains HP from being hit", "various rare bugs involving pitfall traps")
                         + list("statues not becoming aggressive when debuffed", "swapping places with allies reducing momentum", "DK minions dropping imp quest tokens", "giant succubi teleporting into enclosed spaces", "spectral blades being blocked by allies", "Spirit Hawk and Shadow Clone being corruptible")
                         + list("wands losing max charge on save/load in rare cases", "magical infusion clearing curses", "dewdrops stacking on each other in rare cases", "exploding skeletons not being blocked by transfusion shield in rare cases", "rare incorrect interactions between swiftthistle and golden lotus")
                         + list("various minor errors with electricity effects", "soul mark not working properly on low HP enemies with shielding", "various rare errors with shadows buff", "errors with time freeze and inter-floor teleportation mechanics", "rooted characters not being immune to knockback effects")
-                        + list("gladiator combos dealing much more damage than intended in certain cases", "magical charge and scroll empower interacting incorrectly", "magical sight not working with farsight talent", "perfect copy talent giving very slightly more HP than intended", "wild magic using cursed wands as if they're normal"))),
+                        + list("gladiator combos dealing much more damage than intended in certain cases", "magical charge and scroll empower interacting incorrectly", "magical sight not working with farsight talent", "perfect copy talent giving very slightly more HP than intended", "wild magic using cursed wands as if they're normal") + list("Disarming traps opening chests.", "Body replacement ally being vulnerable to various AI-related debuffs."))),
             NewContent(
                 new ChangeButton(new ItemSprite(ItemSpriteSheet.ARMOR_RAT_KING), "Rat King's Wrath Redesign!", "I've finally gotten around to updating Rat King's Wrath to reflect v0.9.3 reworks to armor abilities!"
                         + "\n\nWhile the previous Wrath was a combination of all armor abilities, the prospect of combining 13 different abilities into one isn't possible under the Wrath design, so I have instead decided to adapt the ones that have similar functionality to each part of the previous Wrath: _Smoke Bomb, Shockwave, Elemental Blast, and Spectral Blades._"
@@ -180,8 +186,7 @@ public class RKPD2Changes {
                         "Smoke Bomb no longer grants invisibility, mechanic instead moved to corresponding talent. Range is reduced to 6, from 8.",
                         "Molten Earth effect replaced with Elemental Blast.",
                         "Wrath's leap no longer stuns adjacent foes, instead sends out a 360 degree AOE Shockwave that covers a 3x3 area.",
-                        "Spectral Blades retains the ability to hit all targets in sight (removing the need to target it), but deals less damage and has reduced chances to proc on-hit effects when attacking many targets.")
-                + "\n_Currently Wrath lacks an icon, I'm working on that now and it should be done when I release v0.2.0._"),
+                        "Spectral Blades retains the ability to hit all targets in sight (removing the need to target it), but deals less damage and has reduced chances to proc on-hit effects when attacking many targets.")),
                 new ChangeButton(HUNTRESS, list(2,
                         "Added a _secret subclass_ to Huntress, accessible by a secret interaction while choosing a subclass.",
                         "_Restored Nature_ root duration reverted to 2/3, down from 4/6, but it now also causes health potions and related alchemy products to be used instantly.")

@@ -62,21 +62,29 @@ public class ChangeButton extends Component {
 	public ChangeButton(Item item, String message ){
 		this( new ItemSprite(item), item.name(), message);
 	}
+
 	public ChangeButton(HeroClass heroClass, String message) {
 		this( avatar(heroClass, 6), heroClass.title(), message );
 	}
+
 	public ChangeButton(Talent talent, String title, String message) {
 		this( new Image( new TalentIcon(talent) ), title, message);
 	}
 	public ChangeButton(Talent talent, String message) {
 		this( talent, talent.title(), message);
 	}
+
 	public ChangeButton(HeroSubClass subClass, String message) {
 		this( new Image( new HeroIcon(subClass) ), subClass.title(), message);
 	}
+
 	public ChangeButton(ArmorAbility ability, String message) {
-		this( new Image( new HeroIcon(ability) ), ability.name(), message);
+		this(ability, ability.name(), message);
 	}
+	public ChangeButton(ArmorAbility ability, String title, String message) {
+		this( new Image( new HeroIcon(ability) ), title, message);
+	}
+
 	public ChangeButton(Buff buff, String message) {
 		this( new Image( new BuffIcon(buff,true) ), buff.toString(), message);
 	}
