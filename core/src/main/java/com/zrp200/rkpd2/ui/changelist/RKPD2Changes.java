@@ -241,35 +241,6 @@ public class RKPD2Changes {
             // v0.1.0
         {
             new ChangeInfo("v0.1.0", true, TITLE_COLOR, ""),
-
-            new ChangeInfo("v0.1.0b", false, TITLE_COLOR, "",
-                    bugFixes(list(2,
-                            "Sorcery not giving BM effects on non-staff melee attacks",
-                            "Berserking Stamina not level-shifted in terms of berserk recovery speed.",
-                            "Confusing typo in Berserking Stamina description",
-                            "Spectral blades being able to attack NPCs (actually a shattered bug)",
-                            "Fan of Blades dealing more damage to additional targets than intended.",
-                            "Projecting Blades giving more wall penetration for the initial target than additional targets.")
-                    )
-            ),
-            new ChangeInfo("v0.1.0a", false, TITLE_COLOR, "",
-                    new ChangeButton(new ItemSprite(new KingsCrown()), "Ability adjustments",list(2,
-                            "Death mark now gives +33% damage, up from +25%.",
-                            "Projecting blades penetration is now 1/3/5/7/9, down from 2/4/6/8/10, and its accuracy boost is 0/33/67/100/133 instead of 25/50/75/100/125.",
-                            "Fan of blades now affects 1/2-3/4/5-6/7 targets in a 30/45/90/135/180 degree AOE cone, from 1/2/3/4/5 targets in a 30/60/90/120/150 degree cone AOE.",
-                            "Growing power no longer has a +0 effect, overall point effectiveness increased to compensate.",
-                            "Nerfed Nature's Wrath to be 10%/20%/30%/40%, down from 13%/25%/38%/50%")),
-                    new ChangeButton(BERSERKER, "I don't think level-shifting talents is what berserker needs. I'll explore different avenues for changes here later, but in the meantime I've reverted most of the levelshifting here and lightly buffed the affected talents instead."
-                            +list(2,
-                            "Endless rage now gives +20%/40%/60% maximum rage instead of +15/30/45/60 rage. This is still up from v0.0.1, because endless rage is such a crappy talent that's only somewhat salvaged by the fact I made it cause you to gain more rage at low HP.",
-                            "Enraged Catalyst now gives +0/+20/40/60% enchant proc rate at full rage, instead of +17/+33/+50/+66",
-                            "Berserking stamina level shifting left intact (actually it was implemented).")),
-                    new ChangeButton(Icons.get(TARGET), "Special Action Targeting", "Refactored Special Action Targeting. The only notable change is that only visible enemies are highlighted now; unopened mimics for example should no longer be autotargeted and must be manually tapped."),
-                    bugFixes(list(2,
-                            "Rogue's cloak boost to weapons being incorrectly displayed in some cases",
-                            "Missing text for certain Rat King's Wrath interactions",
-                            "String formatting failure in Enhanced Scrolls",
-                            "Various typos in talent and subclass descriptions."))),
             NewContent(
                 new ChangeButton(Icons.get(INFO), "Developer Commentary",
                     "I regret the relatively long wait for a v0.9.3 implementation, but RKPD2 is now updated to Shattered v0.9.3c! Enjoy smaller levels, some quality of life improvements, and even more buffs to your favorite heroes."
@@ -282,23 +253,13 @@ public class RKPD2Changes {
                         "Epic armors and T4 talents have been directly implemented.",
                         "The 12 points for t3 talents remain, causing the hero to uniquely gain two talent points per level for levels 21-24.",
                         "You can still supercharge your armor if you have too low charge, don't worry, though I doubt it'll be as notable as before with the charging mechanic changes and Heroic Energy.",
-                        "Rat King has two \"special\" abilities to choose from, currently, and one more will hopefully be added in future updates."
-                    )
-                    + "_Ability Buffs_:" + list("Heroic Energy, Elemental Power, Reactive Barrier, and Nature's Wrath are now more potent.",
-                        "Ratforcements spawns scaled rats that are much stronger than standard rats. It can also summon scaled loyal albinos now.",
-                        "Ratlomancy now gives 50% more adrenaline for 50% more fun.",
-                        "Death Mark has been buffed heavily.",
-                        "Growing Power, Blast Radius, Long Range Warp, and Telefrag have been level-shifted",
-                        "Shadow Clone and Spectral Blades have their talents level-shifted.")
-                ),
+                        "Rat King has two \"special\" abilities to choose from, currently, and one more will hopefully be added in future updates.")
+                    + "_Ability Buffs_:" + list("Heroic Energy, Elemental Power, Growing Power, and Reactive Barrier are now more potent.", "Nature's Wrath is now 10%/20%/30%/40% prc.", "Ratforcements spawns scaled rats that are much stronger than standard rats. It can also summon scaled loyal albinos now.", "Ratlomancy now gives 50% more adrenaline for 50% more fun.", "Death mark now gives +33% damage, up from +25%.","Blast Radius, Long Range Warp, and Telefrag have been level-shifted", "Projecting blades penetration is now 1/3/5/7/9, down from 2/4/6/8/10, and its accuracy boost is 0/33/67/100/133 instead of 25/50/75/100/125.", "Fan of blades now affects 1/2-3/4/5-6/7 targets in a 30/45/90/135/180 degree AOE cone.")),
                 new ChangeButton(Icons.get(Icons.CHALLENGE_ON), "New Challenge!", "Badder bosses has been implemented into RKPD2, enjoy teaching those bosses that no matter what they do, they will still lose."),
                 new ChangeButton(Icons.get(TARGET), "Special Action Targeting", "Added smart targeting for Combo, Preparation, and Sniper's Mark's free shot via Multishot."
                     + list(2,
-                        "When there is only one target for the action, the action will skip the prompt and simply execute.",
-                        "When there is more than one possible target (or no targets), the valid targets will be highlighted.")
-                    + "This should make using these abilities much more smooth when fighting a single enemy as well as making them more intuitive in general."
-                )
-            ),
+                        "When there is only one target for the action, the action will skip the prompt and simply execute.", "When there is more than one possible target (or no targets), the valid targets will be highlighted.")
+                    + "This should make using these abilities much more smooth when fighting a single enemy as well as making them more intuitive in general.")),
 
             Changes(
                 new ChangeButton(RAT_KING, ""
@@ -309,12 +270,7 @@ public class RKPD2Changes {
                             "Tactics buffed, its strongman now uses the v0.9.3 version and its description has been updated to indicate that cleave makes combo last for 15/30/45 turns. This talent is probably the biggest winner of this update.",
                             "Ranged Terror buffed, now gives a greater damage boost to specials when using thrown weapons.",
                             "Royal Presence changed, now has an increased chance to spawn wraiths but decreased indirect damage soul mark effectiveness and ally warp range",
-                            "Natural Dominance nerfed, now gives 50/100/150% Rat King's level in barkskin that fades every turn instead of previous barkskin effect.")
-                        //+"\n\nThe following balance changes have been made:"
-                        //+"\n_TODO_ Strongman talent effect moved from Tactics to Imperial Wrath, uses new 0.9.3 implementation."
-                        //+"\n_TODO_ Hold fast talent effect moved from Imperial Wrath to Tactics."
-                        //+"\n\nTactics is already one of the safest investments you can have, it really doesn't need a strongman buff right now, and strongman fits IW better thematically."
-                ),
+                            "Natural Dominance nerfed, now gives 50/100/150% Rat King's level in barkskin that fades every turn instead of previous barkskin effect.")),
                 new ChangeButton(Icons.get(DEPTH), "Levelgen", "Implementing SHPD v0.9.3's levelgen changes has resulted in an even smaller RKPD2!"
                         +list(2,
                             "Levels should be slightly smaller than before in terms of room amounts",
@@ -332,11 +288,13 @@ public class RKPD2Changes {
                         "Dwarf King now bellows on certain quotes",
                         "Added differing descriptions for loyal rats and hostile rats, might wanna look at their descriptions when you get the chance.")
                 ),
-                bugFixes(list(2,
-                        "Bugfixes up to SHPD v0.9.3c have been implemented.",
+                bugFixes(list("Bugfixes up to SHPD v0.9.3c have been implemented.",
                         "King's Vision now correctly updates Rat King's field of view on the turn it is upgraded.",
-                        "Fixed some talent description typos."))
-            ),
+                        "Fixed some talent description typos.")
+                        // v0.1.0a
+                        + list("Rogue's cloak boost to weapons being incorrectly displayed in some cases", "Missing text for certain Rat King's Wrath interactions", "String formatting failure in Enhanced Scrolls", "Various typos in talent and subclass descriptions.")
+                        // v0.1.0b
+                        + list("Sorcery not giving BM effects on non-staff melee attacks", "Berserking Stamina not level-shifted in terms of berserk recovery speed.", "Confusing typo in Berserking Stamina description", "Spectral blades being able to attack NPCs (actually a shattered bug)", "Fan of Blades dealing more damage to additional targets than intended.", "Projecting Blades giving more wall penetration for the initial target than additional targets."))),
 
             Buffs(
                 new ChangeButton(HUNTRESS, "I'm leaning harder on giving subclasses access to talents without upgrading them, and _Warden_ is an excellent place to start:"
@@ -416,11 +374,23 @@ public class RKPD2Changes {
                         "Mystical Upgrade is now more potent, gives instant 8/12 recharge to non-cloak artifacts, up from 5/8.",
                         "Enhanced Rings now stacks.")
                 ));
-                addButton(new ChangeButton(RAT_KING, list(2,
-                        "Mercenary Commander renamed to Flash, no longer gives the same blink benefit as Assassin's Reach (was bugged lol), instead gives the standard SHPD blink scaling it was supposed to have.",
-                        "Changed Rat King's hero description in Hero Select and the descriptions of many of his t3 talents.",
-                        "Added a note about how to toggle special actions for Rat King's subclass, and added a hotkey for toggling special action for desktop users.",
-                        "Added unique dialog for Ambitious Imp.")
+                addButton(new ChangeButton(avatar(HUNTRESS, 6), "Multishot and Warden", ""
+                        + "\nMultishot:" + list("now has a unique icon.",
+                        "levels for targets are now evaluated independently for the purposes of shared upgrades.",
+                        "the total duration of sniper's mark is now the sum of the durations of each marked target.",
+                        "free shot is now kept for 1/2/3x duration at +1/2/3.",
+                        "Improved target handling between floors and when some targets cannot be shot.")
+                        + "\nWarden's power seems to currently be concentrated in Nature's Better Aid:"
+                        + list("NBA seed boost now +17/33/50% down from +33/66/100%",
+                        "NBA dew boost now +8/17/25% down from +33/66/100%",
+                        "Shielding Dew now also gives upfront shielding equal to 25%/50%/75% of the heal when not at full HP.")));
+                addButton(new ChangeButton(get(Icons.TALENT), "General Talents", ""
+                        + list("Scholar's Intuition +2 now has a 50% chance to identify consumables when picking them up, down from 2/3",
+                        "Scholar's Intuition +1 now identifies wand levels on the first zap.")
+                        + list("Restored Nature now roots for 4/6 turns, up from 3/5")
+                        + list("Seer Shot cooldown reduced from 20 to 5. (It was bugged to be 20 instead of 10)",
+                        "Natural Dominance's Seer Shot cooldown increased to 20 from 10")
+                        + "\n_-_ Fixed an oversight that caused Soul Siphon to cause wands to trigger soul mark at 200/300/400% effectiveness instead of 20/30/40%"
                 ));
                 addButton(new ChangeButton(new ItemSprite(KIT), "Epic Armor", ""
                     + list(2,
@@ -431,58 +401,20 @@ public class RKPD2Changes {
                         "Changed effects to make them more distinct (and fixed a couple omitted visual effects)",
                         "Changed the priority of the invisibility to actually cover the last turn of delay.")
                 ));
-                addButton(misc(list(2,"Huntress spirit bow now scales to +10, down from +12.",
-                    "Empowering Scrolls talent's effect now lasts for 40 turns, up from 30.",
-                    "Shopkeepers now offer reasonable deals for both buying and selling...",
-                    "ID VFX is now used for on-equip identification.",
-                    "Adjusted VFX for Hearty Meal and Test Subject.",
-                    "Added a shatter vfx effect when 'skipping' DK.",
-                    "Added a sfx for fully recovering, since apparently it's needed.",
+                addButton(misc(list(2,
+                        "Changed Rat King's hero description in Hero Select and the descriptions of many of his t3 talents.", "Added a note about how to toggle special actions for Rat King's subclass, and added a hotkey for toggling special action for desktop users.", "Added unique dialog for Ambitious Imp.")
+                        + list("Huntress spirit bow now scales to +10, down from +12.", "Empowering Scrolls talent's effect now lasts for 40 turns, up from 30.", "Shopkeepers now offer reasonable deals for both buying and selling...", "ID VFX is now used for on-equip identification.", "Adjusted VFX for Hearty Meal and Test Subject.", "Added a shatter vfx effect when 'skipping' DK.", "Added a sfx for fully recovering, since apparently it's needed.",
                     "Troll Blacksmith now transitions directly into the reforge window after initially talking to him.")
-                ));
+                        + list("The level at which enemies stop giving exp has been increased again by 1 (now +2 compared to shattered)", "The level at which enemies stop dropping stuff has been decreased by 1 to match this new value. (now same as shattered)").trim() + list("explosive arrows can now proc on miss regardless of where they are shot.", "Adrenaline and Sniper's Mark visual fades now match their initial durations", "Dwarf King now gloats if he manages to kill you.")));
                 addButton(bugFixes("Fixed many bugs involving soul marking that were directly impacting the power of soul mark:"
                     + list("Warlock's Touch can now actually provide its benefit immediately.",
                         "Fixed melee attacks proccing soul mark twice.",
                         "Fixed melee attacks coming from the hero being considered indirect damage and thus requiring Soul Siphon or Presence to work with soul mark at all.",
                         "Rare crashes when zapping the shopkeeper with a wand that can soul-mark.")
-                    + "\nOther fixes:" + list("Huntress and Rat King getting more berries at +2 from their respective talents than intended.",
-                        "Being able to apply sniper's mark to multiple foes when it shouldn't be possible.",
+                    + "\nOther fixes:" + list("Huntress and Rat King getting more berries at +2 from their respective talents than intended.", "Being able to apply sniper's mark to multiple foes when it shouldn't be possible.",
                         "Typos")
-                ));
-            }},
-            new ChangeInfo("v0.0.1a", false, TITLE_COLOR, "",
-                new ChangeButton(avatar(HUNTRESS, 6), "Multishot and Warden", ""
-                    + "\nMultishot:" + list("now has a unique icon.",
-                        "levels for targets are now evaluated independently for the purposes of shared upgrades.",
-                        "the total duration of sniper's mark is now the sum of the durations of each marked target.",
-                        "free shot is now kept for 1/2/3x duration at +1/2/3.",
-                        "Improved target handling between floors and when some targets cannot be shot.")
-                    + "\nWarden's power seems to currently be concentrated in Nature's Better Aid:"
-                    + list("NBA seed boost now +17/33/50% down from +33/66/100%",
-                        "NBA dew boost now +8/17/25% down from +33/66/100%",
-                        "Shielding Dew now also gives upfront shielding equal to 25%/50%/75% of the heal when not at full HP.")),
-                new ChangeButton(get(Icons.TALENT), "General Talents", ""
-                    + list("Scholar's Intuition +2 now has a 50% chance to identify consumables when picking them up, down from 2/3",
-                        "Scholar's Intuition +1 now identifies wand levels on the first zap.")
-                    + list("Restored Nature now roots for 4/6 turns, up from 3/5")
-                    + list("Seer Shot cooldown reduced from 20 to 5. (It was bugged to be 20 instead of 10)",
-                        "Natural Dominance's Seer Shot cooldown increased to 20 from 10")
-                    + "\n_-_ Fixed an oversight that caused Soul Siphon to cause wands to trigger soul mark at 200/300/400% effectiveness instead of 20/30/40%"
-                ),
-                misc(list("The level at which enemies stop giving exp has been increased again by 1 (now +2 compared to shattered)",
-                        "The level at which enemies stop dropping stuff has been decreased by 1 to match this new value. (now same as shattered)"
-                    ).trim() + list(2,
-                        "explosive arrows can now proc on miss regardless of where they are shot.",
-                        "Adrenaline and Sniper's Mark visual fades now match their initial durations",
-                        "Dwarf King now gloats if he manages to kill you.")),
-                bugFixes(list(2,
-                        "natural dominance incorrectly giving ally swap instead of king's presence",
-                        "Rogue not actually recieving innate 2x ring id speed.",
-                        "display bugs with rings, especially might and cursed rings.",
-                        "Multishot not checking if a given character is already marked when marking an enemy with sniper's mark",
-"'Hang' bug when attempting to target an out-of-range character with free shot from multi-shot",
-                        "Shattered bug where dk shows his alert during the whole second phase.",
-                        "Gamebreaking typo in update screen.")))
+                        + list("natural dominance incorrectly giving ally swap instead of king's presence", "Rat King getting Assassin's reach buffs instead of rogue", "Rogue not actually recieving innate 2x ring id speed.", "display bugs with rings, especially might and cursed rings.", "Multishot not checking if a given character is already marked when marking an enemy with sniper's mark", "'Hang' bug when attempting to target an out-of-range character with free shot from multi-shot", "Shattered bug where dk shows his alert during the whole second phase.")));
+            }}
         },
             // v0.0.0
         {
