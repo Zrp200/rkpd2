@@ -57,6 +57,10 @@ public class ShatteredPixelDungeon extends Game {
 	public ShatteredPixelDungeon( PlatformSupport platform ) {
 		super( sceneClass == null ? WelcomeScene.class : sceneClass, platform );
 
+		// no idea if this is needed.
+		com.watabou.utils.Bundle.addAlias(com.zrp200.rkpd2.actors.buffs.SoulMark.class,
+				"com.zrp200.rkpd2.actors.buffs.SoulMark.DelayedMark");
+
 		//v1.0.0
 		com.watabou.utils.Bundle.addAlias(
 				com.zrp200.rkpd2.items.stones.StoneOfFear.class,
