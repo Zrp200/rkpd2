@@ -229,7 +229,6 @@ public class ElementalBlast extends ArmorAbility {
 							//*** Wand of Regrowth ***
 							} else if (finalWandCls == WandOfRegrowth.class){
 								//TODO: spend 3 charges worth of regrowth energy from staff?
-								int t = Dungeon.level.map[cell];
 								if (Random.Float() < 0.33f*effectMulti) {
 									HighGrass.plant(cell);
 								}
@@ -349,7 +348,7 @@ public class ElementalBlast extends ArmorAbility {
 						//### Self-Effects ###
 						//*** Wand of Magic Missile ***
 						if (finalWandCls == WandOfMagicMissile.class) {
-							Buff.affect(hero, Recharging.class, effectMulti* Recharging.DURATION / 2f);
+							Buff.append(hero, Recharging.class, effectMulti* Recharging.DURATION / 2f);
 
 						//*** Wand of Living Earth ***
 						} else if (finalWandCls == WandOfLivingEarth.class && charsHit > 0){
