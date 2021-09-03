@@ -152,6 +152,7 @@ public class SmokeBomb extends ArmorAbility {
 	public static void applyHastyRetreat(Hero hero) {
 		int duration = hero.shiftedPoints(Talent.HASTY_RETREAT, Talent.SMOKE_AND_MIRRORS);
 		if(duration == 0) return;
+		duration += 0.67f;
 		Buff.affect(hero, Haste.class, duration);
 		Buff.affect(hero, Invisibility.class, duration);
 	}

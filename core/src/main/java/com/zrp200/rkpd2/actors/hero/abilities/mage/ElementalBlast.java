@@ -161,7 +161,7 @@ public class ElementalBlast extends ArmorAbility {
 			);
 		}
 
-		final float effectMulti = 1f + 0.15f*hero.byTalent(
+		final float effectMulti = 1f + 0.2f*hero.byTalent(
 				Talent.ELEMENTAL_POWER,1.5f,
 				Talent.RAT_BLAST,1f);
 

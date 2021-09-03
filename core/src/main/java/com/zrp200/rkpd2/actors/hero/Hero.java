@@ -233,13 +233,13 @@ public class Hero extends Char {
 	}
 
 	public int STR() {
-		int STR = this.STR;
+		int strBonus = 0;
 
-		STR += RingOfMight.strengthBonus( this );
+		strBonus += RingOfMight.strengthBonus( this );
 		
 		AdrenalineSurge buff = buff(AdrenalineSurge.class);
 		if (buff != null){
-			STR += buff.boost();
+			strBonus += buff.boost();
 		}
 
 		// TODO buff for warrior
@@ -248,10 +248,10 @@ public class Hero extends Char {
 					0.05f + 0.08f*pointsInTalent(Talent.STRONGMAN), // get it? ~1.5x. Very, very slightly worse than v0.0.1
 					0.03f + 0.05f*pointsInTalent(Talent.RK_BERSERKER)
 			);
-			STR = (int)Math.floor(STR * (1 + boost));
+			strBonus += (int)Math.floor(STR * boost);
 		}
 
-		return STR;
+		return STR + strBonus;
 	}
 
 	// this affects what items get boosted. if I want a talent to grant boosts I should go here.
