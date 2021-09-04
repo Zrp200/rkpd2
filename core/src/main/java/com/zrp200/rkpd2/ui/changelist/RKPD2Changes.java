@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.ui.changelist;
 
 import com.watabou.noosa.Image;
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.actors.hero.abilities.mage.ElementalBlast;
 import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath;
 import com.zrp200.rkpd2.items.KingsCrown;
 import com.zrp200.rkpd2.items.armor.WarriorArmor;
@@ -110,6 +111,10 @@ public class RKPD2Changes {
                 buttons);
     }
 
+    private static ChangeButton info(String message) {
+        return new ChangeButton(get(INFO), "Developer Commentary", message);
+    }
+
     // more utils
 
     /** makes a list in the standard PD style.
@@ -132,14 +137,22 @@ public class RKPD2Changes {
     final ChangeInfo[][] changes = {
         {
             new ChangeInfo("v0.2.0", true, TITLE_COLOR, ""),
-            new ChangeInfo("From SHPD v1.0.1", false, SHPX_COLOR, "",
+            new ChangeInfo("BETA-6", false, "",
+                    info("This should be the last beta. Expect a release Sunday or early Monday"),
+                    new ChangeButton(new ElementalBlast(), list(2,"Buffed elemental power to be 25/50/75/100, up from 23/45/68/90", "Rat Blast's elemental power increased to 20%/40%/60%/80% from 15%/30%/45%/60%", "Magic Missile elemental blast now appends new recharging buffs instead of extending existing recharging, to prevent an exploit.")),
+                    misc("renamed Imperial Wrath to Inevitability."),
+                    bugFixes("_-_ Fixed a major bug in Warlock's Touch causing incorrect soul mark chances" + "\n\nImplemented bugfixes from v1.0.3 and v1.0.2:\n\n_-_ Reclaim Trap spells incorrectly starting with a summoning trap reclaimed\n\n" +
+                            "Fixed (caused by 1.0.1):" + list("Music corruption and crashes for Desktop users") +
+                            "\nFixed (caused by 1.0.0):" + list("Negative STR bonuses not displaying separately", "Hasty Retreat and Smoke and Mirrors giving less haste/invis than intended", "Various rare game crashes", "Some items being treated as equipped after save/load with lost inventory", "Cases where liquid metal could be applied to items at full durability") +
+                            "\nFixed (existed prior to 1.0.0):" + list("Time stasis sometimes not preventing harmful effects in its last turn.", "Minor text and vfx corrections"))),
+            new ChangeInfo("From SHPD v1.0.3", false, SHPX_COLOR, "",
                     // alchemy stuff once it's added in.
                     new ChangeButton(new ItemSprite(CROWN), "Armor Ability Changes", ""
                         + "_Buffs:_\n"
                         + list("_Endure_ bonus damage conversion rate up to 1/3 from 1/4.")
                         + list("_Striking Wave_ effectiveness increased by 20%."/*,"_Shock Force_ now actually adds 20% damage per level as stated. Previously it only added 15%."*/, "Relatedly, Striking Force is no longer level shifted with regards to damage, but its boost is now +25/+50/+75/+100% damage.")
                         + list("_Wild Magic_ now boosts wand levels, instead of overriding them.","_Conserved Magic_ now has a chance to give each wand a 3rd shot.","_Conserved Magic_ charge cost reduction down to 33/55/70/80% from 44/69/82/90%.")
-                        + list("_Elemental Blast_ base damage increased to 15-25 from 10-20.")
+                        + list("_Elemental Blast_ base damage increased to 15-25 from 10-20.", "Elemental Power scaling increased to 20%/40%/60%/80% (Rat Blast) and 25/50/75/100 (Elemental Blast).")
                         + list("_Remote Beacon_ range per level increased to 4, from 3.")
                         + list("_Shadow Clone_ now follows the hero at 2x speed.","_Shadow Blade_ unshifted, damage per level increased to 7.5% from 6.25%.","_Cloned Armor_ unshifted, armor per level increased to 15% from 12.5%.")
                         + list("_Spirit Hawk_ evasion, accuracy, and duration increased by 20%.","_Swift Spirit_ now gives 2/3/4/5 dodges, up from 1/2/3/4.","_Go for the Eyes_ now gives 2/4/6/8 turns of blind, up from 2/3/4/5.")
@@ -171,7 +184,7 @@ public class RKPD2Changes {
                         + list("statues not becoming aggressive when debuffed", "swapping places with allies reducing momentum", "DK minions dropping imp quest tokens", "giant succubi teleporting into enclosed spaces", "spectral blades being blocked by allies", "Spirit Hawk and Shadow Clone being corruptible")
                         + list("wands losing max charge on save/load in rare cases", "magical infusion clearing curses", "dewdrops stacking on each other in rare cases", "exploding skeletons not being blocked by transfusion shield in rare cases", "rare incorrect interactions between swiftthistle and golden lotus")
                         + list("various minor errors with electricity effects", "soul mark not working properly on low HP enemies with shielding", "various rare errors with shadows buff", "errors with time freeze and inter-floor teleportation mechanics", "rooted characters not being immune to knockback effects")
-                        + list("gladiator combos dealing much more damage than intended in certain cases", "magical charge and scroll empower interacting incorrectly", "magical sight not working with farsight talent", "perfect copy talent giving very slightly more HP than intended", "wild magic using cursed wands as if they're normal") + list("Disarming traps opening chests.", "Body replacement ally being vulnerable to various AI-related debuffs.") + list("Disarming traps opening chests", "Body replacement ally being vulnerable to various AI-related debuffs", "Some ranged enemies becoming frozen if they were attacked from out of their vision"))),
+                        + list("gladiator combos dealing much more damage than intended in certain cases", "magical charge and scroll empower interacting incorrectly", "magical sight not working with farsight talent", "perfect copy talent giving very slightly more HP than intended", "wild magic using cursed wands as if they're normal") + list("Disarming traps opening chests.", "Body replacement ally being vulnerable to various AI-related debuffs.") + list("Disarming traps opening chests", "Body replacement ally being vulnerable to various AI-related debuffs", "Some ranged enemies becoming frozen if they were attacked from out of their vision", "Time stasis sometimes not preventing harmful effects in its last turn."))),
             NewContent(
                 new ChangeButton(new Wrath(), "Rat King's Wrath Redesign!", "I've finally gotten around to updating Rat King's Wrath to reflect v0.9.3 reworks to armor abilities!"
                         + "\n\nWhile the previous Wrath was a combination of all armor abilities, the prospect of combining 13 different abilities into one isn't possible under the Wrath design, so I have instead decided to adapt the ones that have similar functionality to each part of the previous Wrath: _Smoke Bomb, Shockwave, Elemental Blast, and Spectral Blades._"
@@ -185,8 +198,7 @@ public class RKPD2Changes {
                         "Allows stacking of free-targeted marks instead of overriding them when a new target is marked.",
                         "Has changed free-targeting logic (thanks to smart-targeting) to make these new interactions smoother; enemies that are already targeted will be highlighted while manually targeting.")
                         + "\nMulti-shot should now be more complex, but in exchange it should (somewhat ironically) be easier to use and understand. It's also much more flexible with its free-targeted sniper special functionality."),
-                    new ChangeButton(KINGS_WISDOM, "New Talent Icons!", "Most of my added talents now have unique icons! Some credit to _Trashbox Bobylev_ is needed."
-                            + "\n\nAlso, the new music and UI changes from SHPD v1.0.0 have been implemented into the game.")),
+                new ChangeButton(KINGS_WISDOM, "New Talent Icons!", "Most of my added talents now have unique icons! Some credit to _Trashbox Bobylev_ is needed.\n\nAlso, the new music and UI changes from SHPD v1.0.0 have been implemented into the game.")),
             Changes(
                 new ChangeButton(WARLOCKS_TOUCH, "Warlock's Touch is currently extremely situational and often requires giving up warlock's other gimmicks to work at its best. At the same time, when exploited it's incredibly overpowered. These changes are intended to instead generalize its use, increasing its versatility and amount of situations in which it is applicable."
                     + list(2,
@@ -205,6 +217,7 @@ public class RKPD2Changes {
                                 "Grim no longer has specifically boosted chances to appear.")),
                 misc(list(2,
                         //"TODO _Energizing Meal I_ now adds new recharging buffs instead of stacking on existing ones.",
+                        "Magic Missile Elemental Blast now adds new recharge buffs rather than extending recharging to prevent exploits.",
                         "Talents that identify curses now declare whether an item is cursed when activated.",
                         // ui
                         "Most windows now scroll if they would not fit on the screen.",
