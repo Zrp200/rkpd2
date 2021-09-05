@@ -90,7 +90,7 @@ public class SoulMark extends FlavourBuff {
 			delayed = false;
 			return;
 		}
-		if(!(src instanceof Char) && !hero.hasTalent(Talent.SOUL_SIPHON)) return; // this shouldn't come up, but in case it does...
+		if(!( src instanceof Char || hero.hasTalent(Talent.SOUL_SIPHON) )) return; // this shouldn't come up, but in case it does...
 		int restoration = Math.min(damage, defender.HP);
 		//physical damage that doesn't come from the hero is less effective
 		if (src != hero){

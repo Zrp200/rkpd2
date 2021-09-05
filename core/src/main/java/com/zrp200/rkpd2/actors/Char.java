@@ -640,7 +640,7 @@ public abstract class Char extends Actor {
 		int initialHP = HP;
 
 		SoulMark soulMark = buff(SoulMark.class);
-		if(soulMark != null) soulMark.proc(src,this,dmg);
+		if( soulMark != null && !(src instanceof Char) ) soulMark.proc(src,this,dmg);
 
 		Terror t = buff(Terror.class);
 		if (t != null){
