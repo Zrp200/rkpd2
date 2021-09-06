@@ -131,7 +131,7 @@ public class SmokeBomb extends ArmorAbility {
 	@Override
 	protected void activate(ClassArmor armor, Hero hero, Integer target) {
 		if (target != null) {
-			if(isValidTarget(hero, target, 8)) return;
+			if(!isValidTarget(hero, target, 8)) return;
 			armor.useCharge();
 
 			if (!isShadowStep(hero)) {
@@ -150,7 +150,7 @@ public class SmokeBomb extends ArmorAbility {
 	}
 
 	public static void applyHastyRetreat(Hero hero) {
-		int duration = hero.shiftedPoints(Talent.HASTY_RETREAT, Talent.SMOKE_AND_MIRRORS);
+		float duration = hero.shiftedPoints(Talent.HASTY_RETREAT, Talent.SMOKE_AND_MIRRORS);
 		if(duration == 0) return;
 		duration += 0.67f;
 		Buff.affect(hero, Haste.class, duration);
