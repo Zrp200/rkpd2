@@ -137,14 +137,6 @@ public class RKPD2Changes {
     final ChangeInfo[][] changes = {
         {
             new ChangeInfo("v0.2.0", true, TITLE_COLOR, ""),
-            new ChangeInfo("BETA-6", false, "",
-                    info("This should be the last beta. Expect a release Sunday or early Monday"),
-                    new ChangeButton(new ElementalBlast(), list(2,"Buffed elemental power to be 25/50/75/100, up from 23/45/68/90", "Rat Blast's elemental power increased to 20%/40%/60%/80% from 15%/30%/45%/60%", "Magic Missile elemental blast now appends new recharging buffs instead of extending existing recharging, to prevent an exploit.")),
-                    misc("renamed Imperial Wrath to Inevitability."),
-                    bugFixes("_-_ Fixed a major bug in Warlock's Touch causing incorrect soul mark chances" + "\n\nImplemented bugfixes from v1.0.3 and v1.0.2:\n\n_-_ Reclaim Trap spells incorrectly starting with a summoning trap reclaimed\n\n" +
-                            "Fixed (caused by 1.0.1):" + list("Music corruption and crashes for Desktop users") +
-                            "\nFixed (caused by 1.0.0):" + list("Negative STR bonuses not displaying separately", "Hasty Retreat and Smoke and Mirrors giving less haste/invis than intended", "Various rare game crashes", "Some items being treated as equipped after save/load with lost inventory", "Cases where liquid metal could be applied to items at full durability") +
-                            "\nFixed (existed prior to 1.0.0):" + list("Time stasis sometimes not preventing harmful effects in its last turn.", "Minor text and vfx corrections"))),
             new ChangeInfo("From SHPD v1.0.3", false, SHPX_COLOR, "",
                     // alchemy stuff once it's added in.
                     new ChangeButton(new ItemSprite(CROWN), "Armor Ability Changes", ""
@@ -238,7 +230,7 @@ public class RKPD2Changes {
                         + "\nIn addition, I'm making these changes based on player feedback:"
                         + list("_Cached Rations_ now gives 3/5 rations, down from 4/6.", "_Light Cloak_ effectiveness now 20%/40%/60%, down from 25/50/75.")),
                 new ChangeButton(RAT_KING, list(2,
-                        "The recent Strongman buff has turned Tactics into a monster, while Imperial Wrath is still rather niche in comparison. Thus, Imperial Wrath now has Strongman instead of Tactics.",
+                        "The recent Strongman buff has turned Tactics into a monster, while Imperial Wrath is still rather niche in comparison. Thus, Imperial Wrath now has Strongman instead of Tactics. I've also taken the liberty of renaming Imperial Wrath to be Inevitability to commemorate this change.",
                         "Royal Intuition's +1 effect is now additive with the SHPD Survialist's Intuition rather than multiplicative. It is now 2.75x/3.75x id speed, down from 3.5x/5.25x.",
                         "Rat King is also affected by the v1.0.0 staff nerf.")),
                 new ChangeButton(RATFORCEMENTS, "I've successfully made Ratforcements the best talent Ratmogrify has. That said, it's so powerful now that it's making the other aspects of Ratmogrify much less useful." + list(2, "Ratforcements stats reduced by ~20% across the board.") + "Don't be fooled though into thinking it's bad now, it is still VERY superior to Shattered's Ratforcements."))
