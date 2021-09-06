@@ -36,7 +36,6 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Burning;
 import com.zrp200.rkpd2.actors.buffs.Charm;
 import com.zrp200.rkpd2.actors.buffs.Corrosion;
-import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.buffs.Frost;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.buffs.Light;
@@ -282,13 +281,7 @@ public class ElementalBlast extends ArmorAbility {
 								//*** Wand of Frost ***
 								} else if (finalWandCls == WandOfFrost.class){
 									if (mob.isAlive() && mob.alignment != Char.Alignment.ALLY) {
-										new FlavourBuff(){
-											{actPriority = VFX_PRIO;}
-											@Override public boolean act() {
-												Buff.affect( target, Frost.class, effectMulti*Frost.DURATION );
-												return super.act();
-											}
-										}.attachTo(mob);
+										Buff.affect( mob, Frost.class, effectMulti*Frost.DURATION );
 									}
 
 								//*** Wand of Prismatic Light ***
