@@ -111,7 +111,7 @@ public class Messages {
 			key += "." + k;
 			// this allows me to change messages by character class, currently this is only done in actors
 			// I really don't understand why there is so much redundancy in heroclass, but it seems to be...needed?
-			HeroClass cls = selectedClass != null ? selectedClass : hero != null ? hero.heroClass : null;
+			HeroClass cls = hero != null ? hero.heroClass : selectedClass;
 			if(cls != null && key.startsWith("actors")) {
 				String byClass = get(key + "_" + cls.name(), args);
 				//noinspection StringEquality
