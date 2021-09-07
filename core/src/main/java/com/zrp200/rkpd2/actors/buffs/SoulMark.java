@@ -105,7 +105,7 @@ public class SoulMark extends FlavourBuff {
 		if(restoration > 0)
 		{
 			Buff.affect(hero, Hunger.class)
-					.affectHunger( restoration/hero.byTalent(Talent.SOUL_EATER, 2f, Talent.RK_WARLOCK, 3f) );
+					.affectHunger( restoration*hero.byTalent(Talent.SOUL_EATER,1/2f,Talent.RK_WARLOCK,1/3f) );
 			hero.HP = (int) Math.ceil(Math.min(hero.HT, hero.HP + restoration * 0.4f));
 			hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), 1);
 		}
