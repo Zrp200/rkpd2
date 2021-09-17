@@ -39,7 +39,7 @@ public class WndInfoItem extends WndTitledMessage {
 	}
 
 	public WndInfoItem( Heap heap ) {
-		super(getTitlebar(heap), heap.type == Heap.Type.HEAP ? heap.peek().desc() : heap.info());
+		super(getTitlebar(heap), heap.type == Heap.Type.HEAP ? heap.peek().info() : heap.info());
 	}
 
 	public WndInfoItem( Item item ) {
