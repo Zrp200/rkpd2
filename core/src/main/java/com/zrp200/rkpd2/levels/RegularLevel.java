@@ -427,7 +427,12 @@ public abstract class RegularLevel extends Level {
 		//cached rations try to drop in a special room on floors 2/3/4/6/7/8, to a max of 4/6 (3/5 for rogue, but actual rations)
 		if (Dungeon.hero.hasTalent(Talent.CACHED_RATIONS,Talent.ROYAL_PRIVILEGE)){
 			Talent.CachedRationsDropped dropped = Buff.affect(Dungeon.hero, Talent.CachedRationsDropped.class);
-			if (dropped.count() < (Dungeon.hero.hasTalent(Talent.CACHED_RATIONS) ? 1 : 2) + 2*Dungeon.hero.pointsInTalent(Talent.CACHED_RATIONS, Talent.ROYAL_PRIVILEGE)){
+			int large = Dungeon.hero.pointsInTalent(Talent.CACHED_RATIONS),
+				small = Dungeon.hero.pointsInTalent(Talent.ROYAL_PRIVILEGE);
+			if(small > 0) small = (small+1)*2;
+			if(large > 0) large++;
+			int total = small + large;
+			if (dropped.count() < total){
 				int cell;
 				do {
 					cell = randomDropCell(SpecialRoom.class);
@@ -437,7 +442,7 @@ public abstract class RegularLevel extends Level {
 					losBlocking[cell] = false;
 				}
 				// rogue gets regular food.
-				drop( Dungeon.hero.hasTalent(Talent.CACHED_RATIONS) ? new Food() : new SmallRation(), cell).type = Heap.Type.CHEST;
+				drop( dropped.count() < large ? new Food() : new SmallRation(), cell).type = Heap.Type.CHEST;
 				dropped.countUp(1);
 			}
 		}

@@ -570,8 +570,11 @@ public class Item implements Bundlable {
 								Char ch = Actor.findChar(cell);
 								if (ch != null && ch.alignment != curUser.alignment){
 									Sample.INSTANCE.play(Assets.Sounds.HIT);
-									float duration = 1f + curUser.pointsInTalent(Talent.IMPROVISED_PROJECTILES,Talent.KINGS_VISION);
-									if(curUser.hasTalent(Talent.IMPROVISED_PROJECTILES)) duration *= 1.5f;
+									// imp: 3/5, vis: 2/3
+									float duration = curUser.byTalent(
+											false, true,
+											Talent.IMPROVISED_PROJECTILES, 1.5f,
+											Talent.KINGS_VISION, 1.0f);
 									Buff.affect(ch, Blindness.class, Math.round(duration));
 									Talent.Cooldown.affectHero(Talent.ImprovisedProjectileCooldown.class);
 								}

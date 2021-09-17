@@ -220,15 +220,13 @@ public enum Talent {
 		public void tintIcon(Image icon) { icon.hardlight(0.15f, 0.2f, 0.5f); }
 	};
 	public static class LethalMomentumTracker extends FlavourBuff{
-		public static void process() {
-			if(hero.hasTalent(LETHAL_MOMENTUM,PURSUIT,LETHAL_MOMENTUM_2)
-					&& Random.Float() < (
-							( hero.hasTalent(LETHAL_MOMENTUM) ? 2 : 1 )
-									+hero.pointsInTalent(LETHAL_MOMENTUM,PURSUIT,LETHAL_MOMENTUM_2))
-						/(hero.hasTalent(PURSUIT)?3f:4f)
-			)
-			Buff.affect(hero, LethalMomentumTracker.class, 1f);
-		}
+		public static void process() { hero.byTalent(process, LETHAL_MOMENTUM,PURSUIT,LETHAL_MOMENTUM_2); }
+		private static final TalentCallback process = (talent, points) -> {
+			if( Random.Float() < ( (talent == LETHAL_MOMENTUM ? 2 : 1) + points )
+					/ (talent == PURSUIT ? 3f : 4f) ) {
+				Buff.prolong(hero, LethalMomentumTracker.class, 1f);
+			}
+		};
 	};
 	public static class StrikingWaveTracker extends FlavourBuff{};
 	public static class WandPreservationCounter extends CounterBuff{};
@@ -237,8 +235,8 @@ public enum Talent {
 	public static class RejuvenatingStepsCooldown extends Cooldown{
 		{ revivePersists = true; }
 		@Override public float duration() {
-			int points = hero.pointsInTalent(REJUVENATING_STEPS, POWER_WITHIN);
-			if(hero.pointsInTalent(Talent.REJUVENATING_STEPS) > 0) points++;
+			// if both are present the higher one is used. They don't stack in this implementation.
+			int points = hero.shiftedPoints(REJUVENATING_STEPS, POWER_WITHIN);
 			return 10*(float)Math.pow(2,1-points);
 		}
 		public int icon() { return BuffIndicator.TIME; }
@@ -286,6 +284,10 @@ public enum Talent {
 	Talent( int icon, int maxPoints ){
 		this.icon = icon;
 		this.maxPoints = maxPoints;
+	}
+	
+	public interface TalentCallback {
+		void call(Talent talent, int points);
 	}
 
 	public int icon(){
@@ -363,91 +365,101 @@ public enum Talent {
 	public static class NatureBerriesAvailable extends CounterBuff{{revivePersists = true;}};
 
 	public static void onFoodEaten( Hero hero, float foodVal, Item foodSource ){
-		if (hero.hasTalent(HEARTY_MEAL,ROYAL_PRIVILEGE)){
+		final int[] heartyMeal = new int[2];
+		hero.byTalent( (talent, points) -> {
 			// somehow I managed to make it even more confusing than before.
-			int points = hero.pointsInTalent(HEARTY_MEAL, ROYAL_PRIVILEGE);
-			int factor = hero.hasTalent(HEARTY_MEAL) ? 3 : 4;
+			int factor = talent == HEARTY_MEAL ? 3 : 4;
 			double missingHP = 1-(double)hero.HP/hero.HT;
-			int strength = (int)(missingHP*factor);
-			if(!hero.hasTalent(HEARTY_MEAL)) strength--; // missing 1/4 hp is not rewarded with healing normally.
-			if(strength-- > 0) { // adjusting for the addition of one point.
-				strength += points;
-				// hearty meal heals for (2.5/4)/(4/6). priv heals for (2/3)/(3/5)
-				int boost = hero.hasTalent(HEARTY_MEAL) && strength == 1
-						? Random.round(2.5f) // simulate 2.5
-						: (int) Math.ceil(( hero.hasTalent(HEARTY_MEAL) ? 2.5 : 2 )*Math.pow(1.5,strength-1));
-				hero.HP += boost;
-				hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), Math.round(boost*2f/3));
-			}
+			int strength = (int) missingHP * factor;
+			if(talent != HEARTY_MEAL) strength--; // missing 1/4 hp is not rewarded with healing normally.
+			if(strength-- == 0) return; // adjusting for the addition of one point.
+			strength += points;
+			// hearty meal heals for (2.5/4)/(4/6). priv heals for (2/3)/(3/5)
+			int boost = talent == HEARTY_MEAL && strength == 1
+					? Random.round(2.5f) // simulate 2.5
+					: (int) Math.ceil( (talent == HEARTY_MEAL ? 2.5 : 2) * Math.pow(1.5,strength-1) );
+			heartyMeal[0] += boost;
+			heartyMeal[1] += Math.round(boost*2f/3);
+		}, ROYAL_PRIVILEGE, HEARTY_MEAL);
+		if(heartyMeal[0] > 0) {
+			hero.HP += heartyMeal[0];
+			hero.sprite.emitter().burst(Speck.factory(Speck.HEALING), heartyMeal[1]);
 		}
 		if (hero.hasTalent(IRON_STOMACH,ROYAL_MEAL)){
 			if (hero.cooldown() > 0) {
 				Buff.affect(hero, WarriorFoodImmunity.class, hero.cooldown());
 			}
 		}
+		boolean charge = false;
 		if (hero.hasTalent(ROYAL_PRIVILEGE)){ // SHPD empowering meal talent
 			//2/3 bonus wand damage for next 3 zaps
 			int bonus = 1+hero.pointsInTalent(ROYAL_PRIVILEGE);
 			Buff.affect( hero, WandEmpower.class).set(bonus, 3);
 			ScrollOfRecharging.charge( hero );
 		}
-		if (hero.hasTalent(ENERGIZING_MEAL_I,ROYAL_MEAL)){
+		if (hero.hasTalent(ENERGIZING_MEAL_I,ROYAL_MEAL)) {
 			//5/8 turns of recharging.
 			int points = hero.pointsInTalent(ENERGIZING_MEAL_I,ROYAL_MEAL);
 			int duration = 2 + 3*points;
 			if(hero.hasTalent(ENERGIZING_MEAL_I)) Buff.affect( hero, Recharging.class, duration);
-			else								  Buff.prolong(hero, Recharging.class, duration);
-			ScrollOfRecharging.charge( hero );
+			if(hero.hasTalent(ROYAL_MEAL)) Buff.prolong(hero, Recharging.class, duration);
+			charge = true;
 		}
 		if (hero.hasTalent(ENERGIZING_MEAL_II)) {
 			// 1/1.5 charges instantly replenished.
 			hero.belongings.charge(0.5f*(1+hero.pointsInTalent(ENERGIZING_MEAL_II)),true);
-			if(!hero.hasTalent(ENERGIZING_MEAL_I)) ScrollOfRecharging.charge( hero );
+			charge = true;
 		}
-		if (hero.hasTalent(MYSTICAL_MEAL,ROYAL_MEAL)){
+		if(charge) ScrollOfRecharging.charge(hero);
+
+		hero.byTalent( (talent, points) -> {
 			//3/5 turns of recharging
-			int duration = 1 + 2*(hero.pointsInTalent(MYSTICAL_MEAL)+hero.pointsInTalent(ROYAL_MEAL));
+			int duration = 1 + 2*points;
 			ArtifactRecharge artifactRecharge = Buff.affect( hero, ArtifactRecharge.class);
-			if(hero.hasTalent(MYSTICAL_MEAL)) artifactRecharge.prolong((float)Math.ceil(duration*1.5)); // 5-8 turns of recharge!!!
+			if(talent == MYSTICAL_MEAL) artifactRecharge.prolong((float)Math.ceil(duration*1.5)); // 5-8 turns of recharge!!!
 			else artifactRecharge.set(duration);
 			artifactRecharge.ignoreHornOfPlenty = foodSource instanceof HornOfPlenty;
 			ScrollOfRecharging.charge( hero );
-		}
-		if (hero.hasTalent(INVIGORATING_MEAL)) {
-			// 4.5/6 tiles -> 3/5 turns
-			Buff.affect(hero, Adrenaline.class, 2+2*hero.pointsInTalent(INVIGORATING_MEAL));
-		}
-		if (hero.hasTalent(ROYAL_MEAL)) {
+		}, ROYAL_MEAL, MYSTICAL_MEAL );
+
+		// 4.5/6 tiles -> 3/5 turns
+		hero.byTalent( (talent, points) -> Buff.affect(hero, Adrenaline.class, 2+2*points),
+				INVIGORATING_MEAL);
+		hero.byTalent( (talent, points) -> {
 			//effectively 1/2 turns of haste
-			Buff.prolong( hero, Haste.class, 0.67f+hero.pointsInTalent(ROYAL_MEAL));
-			hero.sprite.emitter().burst(Speck.factory(Speck.JET), 4*hero.pointsInTalent(ROYAL_MEAL));
-		}
+			Buff.prolong( hero, Haste.class, 0.67f+points);
+			hero.sprite.emitter().burst(Speck.factory(Speck.JET), 4*points);
+		}, ROYAL_MEAL);
 	}
 
 	public static class WarriorFoodImmunity extends FlavourBuff{
 		{ actPriority = HERO_PRIO+1; }
 	}
 
-	// additive instead of multiplicative due to the presence of rk
+	// royal intuition is additive, separate talents are multiplictive, however.
 	public static float itemIDSpeedFactor( Hero hero, Item item ){
 		float factor = 1f;
 
-		// +75% speed with royal intuition talent across the board
-		factor += hero.pointsInTalent(ROYAL_INTUITION,SURVIVALISTS_INTUITION) * 0.75f;
-		if( hero.hasTalent(SURVIVALISTS_INTUITION) ) factor *= 1.5f; // this is multiplicative to avoid nerfing huntress right now.
+		// all royal intuition is now handled here.
+		factor *= 1 + hero.pointsInTalent(ROYAL_INTUITION) * (0.75f + (
+				item instanceof MeleeWeapon || item instanceof Armor ? 2 // armsmaster
+						: item instanceof Ring ? 2 // thief's intuition
+						: item instanceof Wand ? 3 // scholar's intuition
+						: 0));
 
-		// 2x/instant for Warrior (see onItemEquipped)
+		factor *= 1 + 0.75f * 1.5f * hero.pointsInTalent(SURVIVALISTS_INTUITION);
+		// 2x innate (+0) / instant for Warrior (see onItemEquipped)
 		if (item instanceof MeleeWeapon || item instanceof Armor){
-			factor += hero.shiftedPoints(ARMSMASTERS_INTUITION,ROYAL_INTUITION);
+			factor *= hero.shiftedPoints(ARMSMASTERS_INTUITION);
 		}
 		// 3x/instant for mage (see Wand.wandUsed()), 4.5x/instant for rk
 		// not shifted for mage right now.
 		if (item instanceof Wand){
-			factor += 2*hero.pointsInTalent(SCHOLARS_INTUITION, ROYAL_INTUITION);
+			factor *= 2*hero.pointsInTalent(SCHOLARS_INTUITION);
 		}
 		// 2x/instant for rogue (see onItemEqupped), also id's type on equip/on pickup
 		if (item instanceof Ring){
-			factor += hero.shiftedPoints(THIEFS_INTUITION, ROYAL_INTUITION);
+			factor *= hero.shiftedPoints(THIEFS_INTUITION);
 		}
 		return factor;
 	}
@@ -456,8 +468,10 @@ public enum Talent {
 		if (hero.hasTalent(RESTORED_WILLPOWER,RESTORATION)){
 			BrokenSeal.WarriorShield shield = hero.buff(BrokenSeal.WarriorShield.class);
 			if (shield != null){
-				double multiplier = 0.33f*(1+hero.pointsInTalent(RESTORED_WILLPOWER,RESTORATION));
-				if(hero.hasTalent(RESTORED_WILLPOWER)) multiplier *= 1.5;
+				// Hero#byTalent can't save me here.
+				double multiplier = Math.max(
+						hero.hasTalent(RESTORED_WILLPOWER) ? hero.shiftedPoints(RESTORED_WILLPOWER)/2f : 0,
+						hero.hasTalent(RESTORATION) ? hero.shiftedPoints(RESTORATION)/3f : 0);
 				shield.supercharge((int)Math.round(shield.maxShield()*multiplier));
 			}
 		}
@@ -476,7 +490,7 @@ public enum Talent {
 			for (int cell : grassCells){
 				Char ch = Actor.findChar(cell);
 				if (ch != null && ch.alignment == Char.Alignment.ENEMY){
-					int duration = 1+hero.pointsInTalent(RESTORED_NATURE,RESTORATION);
+					int duration = 1+hero.pointsInTalent(false, RESTORED_NATURE,RESTORATION);
 					// please do note that this can be stacked, assuming you throw away healing or shielding, of course.
 					Buff.affect(ch, Roots.class, duration);
 				}
@@ -488,7 +502,7 @@ public enum Talent {
 				}
 				HighGrass.playVFX(cell);
 			}
-			int grassToSpawn = 2 + 3*hero.pointsInTalent(RESTORED_NATURE, RESTORATION); // 5/8
+			int grassToSpawn = 2 + 3*hero.pointsInTalent(false, RESTORED_NATURE, RESTORATION); // 5/8
 			if( hero.hasTalent(RESTORED_NATURE) ) {
 				grassCells.add(hero.pos); // it can spawn in the hero's position if huntress's talent.
 			}
@@ -505,14 +519,18 @@ public enum Talent {
 
 	public static void onUpgradeScrollUsed( Hero hero ){
 		if (hero.hasTalent(ENERGIZING_UPGRADE,RESTORATION)){
-			int charge = 1+2*hero.pointsInTalent(ENERGIZING_UPGRADE,RESTORATION);
+			int charge = 1+2*hero.pointsInTalent(ENERGIZING_UPGRADE);
 			MagesStaff staff = hero.belongings.getItem(MagesStaff.class);
+			int pointDiff = hero.pointsInTalent(RESTORATION) - hero.pointsInTalent(ENERGIZING_UPGRADE);
+			boolean charged = false;
 			if(hero.hasTalent(ENERGIZING_UPGRADE)) {
 				hero.belongings.charge(charge, true);
-				ScrollOfRecharging.charge(hero);
-				SpellSprite.show( hero, SpellSprite.CHARGE );
-			} else if (staff != null){
-				staff.gainCharge( charge, true);
+			}
+			if (staff != null && pointDiff > 0){
+				staff.gainCharge( charge + 2*pointDiff, true);
+				charged = true;
+			}
+			if(charged) {
 				ScrollOfRecharging.charge(hero);
 				SpellSprite.show( hero, SpellSprite.CHARGE );
 			}
@@ -529,8 +547,9 @@ public enum Talent {
 			}
 			CloakOfShadows cloak = hero.belongings.getItem(CloakOfShadows.class);
 			if (cloak != null){
-				cloak.overCharge(1+hero.pointsInTalent(MYSTICAL_UPGRADE,RESTORATION));
-				charge = true; }
+				cloak.overCharge(1+hero.pointsInTalent(false, MYSTICAL_UPGRADE, RESTORATION));
+				charge = true;
+			}
 			if(charge) {
 				ScrollOfRecharging.charge(hero);
 				SpellSprite.show( hero, SpellSprite.CHARGE );
@@ -547,7 +566,8 @@ public enum Talent {
 	}
 	public static void onItemEquipped( Hero hero, Item item ){
 		boolean id = false;
-		if (hero.pointsInTalent(ARMSMASTERS_INTUITION,ROYAL_INTUITION) >= (hero.hasTalent(ARMSMASTERS_INTUITION) ? 1 : 2) && (item instanceof Weapon || item instanceof Armor)){
+		if (hero.shiftedPoints(ARMSMASTERS_INTUITION, ROYAL_INTUITION) >= 2
+				&& (item instanceof Weapon || item instanceof Armor)){
 			if(id = !item.isIdentified()) item.identify();
 		}
 		if ((hero.heroClass == HeroClass.ROGUE || hero.hasTalent(ROYAL_INTUITION)) && item instanceof Ring){
@@ -566,19 +586,18 @@ public enum Talent {
 	public static void onItemCollected( Hero hero, Item item ){
 		if(item.isIdentified()) return;
 		boolean id = false, curseID = false;
-		if (hero.heroClass == HeroClass.ROGUE || hero.hasTalent(THIEFS_INTUITION,ROYAL_INTUITION)){
-			int points = hero.pointsInTalent(THIEFS_INTUITION,ROYAL_INTUITION);
-			if(hero.heroClass == HeroClass.ROGUE) points++;
-			if (points == 3 && (item instanceof Ring || item instanceof Artifact)) {
+		if(hero.shiftedPoints(THIEFS_INTUITION, ROYAL_INTUITION) > 0 && (item instanceof Ring || item instanceof Artifact)) {
+			if (hero.pointsInTalent(THIEFS_INTUITION) == 2) {
 				item.identify();
 				id = true;
 			}
-			else if (points == 2 && item instanceof Ring) ((Ring) item).setKnown();
-			if(hero.pointsInTalent(THIEFS_INTUITION) == 1
-					&& (item instanceof Ring || item instanceof Artifact)
+			else if( hero.shiftedPoints(THIEFS_INTUITION, ROYAL_INTUITION) == 2 && item instanceof Ring) {
+				((Ring) item).setKnown();
+			}
+			else if(hero.canHaveTalent(THIEFS_INTUITION)
 					&& !item.collected && item.cursed && !item.cursedKnown
 					&& Random.Int(2) == 0) {
-				id = curseID = item.cursedKnown = true;
+				curseID = item.cursedKnown = true;
 			}
 		}
 		if (hero.pointsInTalent(ARMSMASTERS_INTUITION) == 2 && Random.Int(2) == 0 && !item.collected &&
@@ -587,7 +606,7 @@ public enum Talent {
 			id = true;
 		}
 		if(!item.collected && !item.cursedKnown && (item instanceof EquipableItem && !(item instanceof MissileWeapon) || item instanceof Wand) && Random.Int(5) < hero.pointsInTalent(SURVIVALISTS_INTUITION)){
-			id = curseID = item.cursedKnown = true;
+			curseID = item.cursedKnown = true;
 		}
 		if( (item instanceof Scroll || item instanceof Potion) && !item.isIdentified() && hero.hasTalent(SCHOLARS_INTUITION) ) {
 			if(!item.collected && Random.Int(4-hero.pointsInTalent(SCHOLARS_INTUITION)) == 0) {
@@ -597,6 +616,7 @@ public enum Talent {
 		}
 
 		if(curseID) {
+			id = true;
 			// fixme this doesn't use .properties file.
 			GLog.w("The %s is %s",
 					item.name(),
@@ -607,33 +627,39 @@ public enum Talent {
 	}
 
 	//note that IDing can happen in alchemy scene, so be careful with VFX here
+	// near-identical talents in this area do stack, they're simple enough where it's really quite trivial to do so.
 	public static void onItemIdentified( Hero hero, Item item ){
-		if (hero.hasTalent(TEST_SUBJECT,KINGS_WISDOM)){
+		int heal = 0;
+		for(Talent talent : new Talent[]{TEST_SUBJECT, KINGS_WISDOM}) {
 			//heal for 2/3 HP
-			int points = hero.pointsInTalent(TEST_SUBJECT,KINGS_WISDOM);
-			int heal = 1 + points;
-			if(hero.hasTalent(TEST_SUBJECT)) heal += points == 1 ? Random.Int(2) : 1; // 2-3/4
-			heal = Math.min(heal, hero.HT-hero.HP);
+			int points = hero.pointsInTalent(talent);
+			if( points == 0 ) continue;
+			heal += 1 + points;
+			if(talent == TEST_SUBJECT) heal += points == 1 ? Random.Int(2) : 1; // 2-3/4
+		}
+		heal = Math.min(heal, hero.HT-hero.HP);
+		if(heal > 0) {
 			hero.HP += heal;
 			Emitter e = hero.sprite.emitter();
-			if (e != null && heal > 0) e.burst(Speck.factory(Speck.HEALING), Math.max(1,Math.round(heal*2f/3)));
+			if (e != null) e.burst(Speck.factory(Speck.HEALING), Math.max(1,Math.round(heal*2f/3)));
 		}
-		if (hero.hasTalent(TESTED_HYPOTHESIS,KINGS_WISDOM)){
+
+		hero.byTalent( (talent, points) -> {
 			//2/3 turns of wand recharging
-			int duration = 1 + hero.pointsInTalent(TESTED_HYPOTHESIS,KINGS_WISDOM);
-			if(hero.hasTalent(TESTED_HYPOTHESIS)) duration = (int)Math.ceil(duration*1.5f); // 3/5
+			int duration = 1 + points;
+			if(talent == TESTED_HYPOTHESIS) duration = (int)Math.ceil(duration*1.5f); // 3/5
 			Buff.affect(hero, Recharging.class, duration);
 			ScrollOfRecharging.charge(hero);
-		}
+		}, TESTED_HYPOTHESIS, ROYAL_INTUITION);
 	}
 
 	public static int onAttackProc( Hero hero, Char enemy, int dmg ){
 		if (hero.hasTalent(Talent.SUCKER_PUNCH,KINGS_WISDOM)
 				&& enemy instanceof Mob && ((Mob) enemy).surprisedBy(hero)
 				&& enemy.buff(SuckerPunchTracker.class) == null){
-			int bonus = hero.hasTalent(SUCKER_PUNCH)
-					? 1+hero.pointsInTalent(SUCKER_PUNCH)  // 2/3
-					: Random.round(0.5f*(2+hero.pointsInTalent(KINGS_WISDOM))); // 1-2/2
+			int bonus = 0;
+			if(hero.hasTalent(SUCKER_PUNCH)) bonus += 1+hero.pointsInTalent(SUCKER_PUNCH);  // 2/3
+			if(hero.hasTalent(KINGS_WISDOM)) bonus += Random.round(0.5f*(2+hero.pointsInTalent(KINGS_WISDOM))); // 1-2/2
 			dmg += bonus;
 			Buff.affect(enemy, SuckerPunchTracker.class);
 		}
@@ -642,10 +668,9 @@ public enum Talent {
 			if (hero.belongings.weapon() instanceof MissileWeapon) {
 				Buff.affect(enemy, FollowupStrikeTracker.class);
 			} else if (enemy.buff(FollowupStrikeTracker.class) != null){
-				int bonus = 1 + hero.pointsInTalent(FOLLOWUP_STRIKE,KINGS_WISDOM); // 2/3
-				if(hero.heroClass == HeroClass.HUNTRESS) {
-					bonus = Random.round( bonus*1.5f ); // 3/4-5
-				};
+				int bonus = 0;
+				if(hero.hasTalent(KINGS_WISDOM)) bonus += hero.shiftedPoints(KINGS_WISDOM); // 2/3
+				if(hero.hasTalent(FOLLOWUP_STRIKE)) bonus += Random.round(hero.shiftedPoints(FOLLOWUP_STRIKE) * 1.5f); // 3/4-5
 				dmg += bonus;
 				if (!(enemy instanceof Mob) || !((Mob) enemy).surprisedBy(hero)){
 					Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG, 0.75f, 1.2f);

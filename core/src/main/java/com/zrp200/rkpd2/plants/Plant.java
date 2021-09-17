@@ -68,10 +68,11 @@ public abstract class Plant implements Bundlable {
 			((Hero) ch).interrupt();
 		}
 
-		if (Dungeon.level.heroFOV[pos] && Dungeon.hero.hasTalent(Talent.NATURES_AID,Talent.NOBLE_CAUSE)){
-			// 3/5 turns based on talent points spent
-			Buff.affect(Dungeon.hero, Barkskin.class).set((Dungeon.hero.hasTalent(Talent.NATURES_AID)?3:2), 1 + 2*(Dungeon.hero.pointsInTalent(Talent.NATURES_AID,Talent.NOBLE_CAUSE)));
-		}
+		if (Dungeon.level.heroFOV[pos]) Dungeon.hero.byTalent( (talent, points) ->
+				// 3/5 turns based on talent points spent
+				Buff.affect(Dungeon.hero, Barkskin.class)
+						.set(talent == Talent.NATURES_AID ? 3 : 2, 1 + 2 * points),
+				Talent.NATURES_AID, Talent.NOBLE_CAUSE);
 
 		wither();
 		activate( ch );
