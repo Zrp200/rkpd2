@@ -48,76 +48,71 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static com.zrp200.rkpd2.Dungeon.hero;
-import static java.util.Collections.unmodifiableSet;
 
 public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
-	private int object;
+	protected int object;
 	public int level = 0;
 
-	public static void remove(Char ch) {
-		SnipersMark mark = new State().get( ch.id() );
-		if(mark == null) return;
-		mark.detach();
-		FreeTarget.apply(mark.level);
+	public void set(int object, int level) {
+		this.object = object;
+		this.level = level;
 	}
 
-	// retrieves all the info needed to work with all the buffs at the same time.
-	// needs to be updated every time relevant info is changed.
-	// also this is probably wasteful.
-	private static class State {
-		final Set<SnipersMark> marks = unmodifiableSet( hero.buffs(SnipersMark.class, true) );
-		final Set<FreeTarget> frees = unmodifiableSet(  hero.buffs(FreeTarget.class) );
-		final boolean freeActive = !frees.isEmpty();
+	public static void remove(Char ch) {
+		int id;
+		SnipersMark mark = findByID( id = ch.id() );
+		if(mark == null) return;
+		mark.detach();
+		FreeTarget.apply(id, mark.level);
+	}
 
-		final int size = marks.size() + frees.size();
-		final int adjustedSize = freeActive ? size - 1 : size;
+	private static void ensureSpace() {
+		SnipersMark[] marks = hero.buffs(SnipersMark.class)
+				.toArray(new SnipersMark[0]);
 
-		void removeOldest() {
-			FlavourBuff min = null;
-			for(FlavourBuff buff : frees) {
-				if(min == null || buff.cooldown() < min.cooldown()) min = buff;
-			}
-			for(FlavourBuff buff : marks) {
-				if(min == null || buff.cooldown() < min.cooldown()) min = buff;
-			}
-			//noinspection ConstantConditions
-			min.detach();
+		int size = marks.length;
+		// an extra free-target is allowed.
+		if( !hero.buffs(FreeTarget.class).isEmpty() ) size--;
+		if( size < maxObjects() ) return;
+
+		// tries to remove the 'least valuable' mark.
+		Arrays.sort(marks, (a, b) -> a.level != b.level ? Integer.compare(a.level, b.level) // try to preserve higher level stuff.
+				: a instanceof FreeTarget != b instanceof FreeTarget ? a instanceof FreeTarget ? 1 : -1 // free > standard
+				: Float.compare( a.cooldown(), b.cooldown() ) // older < newer
+		);
+		marks[0].detach();
+	}
+
+	private static SnipersMark findByID(int id) {
+		for( SnipersMark mark : hero.buffs(SnipersMark.class) ) {
+			if(mark.object == id) return mark;
 		}
-
-		SnipersMark get(int object) {
-			for(SnipersMark mark : marks) {
-				if(mark.object == object) return mark;
-			}
-			return null;
-		}
+		return null;
 	}
 
 	// TODO should I just sync all buffs together?!
 
 	public static void add(Char ch, int level) {
 		addTime(level);
-		if( !ch.isAlive() ) FreeTarget.apply(level);
 
-		State state = new State();
-
-		SnipersMark existing = state.get( ch.id() );
+		int id; SnipersMark existing = findByID( id = ch.id() );
 		if(existing != null) {
-			existing.level = Math.max(existing.level, level);
+			existing.level = level = Math.max(existing.level, level);
+		}
+		if( !ch.isAlive() ) {
+			if(existing != null) existing.detach();
+			FreeTarget.apply(id, level);
+		}
+		else if(existing != null) {
 			ActionIndicator.setAction(existing);
-			return;
 		}
-
-		if (state.adjustedSize >= maxObjects()) {
-			state.removeOldest();
+		else {
+			ensureSpace();
+			Buff.append( hero, SnipersMark.class, duration(level) ).set(id, level);
 		}
-
-		SnipersMark mark = Buff.append( hero, SnipersMark.class, duration(level) );
-		mark.object = ch.id();
-		mark.level = level;
 	}
 
 	private static final String OBJECT    = "object";
@@ -277,12 +272,15 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 			GameScene.ready();
 		}
 
-		final LinkedList<SnipersMark> queue = new LinkedList( hero.buffs(FreeTarget.class) );
+		final LinkedList<SnipersMark> queue = new LinkedList( hero.buffs(SnipersMark.class) );
 		{
-			Collections.sort(queue, (a, b) -> Float.compare( a.cooldown(), b.cooldown() ) );
-
-			// now we add the standard buffs for processing, first.
-			for( SnipersMark mark : hero.buffs(SnipersMark.class, true) ) queue.push(mark);
+			Collections.sort(queue, (a,b) -> {
+				// free-targets go after standard marks, since they have to choose their targets
+				if(a instanceof FreeTarget != b instanceof FreeTarget) return a instanceof FreeTarget ? 1 : -1;
+				int level = Integer.compare(a.level, b.level);
+				// sorted by highest to lowest level, then soonest to expire to longest to expire.
+				return level != 0 ? -level : Float.compare( a.cooldown(), b.cooldown() );
+			});
 
 			// this ensures that the 'skip' button consistently works the way I want it to.
 			if(queue.size() > 1
@@ -361,14 +359,10 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
 		private CellSelector.TargetedListener listener;
 
-		public static void apply(int level) {
+		// converts a standard mark into a free-targeted mark.
+		public static void apply(int id, int level) {
 			if(!hero.hasTalent(Talent.MULTISHOT)) return;
-
-			State state = new State();
-			if(state.adjustedSize > maxObjects() + 1) state.removeOldest();
-
-			FreeTarget freeTarget = Buff.append( hero, FreeTarget.class, duration(level) );
-			freeTarget.level = level;
+			Buff.append( hero, FreeTarget.class, duration(level) ).set(id, level);
 		}
 
 		// only difference is we don't care about object at all. it just exists.
@@ -385,25 +379,38 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
 		@Override
 		protected void queueAction() {
+			// prevents...bizarre behavior, though now I need to aggressively set it to null when I'm done.
+			if(listener != null) {
+				actionHandler.destroy();
+				return;
+			}
 			GameScene.selectCell(listener = new CellSelector.TargetedListener() {
 				{
 					conflictTolerance = actionHandler.queue.size();
-					promptIfNoTargets = false;
 					readyOnSelect = false; // manually disable the mechanic that prevents stacking.
 				}
 
 				@Override protected boolean isValidTarget(Char ch) { return actionHandler.isValidTarget(ch); }
 
+				@Override protected boolean noTargets() {
+					// this covers the edge case where you have more marks than targets.
+					if(actionHandler != null) actionHandler.next();
+					return false;
+				}
+
 				@Override protected void action(Char ch) {
+					listener = null;
 					actionHandler.select(FreeTarget.this, ch);
 					actionHandler.next();
 				}
 
 				@Override protected void onCancel() {
+					listener = null;
 					if(actionHandler != null) actionHandler.destroy();
 				}
 
 				@Override protected void onInvalid(int cell) {
+					listener = null;
 					Char ch = Actor.findChar(cell);
 					if(ch != null) {
 						String message = actionHandler.isTargeting(ch)

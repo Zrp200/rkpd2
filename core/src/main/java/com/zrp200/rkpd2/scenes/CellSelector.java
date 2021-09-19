@@ -414,12 +414,17 @@ public class CellSelector extends ScrollArea {
 			return l;
 		}
 
+		// return value determines if there is a prompt afterwards.
+		// by default it does.
+		protected boolean noTargets() {
+			onCancel();
+			return true;
+		}
+
 		// if there's only one target, this skips the actual selecting.
 		protected final boolean action() {
 			if( getTargets().isEmpty() ) {
-				if(promptIfNoTargets) return false;
-				onCancel();
-				return true;
+				return noTargets();
 			}
 			if( !skippable ) return false;
 
