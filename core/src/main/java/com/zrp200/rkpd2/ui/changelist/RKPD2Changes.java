@@ -136,7 +136,12 @@ public class RKPD2Changes {
 
     final ChangeInfo[][] changes = {
         {
-            new ChangeInfo("v0.2.0", true, TITLE_COLOR, ""),
+            new ChangeInfo("v0.2", true, TITLE_COLOR, ""),
+            new ChangeInfo("v0.2.1", false, "",
+                    new ChangeButton(get(INFO), "Developer Commentary", "I'm shifting to Shattered's new major.minor.patch versioning system, so even though this is listed as v0.2.1, it's really the equivalent of v0.2.0a.\n\nThis patch has many internal changes to the talent system, so beware of any bugs that may result from this."),
+                    new ChangeButton(MULTISHOT, "Adjusted the way multiple sniper's marks are handled internally, to increase consistency of the mechanic:" + list(2,"Using specials with multiple free targets stored will now use them in order of highest level to lowest level.", "When too many snipers marks are stored, the one storing the lowest shared upgrades level is now removed. If all are the same level, 'standard' sniper's marks will be removed before free-targeted marks. Previously level was not considered at all.") + "\nAlso fixed a bunch of issues with multi-shot:" + list(2,"Crash when cancelling targeting a single free-targeted sniper's mark.", "Rare cases where cancelling a special would incorrectly leave the targeting system active.", "Killing a marked enemy with a thrown weapon generating two free-targeted sniper's marks.", "Not being able to use sniper specials if there are less possible targets than available marks.", "Sniper's marks sometimes not detaching when their targets are killed.")),
+                    new ChangeButton(KINGS_WISDOM, "Improved King's Wisdom icon, hopefully it should feel more professional now with a proper background and less outlines."),
+                    bugFixes(list(2,"fixed soul eater working incorrectly and sometimes yielding NaN hunger.", "Fixed rare cases of incorrect character-specific text.", "Fixed color of Rat King's eyes in his subclass icon."))),
             new ChangeInfo("From SHPD v1.0.3", false, SHPX_COLOR, "",
                     // alchemy stuff once it's added in.
                     new ChangeButton(new ItemSprite(CROWN), "Armor Ability Changes", ""
