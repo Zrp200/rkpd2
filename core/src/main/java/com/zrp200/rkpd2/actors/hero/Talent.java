@@ -450,16 +450,16 @@ public enum Talent {
 		factor *= 1 + 0.75f * 1.5f * hero.pointsInTalent(SURVIVALISTS_INTUITION);
 		// 2x innate (+0) / instant for Warrior (see onItemEquipped)
 		if (item instanceof MeleeWeapon || item instanceof Armor){
-			factor *= hero.shiftedPoints(ARMSMASTERS_INTUITION);
+			factor *= 1f + hero.shiftedPoints(ARMSMASTERS_INTUITION);
 		}
 		// 3x/instant for mage (see Wand.wandUsed()), 4.5x/instant for rk
 		// not shifted for mage right now.
 		if (item instanceof Wand){
-			factor *= 2*hero.pointsInTalent(SCHOLARS_INTUITION);
+			factor *= 1f + 2*hero.pointsInTalent(SCHOLARS_INTUITION);
 		}
 		// 2x/instant for rogue (see onItemEqupped), also id's type on equip/on pickup
 		if (item instanceof Ring){
-			factor *= hero.shiftedPoints(THIEFS_INTUITION);
+			factor *= 1f + hero.shiftedPoints(THIEFS_INTUITION);
 		}
 		return factor;
 	}
