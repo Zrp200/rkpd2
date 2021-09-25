@@ -533,7 +533,7 @@ public abstract class Char extends Actor {
 		if(alignment == Alignment.ALLY && hero.hasTalent(Talent.WARLOCKS_TOUCH)) {
 			// warlock+allies can soul mark by simply attacking via warlock's touch.
 
-			float shift=.5f, scaling=.1f;
+			float shift=.05f, scaling=.1f;
 			// 15/25/35 for melee and spirit bow, 20/35/50 for thrown weapons. Not sure if this is a good gimmick or if I'm forcing a synergy here.
 			if(this == hero && hero.belongings.thrownWeapon != null && !(hero.belongings.thrownWeapon instanceof SpiritBow.SpiritArrow) ) {
 				// thrown weapons have a slight boost.
@@ -542,7 +542,7 @@ public abstract class Char extends Actor {
 			SoulMark.process(enemy,
 					-4, // 10 - 4 = 6 turns
 					shift + scaling*hero.pointsInTalent(Talent.WARLOCKS_TOUCH),
-					true);
+					true, false);
 		}
 
 		return damage;

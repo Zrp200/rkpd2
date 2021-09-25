@@ -65,11 +65,10 @@ public class SoulMark extends FlavourBuff {
 		if(hero.subClass == HeroSubClass.WARLOCK && hero.heroClass != HeroClass.MAGE) level += 2;
 
 		//standard 1 - 0.92^x chance, plus 7%. Starts at 15%
-		process(defender, level, 1f - (float)(Math.pow(0.92f, (level * chargesUsed) + 1) - 0.07f), afterDamage);
+		process(defender, level, 1f - (float)(Math.pow(0.92f, (level * chargesUsed) + 1) - 0.07f), afterDamage, true);
 	}
 
-	// note chance is chance to NOT proc :/
-	public static void process(Char defender, int bonusDuration, float chance, boolean afterDamage ) {
+	public static void process(Char defender, int bonusDuration, float chance, boolean afterDamage, boolean extend) {
 		// warlock's touch can cancel an afterDamage argument with 20%/30%/40% chance.
 		afterDamage = afterDamage && hero.hasTalent(Talent.WARLOCKS_TOUCH)
 				// this is GREATER THAN because we're checking if the proc failed, not succeeded.
@@ -78,12 +77,13 @@ public class SoulMark extends FlavourBuff {
 		if (defender != hero
 				&& (hero.subClass == HeroSubClass.WARLOCK || hero.subClass == HeroSubClass.KING)
 				&& Random.Float() < chance) {
-			affect(defender, SoulMark.class, DURATION+bonusDuration).delayed = afterDamage;
+			float duration = DURATION + bonusDuration;
+			(extend ? affect(defender, SoulMark.class, duration)
+					: prolong(defender, SoulMark.class, duration)
+			).delayed = afterDamage;
 			// see Char#damage
 		}
 	}
-	// fixme this class should not be needed at all, much less stored. but if I make it a blind actor then
-	// basically lets me hold onto it for a hot second. detaching adds the mark, which means I can delay activation to when I want it to.
 
 	public void proc(Object src, Char defender, int damage) {
 		if(delayed) {
