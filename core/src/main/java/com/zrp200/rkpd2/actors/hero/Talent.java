@@ -650,7 +650,7 @@ public enum Talent {
 			if(talent == TESTED_HYPOTHESIS) duration = (int)Math.ceil(duration*1.5f); // 3/5
 			Buff.affect(hero, Recharging.class, duration);
 			ScrollOfRecharging.charge(hero);
-		}, TESTED_HYPOTHESIS, ROYAL_INTUITION);
+		}, TESTED_HYPOTHESIS, KINGS_WISDOM);
 	}
 
 	public static int onAttackProc( Hero hero, Char enemy, int dmg ){
