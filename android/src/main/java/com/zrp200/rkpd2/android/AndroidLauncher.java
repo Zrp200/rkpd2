@@ -28,12 +28,14 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.widget.TextView;
-
 import com.badlogic.gdx.graphics.g2d.freetype.FreeType;
 import com.badlogic.gdx.utils.GdxNativesLoader;
+import com.rohitss.uceh.UCEHandler;
 
 public class AndroidLauncher extends Activity {
-	
+
+	private boolean googlePlay = false;
+
 	@SuppressLint("SetTextI18n")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,7 @@ public class AndroidLauncher extends Activity {
 			FreeType.initFreeType();
 			
 			Intent intent = new Intent(this, AndroidGame.class);
+			new UCEHandler.Builder(this).setUCEHEnabled(!googlePlay).build();
 			startActivity(intent);
 			finish();
 		} catch (Exception e){
