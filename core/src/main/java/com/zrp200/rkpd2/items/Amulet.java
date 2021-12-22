@@ -63,9 +63,9 @@ public class Amulet extends Item {
 	}
 	
 	@Override
-	public boolean doPickUp( Hero hero ) {
+	public boolean doPickUp(Hero hero, int pos) {
 		Badges.validateRatKingUnlock();
-		if (super.doPickUp( hero )) {
+		if (super.doPickUp( hero, pos )) {
 			
 			if (!Statistics.amuletObtained) {
 				Statistics.amuletObtained = true;

@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.blobs.CorrosiveGas;
 import com.zrp200.rkpd2.actors.blobs.ToxicGas;
+import com.zrp200.rkpd2.actors.buffs.AllyBuff;
 import com.zrp200.rkpd2.actors.buffs.Burning;
 import com.zrp200.rkpd2.actors.buffs.Corruption;
 import com.zrp200.rkpd2.actors.hero.Hero;
@@ -136,6 +137,6 @@ public abstract class AbstractMirrorImage extends NPC {
         immunities.add( ToxicGas.class );
         immunities.add( CorrosiveGas.class );
         immunities.add( Burning.class );
-        immunities.add( Corruption.class );
+        immunities.add( AllyBuff.class );
     }
 }

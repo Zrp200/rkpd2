@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Amok;
 import com.zrp200.rkpd2.actors.buffs.Awareness;
 import com.zrp200.rkpd2.actors.buffs.Light;
+import com.zrp200.rkpd2.actors.buffs.MagicalSight;
 import com.zrp200.rkpd2.actors.buffs.MindVision;
 import com.zrp200.rkpd2.actors.buffs.RevealedArea;
 import com.zrp200.rkpd2.actors.hero.Hero;
@@ -163,8 +164,10 @@ public class Dungeon {
 	public static QuickSlot quickslot = new QuickSlot();
 	
 	public static int depth;
+
 	public static int gold;
-	
+	public static int energy;
+
 	public static HashSet<Integer> chapters;
 
 	public static SparseArray<ArrayList<Item>> droppedItems;
@@ -204,6 +207,7 @@ public class Dungeon {
 		
 		depth = 0;
 		gold = 0;
+		energy = 0;
 
 		droppedItems = new SparseArray<>();
 		portedItems = new SparseArray<>();
@@ -444,8 +448,9 @@ public class Dungeon {
 	private static final String CHALLENGES	= "challenges";
 	private static final String MOBS_TO_CHAMPION	= "mobs_to_champion";
 	private static final String HERO		= "hero";
-	private static final String GOLD		= "gold";
 	private static final String DEPTH		= "depth";
+	private static final String GOLD		= "gold";
+	private static final String ENERGY		= "energy";
 	private static final String DROPPED     = "dropped%d";
 	private static final String PORTED      = "ported%d";
 	private static final String LEVEL		= "level";
@@ -464,8 +469,10 @@ public class Dungeon {
 			bundle.put( CHALLENGES, challenges );
 			bundle.put( MOBS_TO_CHAMPION, mobsToChampion );
 			bundle.put( HERO, hero );
-			bundle.put( GOLD, gold );
 			bundle.put( DEPTH, depth );
+
+			bundle.put( GOLD, gold );
+			bundle.put( ENERGY, energy );
 
 			for (int d : droppedItems.keyArray()) {
 				bundle.put(Messages.format(DROPPED, d), droppedItems.get(d));
@@ -610,9 +617,11 @@ public class Dungeon {
 		hero = null;
 		hero = (Hero)bundle.get( HERO );
 		
-		gold = bundle.getInt( GOLD );
 		depth = bundle.getInt( DEPTH );
-		
+
+		gold = bundle.getInt( GOLD );
+		energy = bundle.getInt( ENERGY );
+
 		Statistics.restoreFromBundle( bundle );
 		Generator.restoreFromBundle( bundle );
 
@@ -692,8 +701,12 @@ public class Dungeon {
 
 	//default to recomputing based on max hero vision, in case vision just shrank/grew
 	public static void observe(){
-		int dist = 8;
+		int dist = Math.max(Dungeon.hero.viewDistance, 8);
 		dist *= hero.getViewDistanceModifier();
+
+		if (Dungeon.hero.buff(MagicalSight.class) != null){
+			dist = Math.max( dist, MagicalSight.DISTANCE );
+		}
 		observe( dist+1 );
 	}
 

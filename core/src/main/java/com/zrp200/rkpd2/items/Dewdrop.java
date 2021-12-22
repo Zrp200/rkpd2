@@ -48,18 +48,18 @@ public class Dewdrop extends Item {
 	}
 	
 	@Override
-	public boolean doPickUp( Hero hero ) {
+	public boolean doPickUp(Hero hero, int pos) {
 		
 		Waterskin flask = hero.belongings.getItem( Waterskin.class );
 		
 		if (flask != null && !flask.isFull()){
 
 			flask.collectDew( this );
-			GameScene.pickUp( this, hero.pos );
+			GameScene.pickUp( this, pos );
 
 		} else {
 
-			int terr = Dungeon.level.map[hero.pos];
+			int terr = Dungeon.level.map[pos];
 			if (!consumeDew(1, hero, terr == Terrain.ENTRANCE|| terr == Terrain.EXIT || terr == Terrain.UNLOCKED_EXIT)){
 				return false;
 			}

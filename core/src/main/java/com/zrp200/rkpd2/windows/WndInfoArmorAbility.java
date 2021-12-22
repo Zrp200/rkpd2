@@ -7,6 +7,7 @@ import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.HeroIcon;
+import com.zrp200.rkpd2.ui.TalentButton;
 import com.zrp200.rkpd2.ui.TalentsPane;
 
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class WndInfoArmorAbility extends WndTitledMessage {
 
 		if(talentList.get(3).isEmpty()) return;
 
-		TalentsPane.TalentTierPane talentPane = new TalentsPane.TalentTierPane(talentList.get(3), 4, false);
+		TalentsPane.TalentTierPane talentPane = new TalentsPane.TalentTierPane(talentList.get(3), 4, TalentButton.Mode.INFO);
 		talentPane.title.text( Messages.titleCase(Messages.get(WndHeroInfo.class, "talents")));
 		addToBottom(talentPane, 5, 0);
 	}

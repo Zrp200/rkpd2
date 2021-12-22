@@ -31,11 +31,13 @@ import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.actors.mobs.ArmoredStatue;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.particles.LeafParticle;
 import com.zrp200.rkpd2.items.Dewdrop;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.armor.glyphs.Camouflage;
+import com.zrp200.rkpd2.items.artifacts.DriedRose;
 import com.zrp200.rkpd2.items.artifacts.SandalsOfNature;
 import com.zrp200.rkpd2.items.food.Berry;
 import com.zrp200.rkpd2.levels.Level;
@@ -143,15 +145,22 @@ public class HighGrass {
 					level.drop(new Dewdrop(), pos).sprite.drop();
 				}
 			}
-			
+
+			//Camouflage
 			if (ch instanceof Hero) {
 				Hero hero = (Hero) ch;
-				
-				//Camouflage
-				//FIXME doesn't work with sad ghost
 				if (hero.belongings.armor() != null && hero.belongings.armor().hasGlyph(Camouflage.class, hero)) {
-					Buff.prolong(hero, Invisibility.class, 3 + hero.belongings.armor.buffedLvl()/2);
-					Sample.INSTANCE.play( Assets.Sounds.MELD );
+					Camouflage.activate(hero, hero.belongings.armor.buffedLvl());
+				}
+			} else if (ch instanceof DriedRose.GhostHero){
+				DriedRose.GhostHero ghost = (DriedRose.GhostHero) ch;
+				if (ghost.armor() != null && ghost.armor().hasGlyph(Camouflage.class, ghost)){
+					Camouflage.activate(ghost, ghost.armor().buffedLvl());
+				}
+			} else if (ch instanceof ArmoredStatue){
+				ArmoredStatue statue = (ArmoredStatue) ch;
+				if (statue.armor() != null && statue.armor().hasGlyph(Camouflage.class, statue)){
+					Camouflage.activate(statue, statue.armor().buffedLvl());
 				}
 			}
 			

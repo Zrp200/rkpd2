@@ -30,8 +30,10 @@ import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.mobs.Mob;
+import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.LostBackpack;
 import com.zrp200.rkpd2.levels.Level;
+import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.levels.features.Chasm;
 import com.zrp200.rkpd2.levels.rooms.special.SpecialRoom;
 import com.zrp200.rkpd2.messages.Messages;
@@ -56,6 +58,7 @@ import com.watabou.utils.DeviceCompat;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class InterlevelScene extends PixelScene {
 	
@@ -447,11 +450,18 @@ public class InterlevelScene extends PixelScene {
 
 		Level level;
 		if (Dungeon.level.locked) {
+			ArrayList<Item> preservedItems = Dungeon.level.getItemsToPreserveFromSealedResurrect();
+
 			Dungeon.hero.resurrect();
 			Dungeon.depth--;
 			level = Dungeon.newLevel();
 			Dungeon.hero.pos = level.randomRespawnCell(Dungeon.hero);
+
+			for (Item i : preservedItems){
+				level.drop(i, level.randomRespawnCell(null));
+			}
 			level.drop(new LostBackpack(), level.randomRespawnCell(null));
+
 		} else {
 			level = Dungeon.level;
 			BArray.setFalse(level.heroFOV);
@@ -462,8 +472,16 @@ public class InterlevelScene extends PixelScene {
 			do {
 				Dungeon.hero.pos = level.randomRespawnCell(Dungeon.hero);
 				tries++;
-			} while (level.trueDistance(invPos, Dungeon.hero.pos) <= 30 - (tries/10));
-			level.plants.remove(Dungeon.hero.pos); //so the hero does not spawn on a plant
+
+			//prevents spawning on traps or plants, prefers farther locations first
+			} while (level.traps.get(Dungeon.hero.pos) != null
+					|| (level.plants.get(Dungeon.hero.pos) != null && tries < 500)
+					|| level.trueDistance(invPos, Dungeon.hero.pos) <= 30 - (tries/10));
+
+			//directly trample grass
+			if (level.map[Dungeon.hero.pos] == Terrain.HIGH_GRASS || level.map[Dungeon.hero.pos] == Terrain.FURROWED_GRASS){
+				level.map[Dungeon.hero.pos] = Terrain.GRASS;
+			}
 			Dungeon.hero.resurrect();
 			level.drop(new LostBackpack(), invPos);
 		}

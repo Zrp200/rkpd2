@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.levels.rooms.secret;
 
 import com.zrp200.rkpd2.actors.blobs.Alchemy;
 import com.zrp200.rkpd2.actors.blobs.Blob;
+import com.zrp200.rkpd2.items.EnergyCrystal;
 import com.zrp200.rkpd2.items.potions.Potion;
 import com.zrp200.rkpd2.items.potions.PotionOfExperience;
 import com.zrp200.rkpd2.items.potions.PotionOfFrost;
@@ -72,11 +73,16 @@ public class SecretLaboratoryRoom extends SecretRoom {
 		Painter.set( level, pot, Terrain.ALCHEMY );
 		
 		Blob.seed( pot.x + level.width() * pot.y, 1+Random.NormalIntRange(20, 30), Alchemy.class, level );
-		
+
+		int pos;
+		do {
+			pos = level.pointToCell(random());
+		} while (level.map[pos] != Terrain.EMPTY_SP || level.heaps.get( pos ) != null);
+		level.drop( new EnergyCrystal().random(), pos );
+
 		int n = Random.IntRange( 2, 3 );
 		HashMap<Class<? extends Potion>, Float> chances = new HashMap<>(potionChances);
 		for (int i=0; i < n; i++) {
-			int pos;
 			do {
 				pos = level.pointToCell(random());
 			} while (level.map[pos] != Terrain.EMPTY_SP || level.heaps.get( pos ) != null);

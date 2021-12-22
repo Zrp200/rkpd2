@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.AllyBuff;
 import com.zrp200.rkpd2.actors.buffs.Amok;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Corruption;
@@ -352,7 +353,7 @@ public class WandOfLivingEarth extends DamageWand {
 		}
 		
 		{
-			immunities.add( Corruption.class );
+			immunities.add( AllyBuff.class );
 		}
 
 		private static final String DEFENSE = "defense";

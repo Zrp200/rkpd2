@@ -27,12 +27,15 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.mobs.npcs.Sheep;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.Speck;
+import com.zrp200.rkpd2.levels.traps.Trap;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.BArray;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+
+import java.util.ArrayList;
 
 public class WoollyBomb extends Bomb {
 	
@@ -45,18 +48,23 @@ public class WoollyBomb extends Bomb {
 		super.explode(cell);
 		
 		PathFinder.buildDistanceMap( cell, BArray.not( Dungeon.level.solid, null ), 4 );
+		ArrayList<Integer> spawnPoints = new ArrayList<>();
 		for (int i = 0; i < PathFinder.distance.length; i++) {
 			if (PathFinder.distance[i] < Integer.MAX_VALUE) {
-				if (Dungeon.level.insideMap(i)
-						&& Actor.findChar(i) == null
-						&& !(Dungeon.level.pit[i])) {
-					Sheep sheep = new Sheep();
-					sheep.lifespan = Random.NormalIntRange( 12, 16 );
-					sheep.pos = i;
-					GameScene.add(sheep);
-					Dungeon.level.occupyCell(sheep);
-					CellEmitter.get(i).burst(Speck.factory(Speck.WOOL), 4);
-				}
+				spawnPoints.add(i);
+			}
+		}
+
+		for (int i : spawnPoints){
+			if (Dungeon.level.insideMap(i)
+					&& Actor.findChar(i) == null
+					&& !(Dungeon.level.pit[i])) {
+				Sheep sheep = new Sheep();
+				sheep.lifespan = Random.NormalIntRange( 12, 16 );
+				sheep.pos = i;
+				GameScene.add(sheep);
+				Dungeon.level.occupyCell(sheep);
+				CellEmitter.get(i).burst(Speck.factory(Speck.WOOL), 4);
 			}
 		}
 		

@@ -30,16 +30,16 @@ import com.zrp200.rkpd2.ui.TalentIcon;
 
 public class WndInfoTalent extends WndTitledMessage {
 
-	public WndInfoTalent(Talent talent, int points, Callback onUpgradeButton){
+	public WndInfoTalent(Talent talent, int points, TalentButtonCallback buttonCallback){
 		super( new TalentIcon( talent ), Messages.titleCase(talent.title() + (points > 0 ? " + " + points: "")), talent.desc(), WIDTH_MIN );
 
-		if (onUpgradeButton != null) {
-			addToBottom(new RedButton( Messages.get(this, "upgrade") ) {
+		if (buttonCallback != null) {
+			addToBottom(new RedButton( buttonCallback.prompt() ) {
 				@Override
 				protected void onClick() {
 					super.onClick();
 					hide();
-					onUpgradeButton.call();
+					buttonCallback.call();
 				}
 				{
 					icon(Icons.get(Icons.TALENT));
@@ -48,6 +48,10 @@ public class WndInfoTalent extends WndTitledMessage {
 			}, 2*GAP, 1);
 		}
 
+	}
+
+	public interface TalentButtonCallback extends Callback {
+		String prompt();
 	}
 
 }

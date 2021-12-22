@@ -27,6 +27,7 @@ import com.zrp200.rkpd2.actors.blobs.Blob;
 import com.zrp200.rkpd2.actors.blobs.ToxicGas;
 import com.zrp200.rkpd2.actors.buffs.Amok;
 import com.zrp200.rkpd2.actors.buffs.Burning;
+import com.zrp200.rkpd2.actors.buffs.Dread;
 import com.zrp200.rkpd2.actors.buffs.Paralysis;
 import com.zrp200.rkpd2.actors.buffs.Sleep;
 import com.zrp200.rkpd2.actors.buffs.Terror;
@@ -50,6 +51,12 @@ public class RotHeart extends Mob {
 
 		properties.add(Property.IMMOVABLE);
 		properties.add(Property.MINIBOSS);
+	}
+
+	@Override
+	protected boolean act() {
+		alerted = false;
+		return super.act();
 	}
 
 	@Override
@@ -122,6 +129,7 @@ public class RotHeart extends Mob {
 		immunities.add( Sleep.class );
 		immunities.add( ToxicGas.class );
 		immunities.add( Terror.class );
+		immunities.add( Dread.class );
 		immunities.add( Vertigo.class );
 	}
 

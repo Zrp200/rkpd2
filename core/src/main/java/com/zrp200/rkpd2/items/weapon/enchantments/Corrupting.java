@@ -44,7 +44,7 @@ public class Corrupting extends Weapon.Enchantment {
 				&& Random.Float() < procChance
 				&& defender instanceof Mob
 				&& defender.isAlive()
-				&& Corruption.corrupt(defender)){
+				&& Corruption.corrupt((Mob)defender)){
 			return 0;
 		}
 		

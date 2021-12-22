@@ -50,6 +50,7 @@ import com.zrp200.rkpd2.items.potions.PotionOfHealing;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfIdentify;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfMagicMapping;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRemoveCurse;
+import com.zrp200.rkpd2.items.spells.Alchemize;
 import com.zrp200.rkpd2.items.stones.StoneOfAugmentation;
 import com.zrp200.rkpd2.items.wands.WandOfFirebolt;
 import com.zrp200.rkpd2.items.weapon.melee.MeleeWeapon;
@@ -189,11 +190,10 @@ public class ShopRoom extends SpecialRoom {
 
 		do { a = (Armor) a.random(); } while(a.cursed);
 		itemsToSpawn.add(a.identify());
-		
+
 		itemsToSpawn.add( TippedDart.randomTipped(2) );
 
-		itemsToSpawn.add( new MerchantsBeacon() );
-
+		itemsToSpawn.add( new Alchemize().quantity(Random.IntRange(3, 4)));
 
 		itemsToSpawn.add(ChooseBag(Dungeon.hero.belongings));
 

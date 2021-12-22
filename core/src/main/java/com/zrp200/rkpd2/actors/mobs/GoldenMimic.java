@@ -30,6 +30,7 @@ import com.zrp200.rkpd2.items.EquipableItem;
 import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.Armor;
+import com.zrp200.rkpd2.items.artifacts.Artifact;
 import com.zrp200.rkpd2.items.wands.Wand;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
@@ -94,7 +95,7 @@ public class GoldenMimic extends Mimic {
 				if (i instanceof Armor && ((Armor) i).hasCurseGlyph()){
 					((Armor) i).inscribe(null);
 				}
-				if (!(i instanceof MissileWeapon) && i.level() == 0 && Random.Int(2) == 0){
+				if (!(i instanceof MissileWeapon || i instanceof Artifact) && i.level() == 0 && Random.Int(2) == 0){
 					i.upgrade();
 				}
 			}

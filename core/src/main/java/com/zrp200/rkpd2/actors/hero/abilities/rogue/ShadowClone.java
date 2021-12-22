@@ -27,11 +27,13 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.AllyBuff;
 import com.zrp200.rkpd2.actors.buffs.Corruption;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
+import com.zrp200.rkpd2.actors.hero.abilities.huntress.SpiritHawk;
 import com.zrp200.rkpd2.actors.mobs.npcs.DirectableAlly;
 import com.zrp200.rkpd2.effects.particles.SmokeParticle;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
@@ -115,7 +117,7 @@ public class ShadowClone extends ArmorAbility {
 				hero.spendAndNext(Actor.TICK);
 
 			} else {
-				GLog.w(Messages.get(this, "no_space"));
+				GLog.w(Messages.get(SpiritHawk.class, "no_space"));
 			}
 		}
 
@@ -147,7 +149,7 @@ public class ShadowClone extends ArmorAbility {
 
 			HP = HT = 100;
 
-			immunities.add(Corruption.class);
+			immunities.add(AllyBuff.class);
 		}
 
 		public ShadowAlly(){

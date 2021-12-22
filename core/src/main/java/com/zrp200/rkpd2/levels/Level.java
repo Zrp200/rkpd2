@@ -21,7 +21,65 @@
 
 package com.zrp200.rkpd2.levels;
 
+import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Challenges;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.ShatteredPixelDungeon;
+import com.zrp200.rkpd2.Statistics;
+import com.zrp200.rkpd2.actors.Actor;
+import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.blobs.Blob;
+import com.zrp200.rkpd2.actors.blobs.SmokeScreen;
+import com.zrp200.rkpd2.actors.blobs.Web;
+import com.zrp200.rkpd2.actors.blobs.WellWater;
+import com.zrp200.rkpd2.actors.buffs.Awareness;
+import com.zrp200.rkpd2.actors.buffs.Blindness;
+import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.ChampionEnemy;
+import com.zrp200.rkpd2.actors.buffs.LockedFloor;
+import com.zrp200.rkpd2.actors.buffs.MagicalSight;
+import com.zrp200.rkpd2.actors.buffs.MindVision;
+import com.zrp200.rkpd2.actors.buffs.PinCushion;
+import com.zrp200.rkpd2.actors.buffs.RevealedArea;
+import com.zrp200.rkpd2.actors.buffs.Shadows;
+import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroSubClass;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.huntress.SpiritHawk;
+import com.zrp200.rkpd2.actors.mobs.Bestiary;
+import com.zrp200.rkpd2.actors.mobs.Mob;
+import com.zrp200.rkpd2.actors.mobs.YogFist;
+import com.zrp200.rkpd2.actors.mobs.npcs.Sheep;
+import com.zrp200.rkpd2.effects.particles.FlowParticle;
+import com.zrp200.rkpd2.effects.particles.WindParticle;
+import com.zrp200.rkpd2.items.Generator;
+import com.zrp200.rkpd2.items.Heap;
+import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.Stylus;
+import com.zrp200.rkpd2.items.Torch;
+import com.zrp200.rkpd2.items.artifacts.TalismanOfForesight;
+import com.zrp200.rkpd2.items.artifacts.TimekeepersHourglass;
+import com.zrp200.rkpd2.items.potions.PotionOfStrength;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfUpgrade;
+import com.zrp200.rkpd2.items.stones.StoneOfEnchantment;
+import com.zrp200.rkpd2.items.stones.StoneOfIntuition;
+import com.zrp200.rkpd2.items.wands.WandOfRegrowth;
+import com.zrp200.rkpd2.items.wands.WandOfWarding;
+import com.zrp200.rkpd2.items.weapon.missiles.HeavyBoomerang;
+import com.zrp200.rkpd2.levels.features.Chasm;
+import com.zrp200.rkpd2.levels.features.Door;
+import com.zrp200.rkpd2.levels.features.HighGrass;
+import com.zrp200.rkpd2.levels.painters.Painter;
+import com.zrp200.rkpd2.levels.traps.Trap;
+import com.zrp200.rkpd2.mechanics.ShadowCaster;
+import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.plants.Plant;
+import com.zrp200.rkpd2.plants.Swiftthistle;
+import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.sprites.ItemSprite;
+import com.zrp200.rkpd2.tiles.CustomTilemap;
+import com.zrp200.rkpd2.utils.BArray;
+import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.audio.Sample;
@@ -310,8 +368,8 @@ public abstract class Level implements Bundlable {
 
 		version = bundle.getInt( VERSION );
 		
-		//saves from before v0.8.0b are not supported
-		if (version < ShatteredPixelDungeon.v0_8_0b){
+		//saves from before v0.9.0b are not supported
+		if (version < ShatteredPixelDungeon.v0_9_0b){
 			throw new RuntimeException("old save");
 		}
 
@@ -482,6 +540,22 @@ public abstract class Level implements Bundlable {
 		}
 	}
 
+	public ArrayList<Item> getItemsToPreserveFromSealedResurrect(){
+		ArrayList<Item> items = new ArrayList<>();
+		for (Heap h : heaps.valueList()){
+			if (h.type == Heap.Type.HEAP) items.addAll(h.items);
+		}
+		for (Mob m : mobs){
+			for (PinCushion b : m.buffs(PinCushion.class)){
+				items.addAll(b.getStuckItems());
+			}
+		}
+		for (HeavyBoomerang.CircleBack b : Dungeon.hero.buffs(HeavyBoomerang.CircleBack.class)){
+			if (b.activeDepth() == Dungeon.depth) items.add(b.cancel());
+		}
+		return items;
+	}
+
 	public Group addVisuals() {
 		if (visuals == null || visuals.parent == null){
 			visuals = new Group();
@@ -639,13 +713,6 @@ public abstract class Level implements Bundlable {
 			water[i]		= (flags & Terrain.LIQUID) != 0;
 			pit[i]			= (flags & Terrain.PIT) != 0;
 		}
-		
-		SmokeScreen s = (SmokeScreen)blobs.get(SmokeScreen.class);
-		if (s != null && s.volume > 0){
-			for (int i=0; i < length(); i++) {
-				losBlocking[i] = losBlocking[i] || s.cur[i] > 0;
-			}
-		}
 
 		Web w = (Web) blobs.get(Web.class);
 		if (w != null && w.volume > 0){
@@ -743,11 +810,6 @@ public abstract class Level implements Bundlable {
 		level.avoid[cell]			= (flags & Terrain.AVOID) != 0;
 		level.pit[cell]			    = (flags & Terrain.PIT) != 0;
 		level.water[cell]			= terrain == Terrain.WATER;
-
-		SmokeScreen s = (SmokeScreen)level.blobs.get(SmokeScreen.class);
-		if (s != null && s.volume > 0){
-			level.losBlocking[cell] = level.losBlocking[cell] || s.cur[cell] > 0;
-		}
 
 		for (int i : PathFinder.NEIGHBOURS9){
 			i = cell + i;
@@ -1051,6 +1113,8 @@ public abstract class Level implements Bundlable {
 
 	private static boolean[] heroMindFov;
 
+	private static boolean[] modifiableBlocking;
+
 	public void updateFieldOfView( Char c, boolean[] fieldOfView ) {
 
 		int cx = c.pos % width();
@@ -1060,13 +1124,29 @@ public abstract class Level implements Bundlable {
 						&& c.buff( TimekeepersHourglass.timeStasis.class ) == null && c.isAlive();
 		if (sighted) {
 			boolean[] blocking;
-			
+
+			if (modifiableBlocking == null || modifiableBlocking.length != Dungeon.level.losBlocking.length){
+				modifiableBlocking = new boolean[Dungeon.level.losBlocking.length];
+			}
+
 			if ((c instanceof Hero && (((Hero) c).subClass == HeroSubClass.WARDEN || ((Hero)c).subClass == HeroSubClass.KING))
 				|| c instanceof YogFist.SoiledFist) {
-				blocking = Dungeon.level.losBlocking.clone();
+				System.arraycopy(Dungeon.level.losBlocking, 0, modifiableBlocking, 0, modifiableBlocking.length);
+				blocking = modifiableBlocking;
 				for (int i = 0; i < blocking.length; i++){
 					if (blocking[i] && (Dungeon.level.map[i] == Terrain.HIGH_GRASS || Dungeon.level.map[i] == Terrain.FURROWED_GRASS)){
 						blocking[i] = false;
+					}
+				}
+			} else if (c.alignment == Char.Alignment.ENEMY
+					&& Dungeon.level.blobs.containsKey(SmokeScreen.class)
+					&& Dungeon.level.blobs.get(SmokeScreen.class).volume > 0) {
+				System.arraycopy(Dungeon.level.losBlocking, 0, modifiableBlocking, 0, modifiableBlocking.length);
+				blocking = modifiableBlocking;
+				Blob s = Dungeon.level.blobs.get(SmokeScreen.class);
+				for (int i = 0; i < blocking.length; i++){
+					if (!blocking[i] && s.cur[i] > 0){
+						blocking[i] = true;
 					}
 				}
 			} else {
@@ -1090,8 +1170,7 @@ public abstract class Level implements Bundlable {
 				sense = Math.max( ((MindVision)b).distance, sense );
 			}
 			if (c.buff(MagicalSight.class) != null){
-				sense = 8;
-				sense *= 1f + 0.25f*((Hero) c).shiftedPoints(Talent.FARSIGHT, Talent.KINGS_VISION);
+				sense = Math.max( MagicalSight.DISTANCE, sense );
 			}
 		}
 		

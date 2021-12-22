@@ -24,9 +24,9 @@ package com.zrp200.rkpd2.actors.mobs;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.AllyBuff;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.ChampionEnemy;
-import com.zrp200.rkpd2.actors.buffs.Corruption;
 import com.zrp200.rkpd2.effects.Pushing;
 import com.zrp200.rkpd2.items.Gold;
 import com.zrp200.rkpd2.levels.features.Chasm;
@@ -165,8 +165,8 @@ public class Ghoul extends Mob {
 	protected synchronized void onRemove() {
 		if (beingLifeLinked) {
 			for (Buff buff : buffs()) {
-				//corruption, champion, and king damager are preserved when removed via life link
-				if (!(buff instanceof Corruption)
+				//ally buffs, champion, and king damager are preserved when removed via life link
+				if (!(buff instanceof AllyBuff)
 						&& (!(buff instanceof ChampionEnemy))
 						&& !(buff instanceof DwarfKing.KingDamager)) {
 					buff.detach();
@@ -266,7 +266,7 @@ public class Ghoul extends Mob {
 				}
 				ghoul.HP = Math.round(ghoul.HT/10f);
 				Actor.add(ghoul);
-				ghoul.spend(-ghoul.cooldown());
+				ghoul.timeToNow();
 				Dungeon.level.mobs.add(ghoul);
 				Dungeon.level.occupyCell( ghoul );
 				ghoul.sprite.idle();
@@ -297,7 +297,7 @@ public class Ghoul extends Mob {
 			Ghoul newHost = searchForHost(ghoul);
 			if (newHost != null){
 				attachTo(newHost);
-				spend(-cooldown());
+				timeToNow();
 			} else {
 				ghoul.die(this);
 			}

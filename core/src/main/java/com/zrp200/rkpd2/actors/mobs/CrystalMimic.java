@@ -25,8 +25,10 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.AllyBuff;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Corruption;
+import com.zrp200.rkpd2.actors.buffs.Dread;
 import com.zrp200.rkpd2.actors.buffs.Haste;
 import com.zrp200.rkpd2.actors.buffs.Terror;
 import com.zrp200.rkpd2.actors.hero.Hero;
@@ -184,7 +186,9 @@ public class CrystalMimic extends Mimic {
 	private class Fleeing extends Mob.Fleeing{
 		@Override
 		protected void nowhereToRun() {
-			if (buff( Terror.class ) == null && buff( Corruption.class ) == null) {
+			if (buff( Terror.class ) == null
+					&& buffs( AllyBuff.class ).isEmpty()
+					&& buff( Dread.class ) == null) {
 				if (enemySeen) {
 					sprite.showStatus(CharSprite.NEGATIVE, Messages.get(Mob.class, "rage"));
 					state = HUNTING;

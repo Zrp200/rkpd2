@@ -28,6 +28,7 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Amok;
 import com.zrp200.rkpd2.actors.buffs.Charm;
+import com.zrp200.rkpd2.actors.buffs.Dread;
 import com.zrp200.rkpd2.actors.buffs.Frost;
 import com.zrp200.rkpd2.actors.buffs.Light;
 import com.zrp200.rkpd2.actors.buffs.LockedFloor;
@@ -494,6 +495,7 @@ public class YogDzewa extends Mob {
 	}
 
 	{
+		immunities.add( Dread.class );
 		immunities.add( Terror.class );
 		immunities.add( Amok.class );
 		immunities.add( Charm.class );

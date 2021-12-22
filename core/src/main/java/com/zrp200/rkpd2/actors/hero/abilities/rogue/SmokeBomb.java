@@ -29,6 +29,7 @@ import com.zrp200.rkpd2.actors.buffs.Amok;
 import com.zrp200.rkpd2.actors.buffs.Blindness;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Charm;
+import com.zrp200.rkpd2.actors.buffs.Dread;
 import com.zrp200.rkpd2.actors.buffs.Haste;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.buffs.Sleep;
@@ -187,6 +188,7 @@ public class SmokeBomb extends ArmorAbility {
 		}
 
 		{
+			immunities.add( Dread.class );
 			immunities.add( Terror.class );
 			immunities.add( Amok.class );
 			immunities.add( Charm.class );

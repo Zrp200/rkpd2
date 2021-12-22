@@ -23,38 +23,38 @@ package com.zrp200.rkpd2.items.scrolls.exotic;
 
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.Charm;
+import com.zrp200.rkpd2.actors.buffs.Dread;
+import com.zrp200.rkpd2.actors.buffs.Terror;
 import com.zrp200.rkpd2.actors.mobs.Mob;
-import com.zrp200.rkpd2.effects.Speck;
+import com.zrp200.rkpd2.effects.Flare;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
 
-public class ScrollOfAffection extends ExoticScroll {
+public class ScrollOfDread extends ExoticScroll {
 	
 	{
-		icon = ItemSpriteSheet.Icons.SCROLL_AFFECTION;
+		icon = ItemSpriteSheet.Icons.SCROLL_DREAD;
 	}
 	
 	@Override
 	public void doRead() {
-		
-		curUser.sprite.centerEmitter().start( Speck.factory( Speck.HEART ), 0.2f, 5 );
-		Sample.INSTANCE.play( Assets.Sounds.CHARMS );
-		
+		new Flare( 5, 32 ).color( 0xFF0000, true ).show( curUser.sprite, 2f );
+		Sample.INSTANCE.play( Assets.Sounds.READ );
+
 		for (Mob mob : Dungeon.level.mobs.toArray( new Mob[0] )) {
-			if (Dungeon.level.heroFOV[mob.pos]) {
-				Buff.affect( mob, Charm.class, Charm.DURATION*2f ).object = curUser.id();
-				mob.sprite.centerEmitter().start( Speck.factory( Speck.HEART ), 0.2f, 5 );
+			if (mob.alignment != Char.Alignment.ALLY && Dungeon.level.heroFOV[mob.pos]) {
+				if (!mob.isImmune(Dread.class)){
+					Buff.affect( mob, Dread.class ).object = curUser.id();
+				} else {
+					Buff.affect( mob, Terror.class, Terror.DURATION ).object = curUser.id();
+				}
 			}
 		}
-		
-		//GLog.i( Messages.get(this, "sooth") );
 
 		identify();
 		
 		readAnimation();
-		
 	}
-	
 }

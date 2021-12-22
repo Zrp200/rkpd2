@@ -21,72 +21,26 @@
 
 package com.zrp200.rkpd2.actors;
 
-import static com.zrp200.rkpd2.Dungeon.hero;
-
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundlable;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.blobs.Blob;
 import com.zrp200.rkpd2.actors.blobs.Electricity;
 import com.zrp200.rkpd2.actors.blobs.ToxicGas;
-import com.zrp200.rkpd2.actors.buffs.Adrenaline;
-import com.zrp200.rkpd2.actors.buffs.ArcaneArmor;
-import com.zrp200.rkpd2.actors.buffs.Barkskin;
-import com.zrp200.rkpd2.actors.buffs.Berserk;
-import com.zrp200.rkpd2.actors.buffs.Bleeding;
-import com.zrp200.rkpd2.actors.buffs.Bless;
-import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.Burning;
-import com.zrp200.rkpd2.actors.buffs.ChampionEnemy;
-import com.zrp200.rkpd2.actors.buffs.Charm;
-import com.zrp200.rkpd2.actors.buffs.Chill;
-import com.zrp200.rkpd2.actors.buffs.Corrosion;
-import com.zrp200.rkpd2.actors.buffs.Corruption;
-import com.zrp200.rkpd2.actors.buffs.Cripple;
-import com.zrp200.rkpd2.actors.buffs.Doom;
-import com.zrp200.rkpd2.actors.buffs.EarthImbue;
-import com.zrp200.rkpd2.actors.buffs.FireImbue;
-import com.zrp200.rkpd2.actors.buffs.Frost;
-import com.zrp200.rkpd2.actors.buffs.FrostImbue;
-import com.zrp200.rkpd2.actors.buffs.Fury;
-import com.zrp200.rkpd2.actors.buffs.Haste;
-import com.zrp200.rkpd2.actors.buffs.Hex;
-import com.zrp200.rkpd2.actors.buffs.Hunger;
-import com.zrp200.rkpd2.actors.buffs.LifeLink;
-import com.zrp200.rkpd2.actors.buffs.MagicalSleep;
-import com.zrp200.rkpd2.actors.buffs.Momentum;
-import com.zrp200.rkpd2.actors.buffs.Ooze;
-import com.zrp200.rkpd2.actors.buffs.Paralysis;
-import com.zrp200.rkpd2.actors.buffs.Poison;
-import com.zrp200.rkpd2.actors.buffs.Preparation;
-import com.zrp200.rkpd2.actors.buffs.ShieldBuff;
-import com.zrp200.rkpd2.actors.buffs.Slow;
-import com.zrp200.rkpd2.actors.buffs.SnipersMark;
-import com.zrp200.rkpd2.actors.buffs.SoulMark;
-import com.zrp200.rkpd2.actors.buffs.Speed;
-import com.zrp200.rkpd2.actors.buffs.Stamina;
-import com.zrp200.rkpd2.actors.buffs.Terror;
-import com.zrp200.rkpd2.actors.buffs.Vertigo;
-import com.zrp200.rkpd2.actors.buffs.Vulnerable;
-import com.zrp200.rkpd2.actors.buffs.Weakness;
+import com.zrp200.rkpd2.actors.buffs.*;
 import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.rogue.DeathMark;
 import com.zrp200.rkpd2.actors.hero.abilities.warrior.Endure;
 import com.zrp200.rkpd2.actors.mobs.Elemental;
 import com.zrp200.rkpd2.items.Heap;
-import com.zrp200.rkpd2.items.KindOfWeapon;
 import com.zrp200.rkpd2.items.armor.glyphs.AntiMagic;
 import com.zrp200.rkpd2.items.armor.glyphs.Potential;
+import com.zrp200.rkpd2.items.potions.exotic.PotionOfCleansing;
 import com.zrp200.rkpd2.items.rings.RingOfElements;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRetribution;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
+import com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfChallenge;
 import com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfPsionicBlast;
 import com.zrp200.rkpd2.items.stones.StoneOfAggression;
 import com.zrp200.rkpd2.items.wands.WandOfFireblast;
@@ -109,9 +63,16 @@ import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.utils.BArray;
 import com.zrp200.rkpd2.utils.GLog;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundlable;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Random;
 
 import java.util.Arrays;
 import java.util.HashSet;
+
+import static com.zrp200.rkpd2.Dungeon.hero;
 
 public abstract class Char extends Actor {
 	
@@ -283,7 +244,7 @@ public abstract class Char extends Actor {
 		super.restoreFromBundle( bundle );
 
 		restoring = this;
-		
+
 		pos = bundle.getInt( POS );
 		HP = bundle.getInt( TAG_HP );
 		HT = bundle.getInt( TAG_HT );
@@ -371,6 +332,10 @@ public abstract class Char extends Actor {
 			endure = enemy.buff(Endure.EndureTracker.class);
 			if (endure != null){
 				dmg = endure.adjustDamageTaken(dmg);
+			}
+
+			if (enemy.buff(ScrollOfChallenge.ChallengeArena.class) != null){
+				dmg *= 0.67f;
 			}
 
 			int effectiveDamage = enemy.defenseProc( this, dmg );
@@ -558,6 +523,7 @@ public abstract class Char extends Actor {
 		if ( buff( Stamina.class ) != null) speed *= 1.5f;
 		if ( buff( Adrenaline.class ) != null) speed *= 2f;
 		if ( buff( Haste.class ) != null) speed *= 3f;
+		if ( buff( Dread.class ) != null) speed *= 2f;
 		return speed;
 	}
 
@@ -616,11 +582,6 @@ public abstract class Char extends Actor {
 		if (alignment != Alignment.ALLY && this.buff(DeathMark.DeathMarkTracker.class) != null){
 			dmg *= DeathMark.damageMultiplier();
 		}
-		Endure.EndureTracker endure = buff(Endure.EndureTracker.class);
-		//reduce damage here if it isn't coming from a chacter (if it is we already reduced it)
-		if (endure != null && !(src instanceof Char)){
-			dmg = endure.adjustDamageTaken(dmg);
-		}
 
 		Class<?> srcClass = src.getClass();
 		if (isImmune( srcClass )) {
@@ -646,6 +607,10 @@ public abstract class Char extends Actor {
 		if (t != null){
 			t.recover();
 		}
+		Dread d = buff(Dread.class);
+		if (d != null){
+			d.recover();
+		}
 		Charm c = buff(Charm.class);
 		if (c != null){
 			c.recover(src);
@@ -662,7 +627,6 @@ public abstract class Char extends Actor {
 		}
 
 		Endure.EndureTracker endure = buff(Endure.EndureTracker.class);
-		//reduce damage here if it isn't coming from a chacter (if it is we already reduced it)
 		if (endure != null){
 			dmg = endure.enforceDamagetakenLimit(dmg);
 		}
@@ -715,6 +679,9 @@ public abstract class Char extends Actor {
 		for (Char ch : Actor.chars().toArray(new Char[0])){
 			if (ch.buff(Charm.class) != null && ch.buff(Charm.class).object == id()){
 				ch.buff(Charm.class).detach();
+			}
+			if (ch.buff(Dread.class) != null && ch.buff(Dread.class).object == id()){
+				ch.buff(Dread.class).detach();
 			}
 			if (ch.buff(Terror.class) != null && ch.buff(Terror.class).object == id()){
 				ch.buff(Terror.class).detach();
@@ -801,7 +768,15 @@ public abstract class Char extends Actor {
 	}
 
 	public synchronized void add( Buff buff ) {
-		
+
+		if (buff(PotionOfCleansing.Cleanse.class) != null) { //cleansing buff
+			if (buff.type == Buff.buffType.NEGATIVE
+					&& !(buff instanceof AllyBuff)
+					&& !(buff instanceof LostInventory)){
+				return;
+			}
+		}
+
 		buffs.add( buff );
 		if (Actor.chars().contains(this)) Actor.add( buff );
 
@@ -849,10 +824,15 @@ public abstract class Char extends Actor {
 	public float stealth() {
 		return 0;
 	}
-	
-	public void move( int step ) {
 
-		if (Dungeon.level.adjacent( step, pos ) && buff( Vertigo.class ) != null) {
+	public final void move( int step ) {
+		move( step, true );
+	}
+
+	//travelling may be false when a character is moving instantaneously, such as via teleportation
+	public void move( int step, boolean travelling ) {
+
+		if (travelling && Dungeon.level.adjacent( step, pos ) && buff( Vertigo.class ) != null) {
 			sprite.interruptMotion();
 			int newPos = pos + PathFinder.NEIGHBOURS8[Random.Int( 8 )];
 			if (!(Dungeon.level.passable[newPos] || Dungeon.level.avoid[newPos])
@@ -956,9 +936,9 @@ public abstract class Char extends Actor {
 
 	public enum Property{
 		BOSS ( new HashSet<Class>( Arrays.asList(Grim.class, GrimTrap.class, ScrollOfRetribution.class, ScrollOfPsionicBlast.class)),
-				new HashSet<Class>( Arrays.asList(Corruption.class) )),
+				new HashSet<Class>( Arrays.asList(AllyBuff.class, Dread.class) )),
 		MINIBOSS ( new HashSet<Class>(),
-				new HashSet<Class>( Arrays.asList(Corruption.class) )),
+				new HashSet<Class>( Arrays.asList(AllyBuff.class, Dread.class) )),
 		UNDEAD,
 		DEMONIC,
 		INORGANIC ( new HashSet<Class>(),

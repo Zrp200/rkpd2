@@ -148,7 +148,8 @@ public class CellSelector extends ScrollArea {
 	}
 	
 	public void select( int cell ) {
-		if (enabled && listener != null && cell != -1) {
+		if (enabled && Dungeon.hero.ready && !GameScene.isShowingWindow()
+				&& listener != null && cell != -1) {
 			
 			listener.onSelect( cell );
 			if( !( listener instanceof TargetedListener && !((TargetedListener) listener ).readyOnSelect) ) GameScene.ready();

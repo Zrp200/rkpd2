@@ -56,14 +56,12 @@ public class WndResurrect extends Window {
 
 	RedButton btnContinue;
 
-	public WndResurrect() {
+	public WndResurrect( final Ankh ankh ) {
 		
 		super();
 		
 		instance = this;
 
-		Ankh ankh = new Ankh();
-		
 		IconTitle titlebar = new IconTitle();
 		titlebar.icon( new ItemSprite( ankh.image(), null ) );
 		titlebar.label( Messages.titleCase(Messages.get(this, "title")) );
@@ -103,6 +101,8 @@ public class WndResurrect extends Window {
 				hide();
 				
 				Statistics.ankhsUsed++;
+
+				ankh.detach(Dungeon.hero.belongings.backpack);
 
 				if (btnItem1.item != null){
 					btnItem1.item.keptThoughLostInvent = true;

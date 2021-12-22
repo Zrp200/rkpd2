@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.actors.mobs;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.AllyBuff;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Burning;
 import com.zrp200.rkpd2.actors.buffs.ChampionEnemy;
@@ -128,8 +129,8 @@ public class Swarm extends Mob {
 		if (buff( Poison.class ) != null) {
 			Buff.affect( clone, Poison.class ).set(2);
 		}
-		if (buff(Corruption.class ) != null) {
-			Buff.affect( clone, Corruption.class);
+		for (Buff b : buffs(AllyBuff.class)){
+			Buff.affect( clone, b.getClass());
 		}
 		for (Buff b : buffs(ChampionEnemy.class)){
 			Buff.affect( clone, b.getClass());

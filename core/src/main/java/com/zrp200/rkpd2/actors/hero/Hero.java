@@ -21,14 +21,6 @@
 
 package com.zrp200.rkpd2.actors.hero;
 
-import com.watabou.noosa.Camera;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.Callback;
-import com.watabou.utils.GameMath;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Bones;
@@ -39,28 +31,7 @@ import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.blobs.Alchemy;
-import com.zrp200.rkpd2.actors.buffs.AdrenalineSurge;
-import com.zrp200.rkpd2.actors.buffs.Amok;
-import com.zrp200.rkpd2.actors.buffs.AnkhInvulnerability;
-import com.zrp200.rkpd2.actors.buffs.Awareness;
-import com.zrp200.rkpd2.actors.buffs.Barkskin;
-import com.zrp200.rkpd2.actors.buffs.Berserk;
-import com.zrp200.rkpd2.actors.buffs.Bless;
-import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.Burning;
-import com.zrp200.rkpd2.actors.buffs.Combo;
-import com.zrp200.rkpd2.actors.buffs.Drowsy;
-import com.zrp200.rkpd2.actors.buffs.Foresight;
-import com.zrp200.rkpd2.actors.buffs.HoldFast;
-import com.zrp200.rkpd2.actors.buffs.Hunger;
-import com.zrp200.rkpd2.actors.buffs.Invisibility;
-import com.zrp200.rkpd2.actors.buffs.LostInventory;
-import com.zrp200.rkpd2.actors.buffs.MindVision;
-import com.zrp200.rkpd2.actors.buffs.Momentum;
-import com.zrp200.rkpd2.actors.buffs.Paralysis;
-import com.zrp200.rkpd2.actors.buffs.Regeneration;
-import com.zrp200.rkpd2.actors.buffs.SnipersMark;
-import com.zrp200.rkpd2.actors.buffs.Vertigo;
+import com.zrp200.rkpd2.actors.buffs.*;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
 import com.zrp200.rkpd2.actors.hero.abilities.huntress.NaturesPower;
 import com.zrp200.rkpd2.actors.hero.abilities.warrior.Endure;
@@ -100,6 +71,7 @@ import com.zrp200.rkpd2.items.potions.Potion;
 import com.zrp200.rkpd2.items.potions.PotionOfExperience;
 import com.zrp200.rkpd2.items.potions.PotionOfHealing;
 import com.zrp200.rkpd2.items.potions.elixirs.ElixirOfMight;
+import com.zrp200.rkpd2.items.potions.exotic.PotionOfDivineInspiration;
 import com.zrp200.rkpd2.items.rings.RingOfAccuracy;
 import com.zrp200.rkpd2.items.rings.RingOfEvasion;
 import com.zrp200.rkpd2.items.rings.RingOfForce;
@@ -109,6 +81,7 @@ import com.zrp200.rkpd2.items.rings.RingOfMight;
 import com.zrp200.rkpd2.items.rings.RingOfTenacity;
 import com.zrp200.rkpd2.items.scrolls.Scroll;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfMagicMapping;
+import com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfChallenge;
 import com.zrp200.rkpd2.items.wands.Wand;
 import com.zrp200.rkpd2.items.wands.WandOfDisintegration;
 import com.zrp200.rkpd2.items.wands.WandOfLivingEarth;
@@ -124,7 +97,6 @@ import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.levels.features.Chasm;
 import com.zrp200.rkpd2.levels.traps.Trap;
 import com.zrp200.rkpd2.mechanics.ShadowCaster;
-import com.zrp200.rkpd2.messages.Languages;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.plants.Earthroot;
 import com.zrp200.rkpd2.plants.Swiftthistle;
@@ -143,9 +115,19 @@ import com.zrp200.rkpd2.windows.WndHero;
 import com.zrp200.rkpd2.windows.WndMessage;
 import com.zrp200.rkpd2.windows.WndResurrect;
 import com.zrp200.rkpd2.windows.WndTradeItem;
+import com.watabou.noosa.Camera;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Callback;
+import com.watabou.utils.GameMath;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Point;
+import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 public class Hero extends Char {
@@ -168,7 +150,8 @@ public class Hero extends Char {
 	public HeroSubClass subClass = HeroSubClass.NONE;
 	public ArmorAbility armorAbility = null;
 	public ArrayList<LinkedHashMap<Talent, Integer>> talents = new ArrayList<>();
-	
+	public LinkedHashMap<Talent, Talent> metamorphedTalents = new LinkedHashMap<>();
+
 	private int attackSkill = 10;
 	private int defenseSkill = 5;
 
@@ -420,14 +403,28 @@ public class Hero extends Char {
 		return total;
 	}
 
+	public boolean hasTier(int tier) {
+		return !(lvl < (Talent.tierLevelThresholds[tier] - 1)
+				|| (tier == 3 && subClass == HeroSubClass.NONE)
+				|| (tier == 4 && armorAbility == null));
+	}
 	public int talentPointsAvailable(int tier){
-		if (lvl < Talent.tierLevelThresholds[tier]
-			|| (tier == 3 && subClass == HeroSubClass.NONE)
-			|| (tier == 4 && armorAbility == null)){
+		if (!hasTier(tier)) {
 			return 0;
 		} else {
 			return Math.min(1 + lvl - Talent.tierLevelThresholds[tier], Talent.getMaxPoints(tier))
-					- talentPointsSpent(tier);
+					- talentPointsSpent(tier) + bonusTalentPoints(tier);
+		}
+	}
+
+	public int bonusTalentPoints(int tier){
+		if (!hasTier(tier)) {
+			return 0;
+		} else if (buff(PotionOfDivineInspiration.DivineInspirationTracker.class) != null
+				&& buff(PotionOfDivineInspiration.DivineInspirationTracker.class).isBoosted(tier)) {
+			return 2;
+		} else {
+			return 0;
 		}
 	}
 	
@@ -908,13 +905,8 @@ public class Hero extends Char {
 				GLog.w( Messages.get(AlchemistsToolkit.class, "cursed"));
 				return false;
 			}
-			
-			Alchemy alch = (Alchemy) Dungeon.level.blobs.get(Alchemy.class);
-			//TODO logic for a well having dried up?
-			if (alch != null) {
-				alch.alchPos = dst;
-				AlchemyScene.setProvider( alch );
-			}
+
+			AlchemyScene.clearToolkit();
 			ShatteredPixelDungeon.switchScene(AlchemyScene.class);
 			return false;
 
@@ -931,7 +923,7 @@ public class Hero extends Char {
 	private boolean actPickUp( HeroAction.PickUp action ) {
 		int dst = action.dst;
 		if (pos == dst) {
-			
+
 			Heap heap = Dungeon.level.heaps.get( pos );
 			if (heap != null) {
 				Item item = heap.peek();
@@ -954,7 +946,7 @@ public class Hero extends Char {
 							GLog.i( Messages.get(this, "you_now_have", item.name()) );
 						}
 					}
-					
+
 					curAction = null;
 				} else {
 
@@ -964,11 +956,8 @@ public class Hero extends Char {
 							|| item instanceof Key) {
 						//Do Nothing
 					} else {
-						//TODO temporary until 0.8.0a, when all languages will get this phrase
-						if (Messages.lang() == Languages.ENGLISH) {
-							GLog.newLine();
-							GLog.n(Messages.get(this, "you_cant_have", item.name()));
-						}
+						GLog.newLine();
+						GLog.n(Messages.get(this, "you_cant_have", item.name()));
 					}
 
 					heap.sprite.drop();
@@ -1308,6 +1297,18 @@ public class Hero extends Char {
 		if (this.buff(Drowsy.class) != null){
 			Buff.detach(this, Drowsy.class);
 			GLog.w( Messages.get(this, "pain_resist") );
+		}
+
+		Endure.EndureTracker endure = buff(Endure.EndureTracker.class);
+		if (!(src instanceof Char)){
+			//reduce damage here if it isn't coming from a character (if it is we already reduced it)
+			if (endure != null){
+				dmg = endure.adjustDamageTaken(dmg);
+			}
+			//the same also applies to challenge scroll damage reduction
+			if (buff(ScrollOfChallenge.ChallengeArena.class) != null){
+				dmg *= 0.67f;
+			}
 		}
 
 		CapeOfThorns.Thorns thorns = buff( CapeOfThorns.Thorns.class );
@@ -1702,7 +1703,7 @@ public class Hero extends Char {
 
 		super.add( buff );
 
-		if (sprite != null) {
+		if (sprite != null && buffs().contains(buff)) {
 			String msg = buff.heroMessage();
 			if (msg != null){
 				GLog.w(msg);
@@ -1750,7 +1751,6 @@ public class Hero extends Char {
 		}
 
 		if (ankh != null) {
-			ankh.detach(belongings.backpack);
 			interrupt();
 			resting = false;
 
@@ -1766,6 +1766,8 @@ public class Hero extends Char {
 				GLog.w(Messages.get(this, "revive"));
 				Statistics.ankhsUsed++;
 
+				ankh.detach(belongings.backpack);
+
 				for (Char ch : Actor.chars()) {
 					if (ch instanceof DriedRose.GhostHero) {
 						((DriedRose.GhostHero) ch).sayAnhk();
@@ -1779,10 +1781,11 @@ public class Hero extends Char {
 				//delete the run or submit it to rankings, because a WndResurrect is about to exist
 				//this is needed because the actual creation of the window is delayed here
 				WndResurrect.instance = new Object();
+				Ankh finalAnkh = ankh;
 				Game.runOnRenderThread(new Callback() {
 					@Override
 					public void call() {
-						GameScene.show( new WndResurrect() );
+						GameScene.show( new WndResurrect(finalAnkh) );
 					}
 				});
 
@@ -1877,12 +1880,12 @@ public class Hero extends Char {
 	}
 
 	@Override
-	public void move( int step ) {
+	public void move(int step, boolean travelling) {
 		boolean wasHighGrass = Dungeon.level.map[step] == Terrain.HIGH_GRASS;
 
-		super.move( step );
+		super.move( step, travelling);
 		
-		if (!flying) {
+		if (!flying && travelling) {
 			if (Dungeon.level.water[pos]) {
 				Sample.INSTANCE.play( Assets.Sounds.WATER, 1, Random.Float( 0.8f, 1.25f ) );
 			} else if (Dungeon.level.map[pos] == Terrain.EMPTY_SP) {
@@ -2008,47 +2011,57 @@ public class Hero extends Char {
 		distance += pointsInTalent(Talent.WIDE_SEARCH);
 		
 		boolean foresight = buff(Foresight.class) != null;
-		
-		if (foresight) distance++;
-		
-		int cx = pos % Dungeon.level.width();
-		int cy = pos / Dungeon.level.width();
-		int ax = cx - distance;
-		if (ax < 0) {
-			ax = 0;
+		boolean foresightScan = foresight && !Dungeon.level.mapped[pos];
+
+		if (foresightScan){
+			Dungeon.level.mapped[pos] = true;
 		}
-		int bx = cx + distance;
-		if (bx >= Dungeon.level.width()) {
-			bx = Dungeon.level.width() - 1;
+
+		if (foresight) {
+			distance = Foresight.DISTANCE;
+			circular = true;
 		}
-		int ay = cy - distance;
-		if (ay < 0) {
-			ay = 0;
-		}
-		int by = cy + distance;
-		if (by >= Dungeon.level.height()) {
-			by = Dungeon.level.height() - 1;
-		}
+
+		Point c = Dungeon.level.cellToPoint(pos);
 
 		TalismanOfForesight.Foresight talisman = buff( TalismanOfForesight.Foresight.class );
 		boolean cursed = talisman != null && talisman.isCursed();
-		
-		for (int y = ay; y <= by; y++) {
-			for (int x = ax, p = ax + y * Dungeon.level.width(); x <= bx; x++, p++) {
 
-				if (circular && Math.abs(x - cx)-1 > ShadowCaster.rounding[distance][distance - Math.abs(y - cy)]){
-					continue;
+		int[] rounding = ShadowCaster.rounding[distance];
+
+		int left, right;
+		int curr;
+		for (int y = Math.max(0, c.y - distance); y <= Math.min(Dungeon.level.height()-1, c.y + distance); y++) {
+			if (!circular){
+				left = c.x - distance;
+			} else if (rounding[Math.abs(c.y - y)] < Math.abs(c.y - y)) {
+				left = c.x - rounding[Math.abs(c.y - y)];
+			} else {
+				left = distance;
+				while (rounding[left] < rounding[Math.abs(c.y - y)]){
+					left--;
 				}
+				left = c.x - left;
+			}
+			right = Math.min(Dungeon.level.width()-1, c.x + c.x - left);
+			left = Math.max(0, left);
+			for (curr = left + y * Dungeon.level.width(); curr <= right + y * Dungeon.level.width(); curr++){
 
-				if (fieldOfView[p] && p != pos) {
-					
-					if (intentional) {
-						GameScene.effectOverFog(new CheckedCell(p, pos));
+				if ((foresight || fieldOfView[curr]) && curr != pos) {
+
+					if ((foresight && (!Dungeon.level.mapped[curr] || foresightScan))){
+						GameScene.effectOverFog(new CheckedCell(curr, foresightScan ? pos : curr));
+					} else if (intentional) {
+						GameScene.effectOverFog(new CheckedCell(curr, pos));
 					}
-					
-					if (Dungeon.level.secret[p]){
-						
-						Trap trap = Dungeon.level.traps.get( p );
+
+					if (foresight){
+						Dungeon.level.mapped[curr] = true;
+					}
+
+					if (Dungeon.level.secret[curr]){
+
+						Trap trap = Dungeon.level.traps.get( curr );
 						float chance;
 
 						//searches aided by foresight always succeed, even if trap isn't searchable
@@ -2068,7 +2081,7 @@ public class Hero extends Char {
 							chance = 0f;
 							
 						//unintentional trap detection scales from 40% at floor 0 to 30% at floor 25
-						} else if (Dungeon.level.map[p] == Terrain.SECRET_TRAP) {
+						} else if (Dungeon.level.map[curr] == Terrain.SECRET_TRAP) {
 							chance = 0.4f - (Dungeon.depth / 250f);
 							
 						//unintentional door detection scales from 20% at floor 0 to 0% at floor 20
@@ -2078,15 +2091,15 @@ public class Hero extends Char {
 						
 						if (Random.Float() < chance) {
 						
-							int oldValue = Dungeon.level.map[p];
+							int oldValue = Dungeon.level.map[curr];
 							
-							GameScene.discoverTile( p, oldValue );
+							GameScene.discoverTile( curr, oldValue );
 							
-							Dungeon.level.discover( p );
+							Dungeon.level.discover( curr );
 							
-							ScrollOfMagicMapping.discover( p );
+							ScrollOfMagicMapping.discover( curr );
 							
-							smthFound = true;
+							if (fieldOfView[curr]) smthFound = true;
 	
 							if (talisman != null){
 								if (oldValue == Terrain.SECRET_TRAP){
@@ -2101,7 +2114,6 @@ public class Hero extends Char {
 			}
 		}
 
-		
 		if (intentional) {
 			sprite.showStatus( CharSprite.DEFAULT, Messages.get(this, "search") );
 			sprite.operate( pos );
@@ -2122,7 +2134,11 @@ public class Hero extends Char {
 			Sample.INSTANCE.play( Assets.Sounds.SECRET );
 			interrupt();
 		}
-		
+
+		if (foresight){
+			GameScene.updateFog(pos, Foresight.DISTANCE+1);
+		}
+
 		return smthFound;
 	}
 	

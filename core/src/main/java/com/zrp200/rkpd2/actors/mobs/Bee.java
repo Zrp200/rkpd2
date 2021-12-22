@@ -24,9 +24,9 @@ package com.zrp200.rkpd2.actors.mobs;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.AllyBuff;
 import com.zrp200.rkpd2.actors.buffs.Amok;
 import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.Corruption;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.BeeSprite;
 import com.watabou.utils.Bundle;
@@ -126,7 +126,8 @@ public class Bee extends Mob {
 	@Override
 	public void add(Buff buff) {
 		super.add(buff);
-		if (buff instanceof Corruption){
+		//TODO maybe handle honeyed bees with their own ally buff?
+		if (buff instanceof AllyBuff){
 			intelligentAlly = false;
 			setPotInfo(-1, null);
 		}
@@ -183,7 +184,7 @@ public class Bee extends Mob {
 
 	@Override
 	protected boolean getCloser(int target) {
-		if (alignment == Alignment.ALLY && enemy == null && buff(Corruption.class) == null){
+		if (alignment == Alignment.ALLY && enemy == null && buffs(AllyBuff.class).isEmpty()){
 			target = Dungeon.hero.pos;
 		} else if (enemy != null && Actor.findById(potHolder) == enemy) {
 			target = enemy.pos;
@@ -194,7 +195,7 @@ public class Bee extends Mob {
 	
 	@Override
 	public String description() {
-		if (alignment == Alignment.ALLY && buff(Corruption.class) == null){
+		if (alignment == Alignment.ALLY && buffs(AllyBuff.class).isEmpty()){
 			return Messages.get(this, "desc_honey");
 		} else {
 			return super.description();

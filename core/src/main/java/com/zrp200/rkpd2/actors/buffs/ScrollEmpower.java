@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.watabou.noosa.Image;
+import com.watabou.utils.Bundle;
 
 import static com.zrp200.rkpd2.Dungeon.hero;
 
@@ -41,6 +42,20 @@ public class ScrollEmpower extends Buff {
 				Talent.RK_BATTLEMAGE, 1);
 	}
 
+
+	private int left;
+
+	public void reset(){
+		left = 2;
+		Item.updateQuickslot();
+	}
+
+	public void use(){
+		left--;
+		if (left <= 0){
+			detach();
+		}
+	}
 
 	@Override
 	public void detach() {
@@ -65,7 +80,25 @@ public class ScrollEmpower extends Buff {
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", hero.heroClass.title(), boost());
+		return Messages.get(this, "desc", hero.heroClass.title(), boost(), left);
 	}
 
+	private static final String LEFT = "left";
+
+	@Override
+	public void storeInBundle(Bundle bundle) {
+		super.storeInBundle(bundle);
+		bundle.put(LEFT, left);
+	}
+
+	@Override
+	public void restoreFromBundle(Bundle bundle) {
+		super.restoreFromBundle(bundle);
+		//pre-1.1.0 saves
+		if (bundle.contains(LEFT)){
+			left = bundle.getInt(LEFT);
+		} else {
+			left = 2;
+		}
+	}
 }

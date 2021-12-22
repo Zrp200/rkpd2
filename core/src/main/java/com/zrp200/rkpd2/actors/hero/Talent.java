@@ -174,9 +174,8 @@ public enum Talent {
 
 		@Override public String title() {
 			//TODO translate this
-			if (Messages.lang() == Languages.ENGLISH
-					&& ratmogrify()) {
-				return "ratroic energy";
+			if (ratmogrify()) {
+				return Messages.get(this, name() + ".rat_title");
 			}
 			return super.title();
 		}
@@ -688,10 +687,14 @@ public enum Talent {
 	public static final int MAX_TALENT_TIERS = 4;
 
 	public static void initClassTalents( Hero hero ){
-		initClassTalents( hero.heroClass, hero.talents );
+		initClassTalents( hero.heroClass, hero.talents, hero.metamorphedTalents );
 	}
 
-	public static void initClassTalents( HeroClass cls, ArrayList<LinkedHashMap<Talent, Integer>> talents ){
+	public static void initClassTalents( HeroClass cls, ArrayList<LinkedHashMap<Talent, Integer>> talents){
+		initClassTalents( cls, talents, new LinkedHashMap<>());
+	}
+
+	public static void initClassTalents( HeroClass cls, ArrayList<LinkedHashMap<Talent, Integer>> talents, LinkedHashMap<Talent, Talent> replacements ){
 		while (talents.size() < MAX_TALENT_TIERS){
 			talents.add(new LinkedHashMap<>());
 		}
@@ -717,6 +720,9 @@ public enum Talent {
 				break;
 		}
 		for (Talent talent : tierTalents){
+			if (replacements.containsKey(talent)){
+				talent = replacements.get(talent);
+			}
 			talents.get(0).put(talent, 0);
 		}
 		tierTalents.clear();
@@ -739,6 +745,9 @@ public enum Talent {
 				Collections.addAll(tierTalents, ROYAL_MEAL, RESTORATION, POWER_WITHIN, KINGS_VISION, PURSUIT);
 		}
 		for (Talent talent : tierTalents){
+			if (replacements.containsKey(talent)){
+				talent = replacements.get(talent);
+			}
 			talents.get(1).put(talent, 0);
 		}
 		tierTalents.clear();
@@ -850,9 +859,23 @@ public enum Talent {
 			}
 			bundle.put(TALENT_TIER+(i+1), tierBundle);
 		}
+
+		Bundle replacementsBundle = new Bundle();
+		for (Talent t : hero.metamorphedTalents.keySet()){
+			replacementsBundle.put(t.name(), hero.metamorphedTalents.get(t));
+		}
+		bundle.put("replacements", replacementsBundle);
 	}
 
 	public static void restoreTalentsFromBundle( Bundle bundle, Hero hero ){
+		//TODO restore replacements
+		if (bundle.contains("replacements")){
+			Bundle replacements = bundle.getBundle("replacements");
+			for (String key : replacements.getKeys()){
+				hero.metamorphedTalents.put(Talent.valueOf(key), replacements.getEnum(key, Talent.class));
+			}
+		}
+
 		if (hero.heroClass != null) initClassTalents(hero);
 		if (hero.subClass != null)  initSubclassTalents(hero);
 		if (hero.armorAbility != null)  initArmorTalents(hero);

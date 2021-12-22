@@ -39,7 +39,9 @@ import com.zrp200.rkpd2.mechanics.ConeAOE;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
+import com.zrp200.rkpd2.windows.WndOptions;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
@@ -62,12 +64,38 @@ public class PotionOfDragonsBreath extends ExoticPotion {
 	}
 	
 	private CellSelector.Listener targeter = new CellSelector.Listener() {
+
+		private boolean showingWindow = false;
+
 		@Override
 		public void onSelect(final Integer cell) {
 
+			if (showingWindow){
+				return;
+			}
+
 			if (cell == null && !isKnown()){
-				identify();
-				detach(curUser.belongings.backpack);
+				showingWindow = true;
+				GameScene.show( new WndOptions(new ItemSprite(PotionOfDragonsBreath.this),
+						Messages.titleCase(name()),
+						Messages.get(ExoticPotion.class, "warning"),
+						Messages.get(ExoticPotion.class, "yes"),
+						Messages.get(ExoticPotion.class, "no") ) {
+					@Override
+					protected void onSelect( int index ) {
+						showingWindow = false;
+						switch (index) {
+							case 0:
+								curUser.spendAndNext(1f);
+								detach(curUser.belongings.backpack);
+								break;
+							case 1:
+								GameScene.selectCell( targeter );
+								break;
+						}
+					}
+					public void onBackPressed() {}
+				} );
 			} else if (cell != null) {
 				identify();
 				curUser.busy();

@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.0'
+        classpath 'com.android.tools.build:gradle:7.0.3'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.13'
     }
 }
@@ -15,17 +15,17 @@ allprojects {
         appName = 'RKPD2'
         appPackageName = 'com.zrp200.rkpd2'
 
-        appVersionCode = 600
-        appVersionName = '0.2.2'
+        appVersionCode = 610
+        appVersionName = '0.3.0'
 
         appJavaCompatibility = JavaVersion.VERSION_1_8
 
-        appAndroidCompileSDK = 30 //TODO update to 31 once it is out of preview
+        appAndroidCompileSDK = 31
         appAndroidMinSDK = 14
         appAndroidTargetSDK = 31
 
         gdxVersion = '1.10.0'
-        robovmVersion = '2.3.13'
+        robovmVersion = '2.3.14'
     }
     version = appVersionName
 

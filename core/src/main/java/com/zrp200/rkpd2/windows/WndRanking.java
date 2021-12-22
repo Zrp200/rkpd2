@@ -37,6 +37,7 @@ import com.zrp200.rkpd2.ui.Icons;
 import com.zrp200.rkpd2.ui.ItemSlot;
 import com.zrp200.rkpd2.ui.RedButton;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
+import com.zrp200.rkpd2.ui.TalentButton;
 import com.zrp200.rkpd2.ui.ScrollPane;
 import com.zrp200.rkpd2.ui.TalentsPane;
 import com.zrp200.rkpd2.ui.Window;
@@ -119,8 +120,8 @@ public class WndRanking extends WndTabbed {
 	
 	private void createControls() {
 		
-		String[] labels =
-			{Messages.get(this, "stats"), Messages.get(this, "items"), Messages.get(this, "badges")};
+		Icons[] icons =
+			{Icons.RANKINGS, Icons.BACKPACK_LRG, Icons.BADGES};
 		Group[] pages =
 			{new StatsTab(), new ItemsTab(), new BadgesTab()};
 		
@@ -128,7 +129,7 @@ public class WndRanking extends WndTabbed {
 			
 			add( pages[i] );
 			
-			Tab tab = new RankingTab( labels[i], pages[i] );
+			Tab tab = new RankingTab( icons[i], pages[i] );
 			add( tab );
 		}
 
@@ -137,12 +138,12 @@ public class WndRanking extends WndTabbed {
 		select( 0 );
 	}
 
-	private class RankingTab extends LabeledTab {
+	private class RankingTab extends IconTab {
 		
 		private Group page;
 		
-		public RankingTab( String label, Group page ) {
-			super( label );
+		public RankingTab( Icons icon, Group page ) {
+			super( Icons.get(icon) );
 			this.page = page;
 		}
 		
@@ -186,7 +187,7 @@ public class WndRanking extends WndTabbed {
 					}
 					Game.scene().addToFront( new Window(){
 						{
-							TalentsPane p = new TalentsPane(false);
+							TalentsPane p = new TalentsPane(TalentButton.Mode.INFO);
 							add(p);
 							p.setPos(0, 0);
 							p.setSize(120, p.content().height());
@@ -239,7 +240,7 @@ public class WndRanking extends WndTabbed {
 			pos += GAP;
 			
 			pos = statSlot( this, Messages.get(this, "food"), Integer.toString( Statistics.foodEaten ), pos );
-			pos = statSlot( this, Messages.get(this, "alchemy"), Integer.toString( Statistics.potionsCooked ), pos );
+			pos = statSlot( this, Messages.get(this, "alchemy"), Integer.toString( Statistics.itemsCrafted ), pos );
 			pos = statSlot( this, Messages.get(this, "ankhs"), Integer.toString( Statistics.ankhsUsed ), pos );
 		}
 		
@@ -316,10 +317,10 @@ public class WndRanking extends WndTabbed {
 			super();
 			
 			camera = WndRanking.this.camera;
-			
+
 			ScrollPane list = new BadgesList( false );
 			add( list );
-			
+
 			list.setSize( WIDTH, HEIGHT );
 		}
 	}

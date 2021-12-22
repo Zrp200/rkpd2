@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Adrenaline;
+import com.zrp200.rkpd2.actors.buffs.AllyBuff;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.ChampionEnemy;
 import com.zrp200.rkpd2.actors.buffs.Corruption;
@@ -211,8 +212,8 @@ public class Necromancer extends Mob {
 		Dungeon.level.occupyCell( mySkeleton );
 		((NecromancerSprite)sprite).finishSummoning();
 
-		if (buff(Corruption.class) != null){
-			Buff.affect(mySkeleton, Corruption.class);
+		for (Buff b : buffs(AllyBuff.class)){
+			Buff.affect(mySkeleton, b.getClass());
 		}
 		for (Buff b : buffs(ChampionEnemy.class)){
 			Buff.affect( mySkeleton, b.getClass());

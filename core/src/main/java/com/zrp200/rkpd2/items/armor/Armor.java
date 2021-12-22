@@ -56,6 +56,7 @@ import com.zrp200.rkpd2.items.armor.glyphs.Stone;
 import com.zrp200.rkpd2.items.armor.glyphs.Swiftness;
 import com.zrp200.rkpd2.items.armor.glyphs.Thorns;
 import com.zrp200.rkpd2.items.armor.glyphs.Viscosity;
+import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfUpgrade;
 import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.messages.Messages;
@@ -103,7 +104,8 @@ public class Armor extends EquipableItem {
 	
 	public Glyph glyph;
 	public boolean curseInfusionBonus = false;
-	
+	public boolean masteryPotionBonus = false;
+
 	private BrokenSeal seal;
 	
 	public int tier;
@@ -120,6 +122,7 @@ public class Armor extends EquipableItem {
 	private static final String AVAILABLE_USES  = "available_uses";
 	private static final String GLYPH			= "glyph";
 	private static final String CURSE_INFUSION_BONUS = "curse_infusion_bonus";
+	private static final String MASTERY_POTION_BONUS = "mastery_potion_bonus";
 	private static final String SEAL            = "seal";
 	private static final String AUGMENT			= "augment";
 
@@ -130,6 +133,7 @@ public class Armor extends EquipableItem {
 		bundle.put( AVAILABLE_USES, availableUsesToID );
 		bundle.put( GLYPH, glyph );
 		bundle.put( CURSE_INFUSION_BONUS, curseInfusionBonus );
+		bundle.put( MASTERY_POTION_BONUS, masteryPotionBonus );
 		bundle.put( SEAL, seal);
 		bundle.put( AUGMENT, augment);
 	}
@@ -141,6 +145,7 @@ public class Armor extends EquipableItem {
 		availableUsesToID = bundle.getInt( AVAILABLE_USES );
 		inscribe((Glyph) bundle.get(GLYPH));
 		curseInfusionBonus = bundle.getBoolean( CURSE_INFUSION_BONUS );
+		masteryPotionBonus = bundle.getBoolean( MASTERY_POTION_BONUS );
 		seal = (BrokenSeal)bundle.get(SEAL);
 		
 		augment = bundle.getEnum(AUGMENT, Augment.class);
@@ -403,12 +408,18 @@ public class Armor extends EquipableItem {
 	
 	public Item upgrade( boolean inscribe ) {
 
-		if (inscribe && (glyph == null || glyph.curse())){
-			inscribe( Glyph.random() );
-		} else if (!inscribe && level() >= 4 && Random.Float(10) < Math.pow(2, level()-4)){
-			inscribe(null);
+		if (inscribe){
+			if (glyph == null){
+				inscribe( Glyph.random() );
+			}
+		} else {
+			if (hasCurseGlyph()){
+				if (Random.Int(3) == 0) inscribe(null);
+			} else if (level() >= 4 && Random.Float(10) < Math.pow(2, level()-4)){
+				inscribe(null);
+			}
 		}
-		
+
 		cursed = false;
 
 		if (seal != null && seal.isUpgradable())
@@ -538,7 +549,11 @@ public class Armor extends EquipableItem {
 	}
 
 	public int STRReq(){
-		return STRReq(level());
+		int req = STRReq(level());
+		if (masteryPotionBonus){
+			req -= 2;
+		}
+		return req;
 	}
 
 	public int STRReq(int lvl){

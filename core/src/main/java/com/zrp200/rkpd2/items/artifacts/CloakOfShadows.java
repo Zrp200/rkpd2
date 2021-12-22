@@ -173,7 +173,7 @@ public class CloakOfShadows extends Artifact {
 		return new cloakStealth();
 	}
 
-	public static final float LC_FACTOR =.2f, LC_FACTOR_RK =.13f;
+	public static final float LC_FACTOR =.2f, LC_FACTOR_RK =0.5f/3f;
 	@Override
 	public void charge(Hero target, float amount) {
 		if (charge < chargeCap) {

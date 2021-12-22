@@ -25,12 +25,16 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.AllyBuff;
 import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.Corruption;
+import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.buffs.Hunger;
 import com.zrp200.rkpd2.actors.buffs.LostInventory;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
+import com.zrp200.rkpd2.ui.BuffIndicator;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 
 public class PotionOfCleansing extends ExoticPotion {
@@ -66,7 +70,7 @@ public class PotionOfCleansing extends ExoticPotion {
 	public static void cleanse(Char ch){
 		for (Buff b : ch.buffs()){
 			if (b.type == Buff.buffType.NEGATIVE
-					&& !(b instanceof Corruption)
+					&& !(b instanceof AllyBuff)
 					&& !(b instanceof LostInventory)){
 				b.detach();
 			}
@@ -74,5 +78,37 @@ public class PotionOfCleansing extends ExoticPotion {
 				((Hunger) b).satisfy(Hunger.STARVING);
 			}
 		}
+		Buff.affect(ch, Cleanse.class, Cleanse.DURATION);
+	}
+
+	public static class Cleanse extends FlavourBuff {
+
+		public static final float DURATION = 5f;
+
+		@Override
+		public int icon() {
+			return BuffIndicator.IMMUNITY;
+		}
+
+		@Override
+		public void tintIcon(Image icon) {
+			icon.hardlight(1f, 0f, 2f);
+		}
+
+		@Override
+		public float iconFadePercent() {
+			return Math.max(0, (DURATION - visualcooldown()) / DURATION);
+		}
+
+		@Override
+		public String toString() {
+			return Messages.get(this, "name");
+		}
+
+		@Override
+		public String desc() {
+			return Messages.get(this, "desc", dispTurns(visualcooldown()));
+		}
+
 	}
 }

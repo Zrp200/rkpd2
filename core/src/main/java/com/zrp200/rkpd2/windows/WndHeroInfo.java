@@ -34,6 +34,7 @@ import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.IconButton;
 import com.zrp200.rkpd2.ui.Icons;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
+import com.zrp200.rkpd2.ui.TalentButton;
 import com.zrp200.rkpd2.ui.TalentsPane;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
@@ -248,7 +249,7 @@ public class WndHeroInfo extends WndTabbed {
 			Talent.initClassTalents(cls, talents);
 			talents.get(2).clear(); //we show T3 talents with subclasses
 
-			talentPane = new TalentsPane(false, talents);
+			talentPane = new TalentsPane(TalentButton.Mode.INFO, talents);
 			add(talentPane);
 		}
 

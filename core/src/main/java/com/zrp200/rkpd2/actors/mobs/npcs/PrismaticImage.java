@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.blobs.CorrosiveGas;
 import com.zrp200.rkpd2.actors.blobs.ToxicGas;
+import com.zrp200.rkpd2.actors.buffs.AllyBuff;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Burning;
 import com.zrp200.rkpd2.actors.buffs.Corruption;
@@ -48,7 +49,7 @@ public class PrismaticImage extends AbstractMirrorImage {
 	{
 		spriteClass = PrismaticSprite.class;
 		
-		HP = HT = 8;
+		HP = HT = 10;
 
 		intelligentAlly = true;
 		
@@ -117,9 +118,9 @@ public class PrismaticImage extends AbstractMirrorImage {
 	@Override
 	public int damageRoll() {
 		if (hero != null) {
-			return Random.NormalIntRange( 1 + hero.lvl/8, 4 + hero.lvl/2 );
+			return Random.NormalIntRange( 2 + hero.lvl/4, 4 + hero.lvl/2 );
 		} else {
-			return Random.NormalIntRange( 1, 4 );
+			return Random.NormalIntRange( 2, 4 );
 		}
 	}
 

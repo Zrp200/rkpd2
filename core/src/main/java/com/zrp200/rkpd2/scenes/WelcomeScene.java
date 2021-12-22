@@ -210,6 +210,7 @@ public class WelcomeScene extends PixelScene {
 
 		}
 
+		/*
 		//if the player has beaten Goo, automatically give all guidebook pages
 		// v1_0_0 is higher than my previous versions so it's used still.
 		if (previousVersion <= ShatteredPixelDungeon.v1_0_0) {
@@ -219,7 +220,7 @@ public class WelcomeScene extends PixelScene {
 					Document.ADVENTURERS_GUIDE.readPage(page);
 				}
 			}
-		}
+		}*/
 		/*resetting language preference back to native for finnish speakers if they were on english
 		//This is because Finnish was unmaintained for quite a while
 		if ( previousVersion <= 500

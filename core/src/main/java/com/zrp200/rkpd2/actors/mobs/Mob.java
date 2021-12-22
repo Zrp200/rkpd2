@@ -28,15 +28,7 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.buffs.Amok;
-import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.ChampionEnemy;
-import com.zrp200.rkpd2.actors.buffs.Charm;
-import com.zrp200.rkpd2.actors.buffs.Corruption;
-import com.zrp200.rkpd2.actors.buffs.Preparation;
-import com.zrp200.rkpd2.actors.buffs.Sleep;
-import com.zrp200.rkpd2.actors.buffs.SoulMark;
-import com.zrp200.rkpd2.actors.buffs.Terror;
+import com.zrp200.rkpd2.actors.buffs.*;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.mobs.npcs.DirectableAlly;
@@ -188,7 +180,7 @@ public abstract class Mob extends Char {
 			return true;
 		}
 
-		if (buff(Terror.class) != null){
+		if (buff(Terror.class) != null || buff(Dread.class) != null ){
 			state = FLEEING;
 		}
 		
@@ -203,6 +195,14 @@ public abstract class Mob extends Char {
 	protected boolean intelligentAlly = false;
 	
 	protected Char chooseEnemy() {
+
+		Dread dread = buff( Dread.class );
+		if (dread != null) {
+			Char source = (Char)Actor.findById( dread.object );
+			if (source != null) {
+				return source;
+			}
+		}
 
 		Terror terror = buff( Terror.class );
 		if (terror != null) {
@@ -338,9 +338,9 @@ public abstract class Mob extends Char {
 	@Override
 	public void add( Buff buff ) {
 		super.add( buff );
-		if (buff instanceof Amok || buff instanceof Corruption) {
+		if (buff instanceof Amok || buff instanceof AllyBuff) {
 			state = HUNTING;
-		} else if (buff instanceof Terror) {
+		} else if (buff instanceof Terror || buff instanceof Dread) {
 			state = FLEEING;
 		} else if (buff instanceof Sleep) {
 			state = SLEEPING;
@@ -351,7 +351,8 @@ public abstract class Mob extends Char {
 	@Override
 	public void remove( Buff buff ) {
 		super.remove( buff );
-		if (buff instanceof Terror) {
+		if ((buff instanceof Terror && buff(Dread.class) == null)
+				|| (buff instanceof Dread && buff(Terror.class) == null)) {
 			if (enemySeen) {
 				sprite.showStatus(CharSprite.NEGATIVE, Messages.get(this, "rage"));
 				state = HUNTING;
@@ -529,7 +530,6 @@ public abstract class Mob extends Char {
 		
 		if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
 			sprite.attack( enemy.pos );
-			spend( attackDelay() );
 			return false;
 			
 		} else {
@@ -542,6 +542,7 @@ public abstract class Mob extends Char {
 	@Override
 	public void onAttackComplete() {
 		attack( enemy );
+		spend( attackDelay() );
 		super.onAttackComplete();
 	}
 	
@@ -717,7 +718,7 @@ public abstract class Mob extends Char {
 		}
 		
 		//lucky enchant logic
-		if (!isRewardSuppressed() && buff(Lucky.LuckProc.class) != null){
+		if (buff(Lucky.LuckProc.class) != null){
 			Dungeon.level.drop(Lucky.genLoot(), pos).sprite.drop();
 			Lucky.showFlare(sprite);
 		}

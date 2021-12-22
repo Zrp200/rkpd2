@@ -114,10 +114,14 @@ public class Item implements Bundlable {
 		return Messages.get(this, "ac_" + action);
 	}
 
-	public boolean doPickUp( Hero hero ) {
+	public final boolean doPickUp( Hero hero ) {
+		return doPickUp( hero, hero.pos );
+	}
+
+	public boolean doPickUp(Hero hero, int pos) {
 		if (collect( hero.belongings.backpack )) {
 			
-			GameScene.pickUp( this, hero.pos );
+			GameScene.pickUp( this, pos );
 			Sample.INSTANCE.play( Assets.Sounds.ITEM );
 			hero.spendAndNext( TIME_TO_PICK_UP );
 			return true;
@@ -452,11 +456,17 @@ public class Item implements Bundlable {
 		quantity = value;
 		return this;
 	}
-	
+
+	//item's value in gold coins
 	public int value() {
 		return 0;
 	}
-	
+
+	//item's value in energy crystals
+	public int energyVal() {
+		return 0;
+	}
+
 	public Item virtual(){
 		Item item = Reflection.newInstance(getClass());
 		if (item == null) return null;

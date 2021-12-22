@@ -25,10 +25,17 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.AllyBuff;
+import com.zrp200.rkpd2.actors.buffs.Amok;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Corruption;
 import com.zrp200.rkpd2.actors.buffs.Doom;
+import com.zrp200.rkpd2.actors.buffs.Dread;
+import com.zrp200.rkpd2.actors.buffs.Paralysis;
 import com.zrp200.rkpd2.actors.buffs.Roots;
+import com.zrp200.rkpd2.actors.buffs.Sleep;
+import com.zrp200.rkpd2.actors.buffs.Terror;
+import com.zrp200.rkpd2.actors.buffs.Vertigo;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.abilities.mage.WildMagic;
 import com.zrp200.rkpd2.actors.mobs.npcs.NPC;
@@ -203,7 +210,7 @@ public class WandOfRegrowth extends Wand {
 		} else {
 			//8 charges at base, plus:
 			//2/3.33/5/7/10/14/20/30/50/110/infinite charges per hero level, based on wand level
-			float lvl = buffedLvl();
+			float lvl = level();
 			return Math.round(8 + heroLvl * (2+lvl) * (1f + (lvl/(10 - lvl))));
 		}
 	}
@@ -453,8 +460,14 @@ public class WandOfRegrowth extends Wand {
 		}
 
 		{
-			immunities.add(Corruption.class);
-			immunities.add(Doom.class);
+			immunities.add( Paralysis.class );
+			immunities.add( Amok.class );
+			immunities.add( Sleep.class );
+			immunities.add( Terror.class );
+			immunities.add( Dread.class );
+			immunities.add( Vertigo.class );
+			immunities.add( AllyBuff.class );
+			immunities.add( Doom.class );
 		}
 
 		@Override

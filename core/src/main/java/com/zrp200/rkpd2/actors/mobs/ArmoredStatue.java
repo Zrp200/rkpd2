@@ -23,8 +23,12 @@ package com.zrp200.rkpd2.actors.mobs;
 
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.Burning;
 import com.zrp200.rkpd2.items.Generator;
+import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.Armor;
+import com.zrp200.rkpd2.items.armor.glyphs.AntiMagic;
+import com.zrp200.rkpd2.items.armor.glyphs.Brimstone;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.StatueSprite;
@@ -70,9 +74,39 @@ public class ArmoredStatue extends Statue {
 		return super.drRoll() + Random.NormalIntRange( armor.DRMin(), armor.DRMax());
 	}
 
+	//used in some glyph calculations
+	public Armor armor(){
+		return armor;
+	}
+
+	@Override
+	public boolean isImmune(Class effect) {
+		if (effect == Burning.class
+				&& armor != null
+				&& armor.hasGlyph(Brimstone.class, this)){
+			return true;
+		}
+		return super.isImmune(effect);
+	}
+
 	@Override
 	public int defenseProc(Char enemy, int damage) {
+		damage = super.defenseProc(enemy, damage);
 		return armor.proc(enemy, this, damage);
+	}
+
+	@Override
+	public void damage(int dmg, Object src) {
+		//TODO improve this when I have proper damage source logic
+		if (armor != null && armor.hasGlyph(AntiMagic.class, this)
+				&& AntiMagic.RESISTS.contains(src.getClass())){
+			dmg -= AntiMagic.drRoll(armor.buffedLvl());
+		}
+
+		super.damage( dmg, src );
+
+		//for the rose status indicator
+		Item.updateQuickslot();
 	}
 
 	@Override

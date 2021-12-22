@@ -46,18 +46,21 @@ public class Berserk extends Buff {
 
 	private static final float LEVEL_RECOVER_START = 2f;
 	private float levelRecovery;
-	
+
+	public int powerLossBuffer = 0;
 	private float power = 0;
 
 	private static final String STATE = "state";
 	private static final String LEVEL_RECOVERY = "levelrecovery";
 	private static final String POWER = "power";
+	private static final String POWER_BUFFER = "power_buffer";
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(STATE, state);
 		bundle.put(POWER, power);
+		bundle.put(POWER_BUFFER, powerLossBuffer);
 		if (state == State.RECOVERING) bundle.put(LEVEL_RECOVERY, levelRecovery);
 	}
 
@@ -67,6 +70,7 @@ public class Berserk extends Buff {
 
 		state = bundle.getEnum(STATE, State.class);
 		power = bundle.getFloat(POWER);
+		powerLossBuffer = bundle.getInt(POWER_BUFFER);
 		if (state == State.RECOVERING) levelRecovery = bundle.getFloat(LEVEL_RECOVERY);
 	}
 
@@ -111,9 +115,13 @@ public class Berserk extends Buff {
 			}
 		} else {
 			// essentially while recovering your max rage is actually capped for basically all purposes.
-			power -= GameMath.gate(recovered()/10f, power, recovered()) * (recovered() * 0.067f) * Math.pow((target.HP/(float)target.HT), 2);
+			if (powerLossBuffer > 0){
+				powerLossBuffer--;
+			} else {
+				power -= GameMath.gate(recovered()/10f, power, recovered()) * (recovered() * 0.067f) * Math.pow((target.HP/(float)target.HT), 2);
 			if (power <= 0 && state != State.RECOVERING) detach();
 			else power = Math.max(0,power);
+			}
 		}
 		spend(TICK);
 		return true;
@@ -163,6 +171,7 @@ public class Berserk extends Buff {
 				Talent.RK_BERSERKER, 0.15f);
 		power = Math.min(maxPower*recovered(), power + rageFactor(damage)*recovered() );
 		BuffIndicator.refreshHero(); //show new power immediately
+		powerLossBuffer = 3; //2 turns until rage starts dropping
 	}
 
 	public final float recovered() {

@@ -10,6 +10,8 @@ import com.zrp200.rkpd2.ui.TalentsPane;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import static com.zrp200.rkpd2.ui.TalentButton.Mode.INFO;
+
 public class WndInfoSubclass extends WndTitledMessage {
 
 	public WndInfoSubclass(HeroClass cls, HeroSubClass subCls){
@@ -19,7 +21,7 @@ public class WndInfoSubclass extends WndTitledMessage {
 		Talent.initClassTalents(cls, talentList);
 		Talent.initSubclassTalents(subCls, talentList);
 
-		TalentsPane.TalentTierPane talentPane = new TalentsPane.TalentTierPane(talentList.get(2), 3, false);
+		TalentsPane.TalentTierPane talentPane = new TalentsPane.TalentTierPane(talentList.get(2), 3, INFO);
 		talentPane.title.text( Messages.titleCase(Messages.get(WndHeroInfo.class, "talents")));
 		addToBottom(talentPane, 5, 0);
 
