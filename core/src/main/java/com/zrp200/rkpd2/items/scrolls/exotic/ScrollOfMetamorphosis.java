@@ -21,6 +21,9 @@
 
 package com.zrp200.rkpd2.items.scrolls.exotic;
 
+import static com.zrp200.rkpd2.actors.hero.HeroClass.*;
+import static com.zrp200.rkpd2.actors.hero.Talent.*;
+
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
@@ -122,7 +125,7 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 			top = text.bottom() + 2;
 
 			ArrayList<LinkedHashMap<Talent, Integer>> talents = new ArrayList<>();
-			Talent.initClassTalents(Dungeon.hero.heroClass, talents, Dungeon.hero.metamorphedTalents);
+			initClassTalents(Dungeon.hero.heroClass, talents, Dungeon.hero.metamorphedTalents);
 
 			for (LinkedHashMap<Talent, Integer> tier : talents){
 				for (Talent talent : tier.keySet()){
@@ -162,19 +165,24 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 		//TODO could some of these be made more generic?
 		private static final HashMap<Talent, HeroClass> restrictedTalents = new HashMap<>();
 		static {
-			restrictedTalents.put(Talent.IRON_WILL, HeroClass.WARRIOR);
-			restrictedTalents.put(Talent.RESTORED_WILLPOWER, HeroClass.WARRIOR);
-			restrictedTalents.put(Talent.RUNIC_TRANSFERENCE, HeroClass.WARRIOR);
+			restrictedTalents.put(IRON_WILL, WARRIOR);
+			restrictedTalents.put(RESTORED_WILLPOWER, WARRIOR);
+			restrictedTalents.put(RUNIC_TRANSFERENCE, WARRIOR);
 
-			restrictedTalents.put(Talent.BACKUP_BARRIER, HeroClass.MAGE);
-			restrictedTalents.put(Talent.ENERGIZING_UPGRADE, HeroClass.MAGE);
-			restrictedTalents.put(Talent.WAND_PRESERVATION, HeroClass.MAGE);
+			restrictedTalents.put(BACKUP_BARRIER, MAGE);
+			restrictedTalents.put(ENERGIZING_UPGRADE, MAGE);
+			restrictedTalents.put(WAND_PRESERVATION, MAGE);
 
-			restrictedTalents.put(Talent.MENDING_SHADOWS, HeroClass.ROGUE);
-			restrictedTalents.put(Talent.MYSTICAL_UPGRADE, HeroClass.ROGUE);
-			restrictedTalents.put(Talent.LIGHT_CLOAK, HeroClass.ROGUE);
+			restrictedTalents.put(MENDING_SHADOWS, ROGUE);
+			restrictedTalents.put(MYSTICAL_UPGRADE, ROGUE);
+			restrictedTalents.put(LIGHT_CLOAK, ROGUE);
 
-			restrictedTalents.put(Talent.SEER_SHOT, HeroClass.HUNTRESS);
+			restrictedTalents.put(SEER_SHOT, HUNTRESS);
+
+			// rat king talents that contain restricted talents are removed.
+			restrictedTalents.put(NOBLE_CAUSE, RAT_KING);
+			restrictedTalents.put(RESTORATION, RAT_KING);
+			restrictedTalents.put(POWER_WITHIN, RAT_KING);
 		}
 
 		public static WndMetamorphReplace INSTANCE;
@@ -211,7 +219,7 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 
 			for (HeroClass cls : HeroClass.values()){
 				ArrayList<LinkedHashMap<Talent, Integer>> clsTalents = new ArrayList<>();
-				Talent.initClassTalents(cls, clsTalents);
+				initClassTalents(cls, clsTalents);
 
 				Set<Talent> clsTalentsAtTier = clsTalents.get(tier-1).keySet();
 				boolean replacingIsInSet = false;
