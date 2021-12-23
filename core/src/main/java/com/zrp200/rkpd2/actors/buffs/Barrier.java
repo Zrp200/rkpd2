@@ -42,8 +42,8 @@ public class Barrier extends ShieldBuff {
 	}
 
 	@Override
-	public void setShield(int shield) {
-		super.setShield(shield);
+	public void setShield(int shield, boolean force) {
+		super.setShield(shield, force);
 		if (shielding() == shield) partialLostShield = 0;
 	}
 

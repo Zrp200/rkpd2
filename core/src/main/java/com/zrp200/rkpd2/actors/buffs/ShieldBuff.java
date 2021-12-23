@@ -47,12 +47,15 @@ public abstract class ShieldBuff extends Buff {
 	public int shielding(){
 		return shielding;
 	}
-	
-	public void setShield( int shield ) {
-		if (this.shielding <= shield) this.shielding = shield;
+
+	public void setShield( int shield, boolean force ) {
+		if (this.shielding <= shield || force) this.shielding = shield;
 		if (target != null) target.needsShieldUpdate = true;
 	}
-	
+	final public void setShield( int shield ) {
+		setShield(shield, false);
+	}
+
 	public void incShield(){
 		incShield(1);
 	}
