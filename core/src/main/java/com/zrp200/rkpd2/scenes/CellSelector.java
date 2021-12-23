@@ -301,7 +301,8 @@ public class CellSelector extends ScrollArea {
 	
 	public void processKeyHold(){
 		if (heldAction != SPDAction.NONE){
-			enabled = true;
+			enabled = Dungeon.hero.ready = true;
+			Dungeon.observe();
 			heldTurns++;
 			moveFromAction(heldAction);
 		}
