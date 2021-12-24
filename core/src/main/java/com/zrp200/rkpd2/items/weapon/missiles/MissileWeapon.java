@@ -292,13 +292,13 @@ abstract public class MissileWeapon extends Weapon {
 		if(Dungeon.hero.heroClass == HeroClass.ROGUE && Dungeon.hero.buff(CloakOfShadows.cloakStealth.class) != null) level++;
 		float usages = baseUses * (float)(Math.pow(3, level));
 
-		// TODO should I link the innate to the talent? currently the talent if transferred is identical to pursuit, except worse...
-		//+50%/75% durability
-		if(Dungeon.hero.heroClass == HeroClass.HUNTRESS) usages *= 1.5; // look how simple this is!
 		final float[] u = {usages};
 		Dungeon.hero.byTalent(
-				(talent, points) -> u[0] *= 1.25f + 0.25f * points,
-				Talent.DURABLE_PROJECTILES, Talent.PURSUIT);
+				(talent, points) -> {
+					float boost = 0.25f * (1 + points); 					// +50% / +75%
+					if(talent == Talent.DURABLE_PROJECTILES) boost *= 2; 	// +100% / +150%
+					u[0] *= 1 + boost;
+				}, Talent.DURABLE_PROJECTILES, Talent.PURSUIT);
 		usages = u[0];
 		if (holster) {
 			usages *= MagicalHolster.HOLSTER_DURABILITY_FACTOR;

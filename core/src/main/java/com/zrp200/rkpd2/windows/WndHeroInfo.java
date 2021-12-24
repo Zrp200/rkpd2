@@ -31,6 +31,7 @@ import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
+import com.zrp200.rkpd2.ui.HeroIcon;
 import com.zrp200.rkpd2.ui.IconButton;
 import com.zrp200.rkpd2.ui.Icons;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
@@ -186,7 +187,7 @@ public class WndHeroInfo extends WndTabbed {
 				case HUNTRESS:
 					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.SPIRIT_BOW),
 							new Image(Assets.Environment.TILES_SEWERS, 112, 96, 16, 16),
-							new ItemSprite(ItemSpriteSheet.THROWING_CLUB),
+							new HeroIcon(HeroSubClass.SNIPER),
 							new ItemSprite(ItemSpriteSheet.ARTIFACT_TALISMAN),
 							new ItemSprite(ItemSpriteSheet.GLOVES),
 							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};

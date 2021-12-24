@@ -67,6 +67,7 @@ import com.zrp200.rkpd2.items.weapon.melee.Dagger;
 import com.zrp200.rkpd2.items.weapon.melee.Gloves;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.items.weapon.melee.WornShortsword;
+import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.items.weapon.missiles.ThrowingKnife;
 import com.zrp200.rkpd2.items.weapon.missiles.ThrowingStone;
 import com.zrp200.rkpd2.messages.Messages;
@@ -84,7 +85,11 @@ public enum HeroClass {
 	ROGUE(ASSASSIN, FREERUNNER) {
 		//@Override public int getBonus(Item item) { return item instanceof Weapon ? 1 : 0; }
 	},
-	HUNTRESS(SNIPER, WARDEN),
+	HUNTRESS(SNIPER, WARDEN) {
+		@Override public int getBonus(Item item) {
+			return item instanceof MissileWeapon ? 1 : 0;
+		}
+	},
 	RAT_KING (KING);
 
 	private HeroSubClass[] subClasses;
