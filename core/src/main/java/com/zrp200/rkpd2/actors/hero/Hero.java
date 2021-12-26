@@ -1197,6 +1197,8 @@ public class Hero extends Char {
 	
 	@Override
 	public int attackProc( final Char enemy, int damage ) {
+		Talent.AssassinLethalMomentumTracker.process(enemy);
+
 		damage = super.attackProc( enemy, damage );
 		
 		KindOfWeapon wep = belongings.weapon();

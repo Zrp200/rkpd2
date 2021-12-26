@@ -38,6 +38,7 @@ import com.zrp200.rkpd2.actors.buffs.EnhancedRings;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.buffs.Haste;
 import com.zrp200.rkpd2.actors.buffs.LostInventory;
+import com.zrp200.rkpd2.actors.buffs.Preparation;
 import com.zrp200.rkpd2.actors.buffs.Recharging;
 import com.zrp200.rkpd2.actors.buffs.RevealedArea;
 import com.zrp200.rkpd2.actors.buffs.Roots;
@@ -66,7 +67,6 @@ import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.levels.Level;
 import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.levels.features.HighGrass;
-import com.zrp200.rkpd2.messages.Languages;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.watabou.noosa.audio.Sample;
@@ -219,7 +219,7 @@ public enum Talent {
 		public void tintIcon(Image icon) { icon.hardlight(0.15f, 0.2f, 0.5f); }
 	};
 	public static class LethalMomentumTracker extends FlavourBuff{
-		public static void process() { hero.byTalent(process, LETHAL_MOMENTUM,PURSUIT,LETHAL_MOMENTUM_2); }
+		public static void process() { hero.byTalent(process, LETHAL_MOMENTUM,PURSUIT); }
 		private static final TalentCallback process = (talent, points) -> {
 			if( Random.Float() < ( (talent == LETHAL_MOMENTUM ? 2 : 1) + points )
 					/ (talent == PURSUIT ? 3f : 4f) ) {
@@ -227,6 +227,71 @@ public enum Talent {
 			}
 		};
 	};
+
+	// this is my idea of buffing lethal momentum: remove all possible inconsistencies with it.
+	public static abstract class RKPD2LethalMomentumTracker extends FlavourBuff {
+		{ actPriority = VFX_PRIO; }
+
+		private Char enemy;
+		private boolean checkShielding = false; // this is a very specific case, but still needed.
+		public void setEnemy(Char enemy) {
+			if (enemy.HP == 0 && enemy.isAlive() && !(checkShielding = enemy.shielding() > 0)) {
+				detach();
+			}
+			this.enemy = enemy;
+		}
+
+		@Override public boolean attachTo(Char target) {
+			return target instanceof Hero && ( Char.restoring == target || tryAttach((Hero)target) ) && super.attachTo(target);
+		}
+		protected abstract boolean tryAttach(Hero hero);
+
+		public static void process(Char enemy) {
+			for(Class<RKPD2LethalMomentumTracker> trackerClass : new Class[]{
+					AssassinLethalMomentumTracker.class}) {
+				Buff.append(hero, trackerClass).setEnemy(enemy);
+			}
+		}
+
+		@Override protected void onRemove() {
+			if( enemy.HP == 0 && (!checkShielding || enemy.shielding() == 0) ) {
+				( (Hero)target ).spend( -target.cooldown() );
+				proc();
+			}
+		}
+		protected void proc() {}
+
+		// do I really need this?
+		private static final String
+				ENEMY = "enemy",
+				CHECK_SHIELDING = "checkShielding";
+		@Override public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put( ENEMY, enemy.id() );
+			bundle.put(CHECK_SHIELDING, checkShielding);
+		}
+
+		@Override public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			enemy = (Char)findById( bundle.getInt(ENEMY) );
+			checkShielding = bundle.getBoolean(CHECK_SHIELDING);
+		}
+	}
+
+	public static class AssassinLethalMomentumTracker extends RKPD2LethalMomentumTracker {
+		// Preparation is only required for the initial kill.
+		public static class Chain extends FlavourBuff {}
+		@Override protected boolean tryAttach(Hero target) {
+			return hero.buff(AssassinLethalMomentumTracker.Chain.class) != null // after the first, any following lethal strike ALWAYS procs lethal.
+					// otherwise you need preparation to start the chain.
+					|| hero.buff(Preparation.class) != null
+						// 50% / 75% / 100%
+						&& Random.Float() < .25f*(2+hero.pointsInTalent(LETHAL_MOMENTUM_2));
+		}
+		@Override protected void proc() {
+			Buff.affect(target, Chain.class);
+		}
+	}
 	public static class StrikingWaveTracker extends FlavourBuff{};
 	public static class WandPreservationCounter extends CounterBuff{};
 	public static class EmpoweredStrikeTracker extends FlavourBuff{};
