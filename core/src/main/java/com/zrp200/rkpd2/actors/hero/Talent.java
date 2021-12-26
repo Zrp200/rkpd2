@@ -242,7 +242,8 @@ public enum Talent {
 		}
 
 		@Override public boolean attachTo(Char target) {
-			return target instanceof Hero && ( Char.restoring == target || tryAttach((Hero)target) ) && super.attachTo(target);
+			// does not bundle.
+			return target instanceof Hero && ( Char.restoring != target && tryAttach((Hero)target) ) && super.attachTo(target);
 		}
 		protected abstract boolean tryAttach(Hero hero);
 
@@ -254,28 +255,11 @@ public enum Talent {
 		}
 
 		@Override protected void onRemove() {
-			if( enemy.HP == 0 && (!checkShielding || enemy.shielding() == 0) ) {
-				( (Hero)target ).spend( -target.cooldown() );
-				proc();
-			}
+			if (enemy == null || enemy.HP != 0 || checkShielding && enemy.shielding() != 0) return;
+			( (Hero)target ).spend( -target.cooldown() );
+			proc();
 		}
 		protected void proc() {}
-
-		// do I really need this?
-		private static final String
-				ENEMY = "enemy",
-				CHECK_SHIELDING = "checkShielding";
-		@Override public void storeInBundle(Bundle bundle) {
-			super.storeInBundle(bundle);
-			bundle.put( ENEMY, enemy.id() );
-			bundle.put(CHECK_SHIELDING, checkShielding);
-		}
-
-		@Override public void restoreFromBundle(Bundle bundle) {
-			super.restoreFromBundle(bundle);
-			enemy = (Char)findById( bundle.getInt(ENEMY) );
-			checkShielding = bundle.getBoolean(CHECK_SHIELDING);
-		}
 	}
 
 	public static class AssassinLethalMomentumTracker extends RKPD2LethalMomentumTracker {
