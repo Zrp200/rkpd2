@@ -69,11 +69,6 @@ public class SoulMark extends FlavourBuff {
 	}
 
 	public static void process(Char defender, int bonusDuration, float chance, boolean afterDamage, boolean extend) {
-		// warlock's touch can cancel an afterDamage argument with 20%/30%/40% chance.
-		afterDamage = afterDamage && hero.hasTalent(Talent.WARLOCKS_TOUCH)
-				// this is GREATER THAN because we're checking if the proc failed, not succeeded.
-				&& Random.Float() > .1f*(1+hero.pointsInTalent(Talent.WARLOCKS_TOUCH));
-
 		if (defender != hero
 				&& (hero.subClass == HeroSubClass.WARLOCK || hero.subClass == HeroSubClass.KING)
 				&& Random.Float() < chance) {
