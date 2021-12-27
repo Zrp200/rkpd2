@@ -72,6 +72,8 @@ import static com.zrp200.rkpd2.Assets.Sounds.CHALLENGE;
 import static com.zrp200.rkpd2.Assets.Sounds.SHATTER;
 import static com.zrp200.rkpd2.actors.hero.HeroClass.RAT_KING;
 
+import sun.jvm.hotspot.opto.Phase;
+
 public class DwarfKing extends Mob implements Hero.DeathCommentator {
 	@Override public void sayHeroKilled() {
 		yell( Messages.get(this, "hero_killed") );
@@ -186,6 +188,8 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 				: Dungeon.hero.heroClass == RAT_KING && phase == 1 && summonsMade < 5;
 		golemSpawned = bundle.getBoolean("golemSpawned");
 		if (phase == 2) properties.add(Property.IMMOVABLE);
+		// this is possible but unlikely.
+		if(buff(DKBarrior.class) != null && phase < 2) new PhaseChange(true);
 	}
 	// for dialogues when he shows a new power.
 	private boolean yellSpecialNotice, yellStrong, golemSpawned;
@@ -513,14 +517,13 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 		else if (phase < 2) {
 			// yay custom logic
 			int preHP = HP;
-			PhaseChange phaseChange = buff(PhaseChange.class);
 			if(phaseChange != null) dmg = Random.round(dmg * phaseChange.remaining());
 			// determine 'final' damage
 			dmg = modifyDamage(dmg, src);
 			// this assumes that DK will never have shielding other than his barrier
 			int toPhaseChange = preHP + shielding() - PHASE2_HP;
 			if(phaseChange == null && dmg >= toPhaseChange) {
-				phaseChange = Buff.affect(this, PhaseChange.class);
+				new PhaseChange(false);
 				toPhaseChange += HT;
 			}
 			int excess = dmg - toPhaseChange;
@@ -529,7 +532,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 			summonCooldown -= dmg / 8f;
 			// skip to phase 3 immediately if there's excess damage, so it can be applied as deferred.
 			if(phaseChange != null && excess > 0) {
-				phaseChange.detach();
+				remove(phaseChange);
 				damage(excess, src);
 			}
 		}
@@ -546,34 +549,35 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 		}
 	}
 
-	public static class PhaseChange extends FlavourBuff {
+	private PhaseChange phaseChange;
+	private class PhaseChange extends Actor {
 		{
 			actPriority = VFX_PRIO;
+			phaseChange = this;
+		}
+
+		@Override protected boolean act() {
+			remove(this);
+			return true;
 		}
 
 		float remaining() {
-			return target.shielding() / (float)target.HT;
+			return shielding() / (float)HT;
 		}
-
-		@Override
-		public boolean attachTo(Char target) {
-			if( super.attachTo(target) ) {
-				int p2HP = ( (DwarfKing)target ).PHASE2_HP;
-				affect(target, DKBarrior.class).setShield(target.HT + target.HP - p2HP);
-				target.HP = p2HP;
-				return true;
+		PhaseChange(boolean restoring) {
+			if(!restoring) {
+				Buff.affect(DwarfKing.this, DKBarrior.class).setShield(HT + HP - PHASE2_HP);
+				HP = PHASE2_HP;
 			}
-			return false;
+			add(this);
 		}
 
-		@Override
-		public void detach() {
-			super.detach();
+		@Override public void onRemove() {
+			phaseChange = null;
 			// dk at 100%, remaining returns 1, skipped returns 0
 			float skipped = ( 1-remaining() ) * 3;
 			// entering phase 3 from enterPhase2 has special logic.
-			( (DwarfKing)target ).enterPhase2(
-					skipped < .5f ? 0 // consistency
+			enterPhase2(skipped < .5f ? 0 // consistency
 							      : Random.round(skipped)
 			);
 		}
