@@ -219,7 +219,7 @@ public enum Talent {
 		public void tintIcon(Image icon) { icon.hardlight(0.15f, 0.2f, 0.5f); }
 	};
 	public static class LethalMomentumTracker extends FlavourBuff{
-		public static void process() { hero.byTalent(process, LETHAL_MOMENTUM,PURSUIT); }
+		public static void process() { hero.byTalent(process, PURSUIT); }
 		private static final TalentCallback process = (talent, points) -> {
 			if( Random.Float() < ( (talent == LETHAL_MOMENTUM ? 2 : 1) + points )
 					/ (talent == PURSUIT ? 3f : 4f) ) {
@@ -249,6 +249,7 @@ public enum Talent {
 
 		public static void process(Char enemy) {
 			for(Class<RKPD2LethalMomentumTracker> trackerClass : new Class[]{
+					WarriorLethalMomentumTracker.class,
 					AssassinLethalMomentumTracker.class}) {
 				Buff.append(hero, trackerClass).setEnemy(enemy);
 			}
@@ -260,11 +261,39 @@ public enum Talent {
 			proc();
 		}
 		protected void proc() {}
+
+		// template class
+		abstract static class Chain extends FlavourBuff {
+			{ type = buffType.POSITIVE; }
+			@Override public int icon() { return BuffIndicator.CORRUPT; }
+			@Override public String desc() {
+				String desc = super.desc();
+				String effect = Messages.get(this, "effect");
+				//noinspection StringEquality
+				if(effect != Messages.NULL) desc += "\n" + effect;
+				return desc;
+			}
+		}
+	}
+
+	public static class WarriorLethalMomentumTracker extends RKPD2LethalMomentumTracker {
+		@Override protected boolean tryAttach(Hero hero) {
+			int points = hero.pointsInTalent(LETHAL_MOMENTUM);
+			return points > 0 && points >= Random.Int(3);
+		}
+
+		@Override protected void proc() { Buff.affect(hero, Chain.class); }
+
+		public static class Chain extends RKPD2LethalMomentumTracker.Chain // 2x accuracy
+		{
+			@Override public void tintIcon(Image icon) { icon.invert(); }
+		}
 	}
 
 	public static class AssassinLethalMomentumTracker extends RKPD2LethalMomentumTracker {
 		// Preparation is only required for the initial kill.
-		public static class Chain extends FlavourBuff {}
+		public static class Chain extends RKPD2LethalMomentumTracker.Chain
+		{}
 		@Override protected boolean tryAttach(Hero target) {
 			return hero.buff(AssassinLethalMomentumTracker.Chain.class) != null // after the first, any following lethal strike ALWAYS procs lethal.
 					// otherwise you need preparation to start the chain.

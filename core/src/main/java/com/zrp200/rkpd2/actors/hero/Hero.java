@@ -513,6 +513,7 @@ public class Hero extends Char {
 				accuracy *= 1.5f;
 			}
 		}
+		if(buff(Talent.WarriorLethalMomentumTracker.Chain.class) != null) accuracy *= 2;
 		
 		if (wep != null) {
 			return (int)(attackSkill * accuracy * wep.accuracyFactor( this ));
