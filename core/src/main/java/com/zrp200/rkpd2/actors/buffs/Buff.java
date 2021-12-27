@@ -25,6 +25,7 @@ import com.watabou.noosa.Image;
 import com.watabou.utils.Reflection;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 
 import java.text.DecimalFormat;
@@ -119,8 +120,16 @@ public class Buff extends Actor {
 		return null;
 	}
 
+	@Override public String toString() {
+		String name = Messages.get(this, "name");
+		//noinspection StringEquality
+		return name != Messages.NULL ? name : super.toString();
+	}
+
 	public String desc(){
-		return "";
+		String desc = Messages.get(this, "desc");
+		//noinspection StringEquality
+		return desc != Messages.NULL ? desc : "";
 	}
 
 	//to handle the common case of showing how many turns are remaining in a buff description.
