@@ -196,7 +196,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 
 	@Override
 	protected boolean act() {
-		if(state == HUNTING && yellSpecialNotice && paralysed == 0) { // takes him a hot second to realize who he's fighting.
+		if(yellSpecialNotice && paralysed == 0) { // takes him a hot second to realize who he's fighting.
 			yell(Messages.get(this, "notice2"));
 			yellSpecialNotice = false;
 			Sample.INSTANCE.play(CHALLENGE);
@@ -482,8 +482,8 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 				}
 			}
 			if(phase == 0) phase = 1;
+			spend(TICK); // there's no good reason he just out and notices you.
 		}
-		spend(TICK); // there's no good reason he just out and notices you.
 	}
 
 	@Override
@@ -585,8 +585,10 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 
 	private void enterPhase2 (int skippedWaves) {
 		if(skippedWaves >= 3) { // dramatic fx, congrats you skipped phase 2.
+			// FIXME still not happy with this.
+			sprite.flash();
+			Sample.INSTANCE.play(SHATTER, 15,1.5f);
 			Buff.detach(this, DKBarrior.class);
-			Sample.INSTANCE.play(SHATTER);
 			yell("...how can this be???");
 			enterPhase3();
 			return;
