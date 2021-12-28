@@ -217,13 +217,15 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 			LinkedHashMap<Talent, Integer> options = new LinkedHashMap<>();
 			Set<Talent> curTalentsAtTier = Dungeon.hero.talents.get(tier-1).keySet();
 
-			// this is because I'm omitting one.
-			HashMap<HeroClass, Float> chances = new HashMap<>();
-			for(HeroClass cls : HeroClass.values()) {
-				chances.put(cls,
-						cls == RAT_KING ? 1/3f // rat king shows up in 25% of cases.
-										: 1);
-			}
+			// lower chance = more likely to be included.
+			HashMap<HeroClass, Float> chances = new HashMap<HeroClass, Float>(){{
+				for(HeroClass cls : HeroClass.values()) put(cls,
+						cls == RAT_KING
+							? 1f
+							: cls == Dungeon.hero.heroClass
+								? 2f
+								: 3f);
+			}};
 			// omit one class to closer simulate shattered. RKPD2 adds one class.
 			HeroClass[] classes = new HeroClass[ HeroClass.values().length-1 ];
 			for(int i=0; i < classes.length; i++) {
