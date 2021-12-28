@@ -23,8 +23,10 @@ package com.zrp200.rkpd2.ui.changelist;
 
 import com.watabou.noosa.Image;
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.mage.ElementalBlast;
 import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath;
+import com.zrp200.rkpd2.actors.mobs.DwarfKing;
 import com.zrp200.rkpd2.items.KingsCrown;
 import com.zrp200.rkpd2.items.armor.WarriorArmor;
 import com.zrp200.rkpd2.items.bags.VelvetPouch;
@@ -136,6 +138,18 @@ public class RKPD2Changes {
 
     final ChangeInfo[][] changes = {
         {
+            new ChangeInfo("v0.3-BETA-1",true,TITLE_COLOR,"",
+                    new ChangeButton(Icons.get(INFO), "Commentary","This is mostly done, though there's a few smaller changes and bugfixes that are still on my list to do."),
+                    new ChangeButton(Icons.get(SHPX),"Implemented Shattered v1.1",""/*todo*/),
+                    new ChangeButton(HUNTRESS, "Swapped Huntress's bonus durability in exchange for extra damage on thrown weapons."),
+                    new ChangeButton(Icons.get(TALENT), "Talents", list(2,
+                            "Reworked seer shot, now gives more vision but also more cooldown when upgraded.",
+                            "Point Blank renamed to Marksman, now gives SHPD point blank and boosts ranged accuracy a bit.",
+                            "Warlock's Touch no longer has an instant soul mark application chance.")),
+                    new ChangeButton(LETHAL_MOMENTUM, "Lethal Momentum", list(2,"Lethal Momentum talents (aside from Pursuit) now always activate if you should've killed the target.","Warrior's Lethal Momentum now gives bonus accuracy the turn that Lethal Momentum is active.","Assassin's Lethal Momentum requires preparation to activate the first time, but all follow-up kills will take 0 turns.")),
+                    new ChangeButton(new KingSprite(), "Dwarf King", list(2,"Modifications to Phase Change mechanics should fix all existing bugs with him (there were many), and let you Fury through him, though it will be less effective than a single strong hit.", "Dwarf King now says his opening lines more consistently.","Adjusted FX for skipping Dwarf King phase 2.", "Fixed Dwarf King not saying his lines when partially skipped.")),
+                    bugFixes(list(2, "Fixed an instance where statues of Rat King were not given the respect they deserved.")))
+        },{
             new ChangeInfo("v0.2", true, TITLE_COLOR, ""),
             new ChangeInfo("v0.2.2",false,"", new ChangeButton(WARLOCKS_TOUCH, "Warlock's touch had incorrect mechanics, and now they've been fixed to be what was intended." + list(2, "Warlock's touch's soul mark application change is now actually 15/25/35. Previously it was instead 60/70/80% melee and 65/80/95 for ranged.", "Removed the ability for warlock's touch-applied soul mark to extend itself past 6 turns.")),misc("adjusted king's wisdom's icon again."), bugFixes(list(2,"hearty meal not working at all.","royal intuition proccing tested hypothesis instead of king's wisdom."))),
             new ChangeInfo("v0.2.1", false, "",
