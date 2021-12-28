@@ -14,6 +14,7 @@ import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.RedButton;
+import com.zrp200.rkpd2.ui.Window;
 
 public class WndEnergizeItem extends WndInfoItem {
 
@@ -34,22 +35,23 @@ public class WndEnergizeItem extends WndInfoItem {
 					hide();
 				}
 				{
-					setHeight(BTN_HEIGHT);
 					icon(new ItemSprite(ItemSpriteSheet.ENERGY));
+					setSize(WndEnergizeItem.this.width, BTN_HEIGHT);
 				}
 			});
 		} else {
 
 			int energyAll = item.energyVal();
+			RedButton first;
 			addToBottom(
-					new RedButton( Messages.get(this, "energize_1", energyAll / item.quantity()) ) {
+					first = new RedButton( Messages.get(this, "energize_1", energyAll / item.quantity()) ) {
 						@Override
 						protected void onClick() {
 							energizeOne( item );
 							hide();
 						}
 						{
-							setHeight(BTN_HEIGHT);
+							setSize(WndEnergizeItem.this.width, BTN_HEIGHT);
 							icon(new ItemSprite(ItemSpriteSheet.ENERGY));
 						}
 					},
@@ -60,8 +62,8 @@ public class WndEnergizeItem extends WndInfoItem {
 							hide();
 						}
 						{
-							setHeight(BTN_HEIGHT);
 							icon(new ItemSprite(ItemSpriteSheet.ENERGY));
+							setRect(0, first.bottom() + GAP, first.width(), BTN_HEIGHT);
 						}
 					}
 			);
