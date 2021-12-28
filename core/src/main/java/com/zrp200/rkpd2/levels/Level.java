@@ -90,63 +90,7 @@ import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 import com.watabou.utils.SparseArray;
-import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.Challenges;
-import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.ShatteredPixelDungeon;
-import com.zrp200.rkpd2.Statistics;
-import com.zrp200.rkpd2.actors.Actor;
-import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.blobs.Blob;
-import com.zrp200.rkpd2.actors.blobs.SmokeScreen;
-import com.zrp200.rkpd2.actors.blobs.Web;
-import com.zrp200.rkpd2.actors.blobs.WellWater;
-import com.zrp200.rkpd2.actors.buffs.Awareness;
-import com.zrp200.rkpd2.actors.buffs.Blindness;
-import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.ChampionEnemy;
-import com.zrp200.rkpd2.actors.buffs.LockedFloor;
-import com.zrp200.rkpd2.actors.buffs.MagicalSight;
-import com.zrp200.rkpd2.actors.buffs.MindVision;
-import com.zrp200.rkpd2.actors.buffs.RevealedArea;
-import com.zrp200.rkpd2.actors.buffs.Shadows;
-import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
-import com.zrp200.rkpd2.actors.hero.HeroSubClass;
-import com.zrp200.rkpd2.actors.hero.Talent;
-import com.zrp200.rkpd2.actors.mobs.Bestiary;
-import com.zrp200.rkpd2.actors.mobs.Mob;
-import com.zrp200.rkpd2.actors.mobs.YogFist;
-import com.zrp200.rkpd2.actors.mobs.npcs.Sheep;
-import com.zrp200.rkpd2.effects.particles.FlowParticle;
-import com.zrp200.rkpd2.effects.particles.WindParticle;
-import com.zrp200.rkpd2.items.Generator;
-import com.zrp200.rkpd2.items.Heap;
-import com.zrp200.rkpd2.items.Item;
-import com.zrp200.rkpd2.items.Stylus;
-import com.zrp200.rkpd2.items.Torch;
-import com.zrp200.rkpd2.items.artifacts.TalismanOfForesight;
-import com.zrp200.rkpd2.items.artifacts.TimekeepersHourglass;
-import com.zrp200.rkpd2.items.potions.PotionOfStrength;
-import com.zrp200.rkpd2.items.scrolls.ScrollOfUpgrade;
-import com.zrp200.rkpd2.items.stones.StoneOfEnchantment;
-import com.zrp200.rkpd2.items.stones.StoneOfIntuition;
-import com.zrp200.rkpd2.items.wands.WandOfRegrowth;
-import com.zrp200.rkpd2.items.wands.WandOfWarding;
-import com.zrp200.rkpd2.levels.features.Chasm;
-import com.zrp200.rkpd2.levels.features.Door;
-import com.zrp200.rkpd2.levels.features.HighGrass;
-import com.zrp200.rkpd2.levels.painters.Painter;
-import com.zrp200.rkpd2.levels.traps.Trap;
-import com.zrp200.rkpd2.mechanics.ShadowCaster;
-import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.plants.Plant;
-import com.zrp200.rkpd2.plants.Swiftthistle;
-import com.zrp200.rkpd2.scenes.GameScene;
-import com.zrp200.rkpd2.sprites.ItemSprite;
-import com.zrp200.rkpd2.tiles.CustomTilemap;
-import com.zrp200.rkpd2.utils.BArray;
-import com.zrp200.rkpd2.utils.GLog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1276,7 +1220,14 @@ public abstract class Level implements Bundlable {
 
 			for (RevealedArea a : c.buffs(RevealedArea.class)){
 				if (Dungeon.depth != a.depth) continue;
-				for (int i : PathFinder.NEIGHBOURS9) heroMindFov[a.pos+i] = true;
+				int radius = RevealedArea.distance();
+				int ax = a.pos % width();
+				int ay = a.pos / width();
+				int left = Math.max(0, ax - radius), right = Math.min(width()-1,ax+radius);
+				for (int y = Math.max(0, ay - RevealedArea.distance()); y <= Math.min(height()-1, ay + RevealedArea.distance()); y++) {
+					int pos = left + y * width();
+					System.arraycopy(discoverable, pos, fieldOfView, pos, right - left + 1);
+				}
 			}
 
 			//set mind vision chars

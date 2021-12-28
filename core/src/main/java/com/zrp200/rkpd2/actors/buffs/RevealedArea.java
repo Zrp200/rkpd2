@@ -21,6 +21,8 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
+import static com.zrp200.rkpd2.Dungeon.hero;
+
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.messages.Messages;
@@ -31,16 +33,29 @@ import com.watabou.utils.Bundle;
 
 public class RevealedArea extends FlavourBuff{
 
+	public static int distance() {
+		// 3x3 normally, Seer Shot however gets 3x3/5x5/7x7
+		return Math.max(1, hero.pointsInTalent(Talent.SEER_SHOT));
+	}
+
 	{
 		type = Buff.buffType.POSITIVE;
 	}
 
 	public int pos, depth;
+	@SuppressWarnings("unused") public RevealedArea(){}
+	public RevealedArea(int pos, int depth) {
+		this.pos = pos;
+		this.depth = depth;
+		spend( duration() );
+		Talent.Cooldown.affectHero(Talent.SeerShotCooldown.class);
+	}
 
 	@Override
 	public void detach() {
-		GameScene.updateFog(pos, 2);
 		super.detach();
+		Dungeon.observe();
+		GameScene.updateFog(pos, distance()+1);
 	}
 
 	@Override
@@ -53,10 +68,9 @@ public class RevealedArea extends FlavourBuff{
 		icon.hardlight(0, 1, 1);
 	}
 
-	@Override
-	public float iconFadePercent() {
-		float max = 5*Dungeon.hero.pointsInTalent(Talent.SEER_SHOT,Talent.RK_WARDEN);
-		return Math.max(0, (max-visualcooldown()) / max);
+	public static int duration() { return 5*hero.pointsInTalent(Talent.SEER_SHOT,Talent.RK_WARDEN); }
+	@Override public float iconFadePercent() {
+		return Math.max( 0, ( duration()-visualcooldown() ) / duration() );
 	}
 
 	@Override

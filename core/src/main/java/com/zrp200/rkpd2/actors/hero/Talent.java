@@ -321,10 +321,13 @@ public enum Talent {
 	};
 	public static class RejuvenatingStepsFurrow extends CounterBuff{};
 	public static class SeerShotCooldown extends Cooldown{
-		@Override public float duration() { return hero.hasTalent(SEER_SHOT) ? 5 : 20; }
+		@Override public float duration() {
+			return hero.hasTalent(SEER_SHOT)
+					? 15 * hero.pointsInTalent(SEER_SHOT)
+					: 20;
+		}
 		public int icon() {
-			// changed cooldown behavior to be more stacking-friendly.
-			return target.buff(RevealedArea.class) != null && !hero.hasTalent(SEER_SHOT) ? BuffIndicator.NONE : BuffIndicator.TIME;
+			return target.buff(RevealedArea.class) == null ? BuffIndicator.TIME : BuffIndicator.NONE;
 		}
 		public void tintIcon(Image icon) { icon.hardlight(0.7f, 0.4f, 0.7f); }
 	};

@@ -451,10 +451,7 @@ public class SpiritBow extends Weapon {
 						&& user.buff(Talent.SeerShotCooldown.class) == null){
 					int shotPos = throwPos(user, dst);
 					if (Actor.findChar(shotPos) == null) {
-						RevealedArea a = Buff.append(user, RevealedArea.class, 5 * user.pointsInTalent(Talent.SEER_SHOT,Talent.RK_WARDEN));
-						a.depth = Dungeon.depth;
-						a.pos = shotPos;
-						Talent.Cooldown.affectHero(Talent.SeerShotCooldown.class);
+						new RevealedArea(shotPos, Dungeon.depth).attachTo(user);
 					}
 				}
 				forceSkipDelay = sniperSpecial && --shotCount > 0;
