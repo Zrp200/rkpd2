@@ -214,7 +214,7 @@ public class TalentsPane extends ScrollPane {
 		protected void layout() {
 			super.layout();
 
-			int regStars = Talent.tierLevelThresholds[tier+1] - Talent.tierLevelThresholds[tier];
+			int regStars = Talent.getMaxPoints(tier);
 
 			float titleWidth = title.width();
 			titleWidth += 2 + Math.min(stars.size(), regStars)*6;
