@@ -138,6 +138,8 @@ public class CavesLevel extends RegularLevel {
 				return Messages.get(CavesLevel.class, "wall_deco_desc");
 			case Terrain.BOOKSHELF:
 				return Messages.get(CavesLevel.class, "bookshelf_desc");
+			case Terrain.STATUE:
+				return Messages.get(CavesLevel.class, "statue_desc");
 			default:
 				return super.tileDesc( tile );
 		}
