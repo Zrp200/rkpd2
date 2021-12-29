@@ -32,13 +32,13 @@ import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.sprites.HeroSprite;
+import com.zrp200.rkpd2.ui.BadgesGrid;
 import com.zrp200.rkpd2.ui.BadgesList;
 import com.zrp200.rkpd2.ui.Icons;
 import com.zrp200.rkpd2.ui.ItemSlot;
 import com.zrp200.rkpd2.ui.RedButton;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
 import com.zrp200.rkpd2.ui.TalentButton;
-import com.zrp200.rkpd2.ui.ScrollPane;
 import com.zrp200.rkpd2.ui.TalentsPane;
 import com.zrp200.rkpd2.ui.Window;
 import com.watabou.noosa.ColorBlock;
@@ -47,6 +47,7 @@ import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.ui.Button;
+import com.watabou.noosa.ui.Component;
 
 import java.util.Locale;
 
@@ -197,6 +198,7 @@ public class WndRanking extends WndTabbed {
 					});
 				}
 			};
+			btnTalents.icon(Icons.get(Icons.TALENT));
 			btnTalents.setRect( (WIDTH - btnTalents.reqWidth()+2)/2, pos, btnTalents.reqWidth()+2 , 16 );
 			add(btnTalents);
 
@@ -210,6 +212,7 @@ public class WndRanking extends WndTabbed {
 					}
 				};
 
+				btnChallenges.icon(Icons.get(Icons.CHALLENGE_ON));
 				btnChallenges.setSize( btnChallenges.reqWidth()+2, 16 );
 				add( btnChallenges );
 
@@ -318,10 +321,14 @@ public class WndRanking extends WndTabbed {
 			
 			camera = WndRanking.this.camera;
 
-			ScrollPane list = new BadgesList( false );
-			add( list );
-
-			list.setSize( WIDTH, HEIGHT );
+			Component badges;
+			if (Badges.unlocked(false) <= 7){
+				badges = new BadgesList(false);
+			} else {
+				badges = new BadgesGrid(false);
+			}
+			add(badges);
+			badges.setSize( WIDTH, HEIGHT );
 		}
 	}
 
