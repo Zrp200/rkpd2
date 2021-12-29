@@ -850,6 +850,7 @@ public enum Talent {
 			case RAT_KING: break; // no unique talents... :(
 		}
 		for (Talent talent : tierTalents){
+			if (replacements.containsKey(talent)) talent = replacements.get(talent);
 			talents.get(2).put(talent, 0);
 		}
 		tierTalents.clear();
