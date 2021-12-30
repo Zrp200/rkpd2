@@ -262,7 +262,7 @@ public enum Talent {
 					// activates if the enemy was brought to 0 HP this turn.
 					(enemy.HP == 0 && (!checkShielding || enemy.shielding() == 0) ||
 							// also activates if the enemy was corrupted.
-							(enemy.buff(AllyBuff.class) != null) == wasTurned
+							(enemy.buff(AllyBuff.class) == null) == wasTurned
 					)
 			) {
 				((Hero) target).spend(-target.cooldown());
