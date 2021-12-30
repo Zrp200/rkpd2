@@ -113,7 +113,8 @@ public class WndTitledMessage extends Window {
 		sp.setRect(0, sp.top(), width, y - sp.top() - gapBefore);
 	}
 
-	// note this wrapper component is very unable to moved after it's placed. If I need to move it again, I won't be able to.
+	// fixme this wrapper component is very unable to moved after it's placed. If I need to move it again, I won't be able to.
+	// should be able to simulate the previous behavior...
 	public Component addToBottom(int gapBefore, int gapAfter, Component... components) {
 		// this ensures that things are formatted correctly vertically.
 		Component wrapper = new Component();
