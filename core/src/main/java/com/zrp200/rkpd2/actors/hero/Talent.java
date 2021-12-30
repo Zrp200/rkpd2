@@ -30,6 +30,7 @@ import com.zrp200.rkpd2.GamesInProgress;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Adrenaline;
+import com.zrp200.rkpd2.actors.buffs.AllyBuff;
 import com.zrp200.rkpd2.actors.buffs.ArtifactRecharge;
 import com.zrp200.rkpd2.actors.buffs.Berserk;
 import com.zrp200.rkpd2.actors.buffs.Buff;
@@ -233,11 +234,12 @@ public enum Talent {
 		{ actPriority = VFX_PRIO; }
 
 		private Char enemy;
-		private boolean checkShielding = false; // this is a very specific case, but still needed.
+		private boolean checkShielding = false, wasTurned; // this is a very specific case, but still needed.
 		public void setEnemy(Char enemy) {
 			if (enemy.HP == 0 && enemy.isAlive() && !(checkShielding = enemy.shielding() > 0)) {
 				detach();
 			}
+			wasTurned = enemy.buff(AllyBuff.class) != null;
 			this.enemy = enemy;
 		}
 
@@ -256,9 +258,16 @@ public enum Talent {
 		}
 
 		@Override protected void onRemove() {
-			if (enemy == null || enemy.HP != 0 || checkShielding && enemy.shielding() != 0) return;
-			( (Hero)target ).spend( -target.cooldown() );
-			proc();
+			if (enemy != null &&
+					// activates if the enemy was brought to 0 HP this turn.
+					(enemy.HP == 0 && (!checkShielding || enemy.shielding() == 0) ||
+							// also activates if the enemy was corrupted.
+							(enemy.buff(AllyBuff.class) != null) == wasTurned
+					)
+			) {
+				((Hero) target).spend(-target.cooldown());
+				proc();
+			}
 		}
 		protected void proc() {}
 
