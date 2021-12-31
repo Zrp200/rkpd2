@@ -103,7 +103,7 @@ public class TalentsPane extends ScrollPane {
 		} else if (tiersAvailable == 2) {
 			blockText = PixelScene.renderTextBlock(Messages.get(this, "unlock_tier3"), 6);
 			content.add(blockText);
-		} else if (tiersAvailable == 3 && Dungeon.hero.armorAbility == null) {
+		} else if (tiersAvailable == 3) {
 			blockText = PixelScene.renderTextBlock(Messages.get(this, "unlock_tier4"), 6);
 			content.add(blockText);
 		} else {
