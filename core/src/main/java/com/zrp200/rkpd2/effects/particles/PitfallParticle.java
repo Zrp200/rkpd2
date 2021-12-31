@@ -27,19 +27,8 @@ import com.watabou.utils.Random;
 
 public class PitfallParticle extends PixelParticle.Shrinking {
 
-	public static final Emitter.Factory FACTORY4 = new Emitter.Factory() {
-		@Override
-		public void emit( Emitter emitter, int index, float x, float y ) {
-			((PitfallParticle)emitter.recycle( PitfallParticle.class )).reset( x,  y, 4 );
-		}
-	};
-
-	public static final Emitter.Factory FACTORY8 = new Emitter.Factory() {
-		@Override
-		public void emit( Emitter emitter, int index, float x, float y ) {
-			((PitfallParticle)emitter.recycle( PitfallParticle.class )).reset( x,  y, 8 );
-		}
-	};
+	public static final Emitter.Factory FACTORY4 = (emitter, index, x, y) -> emitter.recycle(PitfallParticle.class).reset(x, y,4),
+			FACTORY8 = (emitter, index, x, y) -> emitter.recycle(PitfallParticle.class).reset(x, y,8);
 
 	public PitfallParticle(){
 		super();

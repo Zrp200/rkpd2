@@ -31,7 +31,7 @@ public class ShaftParticle extends PixelParticle {
 	public static final Emitter.Factory FACTORY = new Factory() {
 		@Override
 		public void emit( Emitter emitter, int index, float x, float y ) {
-			((ShaftParticle)emitter.recycle( ShaftParticle.class )).reset( x, y );
+			emitter.recycle( ShaftParticle.class ).reset( x, y );
 		}
 		@Override
 		public boolean lightMode() {

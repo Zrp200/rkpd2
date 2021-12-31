@@ -30,7 +30,7 @@ public class SacrificialParticle extends PixelParticle.Shrinking {
 	public static final Emitter.Factory FACTORY = new Factory() {
 		@Override
 		public void emit( Emitter emitter, int index, float x, float y ) {
-			((SacrificialParticle)emitter.recycle( SacrificialParticle.class )).reset( x, y );
+			emitter.recycle( SacrificialParticle.class ).reset( x, y );
 		}
 		@Override
 		public boolean lightMode() {

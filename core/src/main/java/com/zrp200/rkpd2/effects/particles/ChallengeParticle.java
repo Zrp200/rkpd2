@@ -9,7 +9,7 @@ public class ChallengeParticle extends PixelParticle.Shrinking {
 	public static final Emitter.Factory FACTORY = new Emitter.Factory() {
 		@Override
 		public void emit( Emitter emitter, int index, float x, float y ) {
-			((ChallengeParticle)emitter.recycle( ChallengeParticle.class )).reset( x, y );
+			emitter.recycle( ChallengeParticle.class ).reset( x, y );
 		}
 		@Override
 		public boolean lightMode() {

@@ -31,12 +31,7 @@ import com.watabou.utils.Random;
 
 public class WindParticle extends PixelParticle {
 
-	public static final Emitter.Factory FACTORY = new Factory() {
-		@Override
-		public void emit( Emitter emitter, int index, float x, float y ) {
-			((WindParticle)emitter.recycle( WindParticle.class )).reset( x, y );
-		}
-	};
+	public static final Emitter.Factory FACTORY = (emitter, index, x, y) -> emitter.recycle(WindParticle.class).reset(x, y);
 	
 	private static float angle = Random.Float( PointF.PI2 );
 	private static PointF speed = new PointF().polar( angle, 5 );

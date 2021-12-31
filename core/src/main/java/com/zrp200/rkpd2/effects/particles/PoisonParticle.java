@@ -32,7 +32,7 @@ public class PoisonParticle extends PixelParticle {
 	public static final Emitter.Factory MISSILE = new Factory() {
 		@Override
 		public void emit( Emitter emitter, int index, float x, float y ) {
-			((PoisonParticle)emitter.recycle( PoisonParticle.class )).resetMissile( x, y );
+			emitter.recycle( PoisonParticle.class ).resetMissile( x, y );
 		}
 		@Override
 		public boolean lightMode() {
@@ -43,7 +43,7 @@ public class PoisonParticle extends PixelParticle {
 	public static final Emitter.Factory SPLASH = new Factory() {
 		@Override
 		public void emit( Emitter emitter, int index, float x, float y ) {
-			((PoisonParticle)emitter.recycle( PoisonParticle.class )).resetSplash( x, y );
+			emitter.recycle( PoisonParticle.class ).resetSplash( x, y );
 		}
 		@Override
 		public boolean lightMode() {

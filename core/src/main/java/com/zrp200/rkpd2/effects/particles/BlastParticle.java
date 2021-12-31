@@ -31,7 +31,7 @@ public class BlastParticle extends PixelParticle.Shrinking {
 	public static final Factory FACTORY = new Factory() {
 		@Override
 		public void emit( Emitter emitter, int index, float x, float y ) {
-			((BlastParticle)emitter.recycle( BlastParticle.class )).reset( x, y );
+			emitter.recycle( BlastParticle.class ).reset( x, y );
 		}
 		@Override
 		public boolean lightMode() {

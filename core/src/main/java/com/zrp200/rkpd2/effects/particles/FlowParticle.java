@@ -31,12 +31,7 @@ import com.watabou.utils.Random;
 
 public class FlowParticle extends PixelParticle {
 
-	public static final Emitter.Factory FACTORY = new Factory() {
-		@Override
-		public void emit( Emitter emitter, int index, float x, float y ) {
-			((FlowParticle)emitter.recycle( FlowParticle.class )).reset( x, y );
-		}
-	};
+	public static final Emitter.Factory FACTORY = (emitter, index, x, y) -> emitter.recycle(FlowParticle.class).reset(x,y );
 	
 	public FlowParticle() {
 		super();

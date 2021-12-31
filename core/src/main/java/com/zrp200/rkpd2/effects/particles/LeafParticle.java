@@ -34,22 +34,16 @@ public class LeafParticle extends PixelParticle.Shrinking {
 	public static int color2;
 	
 	
-	public static final Emitter.Factory GENERAL = new Factory() {
-		@Override
-		public void emit( Emitter emitter, int index, float x, float y ) {
-			LeafParticle p = ((LeafParticle)emitter.recycle( LeafParticle.class ));
-			p.color( ColorMath.random( 0x004400, 0x88CC44 ) );
-			p.reset( x, y );
-		}
+	public static final Emitter.Factory GENERAL = (emitter, index, x, y) -> {
+		LeafParticle p = emitter.recycle( LeafParticle.class );
+		p.color( ColorMath.random( 0x004400, 0x88CC44 ) );
+		p.reset( x, y );
 	};
 	
-	public static final Emitter.Factory LEVEL_SPECIFIC = new Factory() {
-		@Override
-		public void emit( Emitter emitter, int index, float x, float y ) {
-			LeafParticle p = ((LeafParticle)emitter.recycle( LeafParticle.class ));
-			p.color( ColorMath.random( Dungeon.level.color1, Dungeon.level.color2 ) );
-			p.reset( x, y );
-		}
+	public static final Emitter.Factory LEVEL_SPECIFIC = (emitter, index, x, y) -> {
+		LeafParticle p = emitter.recycle( LeafParticle.class );
+		p.color( ColorMath.random( Dungeon.level.color1, Dungeon.level.color2 ) );
+		p.reset( x, y );
 	};
 	
 	public LeafParticle() {

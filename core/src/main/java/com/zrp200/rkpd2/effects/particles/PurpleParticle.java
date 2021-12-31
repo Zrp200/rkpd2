@@ -30,23 +30,18 @@ import com.watabou.utils.Random;
 
 public class PurpleParticle extends PixelParticle {
 	
-	public static final Emitter.Factory MISSILE = new Factory() {
-		@Override
-		public void emit( Emitter emitter, int index, float x, float y ) {
-			((PurpleParticle)emitter.recycle( PurpleParticle.class )).reset( x, y );
-		}
-	};
-	
-	public static final Emitter.Factory BURST = new Factory() {
-		@Override
-		public void emit( Emitter emitter, int index, float x, float y ) {
-			((PurpleParticle)emitter.recycle( PurpleParticle.class )).resetBurst( x, y );
-		}
-		@Override
-		public boolean lightMode() {
-			return true;
-		}
-	};
+	public static final Emitter.Factory MISSILE = (emitter, index, x, y) ->
+			emitter.recycle(PurpleParticle.class).reset(x, y),
+		BURST = new Factory() {
+			@Override
+			public void emit( Emitter emitter, int index, float x, float y ) {
+				emitter.recycle( PurpleParticle.class ).resetBurst( x, y );
+			}
+			@Override
+			public boolean lightMode() {
+				return true;
+			}
+		};
 	
 	public PurpleParticle() {
 		super();

@@ -22,26 +22,15 @@
 package com.zrp200.rkpd2.effects.particles;
 
 import com.watabou.noosa.particles.Emitter;
-import com.watabou.noosa.particles.Emitter.Factory;
 import com.watabou.noosa.particles.PixelParticle;
 import com.watabou.utils.ColorMath;
 import com.watabou.utils.Random;
 
 public class EarthParticle extends PixelParticle {
 	
-	public static final Emitter.Factory FACTORY = new Factory() {
-		@Override
-		public void emit( Emitter emitter, int index, float x, float y ) {
-			((EarthParticle)emitter.recycle( EarthParticle.class )).reset( x,  y );
-		}
-	};
+	public static final Emitter.Factory FACTORY = (emitter, index, x, y) -> emitter.recycle(EarthParticle.class).reset( x,  y );
 
-	public static final Emitter.Factory FALLING = new Factory() {
-		@Override
-		public void emit( Emitter emitter, int index, float x, float y ) {
-			((EarthParticle)emitter.recycle( EarthParticle.class )).resetFalling( x,  y );
-		}
-	};
+	public static final Emitter.Factory FALLING = (emitter, index, x, y) -> emitter.recycle(EarthParticle.class).resetFalling( x,  y );
 
 	public EarthParticle() {
 		super();

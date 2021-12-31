@@ -30,26 +30,10 @@ import com.watabou.utils.Random;
 
 public class ShadowParticle extends PixelParticle.Shrinking {
 	
-	public static final Emitter.Factory MISSILE = new Factory() {
-		@Override
-		public void emit( Emitter emitter, int index, float x, float y ) {
-			((ShadowParticle)emitter.recycle( ShadowParticle.class )).reset( x, y );
-		}
-	};
-	
-	public static final Emitter.Factory CURSE = new Factory() {
-		@Override
-		public void emit( Emitter emitter, int index, float x, float y ) {
-			((ShadowParticle)emitter.recycle( ShadowParticle.class )).resetCurse( x, y );
-		}
-	};
-	
-	public static final Emitter.Factory UP = new Factory() {
-		@Override
-		public void emit( Emitter emitter, int index, float x, float y ) {
-			((ShadowParticle)emitter.recycle( ShadowParticle.class )).resetUp( x, y );
-		}
-	};
+	public static final Emitter.Factory
+			MISSILE = (emitter, index, x, y) -> emitter.recycle(ShadowParticle.class).reset(x, y),
+			CURSE = (emitter, index, x, y) -> emitter.recycle(ShadowParticle.class).resetCurse(x, y),
+			UP = (emitter, index, x, y) -> emitter.recycle(ShadowParticle.class).resetUp(x, y);
 	
 	public void reset( float x, float y ) {
 		revive();

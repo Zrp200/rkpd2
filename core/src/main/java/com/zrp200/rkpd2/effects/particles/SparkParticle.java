@@ -31,7 +31,7 @@ public class SparkParticle extends PixelParticle {
 	public static final Emitter.Factory FACTORY = new Factory() {
 		@Override
 		public void emit( Emitter emitter, int index, float x, float y ) {
-			((SparkParticle)emitter.recycle( SparkParticle.class )).reset( x, y );
+			emitter.recycle( SparkParticle.class ).reset( x, y );
 		}
 		@Override
 		public boolean lightMode() {
@@ -42,7 +42,7 @@ public class SparkParticle extends PixelParticle {
 	public static final Emitter.Factory STATIC = new Factory() {
 		@Override
 		public void emit( Emitter emitter, int index, float x, float y ) {
-			((SparkParticle)emitter.recycle( SparkParticle.class )).resetStatic( x, y );
+			emitter.recycle( SparkParticle.class ).resetStatic( x, y );
 		}
 		@Override
 		public boolean lightMode() {

@@ -31,7 +31,7 @@ public class RainbowParticle extends PixelParticle {
 	public static final Emitter.Factory BURST = new Emitter.Factory() {
 		@Override
 		public void emit( Emitter emitter, int index, float x, float y ) {
-			((RainbowParticle)emitter.recycle( RainbowParticle.class )).resetBurst( x, y );
+			emitter.recycle( RainbowParticle.class ).resetBurst( x, y );
 		}
 		@Override
 		public boolean lightMode() {

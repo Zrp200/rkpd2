@@ -28,12 +28,8 @@ import com.watabou.utils.Random;
 
 public class SnowParticle extends PixelParticle {
 	
-	public static final Emitter.Factory FACTORY = new Factory() {
-		@Override
-		public void emit( Emitter emitter, int index, float x, float y ) {
-			((SnowParticle)emitter.recycle( SnowParticle.class )).reset( x, y );
-		}
-	};
+	public static final Emitter.Factory FACTORY = (emitter, index, x, y) ->
+			emitter.recycle( SnowParticle.class ).reset( x, y );
 	
 	public SnowParticle() {
 		super();

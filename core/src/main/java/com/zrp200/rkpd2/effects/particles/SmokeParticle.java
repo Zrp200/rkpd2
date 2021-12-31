@@ -21,7 +21,6 @@
 
 package com.zrp200.rkpd2.effects.particles;
 
-import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.particles.Emitter.Factory;
 import com.watabou.noosa.particles.PixelParticle;
 import com.watabou.utils.PointF;
@@ -29,19 +28,9 @@ import com.watabou.utils.Random;
 
 public class SmokeParticle extends PixelParticle {
 	
-	public static final Factory FACTORY = new Factory() {
-		@Override
-		public void emit( Emitter emitter, int index, float x, float y ) {
-			((SmokeParticle)emitter.recycle( SmokeParticle.class )).reset( x, y );
-		}
-	};
+	public static final Factory FACTORY = (emitter, index, x, y) -> emitter.recycle( SmokeParticle.class ).reset( x, y );
 	
-	public static final Factory SPEW = new Factory() {
-		@Override
-		public void emit( Emitter emitter, int index, float x, float y ) {
-			((SmokeParticle)emitter.recycle( SmokeParticle.class )).resetSpew( x, y );
-		}
-	};
+	public static final Factory SPEW = (emitter, index, x, y) -> emitter.recycle( SmokeParticle.class ).resetSpew( x, y );
 	
 	public SmokeParticle() {
 		super();

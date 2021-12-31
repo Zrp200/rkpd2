@@ -32,7 +32,7 @@ public class EnergyParticle extends PixelParticle {
 	public static final Emitter.Factory FACTORY = new Factory() {
 		@Override
 		public void emit( Emitter emitter, int index, float x, float y ) {
-			((EnergyParticle)emitter.recycle( EnergyParticle.class )).reset( x, y );
+			emitter.recycle( EnergyParticle.class ).reset( x, y );
 		}
 		@Override
 		public boolean lightMode() {

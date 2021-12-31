@@ -29,17 +29,12 @@ import com.watabou.utils.Random;
 
 public class BloodParticle extends PixelParticle.Shrinking {
 	
-	public static final Emitter.Factory FACTORY = new Factory() {
-		@Override
-		public void emit( Emitter emitter, int index, float x, float y ) {
-			((BloodParticle)emitter.recycle( BloodParticle.class )).reset( x, y );
-		}
-	};
+	public static final Emitter.Factory FACTORY = (emitter, index, x, y) -> emitter.recycle( BloodParticle.class ).reset( x, y );
 
 	public static final Emitter.Factory BURST = new Factory() {
 		@Override
 		public void emit( Emitter emitter, int index, float x, float y ) {
-			((BloodParticle)emitter.recycle( BloodParticle.class )).resetBurst( x, y );
+			emitter.recycle( BloodParticle.class ).resetBurst( x, y );
 		}
 		@Override
 		public boolean lightMode() {
