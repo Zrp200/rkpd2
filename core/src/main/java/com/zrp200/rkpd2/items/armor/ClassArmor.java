@@ -170,29 +170,28 @@ abstract public class ClassArmor extends Armor {
 
 		super.execute( hero, action );
 
-		if (action.equals(AC_ABILITY)){
-
-			//for pre-0.9.3 saves
-			if (hero.armorAbility == null){
-				GameScene.show(new WndChooseAbility(null, this, hero));
-			} else if (!isEquipped( hero )) {
-				usesTargeting = false;
-				GLog.w( Messages.get(this, "not_equipped") );
-			} else {
-				if (charge < hero.armorAbility.chargeUse(hero)) {
-					/*usesTargeting = false;
-					GLog.w( Messages.get(this, "low_charge") );*/
-					GLog.n("Rat King: I don't have time for this nonsense! I have a kingdom to run! CLASS ARMOR SUPERCHAARGE!!");
-					charge += 100;
-					hero.HP = Math.max( Math.min(hero.HP,1), hero.HP*2/3 );
-					updateQuickslot();
-					ScrollOfRecharging.charge(hero);
-					Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);
-				}
-				usesTargeting = hero.armorAbility.useTargeting();
-				hero.armorAbility.use(this, hero);
+		if (action.equals(AC_ABILITY)) { useAbility(hero); }
+	}
+	public void useAbility(Hero hero) {
+		//for pre-0.9.3 saves
+		if (hero.armorAbility == null){
+			GameScene.show(new WndChooseAbility(null, this, hero));
+		} else if (!isEquipped( hero )) {
+			usesTargeting = false;
+			GLog.w( Messages.get(this, "not_equipped") );
+		} else {
+			if (charge < hero.armorAbility.chargeUse(hero)) {
+				/*usesTargeting = false;
+				GLog.w( Messages.get(this, "low_charge") );*/
+				GLog.n("Rat King: I don't have time for this nonsense! I have a kingdom to run! CLASS ARMOR SUPERCHAARGE!!");
+				charge += 100;
+				hero.HP = Math.max( Math.min(hero.HP,1), hero.HP*2/3 );
+				updateQuickslot();
+				ScrollOfRecharging.charge(hero);
+				Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);
 			}
-
+			usesTargeting = hero.armorAbility.useTargeting();
+			hero.armorAbility.use(this, hero);
 		}
 	}
 
