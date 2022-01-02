@@ -416,27 +416,35 @@ public class CellSelector extends ScrollArea {
 			return l;
 		}
 
-		// return value determines if there is a prompt afterwards.
-		// by default it does.
+		// return value indicates whether the action should be considered a success
+		// if the action was considered a success no prompt will occur.
+		// by default, no targets means no action happened, meaning it did not succeed, thus the default false.
 		protected boolean noTargets() {
 			onCancel();
-			return true;
+			return false;
 		}
 
 		// if there's only one target, this skips the actual selecting.
 		protected final boolean action() {
 			if( getTargets().isEmpty() ) {
+				// result of noTargets determines whether the action was considered a success (by default false)
 				return noTargets();
 			}
 			if( !skippable ) return false;
 
 			Char target = null;
 			for(Char ch : getHighlightedTargets()) {
+				// if there are too many targets, prompt the user.
+				// conflict tolerance will let us delay this point to enable stacking (see multishot)
 				if(target != null && conflictTolerance-- == 0) return false;
 				target = ch;
 			}
-			if(target == null) return false; // no targets
-
+			if(target == null) {
+				// even though there are targets, we can't auto-target them, so prompt user.
+				// one thing about this is that this can cause 'suspicious' prompts when #noTargets would return true normally.
+				return false;
+			}
+			// we have a target, no need to prompt, just do the action and save us the trouble.
 			action(target);
 			return true;
 		}
@@ -458,6 +466,7 @@ public class CellSelector extends ScrollArea {
 			}
 
 			Char c = Actor.findChar(cell);
+			// handle the selected character.
 			if(c != null && getTargets().contains(c)) action(c);
 			else onInvalid(cell);
 		}
