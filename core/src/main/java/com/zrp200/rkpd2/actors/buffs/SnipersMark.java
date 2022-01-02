@@ -48,6 +48,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.zrp200.rkpd2.Dungeon.hero;
 
@@ -244,8 +245,10 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	// only one action handler can be active at a time.
 	private static ActionHandler actionHandler;
 	private class ActionHandler { // this is an inner class to keep access to the original buff.
-		SnipersMark running = null;
+		SnipersMark running;
+		CellSelector.TargetedListener listener;
 
+		// todo technically it could probably work with just using #object. Look into that?
 		final HashMap<SnipersMark, Char> actionMap = new HashMap();
 		final SpiritBow bow = hero.belongings.getItem(SpiritBow.class);
 
@@ -297,7 +300,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 			hero.busy();
 			for (Map.Entry<SnipersMark, Char> mapping : actionMap.entrySet()) {
 				SnipersMark mark = mapping.getKey(); Char ch = mapping.getValue();
-				mark.doSniperSpecial( hero, bow, ch );
+				mark.doSniperSpecial(hero, bow, ch);
 			}
 		}
 
@@ -306,7 +309,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 			if(running == null) doAction();
 			else {
 				GameScene.clearCellSelector(true);
-				running.doAction();
+				running.queueAction();
 			}
 		}
 
@@ -318,23 +321,20 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		}
 	}
 
+	// this is the safe way to create new actions. will prevent duplication of free-targets as well.
 	@Override
 	public void doAction() {
 		if (hero == null) return;
 		if(actionHandler == null) {
 			actionHandler = new ActionHandler();
-			if(actionHandler.bow != null && actionHandler.bow.knockArrow() != null)
-				actionHandler.next();
-			else
-				actionHandler = null;
+			if(actionHandler.bow != null && actionHandler.bow.knockArrow() != null) actionHandler.next();
+			else actionHandler = null;
 		}
-		else if(actionHandler.running != this) { // in other words it's been started again.
-			// this should always be the case
-			if(actionHandler.running instanceof FreeTarget) {
-				// mimic the effect of a similar quickslot-based override if at all possible.
-				List<Char> highlighted = ((FreeTarget)actionHandler.running).listener.getHighlightedTargets();
-				if(highlighted.size() == 1) actionHandler.select( actionHandler.running, highlighted.get(0) );
-			}
+		// this prevents stacking.
+		else if(actionHandler.listener != null) {
+			// mimic the effect of a similar quickslot-based override if at all possible and attempt to do the action now.
+			List<Char> highlighted = actionHandler.listener.getHighlightedTargets();
+			if(highlighted.size() == 1) actionHandler.select(actionHandler.running, highlighted.get(0));
 			actionHandler.doAction();
 		} else {
 			queueAction();
@@ -357,8 +357,6 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
 	public static class FreeTarget extends SnipersMark {
 
-		private CellSelector.TargetedListener listener;
-
 		// converts a standard mark into a free-targeted mark.
 		public static void apply(int id, int level) {
 			if(!hero.hasTalent(Talent.MULTISHOT)) return;
@@ -379,12 +377,8 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
 		@Override
 		protected void queueAction() {
-			// prevents...bizarre behavior, though now I need to aggressively set it to null when I'm done.
-			if(listener != null) {
-				actionHandler.destroy();
-				return;
-			}
-			GameScene.selectCell(listener = new CellSelector.TargetedListener() {
+			Objects.requireNonNull(actionHandler);
+			GameScene.selectCell(actionHandler.listener = new CellSelector.TargetedListener() {
 				{
 					conflictTolerance = actionHandler.queue.size();
 					readyOnSelect = false; // manually disable the mechanic that prevents stacking.
@@ -393,24 +387,26 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 				@Override protected boolean isValidTarget(Char ch) { return actionHandler.isValidTarget(ch); }
 
 				@Override protected boolean noTargets() {
+					if(actionHandler.queue.isEmpty() && actionHandler.actionMap.isEmpty()) {
+						actionHandler = null; // #destroy resets the scene, and there's no highlighted targets by definition of this scenario.
+						// prompt uselessly to give user a sense of control.
+						return false;
+					}
 					// this covers the edge case where you have more marks than targets.
-					if(actionHandler != null) actionHandler.next();
-					return false;
+					actionHandler.next();
+					return true;
 				}
 
 				@Override protected void action(Char ch) {
-					listener = null;
 					actionHandler.select(FreeTarget.this, ch);
 					actionHandler.next();
 				}
 
 				@Override protected void onCancel() {
-					listener = null;
 					if(actionHandler != null) actionHandler.destroy();
 				}
 
 				@Override protected void onInvalid(int cell) {
-					listener = null;
 					Char ch = Actor.findChar(cell);
 					if(ch != null) {
 						String message = actionHandler.isTargeting(ch)
@@ -419,9 +415,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 						GLog.w(message);
 						GameScene.clearCellSelector(true);
 						queueAction();
-					} else {
-						actionHandler.destroy();
-					}
+					} else if(actionHandler != null) actionHandler.destroy();
 				}
 
 				@Override protected boolean canIgnore(Char ch) {
