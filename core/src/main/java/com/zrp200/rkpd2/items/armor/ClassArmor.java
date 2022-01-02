@@ -145,9 +145,7 @@ abstract public class ClassArmor extends Armor {
 	@Override
 	public ArrayList<String> actions( Hero hero ) {
 		ArrayList<String> actions = super.actions( hero );
-		if (isEquipped( hero )) {
-			actions.add( AC_ABILITY );
-		}
+		actions.add( AC_ABILITY );
 		return actions;
 	}
 
@@ -176,9 +174,6 @@ abstract public class ClassArmor extends Armor {
 		//for pre-0.9.3 saves
 		if (hero.armorAbility == null){
 			GameScene.show(new WndChooseAbility(null, this, hero));
-		} else if (!isEquipped( hero )) {
-			usesTargeting = false;
-			GLog.w( Messages.get(this, "not_equipped") );
 		} else {
 			if (charge < hero.armorAbility.chargeUse(hero)) {
 				/*usesTargeting = false;
