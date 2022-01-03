@@ -40,6 +40,9 @@ public class HeroSprite extends CharSprite {
 	
 	private static final int FRAME_WIDTH	= 12;
 	private static final int FRAME_HEIGHT	= 15;
+
+	public int frameWidth() { return FRAME_WIDTH; }
+	public int frameHeight() { return FRAME_HEIGHT; }
 	
 	protected int runFramerate	= 20;
 	

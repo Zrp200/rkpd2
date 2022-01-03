@@ -21,13 +21,17 @@
 
 package com.zrp200.rkpd2.ui;
 
+import com.watabou.utils.PointF;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.hero.abilities.rat_king.OmniAbility;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.Armor;
+import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.items.rings.Ring;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
@@ -135,7 +139,7 @@ public class ItemSlot extends Button {
 
 		if (itemIcon != null){
 			itemIcon.x = x + width - (ItemSpriteSheet.Icons.SIZE + itemIcon.width())/2f;
-			itemIcon.y = y + (ItemSpriteSheet.Icons.SIZE - itemIcon.height)/2f;
+			itemIcon.y = y + (ItemSpriteSheet.Icons.SIZE - itemIcon.height())/2f;
 			PixelScene.align(itemIcon);
 		}
 		
@@ -200,7 +204,12 @@ public class ItemSlot extends Button {
 
 		status.text( item.status() );
 
-		if (item.icon != -1 && (item.isIdentified() || (item instanceof Ring && ((Ring) item).isKnown()))){
+		if(item instanceof ClassArmor && Dungeon.hero.armorAbility instanceof OmniAbility) {
+			OmniAbility ability = (OmniAbility) Dungeon.hero.armorAbility;
+			itemIcon = new HeroIcon(ability.activeAbility());
+			itemIcon.scale.set(0.5f);
+			add(itemIcon);
+		} else if (item.icon != -1 && (item.isIdentified() || (item instanceof Ring && ((Ring) item).isKnown()))){
 			extra.text( null );
 
 			itemIcon = new Image(Assets.Sprites.ITEM_ICONS);

@@ -31,6 +31,7 @@ import com.zrp200.rkpd2.actors.buffs.AllyBuff;
 import com.zrp200.rkpd2.actors.buffs.Corruption;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
 import com.zrp200.rkpd2.actors.hero.abilities.huntress.SpiritHawk;
@@ -332,7 +333,8 @@ public class ShadowClone extends ArmorAbility {
 
 			texture( hero.heroClass.spritesheet() );
 
-			TextureFilm film = new TextureFilm( ((HeroSprite) hero.sprite).tiers(), 6, 12, 15 );
+			HeroSprite sprite = (HeroSprite) hero.sprite;
+			TextureFilm film = new TextureFilm(sprite.tiers(), hero.heroClass == HeroClass.RAT_KING ? 0 : 6, sprite.frameWidth(), sprite.frameHeight() );
 
 			idle = new Animation( 1, true );
 			idle.frames( film, 0, 0, 0, 1, 0, 0, 1, 1 );

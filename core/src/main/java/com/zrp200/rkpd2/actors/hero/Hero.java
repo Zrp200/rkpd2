@@ -34,6 +34,7 @@ import com.zrp200.rkpd2.actors.blobs.Alchemy;
 import com.zrp200.rkpd2.actors.buffs.*;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
 import com.zrp200.rkpd2.actors.hero.abilities.huntress.NaturesPower;
+import com.zrp200.rkpd2.actors.hero.abilities.rat_king.OmniAbility;
 import com.zrp200.rkpd2.actors.hero.abilities.warrior.Endure;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.Monk;
@@ -313,7 +314,7 @@ public class Hero extends Char {
 
 	public boolean canHaveTalent(Talent talent) {
 		for(LinkedHashMap<Talent,Integer> tier : talents) if(tier.containsKey(talent)) return true;
-		return false;
+		return OmniAbility.findTalent(talent) != null;
 	}
 	public boolean hasTalent( Talent talent ){
 		return pointsInTalent(talent) > 0;
@@ -331,7 +332,8 @@ public class Hero extends Char {
 				if (f == talent) return tier.get(f);
 			}
 		}
-		return 0;
+		Integer omniPoints = OmniAbility.findTalent(talent);
+		return omniPoints != null ? omniPoints : 0;
 	}
 	// stacks was the legacy behavior.
 	public final int pointsInTalent(Talent... talents) {

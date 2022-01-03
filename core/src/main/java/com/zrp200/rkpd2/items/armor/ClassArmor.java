@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.items.armor;
 
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.LockedFloor;
+import com.zrp200.rkpd2.actors.hero.abilities.rat_king.OmniAbility;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.tiles.DungeonTileSheet;
 import com.zrp200.rkpd2.windows.WndChooseAbility;
@@ -41,6 +42,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import static com.zrp200.rkpd2.Dungeon.hero;
+import static com.zrp200.rkpd2.actors.hero.abilities.rat_king.OmniAbility.additionalActions;
 
 abstract public class ClassArmor extends Armor {
 
@@ -146,6 +148,7 @@ abstract public class ClassArmor extends Armor {
 	public ArrayList<String> actions( Hero hero ) {
 		ArrayList<String> actions = super.actions( hero );
 		actions.add( AC_ABILITY );
+		actions.addAll( additionalActions().keySet() );
 		return actions;
 	}
 
@@ -154,7 +157,10 @@ abstract public class ClassArmor extends Armor {
 		if (hero.armorAbility != null && action.equals(AC_ABILITY)){
 			return hero.armorAbility.actionName();
 		} else {
-			return super.actionName(action, hero);
+			String actionName = super.actionName(action, hero);
+			//overriding the default to suppress NULL so that OmniAbility can communicate with itself.
+			//noinspection StringEquality
+			return actionName != Messages.NULL ? actionName : action;
 		}
 	}
 
@@ -170,6 +176,8 @@ abstract public class ClassArmor extends Armor {
 
 		if (action.equals(AC_ABILITY)) {
 			useAbility(hero, hero.armorAbility);
+		} else if(additionalActions().containsKey(action)) {
+			useAbility(hero, additionalActions().get(action));
 		}
 	}
 	private void useAbility(Hero hero, ArmorAbility armorAbility) {

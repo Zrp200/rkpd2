@@ -12,6 +12,9 @@ public class RatKingHeroSprite extends HeroSprite {
         //runFramerate = 10;
     }
 
+    @Override public int frameWidth() { return FRAME_WIDTH; }
+    @Override public int frameHeight() { return FRAME_HEIGHT; }
+
     public void updateArmor() {
         // there's only two armors. really one atm.
         // TODO decide if I want a "crownless" rat king towards the beginning of the game.
