@@ -10,9 +10,11 @@ import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
 import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
+import com.zrp200.rkpd2.effects.Transmuting;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.CharSprite;
+import com.zrp200.rkpd2.ui.HeroIcon;
 
 import java.util.*;
 
@@ -36,9 +38,12 @@ public class OmniAbility extends ArmorAbility {
         Set<ArmorAbility> pool = new HashSet<>(abilities);
         pool.removeAll(activeAbilities());
         pool.remove(armorAbility);
-        armorAbility = Objects.requireNonNull( Random.element(pool) );
+        new Transmuting(
+                new HeroIcon(armorAbility),
+                // shouldn't be null.
+                new HeroIcon( armorAbility = Objects.requireNonNull( Random.element(pool) ) )
+        ).show(hero);
         if(hero.talents.size() >= 4) hero.talents.set(3, transferTalents(armorAbility));
-        hero.sprite.showStatus(CharSprite.POSITIVE, armorAbility.name());
     }
 
     @Override public boolean useTargeting() {
