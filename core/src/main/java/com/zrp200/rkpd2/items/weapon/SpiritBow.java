@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.items.weapon;
 
+import com.watabou.noosa.particles.Emitter;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
@@ -32,6 +33,7 @@ import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.huntress.NaturesPower;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.effects.Splash;
+import com.zrp200.rkpd2.effects.particles.LeafParticle;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.bombs.Bomb;
 import com.zrp200.rkpd2.items.rings.RingOfFuror;
@@ -263,6 +265,19 @@ public class SpiritBow extends Weapon {
 
 		public boolean sniperSpecial = false;
 		public float sniperSpecialBonusDamage = 0f;
+
+		@Override
+		public Emitter emitter() {
+			if (Dungeon.hero.buff(NaturesPower.naturesPowerTracker.class) != null && !sniperSpecial){
+				Emitter e = new Emitter();
+				e.pos(5, 5);
+				e.fillTarget = false;
+				e.pour(LeafParticle.GENERAL, 0.01f);
+				return e;
+			} else {
+				return super.emitter();
+			}
+		}
 
 		@Override
 		public int damageRoll(Char owner) {
