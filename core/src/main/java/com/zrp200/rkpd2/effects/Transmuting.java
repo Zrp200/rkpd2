@@ -51,13 +51,11 @@ public class Transmuting extends Component {
 	private float duration;
 	private float passed;
 
-	public Transmuting( Item oldItem, Item newItem ){
-		oldSprite = new ItemSprite(oldItem);
+	public Transmuting(Image oldSprite, Image newSprite) {
 		oldSprite.originToCenter();
-		add(oldSprite);
-		newSprite = new ItemSprite(newItem);
+		add(this.oldSprite = oldSprite);
 		newSprite.originToCenter();
-		add(newSprite);
+		add(this.newSprite = newSprite);
 
 		oldSprite.alpha(0f);
 		newSprite.alpha(0f);
@@ -66,21 +64,11 @@ public class Transmuting extends Component {
 		duration = FADE_IN_TIME;
 		passed = 0;
 	}
-
+	public Transmuting( Item oldItem, Item newItem ){
+		this( new ItemSprite(oldItem), new ItemSprite(newItem) );
+	}
 	public Transmuting( Talent oldTalent, Talent newTalent ){
-		oldSprite = new TalentIcon(oldTalent);
-		oldSprite.originToCenter();
-		add(oldSprite);
-		newSprite = new TalentIcon(newTalent);
-		newSprite.originToCenter();
-		add(newSprite);
-
-		oldSprite.alpha(0f);
-		newSprite.alpha(0f);
-
-		phase = Phase.FADE_IN;
-		duration = FADE_IN_TIME;
-		passed = 0;
+		this( new TalentIcon(oldTalent), new TalentIcon(newTalent) );
 	}
 
 	@Override
@@ -129,26 +117,18 @@ public class Transmuting extends Component {
 		}
 	}
 
+	public void show(Char ch) {
+		if(!ch.sprite.visible) return; // fixme this checks twice, if anything I would prefer to only have this check; it's dumb to duplicate #show over and over for literally no reason.
+		target = ch;
+		ch.sprite.parent.add(this);
+	}
 	public static void show( Char ch, Item oldItem, Item newItem ) {
 
-		if (!ch.sprite.visible) {
-			return;
-		}
-
-		Transmuting sprite = new Transmuting( oldItem, newItem );
-		sprite.target = ch;
-		ch.sprite.parent.add( sprite );
+		if (!ch.sprite.visible) new Transmuting( oldItem, newItem ).show(ch);
 	}
 
 	public static void show( Char ch, Talent oldTalent, Talent newTalent ) {
-
-		if (!ch.sprite.visible) {
-			return;
-		}
-
-		Transmuting sprite = new Transmuting( oldTalent, newTalent );
-		sprite.target = ch;
-		ch.sprite.parent.add( sprite );
+		if (!ch.sprite.visible) new Transmuting( oldTalent, newTalent ).show(ch);
 	}
 
 }
