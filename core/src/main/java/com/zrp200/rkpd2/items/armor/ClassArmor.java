@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.actors.buffs.LockedFloor;
 import com.zrp200.rkpd2.actors.hero.abilities.rat_king.OmniAbility;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.tiles.DungeonTileSheet;
+import com.zrp200.rkpd2.utils.SafeCast;
 import com.zrp200.rkpd2.windows.WndChooseAbility;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
@@ -202,6 +203,8 @@ abstract public class ClassArmor extends Armor {
 
 	public void useCharge(Hero hero, ArmorAbility armorAbility) {
 		charge -= armorAbility.chargeUse(hero);
+		OmniAbility o = SafeCast.cast(hero.armorAbility, OmniAbility.class);
+		if(o != null && o.activeAbility().equals(armorAbility)) o.setArmorAbility();
 		updateQuickslot();
 	}
 

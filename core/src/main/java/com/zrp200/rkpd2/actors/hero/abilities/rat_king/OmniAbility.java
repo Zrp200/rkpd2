@@ -24,8 +24,7 @@ public class OmniAbility extends ArmorAbility {
         if(armorAbility == null) setArmorAbility();
         else {
             armorAbility.use(armor, hero);
-            // change armor ability afterwards.
-            Actor.add(this::setArmorAbility);
+            // change armor ability afterwards ( see ClassArmor.useCharge() )
         }
 
     }
