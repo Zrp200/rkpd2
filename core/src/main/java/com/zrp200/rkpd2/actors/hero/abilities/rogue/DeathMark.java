@@ -92,8 +92,7 @@ public class DeathMark extends ArmorAbility {
 			Buff.affect(ch, DeathMarkTracker.class, 5f).setInitialHP(ch.HP);
 		}
 
-		armor.charge -= chargeUse( hero );
-		armor.updateQuickslot();
+		armor.useCharge(hero, this);
 		hero.sprite.zap(target);
 
 		hero.next();

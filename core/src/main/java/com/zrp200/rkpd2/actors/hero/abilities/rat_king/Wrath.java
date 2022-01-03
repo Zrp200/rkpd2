@@ -105,7 +105,7 @@ public class Wrath extends ArmorAbility {
 
         if(isShadowStep) {
             // shadow step: end the whole thing right here.
-            armor.useCharge();
+            armor.useCharge(hero, this);
             hero.next();
             return false;
         }
@@ -193,7 +193,7 @@ public class Wrath extends ArmorAbility {
         }
 
         hero.spendAndNext(delay);
-        for(boolean stage : stages) if(stage) { armor.useCharge(); return; }
+        for(boolean stage : stages) if(stage) { armor.useCharge(hero, this); return; }
     }
 
     public static class RatStatue extends SmokeBomb.NinjaLog {

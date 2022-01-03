@@ -104,8 +104,7 @@ public class ShadowClone extends ArmorAbility {
 			}
 
 			if (!spawnPoints.isEmpty()){
-				armor.charge -= chargeUse(hero);
-				armor.updateQuickslot();
+				armor.useCharge(hero, this);
 
 				ally = new ShadowAlly(hero.lvl);
 				ally.pos = Random.element(spawnPoints);

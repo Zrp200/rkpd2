@@ -133,7 +133,7 @@ public class SmokeBomb extends ArmorAbility {
 	protected void activate(ClassArmor armor, Hero hero, Integer target) {
 		if (target != null) {
 			if(!isValidTarget(hero, target, 8)) return;
-			armor.useCharge();
+			armor.useCharge(hero,this);
 
 			if (!isShadowStep(hero)) {
 				blindAdjacentMobs(hero);

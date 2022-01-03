@@ -105,8 +105,7 @@ public class SpiritHawk extends ArmorAbility {
 			}
 
 			if (!spawnPoints.isEmpty()){
-				armor.charge -= chargeUse(hero);
-				armor.updateQuickslot();
+				armor.useCharge(hero, this);
 
 				ally = new HawkAlly();
 				ally.pos = Random.element(spawnPoints);

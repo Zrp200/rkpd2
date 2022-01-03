@@ -51,8 +51,7 @@ public class NaturesPower extends ArmorAbility {
 		Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);
 		hero.sprite.emitter().burst(LeafParticle.GENERAL, 10);
 
-		armor.charge -= chargeUse(hero);
-		armor.updateQuickslot();
+		armor.useCharge(hero, this);
 		Invisibility.dispel();
 		hero.spendAndNext(Actor.TICK);
 

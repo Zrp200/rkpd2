@@ -395,8 +395,7 @@ public class ElementalBlast extends ArmorAbility {
 		Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);
 		Invisibility.dispel();
 
-		armor.charge -= chargeUse(hero);
-		armor.updateQuickslot();
+		armor.useCharge(hero, this);
 	}
 
 	@Override

@@ -158,7 +158,7 @@ public class Shockwave extends ArmorAbility {
 				60 + 15*hero.shiftedPoints(EXPANDING_WAVE),
 				5 + hero.shiftedPoints(EXPANDING_WAVE),
 				null);
-		armor.useCharge();
+		armor.useCharge(hero, this);
 	}
 
 	@Override

@@ -118,8 +118,7 @@ public class Ratmogrify extends ArmorAbility {
 			Dungeon.level.occupyCell(rat);
 		}
 
-		armor.charge -= chargeUse(hero);
-		armor.updateQuickslot();
+		armor.useCharge(hero,this);
 		Invisibility.dispel();
 		hero.spendAndNext(Actor.TICK);
 

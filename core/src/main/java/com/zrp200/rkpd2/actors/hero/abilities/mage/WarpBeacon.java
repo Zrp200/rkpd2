@@ -251,6 +251,10 @@ public class WarpBeacon extends ArmorAbility {
 		}
 	}
 
+	@Override public boolean isActive() {
+		return Actor.containsClass(WarpBeaconTracker.class);
+	}
+
 	@Override
 	public int icon() {
 		return HeroIcon.WARP_BEACON;

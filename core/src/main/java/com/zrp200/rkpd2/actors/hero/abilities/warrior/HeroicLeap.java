@@ -78,8 +78,7 @@ public class HeroicLeap extends ArmorAbility {
 				backTrace--;
 			}
 
-			armor.charge -= chargeUse( hero );
-			armor.updateQuickslot();
+			armor.useCharge(hero, this);
 
 			final int dest = cell;
 			hero.busy();
