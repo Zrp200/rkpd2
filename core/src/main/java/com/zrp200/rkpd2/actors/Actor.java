@@ -370,6 +370,14 @@ public abstract class Actor implements Bundlable {
 		return ids.get( id );
 	}
 
+	public static synchronized <T extends Actor>  T findByClass(Class<T> cls) {
+		for(Actor a : all) if(cls.isInstance(a)) return cls.cast(a);
+		return null;
+	}
+	public static synchronized boolean containsClass(Class<? extends Actor> cls) {
+		return findByClass(cls) != null;
+	}
+
 	public static synchronized HashSet<Actor> all() {
 		return new HashSet<>(all);
 	}

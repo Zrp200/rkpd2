@@ -142,6 +142,7 @@ public class SpiritHawk extends ArmorAbility {
 		}
 		return null;
 	}
+	@Override public boolean isActive() { return getHawk() != null; }
 
 	public static class HawkAlly extends DirectableAlly {
 

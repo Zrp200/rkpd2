@@ -63,6 +63,11 @@ public class Endure extends ArmorAbility {
 		hero.spendAndNext(3f);
 	}
 
+	@Override
+	public boolean isActive() {
+		return Actor.containsClass(EndureTracker.class);
+	}
+
 	public static class EndureTracker extends FlavourBuff {
 
 		public boolean enduring;

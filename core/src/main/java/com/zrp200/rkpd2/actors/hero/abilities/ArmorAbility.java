@@ -100,4 +100,14 @@ public abstract class ArmorAbility implements Bundlable {
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 	}
+
+	// for ClassArmor.java
+	public String actionName() { return name().toUpperCase(); }
+	// causes OmniAbility to trick the game into thinking has talents for this ArmorAbility
+	public boolean isActive() { return false; }
+
+	// all objects of a given armor ability are equal. they're all interchangeable.
+	@Override public boolean equals(Object other) { return getClass().equals(other.getClass()); }
+	@Override public int hashCode() { return getClass().hashCode(); }
+
 }
