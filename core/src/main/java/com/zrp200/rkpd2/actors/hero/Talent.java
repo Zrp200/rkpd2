@@ -232,40 +232,39 @@ public enum Talent {
 	// this is my idea of buffing lethal momentum: remove all possible inconsistencies with it.
 	public static abstract class RKPD2LethalMomentumTracker extends FlavourBuff {
 		{ actPriority = VFX_PRIO; }
-
-		private Char enemy;
 		private boolean checkShielding = false, wasTurned; // this is a very specific case, but still needed.
-		public void setEnemy(Char enemy) {
-			if (enemy.HP == 0 && enemy.isAlive() && !(checkShielding = enemy.shielding() > 0)) {
-				detach();
-			}
-			wasTurned = enemy.buff(AllyBuff.class) != null;
-			this.enemy = enemy;
-		}
 
 		@Override public boolean attachTo(Char target) {
 			// does not bundle.
-			return target instanceof Hero && ( Char.restoring != target && tryAttach((Hero)target) ) && super.attachTo(target);
+			if (Char.restoring == target
+					|| !tryAttach(target)
+					|| target.HP == 0 && target.isAlive() && !(checkShielding = target.shielding() > 0)
+					|| !super.attachTo(target)) {
+				return false;
+			}
+			wasTurned = target.buff(AllyBuff.class) != null;
+			return true;
 		}
-		protected abstract boolean tryAttach(Hero hero);
+		protected abstract boolean tryAttach(Char target);
 
 		public static void process(Char enemy) {
 			for(Class<RKPD2LethalMomentumTracker> trackerClass : new Class[]{
 					WarriorLethalMomentumTracker.class,
 					AssassinLethalMomentumTracker.class}) {
-				Buff.append(hero, trackerClass).setEnemy(enemy);
+				Buff.append(enemy, trackerClass);
 			}
 		}
 
 		@Override protected void onRemove() {
-			if (enemy != null &&
+			if (target != null &&
 					// activates if the enemy was brought to 0 HP this turn.
-					(enemy.HP == 0 && (!checkShielding || enemy.shielding() == 0) ||
+					(target.HP == 0 && (!checkShielding || target.shielding() == 0) ||
 							// also activates if the enemy was corrupted.
-							(enemy.buff(AllyBuff.class) == null) == wasTurned
+							(target.buff(AllyBuff.class) == null) == wasTurned
 					)
 			) {
-				((Hero) target).spend(-target.cooldown());
+				hero.spend(-hero.cooldown());
+				detach(target, RKPD2LethalMomentumTracker.class);
 				proc();
 			}
 		}
@@ -286,7 +285,7 @@ public enum Talent {
 	}
 
 	public static class WarriorLethalMomentumTracker extends RKPD2LethalMomentumTracker {
-		@Override protected boolean tryAttach(Hero hero) {
+		@Override protected boolean tryAttach(Char target) {
 			int points = hero.pointsInTalent(LETHAL_MOMENTUM);
 			return points > 0 && points >= Random.Int(3);
 		}
@@ -303,7 +302,7 @@ public enum Talent {
 		// Preparation is only required for the initial kill.
 		public static class Chain extends RKPD2LethalMomentumTracker.Chain
 		{}
-		@Override protected boolean tryAttach(Hero target) {
+		@Override protected boolean tryAttach(Char target) {
 			return hero.buff(AssassinLethalMomentumTracker.Chain.class) != null // after the first, any following lethal strike ALWAYS procs lethal.
 					// otherwise you need preparation to start the chain.
 					|| hero.buff(Preparation.class) != null
@@ -311,7 +310,7 @@ public enum Talent {
 						&& Random.Float() < .25f*(2+hero.pointsInTalent(LETHAL_MOMENTUM_2));
 		}
 		@Override protected void proc() {
-			Buff.affect(target, Chain.class);
+			Buff.affect(hero, Chain.class);
 		}
 	}
 	public static class StrikingWaveTracker extends FlavourBuff{};
