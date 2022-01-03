@@ -203,8 +203,7 @@ abstract public class ClassArmor extends Armor {
 
 	public void useCharge(Hero hero, ArmorAbility armorAbility) {
 		charge -= armorAbility.chargeUse(hero);
-		OmniAbility o = SafeCast.cast(hero.armorAbility, OmniAbility.class);
-		if(o != null && o.activeAbility().equals(armorAbility)) o.setArmorAbility();
+		OmniAbility.markAbilityUsed(armorAbility);
 		updateQuickslot();
 	}
 

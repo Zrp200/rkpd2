@@ -21,6 +21,8 @@
 
 package com.zrp200.rkpd2.actors.hero.abilities.mage;
 
+import static com.zrp200.rkpd2.actors.hero.abilities.rat_king.OmniAbility.markAbilityUsed;
+
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
@@ -205,6 +207,7 @@ public class WarpBeacon extends ArmorAbility {
 			tracker.pos = target;
 			tracker.depth = Dungeon.depth;
 			tracker.attachTo(hero);
+			markAbilityUsed(this);
 
 			hero.sprite.operate(target);
 			Sample.INSTANCE.play(Assets.Sounds.TELEPORT);

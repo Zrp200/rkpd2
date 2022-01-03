@@ -21,6 +21,8 @@
 
 package com.zrp200.rkpd2.actors.hero.abilities.mage;
 
+import static com.zrp200.rkpd2.actors.hero.abilities.rat_king.OmniAbility.markAbilityUsed;
+
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.buffs.Buff;
@@ -106,6 +108,7 @@ public class WildMagic extends ArmorAbility {
 
 		if (wands.size() == 0){
 			GLog.w(Messages.get(this, "no_wands"));
+			markAbilityUsed(this);
 			return;
 		}
 

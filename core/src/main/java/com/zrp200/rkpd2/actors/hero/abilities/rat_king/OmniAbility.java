@@ -101,6 +101,13 @@ public class OmniAbility extends ArmorAbility {
     private static boolean isApplicable() {
         return hero != null && hero.armorAbility instanceof OmniAbility;
     }
+    /** omniability checks based on ability usage. **/
+    public static void markAbilityUsed(ArmorAbility ability) {
+        if(isApplicable()) {
+            OmniAbility omniAbility = (OmniAbility) hero.armorAbility;
+            if(ability.equals(omniAbility.armorAbility)) omniAbility.setArmorAbility();
+        }
+    }
     private static LinkedHashMap<Talent, Integer> transferTalents(ArmorAbility armorAbility) {
         LinkedHashMap<Talent, Integer> talents = new LinkedHashMap<>();
         if(hero.talents.size() < 4) return talents;

@@ -21,6 +21,8 @@
 
 package com.zrp200.rkpd2.actors.hero.abilities.mage;
 
+import static com.zrp200.rkpd2.actors.hero.abilities.rat_king.OmniAbility.markAbilityUsed;
+
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
@@ -45,6 +47,7 @@ import com.zrp200.rkpd2.actors.buffs.Roots;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
+import com.zrp200.rkpd2.actors.hero.abilities.rat_king.OmniAbility;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.effects.MagicMissile;
 import com.zrp200.rkpd2.effects.Speck;
@@ -388,7 +391,10 @@ public class ElementalBlast extends ArmorAbility {
 	}
 	@Override
 	protected void activate(ClassArmor armor, Hero hero, Integer target) {
-		if(MagesStaff.getWandClass() == null) return; // prevents the callback by catching it now.
+		if(MagesStaff.getWandClass() == null) {
+			markAbilityUsed(this);
+			return; // prevents the callback by catching it now.
+		}
 
 		activate(hero, () -> hero.spendAndNext(Actor.TICK) );
 
