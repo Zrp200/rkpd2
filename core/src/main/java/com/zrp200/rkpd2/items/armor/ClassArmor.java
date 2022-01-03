@@ -168,14 +168,16 @@ abstract public class ClassArmor extends Armor {
 
 		super.execute( hero, action );
 
-		if (action.equals(AC_ABILITY)) { useAbility(hero); }
+		if (action.equals(AC_ABILITY)) {
+			useAbility(hero, hero.armorAbility);
+		}
 	}
-	public void useAbility(Hero hero) {
+	private void useAbility(Hero hero, ArmorAbility armorAbility) {
 		//for pre-0.9.3 saves
-		if (hero.armorAbility == null){
+		if (armorAbility == null){
 			GameScene.show(new WndChooseAbility(null, this, hero));
 		} else {
-			if (charge < hero.armorAbility.chargeUse(hero)) {
+			if (charge < armorAbility.chargeUse(hero)) {
 				/*usesTargeting = false;
 				GLog.w( Messages.get(this, "low_charge") );*/
 				GLog.n("Rat King: I don't have time for this nonsense! I have a kingdom to run! CLASS ARMOR SUPERCHAARGE!!");
@@ -185,8 +187,8 @@ abstract public class ClassArmor extends Armor {
 				ScrollOfRecharging.charge(hero);
 				Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);
 			}
-			usesTargeting = hero.armorAbility.useTargeting();
-			hero.armorAbility.use(this, hero);
+			usesTargeting = armorAbility.useTargeting();
+			armorAbility.use(this, hero);
 		}
 	}
 
