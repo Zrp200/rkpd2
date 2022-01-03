@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.actors;
 
+import com.watabou.utils.Callback;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.blobs.Blob;
@@ -310,7 +311,19 @@ public abstract class Actor implements Bundlable {
 	public static void addDelayed( Actor actor, float delay ) {
 		add( actor, now + delay );
 	}
-	
+
+	// shortcut to add something that executes as soon as the current actor is done acting.
+	public static void add(Callback callback) {
+		add(new Actor() {
+			{ actPriority = VFX_PRIO; }
+			@Override protected boolean act() {
+				remove(this);
+				callback.call();
+				return true;
+			}
+		});
+	}
+
 	private static synchronized void add( Actor actor, float time ) {
 		
 		if (all.contains( actor )) {
