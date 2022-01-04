@@ -38,6 +38,7 @@ import com.zrp200.rkpd2.items.BrokenSeal;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRecharging;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.utils.GLog;
+import com.zrp200.rkpd2.windows.WndInfoArmorAbility;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -171,6 +172,32 @@ abstract public class ClassArmor extends Armor {
 	}
 
 	@Override
+	public void execute(Hero hero) {
+		if(additionalActions().isEmpty()) super.execute(hero);
+		else {
+			// omni-ability default action.
+			OmniAbility omniAbility = (OmniAbility)hero.armorAbility;
+			ArmorAbility activeAbility = omniAbility.activeAbility();
+			GameScene.show(new WndChooseAbility(null,this, omniAbility.name(),false) {
+				@Override protected ArrayList<ArmorAbility> getArmorAbilities() {
+					ArrayList<ArmorAbility> abilities = new ArrayList<>();
+					abilities.add(activeAbility);
+					abilities.addAll( OmniAbility.activeAbilities() );
+					return abilities;
+				}
+				@Override protected WndInfoArmorAbility getAbilityInfo(ArmorAbility ability) {
+					return new WndInfoArmorAbility(ability, OmniAbility::transferTalents);
+				}
+				@Override protected void selectAbility(ArmorAbility ability) {
+					hide();
+					if(ability.equals(activeAbility)) ClassArmor.super.execute(hero);
+					else execute(hero, ability.actionName());
+				}
+			});
+		}
+	}
+
+	@Override
 	public void execute( Hero hero, String action ) {
 
 		super.execute( hero, action );
@@ -184,7 +211,7 @@ abstract public class ClassArmor extends Armor {
 	private void useAbility(Hero hero, ArmorAbility armorAbility) {
 		//for pre-0.9.3 saves
 		if (armorAbility == null){
-			GameScene.show(new WndChooseAbility(null, this, hero));
+			GameScene.show(new WndChooseAbility(null, this));
 		} else {
 			if (charge < armorAbility.chargeUse(hero)) {
 				/*usesTargeting = false;
@@ -203,6 +230,7 @@ abstract public class ClassArmor extends Armor {
 
 	public void useCharge(Hero hero, ArmorAbility armorAbility) {
 		charge -= armorAbility.chargeUse(hero);
+		// This is a trigger for OmniAbility to transition to a new ability.
 		OmniAbility.markAbilityUsed(armorAbility);
 		updateQuickslot();
 	}

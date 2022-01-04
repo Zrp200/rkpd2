@@ -98,7 +98,7 @@ public class OmniAbility extends ArmorAbility {
     // interactions with talent-related stuff.
 
     /** establishes that these interactions need to be performed. **/
-    private static boolean isApplicable() {
+    public static boolean isApplicable() {
         return hero != null && hero.armorAbility instanceof OmniAbility;
     }
     /** omniability checks based on ability usage. **/
@@ -108,7 +108,7 @@ public class OmniAbility extends ArmorAbility {
             if(ability.equals(omniAbility.armorAbility)) omniAbility.setArmorAbility();
         }
     }
-    private static LinkedHashMap<Talent, Integer> transferTalents(ArmorAbility armorAbility) {
+    public static LinkedHashMap<Talent, Integer> transferTalents(ArmorAbility armorAbility) {
         LinkedHashMap<Talent, Integer> talents = new LinkedHashMap<>();
         if(hero.talents.size() < 4) return talents;
         Iterator<Integer> iterator = hero.talents.get(3).values().iterator();

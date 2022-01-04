@@ -355,7 +355,7 @@ public class WndHeroInfo extends WndTabbed {
 				abilityInfos[i] = new IconButton( Icons.get(Icons.INFO) ){
 					@Override
 					protected void onClick() {
-						Game.scene().addToFront(new WndInfoArmorAbility(cls, abilities[finalI]));
+						Game.scene().addToFront(new WndInfoArmorAbility(abilities[finalI]));
 					}
 				};
 				add(abilityDescs[i]);

@@ -1,5 +1,6 @@
 package com.zrp200.rkpd2.windows;
 
+import com.watabou.utils.function.Function;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
@@ -15,17 +16,22 @@ import java.util.LinkedHashMap;
 
 public class WndInfoArmorAbility extends WndTitledMessage {
 
-	public WndInfoArmorAbility(HeroClass cls, ArmorAbility ability){
+	public WndInfoArmorAbility(ArmorAbility ability, Function<ArmorAbility, LinkedHashMap<Talent, Integer>> initializeArmorTalents){
 		super( new HeroIcon(ability), Messages.titleCase(ability.name()), ability.desc());
 
-		ArrayList<LinkedHashMap<Talent, Integer>> talentList = new ArrayList<>();
-		Talent.initArmorTalents(ability, talentList);
+		LinkedHashMap<Talent, Integer> talents = initializeArmorTalents.apply(ability);
+		if(talents.isEmpty()) return;
 
-		if(talentList.get(3).isEmpty()) return;
-
-		TalentsPane.TalentTierPane talentPane = new TalentsPane.TalentTierPane(talentList.get(3), 4, TalentButton.Mode.INFO);
+		TalentsPane.TalentTierPane talentPane = new TalentsPane.TalentTierPane(talents, 4, TalentButton.Mode.INFO);
 		talentPane.title.text( Messages.titleCase(Messages.get(WndHeroInfo.class, "talents")));
 		addToBottom(talentPane, 5, 0);
 	}
+	public WndInfoArmorAbility(ArmorAbility ability) {
+		this(ability, WndInfoArmorAbility::initializeTalents);
+	}
 
+	public static LinkedHashMap<Talent, Integer> initializeTalents(ArmorAbility ability) {
+		ArrayList<LinkedHashMap<Talent, Integer>> talentList = Talent.initArmorTalents(ability);
+		return talentList.size() < 4 ? new LinkedHashMap<>() : talentList.get(3);
+	}
 }

@@ -21,8 +21,8 @@
 
 package com.zrp200.rkpd2.windows;
 
-import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.actors.hero.Hero;
+import static com.zrp200.rkpd2.Dungeon.hero;
+
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
 import com.zrp200.rkpd2.items.KingsCrown;
 import com.zrp200.rkpd2.items.armor.Armor;
@@ -36,21 +36,34 @@ import com.zrp200.rkpd2.ui.Icons;
 import com.zrp200.rkpd2.ui.RedButton;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
 import com.zrp200.rkpd2.ui.Window;
-import com.watabou.noosa.Image;
+
+import java.util.Arrays;
+import java.util.Collection;
+
+// I have systematically reworked this class to let me abuse it for nefarious purposes.
 
 public class WndChooseAbility extends Window {
 
 	private static final int WIDTH		= 130;
 	private static final float GAP		= 2;
 
-	public WndChooseAbility(final KingsCrown crown, final Armor armor, final Hero hero){
+	protected KingsCrown crown;
+	protected Armor armor;
+
+	public WndChooseAbility(final KingsCrown crown, final Armor armor) {
+		this(crown,armor, crown == null ? armor.name() : crown.name(), true);
+	}
+
+	public WndChooseAbility(final KingsCrown crown, final Armor armor, String title, boolean includeCancel){
 
 		super();
+		this.crown = crown;
+		this.armor = armor;
 
 		//crown can be null if hero is choosing from armor, pre-0.9.3 saves
 		IconTitle titlebar = new IconTitle();
 		titlebar.icon( new ItemSprite( crown == null ? armor.image() : crown.image(), null ) );
-		titlebar.label( Messages.titleCase(crown == null ? armor.name() : crown.name()) );
+		titlebar.label( Messages.titleCase(title) );
 		titlebar.setRect( 0, 0, WIDTH, 0 );
 		add( titlebar );
 
@@ -64,30 +77,12 @@ public class WndChooseAbility extends Window {
 		add( body );
 
 		float pos = body.bottom() + 3*GAP;
-		for (ArmorAbility ability : hero.heroClass.armorAbilities()) {
+		for (ArmorAbility ability : getArmorAbilities()) {
 
 			RedButton abilityButton = new RedButton(ability.shortDesc(), 6){
 				@Override
 				protected void onClick() {
-					GameScene.show(new WndOptions( new HeroIcon( ability ),
-							Messages.titleCase(ability.name()),
-							Messages.get(WndChooseAbility.this, "are_you_sure"),
-							Messages.get(WndChooseAbility.this, "yes"),
-							Messages.get(WndChooseAbility.this, "no")){
-
-						@Override
-						protected void onSelect(int index) {
-							hide();
-							if (index == 0 && WndChooseAbility.this.parent != null){
-								WndChooseAbility.this.hide();
-								if (crown != null) {
-									crown.upgradeArmor(hero, armor, ability);
-								} else {
-									new KingsCrown().upgradeArmor(hero, null, ability);
-								}
-							}
-						}
-					});
+					selectAbility(ability);
 				}
 			};
 			abilityButton.leftJustify = true;
@@ -99,7 +94,7 @@ public class WndChooseAbility extends Window {
 			IconButton abilityInfo = new IconButton(Icons.get(Icons.INFO)){
 				@Override
 				protected void onClick() {
-					GameScene.show(new WndInfoArmorAbility(Dungeon.hero.heroClass, ability));
+					GameScene.show(getAbilityInfo(ability));
 				}
 			};
 			abilityInfo.setRect(WIDTH-20, abilityButton.top() + (abilityButton.height()-20)/2, 20, 20);
@@ -108,19 +103,49 @@ public class WndChooseAbility extends Window {
 			pos = abilityButton.bottom() + GAP;
 		}
 
-		RedButton cancelButton = new RedButton(Messages.get(this, "cancel")){
-			@Override
-			protected void onClick() {
-				hide();
-			}
-		};
-		cancelButton.setRect(0, pos, WIDTH, 18);
-		add(cancelButton);
-		pos = cancelButton.bottom() + GAP;
+		if(includeCancel) {
+			RedButton cancelButton = new RedButton(Messages.get(this, "cancel")){
+				@Override
+				protected void onClick() {
+					hide();
+				}
+			};
+			cancelButton.setRect(0, pos, WIDTH, 18);
+			add(cancelButton);
+			pos = cancelButton.bottom() + GAP;
+		}
 
 		resize(WIDTH, (int)pos);
 
 	}
 
+	protected Collection<ArmorAbility> getArmorAbilities() {
+		return Arrays.asList(hero.heroClass.armorAbilities());
+	}
 
+	protected WndInfoArmorAbility getAbilityInfo(ArmorAbility ability) {
+		return new WndInfoArmorAbility(ability);
+	}
+
+	protected void selectAbility(ArmorAbility ability) {
+		GameScene.show(new WndOptions( new HeroIcon( ability ),
+				Messages.titleCase(ability.name()),
+				Messages.get(WndChooseAbility.this, "are_you_sure"),
+				Messages.get(WndChooseAbility.this, "yes"),
+				Messages.get(WndChooseAbility.this, "no")){
+
+			@Override
+			protected void onSelect(int index) {
+				hide();
+				if (index == 0 && WndChooseAbility.this.parent != null){
+					WndChooseAbility.this.hide();
+					if (crown != null) {
+						crown.upgradeArmor(hero, armor, ability);
+					} else {
+						new KingsCrown().upgradeArmor(hero, null, ability);
+					}
+				}
+			}
+		});
+	}
 }

@@ -68,7 +68,7 @@ public class KingsCrown extends Item {
 
 			curUser = hero;
 			if (hero.belongings.armor() != null){
-				GameScene.show( new WndChooseAbility(this, hero.belongings.armor(), hero));
+				GameScene.show( new WndChooseAbility(this, hero.belongings.armor()));
 			} else {
 				GLog.w( Messages.get(this, "naked"));
 			}
