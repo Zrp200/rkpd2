@@ -4,7 +4,6 @@ import static com.zrp200.rkpd2.Dungeon.hero;
 
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
-import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -13,7 +12,6 @@ import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
 import com.zrp200.rkpd2.effects.Transmuting;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.HeroIcon;
 
 import java.util.*;
@@ -37,11 +35,18 @@ public class OmniAbility extends ArmorAbility {
     public void setArmorAbility() {
         Set<ArmorAbility> pool = new HashSet<>(abilities);
         pool.removeAll(activeAbilities());
+
+        // Rat King's abilities show up less.
+        int roll = Random.Int(4);
+        if(roll < 2){
+            pool.remove( new Wrath() );
+            if(roll == 0) pool.remove(new Ratmogrify());
+        }
+
         pool.remove(armorAbility);
         new Transmuting(
                 new HeroIcon(armorAbility),
-                // shouldn't be null.
-                new HeroIcon( armorAbility = Objects.requireNonNull( Random.element(pool) ) )
+                new HeroIcon(armorAbility = Objects.requireNonNull(Random.element(pool)))
         ).show(hero);
         if(hero.talents.size() >= 4) hero.talents.set(3, transferTalents(armorAbility));
     }
@@ -142,11 +147,16 @@ public class OmniAbility extends ArmorAbility {
         for(ArmorAbility ability : activeAbilities()) map.put(ability.actionName(), ability);
         return map;
     }
+    /** the pool by which abilities are searched.
+     *
+     * Anything not in this pool won't be rolled by omniability, and does not have to accommodate it.
+     **/
     private static final Set<ArmorAbility> abilities = new HashSet(); static {
         for(HeroClass cls : HeroClass.values()) {
-            if(cls == HeroClass.RAT_KING) continue;
+            //if(cls == HeroClass.RAT_KING) continue;
             abilities.addAll(Arrays.asList(cls.armorAbilities()));
         }
-        abilities.add(new Ratmogrify());
+        abilities.remove(new OmniAbility());
+        //abilities.add(new Ratmogrify());
     }
 }
