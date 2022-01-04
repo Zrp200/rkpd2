@@ -139,7 +139,13 @@ public class ItemSlot extends Button {
 
 		if (itemIcon != null){
 			itemIcon.x = x + width - (ItemSpriteSheet.Icons.SIZE + itemIcon.width())/2f;
-			itemIcon.y = y + (ItemSpriteSheet.Icons.SIZE - itemIcon.height())/2f;
+			if(item instanceof ClassArmor) {
+				// bottom right, with a 1 pixel offset from the corners.
+				itemIcon.x--;
+				itemIcon.y = y + height - itemIcon.height() - 1;
+			} else {
+				itemIcon.y = y + (ItemSpriteSheet.Icons.SIZE - itemIcon.height())/2f;
+			}
 			PixelScene.align(itemIcon);
 		}
 		
