@@ -141,7 +141,7 @@ public class ItemSlot extends Button {
 			itemIcon.x = x + width - (ItemSpriteSheet.Icons.SIZE + itemIcon.width())/2f;
 			if(item instanceof ClassArmor) {
 				// bottom right, with a 1 pixel offset from the corners.
-				itemIcon.x--;
+				if(level != null) itemIcon.x = x + 1; else itemIcon.x--;
 				itemIcon.y = y + height - itemIcon.height() - 1;
 			} else {
 				itemIcon.y = y + (ItemSpriteSheet.Icons.SIZE - itemIcon.height())/2f;
