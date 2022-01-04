@@ -49,7 +49,8 @@ import static com.zrp200.rkpd2.Dungeon.hero;
 public class DeathMark extends ArmorAbility {
 
 	public static float damageMultiplier() {
-		return hero.heroClass == HeroClass.ROGUE ? 5/3f : 1.25f;
+		//return hero.heroClass == HeroClass.ROGUE ? 5/3f : 1.25f;
+		return 4/3f;
 	}
 
 	@Override

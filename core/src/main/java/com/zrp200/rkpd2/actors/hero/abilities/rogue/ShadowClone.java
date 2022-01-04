@@ -153,6 +153,11 @@ public class ShadowClone extends ArmorAbility {
 			immunities.add(AllyBuff.class);
 		}
 
+		@Override
+		public String name() {
+			return Messages.get(this, "name", hero.heroClass.title());
+		}
+
 		public ShadowAlly(){
 			super();
 		}
@@ -264,8 +269,8 @@ public class ShadowClone extends ArmorAbility {
 
 		@Override
 		public boolean interact(Char c) {
-			// automatically given..
-			if (!hero.canHaveTalent(Talent.PERFECT_COPY)){
+
+			if (!hero.hasTalent(Talent.PERFECT_COPY)){
 				return super.interact(c);
 			}
 
@@ -309,6 +314,13 @@ public class ShadowClone extends ArmorAbility {
 			}
 		}
 
+		@Override
+		public String description() {
+			String name = Messages.titleCase(hero.heroClass.title());
+			if(hero.heroClass != HeroClass.RAT_KING) name = "the " + name;
+			return Messages.get(this, "desc", name);
+		}
+
 		private static final String DEF_SKILL = "def_skill";
 
 		@Override
@@ -332,21 +344,10 @@ public class ShadowClone extends ArmorAbility {
 			super();
 
 			texture( hero.heroClass.spritesheet() );
+			copyAnimations(hero.sprite);
 
-			HeroSprite sprite = (HeroSprite) hero.sprite;
-			TextureFilm film = new TextureFilm(sprite.tiers(), hero.heroClass == HeroClass.RAT_KING ? 0 : 6, sprite.frameWidth(), sprite.frameHeight() );
-
-			idle = new Animation( 1, true );
-			idle.frames( film, 0, 0, 0, 1, 0, 0, 1, 1 );
-
-			run = new Animation( 20, true );
-			run.frames( film, 2, 3, 4, 5, 6, 7 );
-
-			die = new Animation( 20, false );
-			die.frames( film, 0 );
-
-			attack = new Animation( 15, false );
-			attack.frames( film, 13, 14, 15, 0 );
+			die.frames( idle.frames[0] );
+			die.delay = 1/20f;
 
 			idle();
 			resetColor();

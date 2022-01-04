@@ -92,6 +92,15 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	protected Animation operate;
 	protected Animation zap;
 	protected Animation die;
+
+	protected void copyAnimations(CharSprite other) {
+		idle = other.idle;
+		run = other.run;
+		attack = other.attack;
+		operate = other.operate;
+		zap = other.zap;
+		die = other.die;
+	}
 	
 	protected Callback animCallback;
 	
