@@ -23,6 +23,8 @@ package com.zrp200.rkpd2.actors.hero;
 
 import static com.zrp200.rkpd2.Dungeon.hero;
 
+import static java.lang.Math.max;
+
 import com.watabou.noosa.Image;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
@@ -208,7 +210,7 @@ public enum Talent {
 			buff.spend( buff.duration() );
 		}
 		public abstract float duration();
-		public float iconFadePercent() { return Math.max(0, visualcooldown() / duration()); }
+		public float iconFadePercent() { return max(0, visualcooldown() / duration()); }
 		public String toString() { return Messages.get(this, "name"); }
 		public String desc() { return Messages.get(this, "desc", dispTurns(visualcooldown())); }
 	}
@@ -322,12 +324,22 @@ public enum Talent {
 		@Override public float duration() {
 			// if both are present the higher one is used. They don't stack in this implementation.
 			int points = hero.shiftedPoints(REJUVENATING_STEPS, POWER_WITHIN);
+			if(hero.hasTalent(NATURES_BETTER_AID)) points = max(points, 1);
 			return 10*(float)Math.pow(2,1-points);
 		}
 		public int icon() { return BuffIndicator.TIME; }
 		public void tintIcon(Image icon) { icon.hardlight(0f, 0.35f, 0.15f); }
 	};
-	public static class RejuvenatingStepsFurrow extends CounterBuff{};
+	public static class RejuvenatingStepsFurrow extends CounterBuff{
+		/** Track a successful proc of rejuvenating steps.
+		 *	Moved logic from Level.java to here so I don't forget what this does.
+		 **/
+		public static void record() {
+			int points = hero.pointsInTalent(false, REJUVENATING_STEPS, POWER_WITHIN);
+			if(hero.hasTalent(NATURES_BETTER_AID)) points = max(points, 1);
+			count(hero, Talent.RejuvenatingStepsFurrow.class, 3 - points);
+		}
+	};
 	public static class SeerShotCooldown extends Cooldown{
 		@Override public float duration() {
 			return hero.hasTalent(SEER_SHOT)
@@ -557,7 +569,7 @@ public enum Talent {
 			BrokenSeal.WarriorShield shield = hero.buff(BrokenSeal.WarriorShield.class);
 			if (shield != null){
 				// Hero#byTalent can't save me here.
-				double multiplier = Math.max(
+				double multiplier = max(
 						hero.hasTalent(RESTORED_WILLPOWER) ? hero.shiftedPoints(RESTORED_WILLPOWER)/2f : 0,
 						hero.hasTalent(RESTORATION) ? hero.shiftedPoints(RESTORATION)/3f : 0);
 				shield.supercharge((int)Math.round(shield.maxShield()*multiplier));
@@ -729,7 +741,7 @@ public enum Talent {
 		if(heal > 0) {
 			hero.HP += heal;
 			Emitter e = hero.sprite.emitter();
-			if (e != null) e.burst(Speck.factory(Speck.HEALING), Math.max(1,Math.round(heal*2f/3)));
+			if (e != null) e.burst(Speck.factory(Speck.HEALING), max(1,Math.round(heal*2f/3)));
 		}
 
 		hero.byTalent( (talent, points) -> {

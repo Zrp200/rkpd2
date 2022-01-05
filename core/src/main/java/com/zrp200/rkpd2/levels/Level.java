@@ -939,8 +939,10 @@ public abstract class Level implements Bundlable {
 		if (!ch.flying){
 
 			if ( (map[ch.pos] == Terrain.GRASS || map[ch.pos] == Terrain.EMBERS)
-				&& ch == Dungeon.hero && Dungeon.hero.hasTalent(Talent.REJUVENATING_STEPS,Talent.POWER_WITHIN)
-					&& ch.buff(Talent.RejuvenatingStepsCooldown.class) == null){
+				&& ch == Dungeon.hero && Dungeon.hero.hasTalent(
+						Talent.REJUVENATING_STEPS,Talent.POWER_WITHIN,
+						Talent.NATURES_BETTER_AID
+				) && ch.buff(Talent.RejuvenatingStepsCooldown.class) == null){
 
 				if (Dungeon.hero.buff(LockedFloor.class) != null && !Dungeon.hero.buff(LockedFloor.class).regenOn()){
 					set(ch.pos, Terrain.FURROWED_GRASS);
@@ -948,7 +950,7 @@ public abstract class Level implements Bundlable {
 					set(ch.pos, Terrain.FURROWED_GRASS);
 				} else {
 					set(ch.pos, Terrain.HIGH_GRASS);
-					Buff.count(ch, Talent.RejuvenatingStepsFurrow.class, 3 - Dungeon.hero.pointsInTalent(Talent.REJUVENATING_STEPS));
+					Talent.RejuvenatingStepsFurrow.record();
 				}
 				GameScene.updateMap(ch.pos);
 				Talent.Cooldown.affectHero(Talent.RejuvenatingStepsCooldown.class);
