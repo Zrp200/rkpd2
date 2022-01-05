@@ -82,7 +82,7 @@ public class SmokeBomb extends ArmorAbility {
 	public static boolean isValidTarget(Hero hero, int target, int limit) {
 		Char ch = Actor.findChar( target );
 		if(ch == hero) {
-			GLog.w( Messages.get(ArmorAbility.class, "self-target") );
+			GLog.w( Messages.get(ArmorAbility.class, "self_target") );
 			return false;
 		}
 
