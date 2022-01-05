@@ -64,7 +64,7 @@ public class Endure extends ArmorAbility {
 	}
 
 	@Override
-	public boolean isActive() {
+	public boolean isTracked() {
 		return Actor.containsClass(EndureTracker.class);
 	}
 

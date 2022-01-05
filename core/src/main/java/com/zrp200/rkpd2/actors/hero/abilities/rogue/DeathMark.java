@@ -136,6 +136,7 @@ public class DeathMark extends ArmorAbility {
 		}
 	}
 
+	// FIXME generalize?
 	public static class DoubleMarkTracker extends FlavourBuff{};
 
 	@Override
@@ -146,6 +147,10 @@ public class DeathMark extends ArmorAbility {
 	@Override
 	public Talent[] talents() {
 		return new Talent[]{Talent.FEAR_THE_REAPER, Talent.DEATHLY_DURABILITY, Talent.DOUBLE_MARK, Talent.HEROIC_ENERGY};
+	}
+
+	@Override public boolean isTracked() {
+		return Actor.containsClass(DeathMarkTracker.class);
 	}
 
 	public static class DeathMarkTracker extends FlavourBuff {

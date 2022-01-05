@@ -196,8 +196,17 @@ public class Wrath extends ArmorAbility {
         for(boolean stage : stages) if(stage) { armor.useCharge(hero, this); return; }
     }
 
+    @Override
+    public boolean isTracked() {
+        return Actor.containsClass(RatStatue.class);
+    }
+
     public static class RatStatue extends SmokeBomb.NinjaLog {
-        { spriteClass = Sprite.class; }
+        {
+            spriteClass = Sprite.class;
+            talent = SMOKE_AND_MIRRORS;
+            drScaling = 3;
+        }
 
         @Override
         public void die(Object cause) {

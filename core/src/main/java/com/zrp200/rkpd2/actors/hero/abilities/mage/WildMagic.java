@@ -130,7 +130,12 @@ public class WildMagic extends ArmorAbility {
 		return Actor.containsClass(WildMagicTracker.class);
 	}
 
-	public static class WildMagicTracker extends FlavourBuff{};
+	public static class WildMagicTracker extends FlavourBuff{
+		@Override
+		protected void onRemove() {
+			markAbilityUsed(new WildMagic());
+		}
+	};
 
 	private void zapWand( ArrayList<Wand> wands, Hero hero, int target){
 		Wand cur = wands.remove(0);

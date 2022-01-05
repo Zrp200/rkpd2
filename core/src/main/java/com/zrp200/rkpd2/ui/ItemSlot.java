@@ -21,6 +21,8 @@
 
 package com.zrp200.rkpd2.ui;
 
+import static com.zrp200.rkpd2.Dungeon.hero;
+
 import com.watabou.utils.PointF;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
@@ -38,6 +40,7 @@ import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Button;
+import com.zrp200.rkpd2.utils.SafeCast;
 
 public class ItemSlot extends Button {
 
@@ -210,11 +213,15 @@ public class ItemSlot extends Button {
 
 		status.text( item.status() );
 
-		if(item instanceof ClassArmor && Dungeon.hero.armorAbility instanceof OmniAbility) {
-			OmniAbility ability = (OmniAbility) Dungeon.hero.armorAbility;
-			itemIcon = new HeroIcon(ability.activeAbility());
-			itemIcon.scale.set(0.5f);
-			add(itemIcon);
+		if(item instanceof ClassArmor) {
+			OmniAbility ability = SafeCast.cast(hero.armorAbility, OmniAbility.class);
+			if(ability != null && ability.activeAbility() != null) {
+				// this violates pixel art rules but I need something.
+				itemIcon = new HeroIcon(ability.activeAbility());
+				itemIcon.scale.set(0.5f);
+				// fixme I would prefer that this go underneath level
+				add(itemIcon);
+			}
 		} else if (item.icon != -1 && (item.isIdentified() || (item instanceof Ring && ((Ring) item).isKnown()))){
 			extra.text( null );
 
@@ -222,12 +229,13 @@ public class ItemSlot extends Button {
 			itemIcon.frame(ItemSpriteSheet.Icons.film.get(item.icon));
 			add(itemIcon);
 
-		} else if (item instanceof Weapon || item instanceof Armor) {
+		}
+		/*else*/ if (item instanceof Weapon || item instanceof Armor) {
 
 			if (item.levelKnown){
 				int str = item instanceof Weapon ? ((Weapon)item).STRReq() : ((Armor)item).STRReq();
 				extra.text( Messages.format( TXT_STRENGTH, str ) );
-				if (str > Dungeon.hero.STR()) {
+				if (str > hero.STR()) {
 					extra.hardlight( DEGRADED );
 				} else {
 					extra.resetColor();

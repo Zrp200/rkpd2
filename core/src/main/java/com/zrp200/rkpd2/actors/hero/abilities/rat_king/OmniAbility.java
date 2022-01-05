@@ -2,6 +2,7 @@ package com.zrp200.rkpd2.actors.hero.abilities.rat_king;
 
 import static com.zrp200.rkpd2.Dungeon.hero;
 
+import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 import com.zrp200.rkpd2.actors.hero.Hero;
@@ -10,6 +11,7 @@ import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
 import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
 import com.zrp200.rkpd2.effects.Transmuting;
+import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.HeroIcon;
@@ -39,15 +41,16 @@ public class OmniAbility extends ArmorAbility {
         // Rat King's abilities show up less.
         int roll = Random.Int(4);
         if(roll < 2){
-            pool.remove( new Wrath() );
+            pool.remove( new Wrath() ); // ;)
             if(roll == 0) pool.remove(new Ratmogrify());
         }
 
         pool.remove(armorAbility);
         new Transmuting(
-                new HeroIcon(armorAbility),
+                armorAbility != null ? new HeroIcon(armorAbility) : new Image(),
                 new HeroIcon(armorAbility = Objects.requireNonNull(Random.element(pool)))
         ).show(hero);
+        Item.updateQuickslot();
         if(hero.talents.size() >= 4) hero.talents.set(3, transferTalents(armorAbility));
     }
 
@@ -122,26 +125,46 @@ public class OmniAbility extends ArmorAbility {
         }
         return talents;
     }
-    /** returns the amount of points that would be in that talent if it corresponded, otherwise return null. **/
+    /** returns the amount of points that would be in that talent if it corresponded, otherwise return null.
+     * It is worth noting that this is only checked after a standard check would have failed, and the stored ability does not use this method.
+     * If I wanted to exclude a talent from being transferred unless it's currently in the active ability, then here would be the place to do it.
+     * **/
     public static Integer findTalent(Talent talent) {
-        for(ArmorAbility ability : activeAbilities()) {
+        for(ArmorAbility ability : trackedAbilities()) {
             for(Talent t : ability.talents()) {
                 if(t == talent) return transferTalents(ability).get(talent);
             }
         }
         return null;
     }
-    public static Set<ArmorAbility> activeAbilities() {
+
+    /** Abilities that are still functioning and thus need access to their respective talents.
+     * Anything in here will have their talents available for lookup by the talent system.
+     * These can still be rolled by OmniAbility.
+    **/
+    public static Set<ArmorAbility> trackedAbilities() {
         HashSet<ArmorAbility> r = new HashSet();
         if(isApplicable()) for(ArmorAbility ability : abilities) {
-            if(ability.isActive()
+            if(ability.isTracked()
                     && !ability.equals(( (OmniAbility) hero.armorAbility ).armorAbility)) {
                 r.add(ability);
             }
         }
         return r;
     }
-    /** Allows you to select previous actions that still can be interacted with when applicable. **/
+
+    /** set of all SELECTABLE additional abilities.
+     * Anything in here cannot be rolled by OmniAbility. **/
+    public static Set<ArmorAbility> activeAbilities() {
+        Set<ArmorAbility> abilities = trackedAbilities();
+        for(Iterator<ArmorAbility> i = abilities.iterator(); i.hasNext();) {
+            if( !i.next().isActive() ) i.remove();
+        }
+        return abilities;
+    }
+    /** Allows you to select previous actions that still can be interacted with when applicable.
+     *  Used with ClassArmor.java
+     **/
     public static Map<String, ArmorAbility> additionalActions() {
         HashMap<String, ArmorAbility> map = new HashMap<>();
         for(ArmorAbility ability : activeAbilities()) map.put(ability.actionName(), ability);
@@ -150,6 +173,7 @@ public class OmniAbility extends ArmorAbility {
     /** the pool by which abilities are searched.
      *
      * Anything not in this pool won't be rolled by omniability, and does not have to accommodate it.
+     * By default everything is in this pool by default, however.
      **/
     private static final Set<ArmorAbility> abilities = new HashSet(); static {
         for(HeroClass cls : HeroClass.values()) {

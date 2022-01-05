@@ -228,11 +228,14 @@ abstract public class ClassArmor extends Armor {
 		}
 	}
 
-	public void useCharge(Hero hero, ArmorAbility armorAbility) {
+	public void useCharge(Hero hero, ArmorAbility armorAbility, boolean recordUsed) {
 		charge -= armorAbility.chargeUse(hero);
 		// This is a trigger for OmniAbility to transition to a new ability.
-		OmniAbility.markAbilityUsed(armorAbility);
+		if(recordUsed) OmniAbility.markAbilityUsed(armorAbility);
 		updateQuickslot();
+	}
+	public void useCharge(Hero hero, ArmorAbility armorAbility) {
+		useCharge(hero, armorAbility, true);
 	}
 
 	@Override

@@ -32,6 +32,7 @@ import com.zrp200.rkpd2.actors.buffs.Weakness;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
+import com.zrp200.rkpd2.actors.hero.abilities.rat_king.OmniAbility;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.items.wands.WandOfBlastWave;
 import com.zrp200.rkpd2.mechanics.Ballistica;
@@ -78,53 +79,51 @@ public class HeroicLeap extends ArmorAbility {
 				backTrace--;
 			}
 
-			armor.useCharge(hero, this);
+			armor.useCharge(hero, this, false);
 
 			final int dest = cell;
 			hero.busy();
-			hero.sprite.jump(hero.pos, cell, new Callback() {
-				@Override
-				public void call() {
-					hero.move(dest);
-					Dungeon.level.occupyCell(hero);
-					Dungeon.observe();
-					GameScene.updateFog();
+			hero.sprite.jump(hero.pos, cell, () -> {
+				hero.move(dest);
+				Dungeon.level.occupyCell(hero);
+				Dungeon.observe();
+				GameScene.updateFog();
 
-					for (int i : PathFinder.NEIGHBOURS8) {
-						Char mob = Actor.findChar(hero.pos + i);
-						if (mob != null && mob != hero && mob.alignment != Char.Alignment.ALLY) {
-							if (hero.canHaveTalent(Talent.BODY_SLAM)){
-								int damage = hero.drRoll();
-								damage = Math.round(damage*0.25f*hero.shiftedPoints(Talent.BODY_SLAM));
-								mob.damage(damage, hero);
-							}
-							if (mob.pos == hero.pos + i && hero.hasTalent(Talent.IMPACT_WAVE)){
-								Ballistica trajectory = new Ballistica(mob.pos, mob.pos + i, Ballistica.MAGIC_BOLT);
-								int strength = 1+hero.pointsInTalent(Talent.IMPACT_WAVE);
-								strength *= 1.5; // 3/4/6 instead of 2/3/4
-								WandOfBlastWave.throwChar(mob, trajectory, strength, true);
-								// 40/60/80/100
-								if (Random.Int(5) < 1+hero.pointsInTalent(Talent.IMPACT_WAVE)){
-									Buff.prolong(mob, Vulnerable.class, 5f); // 3 -> 5
-								}
-							}
+				for (int i : PathFinder.NEIGHBOURS8) {
+					Char mob = Actor.findChar(hero.pos + i);
+					if (mob != null && mob != hero && mob.alignment != Char.Alignment.ALLY) {
+						if (hero.canHaveTalent(Talent.BODY_SLAM)){
+							int damage = hero.drRoll();
+							damage = Math.round(damage*0.25f*hero.shiftedPoints(Talent.BODY_SLAM));
+							mob.damage(damage, hero);
 						}
-					}
-
-					WandOfBlastWave.BlastWave.blast(dest);
-					Camera.main.shake(2, 0.5f);
-
-					Invisibility.dispel();
-					hero.spendAndNext(Actor.TICK);
-
-					if (hero.buff(DoubleJumpTracker.class) != null){
-						hero.buff(DoubleJumpTracker.class).detach();
-					} else {
-						if (hero.canHaveTalent(Talent.DOUBLE_JUMP)) {
-							Buff.affect(hero, DoubleJumpTracker.class, 3);
+						if (mob.pos == hero.pos + i && hero.hasTalent(Talent.IMPACT_WAVE)){
+							Ballistica trajectory = new Ballistica(mob.pos, mob.pos + i, Ballistica.MAGIC_BOLT);
+							int strength = 1+hero.pointsInTalent(Talent.IMPACT_WAVE);
+							strength *= 1.5; // 3/4/6 instead of 2/3/4
+							WandOfBlastWave.throwChar(mob, trajectory, strength, true);
+							// 40/60/80/100
+							if (Random.Int(5) < 1+hero.pointsInTalent(Talent.IMPACT_WAVE)){
+								Buff.prolong(mob, Vulnerable.class, 5f); // 3 -> 5
+							}
 						}
 					}
 				}
+
+				WandOfBlastWave.BlastWave.blast(dest);
+				Camera.main.shake(2, 0.5f);
+
+				Invisibility.dispel();
+				hero.spendAndNext(Actor.TICK);
+
+				if (hero.buff(DoubleJumpTracker.class) != null){
+					hero.buff(DoubleJumpTracker.class).detach();
+				} else {
+					if (hero.canHaveTalent(Talent.DOUBLE_JUMP)) {
+						Buff.affect(hero, DoubleJumpTracker.class, 3);
+					}
+				}
+				OmniAbility.markAbilityUsed(HeroicLeap.this);
 			});
 		}
 	}

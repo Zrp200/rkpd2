@@ -133,7 +133,6 @@ public class SmokeBomb extends ArmorAbility {
 	protected void activate(ClassArmor armor, Hero hero, Integer target) {
 		if (target != null) {
 			if(!isValidTarget(hero, target, 8)) return;
-			armor.useCharge(hero,this);
 
 			if (!isShadowStep(hero)) {
 				blindAdjacentMobs(hero);
@@ -147,6 +146,7 @@ public class SmokeBomb extends ArmorAbility {
 			} else {
 				hero.next();
 			}
+			armor.useCharge(hero,this);
 		}
 	}
 
@@ -168,6 +168,12 @@ public class SmokeBomb extends ArmorAbility {
 		return new Talent[]{Talent.HASTY_RETREAT, Talent.BODY_REPLACEMENT, Talent.SHADOW_STEP, Talent.HEROIC_ENERGY};
 	}
 
+	@Override
+	public boolean isTracked() {
+		// keeps summon stats consistent.
+		return Actor.containsClass(NinjaLog.class);
+	}
+
 	public static class NinjaLog extends NPC {
 
 		{
@@ -178,13 +184,17 @@ public class SmokeBomb extends ArmorAbility {
 
 			alignment = Alignment.ALLY;
 
-			HP = HT = 20* hero.pointsInTalent(Talent.BODY_REPLACEMENT, Talent.SMOKE_AND_MIRRORS);
+			// TODO isn't it kinda weird that the two variants have the same HP?
+			HP = HT = 20* hero.pointsInTalent(false,Talent.BODY_REPLACEMENT, Talent.SMOKE_AND_MIRRORS);
 		}
+
+		protected Talent talent = Talent.BODY_REPLACEMENT;
+		protected int drScaling = 5;
 
 		@Override
 		public int drRoll() {
-			return Random.NormalIntRange(hero.pointsInTalent(Talent.BODY_REPLACEMENT, Talent.SMOKE_AND_MIRRORS),
-					(int)hero.byTalent(Talent.BODY_REPLACEMENT, 5, Talent.SMOKE_AND_MIRRORS, 3));
+			int points = hero.pointsInTalent(talent);
+			return Random.NormalIntRange(points, points*drScaling);
 		}
 
 		{

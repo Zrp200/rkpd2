@@ -134,6 +134,12 @@ public class Ratmogrify extends ArmorAbility {
 		return new Talent[]{ Talent.RATSISTANCE, Talent.RATLOMACY, Talent.RATFORCEMENTS, Talent.HEROIC_ENERGY};
 	}
 
+	@Override
+	public boolean isTracked() {
+		// yes I know this is incredibly general, but I know this will come up at some point.
+		return Actor.containsClass(Rat.class) || Actor.containsClass(TransmogRat.class);
+	}
+
 	public static class TransmogRat extends Mob {
 
 		{

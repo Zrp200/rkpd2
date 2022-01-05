@@ -113,7 +113,9 @@ public class WarpBeacon extends ArmorAbility {
 
 						armor.charge -= chargeNeeded;
 						armor.updateQuickslot();
-						markAbilityUsed(WarpBeacon.this); // won't let you repeat.
+						//  todo should I clear the beacon at this point? Bottom implementation wouldn't work, would need to manually clear the thing.
+						// could also force you to teleport once before switching (this would be in line with standard mechanics but would be annoying af)
+						// markAbilityUsed(WarpBeacon.this); // won't let you repeat.
 
 						if (tracker.depth == Dungeon.depth){
 							Char existing = Actor.findChar(tracker.pos);
