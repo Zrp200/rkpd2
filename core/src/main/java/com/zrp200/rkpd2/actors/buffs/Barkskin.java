@@ -72,10 +72,19 @@ public class Barkskin extends Buff {
 		return BuffIndicator.BARKSKIN;
 	}
 
+	private static final float BARKSKIN_MODIFIER = .8f;
 	public static int getGrassDuration(Hero hero) {
-		int points = hero.pointsInTalent(Talent.BARKSKIN, Talent.RK_WARDEN);
-		if(hero.canHaveTalent(Talent.BARKSKIN)) points++;
-		return hero.lvl*points/2;
+		float modifier = 0;
+		if(hero.hasTalent(Talent.BARKSKIN, Talent.RK_WARDEN)) {
+			modifier = hero.byTalent(true, true,
+					Talent.BARKSKIN, BARKSKIN_MODIFIER,
+					Talent.RK_WARDEN, .5f);
+		} else if(hero.canHaveTalent(Talent.BARKSKIN)) {
+			// level-shifted, but with +1 being twice as effective.
+			// I think this is the proper way to do level-shifting.
+			modifier = BARKSKIN_MODIFIER/2;
+		}
+		return (int)(hero.lvl*modifier);
 	}
 
 	@Override
