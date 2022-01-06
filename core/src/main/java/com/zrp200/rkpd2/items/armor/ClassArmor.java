@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.actors.buffs.LockedFloor;
 import com.zrp200.rkpd2.actors.hero.abilities.rat_king.OmniAbility;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.tiles.DungeonTileSheet;
+import com.zrp200.rkpd2.ui.QuickSlotButton;
 import com.zrp200.rkpd2.utils.SafeCast;
 import com.zrp200.rkpd2.windows.WndChooseAbility;
 import com.watabou.noosa.audio.Sample;
@@ -44,6 +45,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import static com.zrp200.rkpd2.Dungeon.hero;
+import static com.zrp200.rkpd2.Dungeon.quickslot;
 import static com.zrp200.rkpd2.actors.hero.abilities.rat_king.OmniAbility.additionalActions;
 
 abstract public class ClassArmor extends Armor {
@@ -178,6 +180,7 @@ abstract public class ClassArmor extends Armor {
 			// omni-ability default action.
 			OmniAbility omniAbility = (OmniAbility)hero.armorAbility;
 			ArmorAbility activeAbility = omniAbility.activeAbility();
+			usesTargeting = false; // manually handled.
 			GameScene.show(new WndChooseAbility(null,this, omniAbility.name(),false) {
 				@Override protected ArrayList<ArmorAbility> getArmorAbilities() {
 					ArrayList<ArmorAbility> abilities = new ArrayList<>();
@@ -192,6 +195,9 @@ abstract public class ClassArmor extends Armor {
 					hide();
 					if(ability.equals(activeAbility)) ClassArmor.super.execute(hero);
 					else execute(hero, ability.actionName());
+					// due to the delay, we need to manually enable targeting.
+					int slotIdx = quickslot.getSlot(ClassArmor.this);
+					if(slotIdx != -1 && usesTargeting) QuickSlotButton.useTargeting(slotIdx);
 				}
 			});
 		}
