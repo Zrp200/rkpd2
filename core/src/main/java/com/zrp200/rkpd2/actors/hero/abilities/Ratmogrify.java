@@ -168,6 +168,11 @@ public class Ratmogrify extends ArmorAbility {
 				state = WANDERING;
 			}
 
+			if(!isAlive()) {
+				// this is actually possible.
+				die(null);
+			}
+
 		}
 
 		private float timeLeft = 6f;
@@ -179,6 +184,7 @@ public class Ratmogrify extends ArmorAbility {
 				original.pos = pos;
 				original.clearTime();
 				GameScene.add(original);
+				if(original.HP == 0) original.die(this); // avoid shittery.
 
 				destroy();
 				sprite.killAndErase();

@@ -39,6 +39,7 @@ public class OmniAbility extends ArmorAbility {
         pool.removeAll(activeAbilities());
 
         // Rat King's abilities show up less.
+        // fixme should I weight things to attempt to 'even' out the results of rng?
         int roll = Random.Int(4);
         if(roll < 2){
             pool.remove( new Wrath() ); // ;)
