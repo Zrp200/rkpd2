@@ -388,8 +388,9 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
 				@Override protected boolean noTargets() {
 					if(actionHandler.queue.isEmpty() && actionHandler.actionMap.isEmpty()) {
-						actionHandler = null; // #destroy resets the scene, and there's no highlighted targets by definition of this scenario.
+						// #destroy resets the scene, and there's no highlighted targets by definition of this scenario.
 						// prompt uselessly to give user a sense of control.
+						// see #onInvalid
 						return false;
 					}
 					// this covers the edge case where you have more marks than targets.
@@ -407,15 +408,21 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 				}
 
 				@Override protected void onInvalid(int cell) {
+					if(actionHandler == null) return;
 					Char ch = Actor.findChar(cell);
 					if(ch != null) {
 						String message = actionHandler.isTargeting(ch)
 								? "That character is already being targeted!"
 								: "That character cannot be targeted.";
 						GLog.w(message);
-						GameScene.clearCellSelector(true);
-						queueAction();
-					} else if(actionHandler != null) actionHandler.destroy();
+						// if there are no targets yet, just treat this like a 'standard' cancel.
+						if(!actionHandler.actionMap.isEmpty()) {
+							GameScene.clearCellSelector(true);
+							queueAction();
+							return;
+						}
+					}
+					actionHandler.destroy();
 				}
 
 				@Override protected boolean canIgnore(Char ch) {
