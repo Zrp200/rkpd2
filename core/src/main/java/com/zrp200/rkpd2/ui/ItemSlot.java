@@ -42,6 +42,8 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.ui.Button;
 import com.zrp200.rkpd2.utils.SafeCast;
 
+import java.util.Collections;
+
 public class ItemSlot extends Button {
 
 	public static final int DEGRADED	= 0xFF4444;
@@ -221,6 +223,8 @@ public class ItemSlot extends Button {
 				itemIcon.scale.set(0.5f);
 				// fixme I would prefer that this go underneath level
 				add(itemIcon);
+				int indexOfItemIcon=indexOf(itemIcon), indexOfLevel=indexOf(level);
+				if(indexOfLevel < indexOfItemIcon) Collections.swap(members, indexOfItemIcon, indexOfLevel);
 			}
 		} else if (item.icon != -1 && (item.isIdentified() || (item instanceof Ring && ((Ring) item).isKnown()))){
 			extra.text( null );
