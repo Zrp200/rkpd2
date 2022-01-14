@@ -33,6 +33,7 @@ import com.zrp200.rkpd2.actors.buffs.LockedFloor;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
+import com.zrp200.rkpd2.actors.hero.abilities.rat_king.OmniAbility;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.MagicMissile;
 import com.zrp200.rkpd2.effects.Pushing;
@@ -113,9 +114,6 @@ public class WarpBeacon extends ArmorAbility {
 
 						armor.charge -= chargeNeeded;
 						armor.updateQuickslot();
-						//  todo should I clear the beacon at this point? Bottom implementation wouldn't work, would need to manually clear the thing.
-						// could also force you to teleport once before switching (this would be in line with standard mechanics but would be annoying af)
-						// markAbilityUsed(WarpBeacon.this); // won't let you repeat.
 
 						if (tracker.depth == Dungeon.depth){
 							Char existing = Actor.findChar(tracker.pos);
@@ -181,6 +179,7 @@ public class WarpBeacon extends ArmorAbility {
 							InterlevelScene.returnPos = tracker.pos;
 							Game.switchScene( InterlevelScene.class );
 						}
+						if(hero.armorAbility instanceof OmniAbility) tracker.detach();
 
 					} else if (index == 1){
 						hero.buff(WarpBeaconTracker.class).detach();
