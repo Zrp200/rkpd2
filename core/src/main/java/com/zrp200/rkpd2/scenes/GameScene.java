@@ -21,20 +21,6 @@
 
 package com.zrp200.rkpd2.scenes;
 
-import com.watabou.glwrap.Blending;
-import com.watabou.noosa.Camera;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.Gizmo;
-import com.watabou.noosa.Group;
-import com.watabou.noosa.NoosaScript;
-import com.watabou.noosa.NoosaScriptNoLighting;
-import com.watabou.noosa.SkinnedBlock;
-import com.watabou.noosa.Visual;
-import com.watabou.noosa.audio.Music;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.noosa.particles.Emitter;
-import com.watabou.utils.GameMath;
-import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Challenges;
@@ -52,14 +38,7 @@ import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.mobs.DemonSpawner;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.Snake;
-import com.zrp200.rkpd2.effects.BannerSprites;
-import com.zrp200.rkpd2.effects.BlobEmitter;
-import com.zrp200.rkpd2.effects.CircleArc;
-import com.zrp200.rkpd2.effects.EmoIcon;
-import com.zrp200.rkpd2.effects.Flare;
-import com.zrp200.rkpd2.effects.FloatingText;
-import com.zrp200.rkpd2.effects.Ripple;
-import com.zrp200.rkpd2.effects.SpellSprite;
+import com.zrp200.rkpd2.effects.*;
 import com.zrp200.rkpd2.items.Ankh;
 import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.items.Honeypot;
@@ -83,9 +62,19 @@ import com.zrp200.rkpd2.sprites.HeroSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.RatKingHeroSprite;
 import com.zrp200.rkpd2.tiles.*;
+import com.zrp200.rkpd2.tiles.WallBlockingTilemap;
 import com.zrp200.rkpd2.ui.*;
 import com.zrp200.rkpd2.utils.GLog;
 import com.zrp200.rkpd2.windows.*;
+import com.watabou.glwrap.Blending;
+import com.watabou.noosa.*;
+import com.watabou.noosa.audio.Music;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.noosa.particles.Emitter;
+import com.watabou.utils.DeviceCompat;
+import com.watabou.utils.GameMath;
+import com.watabou.utils.Random;
+import com.watabou.utils.RectF;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -599,7 +588,6 @@ public class GameScene extends PixelScene {
 	@Override
 	public synchronized void onPause() {
 		try {
-			if (Dungeon.hero != null && !Dungeon.hero.ready) waitForActorThread(500, false);
 			Dungeon.saveAll();
 			Badges.saveGlobal();
 			Journal.saveGlobal();
@@ -698,38 +686,44 @@ public class GameScene extends PixelScene {
 
 		if (scene == null) return;
 
-		float tagLeft = SPDSettings.flipTags() ? 0 : uiCamera.width - scene.attack.width();
+		//primarily for phones displays with notches
+		//TODO Android never draws into notch atm, perhaps allow it for center notches?
+		RectF insets = DeviceCompat.getSafeInsets();
+		insets = insets.scale(1f / uiCamera.zoom);
+
+		boolean tagsOnLeft = SPDSettings.flipTags();
+		float tagWidth = Tag.SIZE + (tagsOnLeft ? insets.left : insets.right);
+		float tagLeft = tagsOnLeft ? 0 : uiCamera.width - tagWidth;
 
 		if (SPDSettings.flipTags()) {
-			scene.log.setRect(scene.attack.width(), scene.toolbar.top()-2, uiCamera.width - scene.attack.width(), 0);
+			scene.log.setRect(tagWidth, scene.toolbar.top()-2, uiCamera.width - tagWidth - insets.right, 0);
 		} else {
-			scene.log.setRect(0, scene.toolbar.top()-2, uiCamera.width - scene.attack.width(),  0 );
+			scene.log.setRect(insets.left, scene.toolbar.top()-2, uiCamera.width - tagWidth - insets.left, 0);
 		}
 
 		float pos = scene.toolbar.top();
 
-		//FIXME adjusting this to position even without visibility resulted in deadlocks
 		if (scene.tagAttack){
-			scene.attack.setPos( tagLeft, pos - scene.attack.height());
-			scene.attack.flip(tagLeft == 0);
+			scene.attack.setRect( tagLeft, pos - Tag.SIZE, tagWidth, Tag.SIZE );
+			scene.attack.flip(tagsOnLeft);
 			pos = scene.attack.top();
 		}
 
 		if (scene.tagLoot) {
-			scene.loot.setPos( tagLeft, pos - scene.loot.height() );
-			scene.loot.flip(tagLeft == 0);
+			scene.loot.setRect( tagLeft, pos - Tag.SIZE, tagWidth, Tag.SIZE );
+			scene.loot.flip(tagsOnLeft);
 			pos = scene.loot.top();
 		}
 
 		if (scene.tagAction) {
-			scene.action.setPos( tagLeft, pos - scene.action.height() );
-			scene.action.flip(tagLeft == 0);
+			scene.action.setRect( tagLeft, pos - Tag.SIZE, tagWidth, Tag.SIZE );
+			scene.action.flip(tagsOnLeft);
 			pos = scene.action.top();
 		}
 
 		if (scene.tagResume) {
-			scene.resume.setPos(tagLeft, pos - scene.resume.height());
-			scene.resume.flip(tagLeft == 0);
+			scene.resume.setRect( tagLeft, pos - Tag.SIZE, tagWidth, Tag.SIZE );
+			scene.resume.flip(tagsOnLeft);
 		}
 	}
 	

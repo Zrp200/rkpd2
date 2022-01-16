@@ -22,8 +22,10 @@
 package com.zrp200.rkpd2.actors.buffs;
 
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.ShatteredPixelDungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 
@@ -50,7 +52,10 @@ public class Levitation extends FlavourBuff {
 	public void detach() {
 		target.flying = false;
 		super.detach();
-		Dungeon.level.occupyCell(target );
+		//only press tiles if we're current in the game screen
+		if (ShatteredPixelDungeon.scene() instanceof GameScene) {
+			Dungeon.level.occupyCell(target );
+		}
 	}
 	
 	@Override
