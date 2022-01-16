@@ -2172,7 +2172,7 @@ public class Hero extends Char {
 		for (Item i : belongings){
 			if (i instanceof EquipableItem && i.isEquipped(this)){
 				((EquipableItem) i).activate(this);
-			} else if (i instanceof CloakOfShadows && i.keptThoughLostInvent && hasTalent(Talent.LIGHT_CLOAK)){
+			} else if (i instanceof CloakOfShadows && i.keptThoughLostInvent && hasTalent(Talent.LIGHT_CLOAK, Talent.RK_FREERUNNER)){
 				((CloakOfShadows) i).activate(this);
 			} else if (i instanceof Wand && i.keptThoughLostInvent){
 				if (holster != null && holster.contains(i)){
