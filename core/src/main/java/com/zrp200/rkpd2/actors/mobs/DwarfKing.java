@@ -505,7 +505,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 		if (isInvulnerable(src.getClass())){
 			super.damage(dmg, src);
 			return;
-		} else if (!isAlive() || dmg < 0) return;
+		} else if (!isAlive()) return;
 
 		if(phase == 0) notice();
 
@@ -515,6 +515,12 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 			sprite.showStatus( CharSprite.WARNING, Messages.get(Viscosity.class, "deferred", dmg) );
 		}
 		else if (phase < 2) {
+			if(dmg < 0)
+			{
+				// preparation calls #damage(-1) to update the state after assassination.
+				// but -1 might have weird behavior so we need to handle it as zero.
+				dmg = 0;
+			}
 			// yay custom logic
 			int preHP = HP;
 			if(phaseChange != null) dmg = Random.round(dmg * phaseChange.remaining());
@@ -536,7 +542,8 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 				damage(excess, src);
 			}
 		}
-		else {
+		else // phase is 2.
+		{
 			int preHP = HP;
 			super.damage(dmg, src);
 			if (phase == 2 && shielding() == 0) { // standard entry into phase 3
@@ -610,12 +617,13 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 		}
 	}
 	private void enterPhase3 () {
-			properties.remove(Property.IMMOVABLE);
-			phase = 3;
-			summonsMade = 1; //monk/warlock on 3rd summon
-			sprite.centerEmitter().start( Speck.factory( Speck.SCREAM ), 0.4f, 2 );
-			Sample.INSTANCE.play( CHALLENGE );
-		}
+		HP = PHASE2_HP; // force him into the proper amount of starting HP.
+		properties.remove(Property.IMMOVABLE);
+		phase = 3;
+		summonsMade = 1; //monk/warlock on 3rd summon
+		sprite.centerEmitter().start( Speck.factory( Speck.SCREAM ), 0.4f, 2 );
+		Sample.INSTANCE.play( CHALLENGE );
+	}
 
 	@Override
 	public boolean isAlive() {
