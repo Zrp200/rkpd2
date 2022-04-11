@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -407,6 +407,10 @@ public class DriedRose extends Artifact {
 				} else {
 					ghostID = 0;
 				}
+			}
+
+			if (ghost != null && !ghost.isAlive()){
+				ghost = null;
 			}
 			
 			//rose does not charge while ghost hero is alive

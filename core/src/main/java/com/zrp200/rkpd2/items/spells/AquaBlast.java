@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,49 +21,35 @@
 
 package com.zrp200.rkpd2.items.spells;
 
-import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.actors.Actor;
-import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.Paralysis;
 import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.effects.Splash;
 import com.zrp200.rkpd2.items.potions.exotic.PotionOfStormClouds;
+import com.zrp200.rkpd2.levels.traps.GeyserTrap;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Random;
 
 public class AquaBlast extends TargetedSpell {
 	
 	{
 		image = ItemSpriteSheet.AQUA_BLAST;
+		usesTargeting = true;
 	}
 	
 	@Override
 	protected void affectTarget(Ballistica bolt, Hero hero) {
 		int cell = bolt.collisionPos;
-		
-		Splash.at(cell, 0x00AAFF, 10);
-		
-		for (int i : PathFinder.NEIGHBOURS9){
-			if (i == 0 || Random.Int(5) != 0){
-				Dungeon.level.setCellToWater(false, cell+i);
-			}
+
+		GeyserTrap geyser = new GeyserTrap();
+		geyser.pos = cell;
+		if (bolt.path.size() > bolt.dist+1) {
+			geyser.centerKnockBackDirection = bolt.path.get(bolt.dist + 1);
 		}
-		
-		Char target = Actor.findChar(cell);
-		
-		if (target != null && target != hero){
-			//just enough to skip their current turn
-			Buff.affect(target, Paralysis.class, target.cooldown());
-		}
+		geyser.activate();
 	}
 	
 	@Override
 	public int value() {
 		//prices of ingredients, divided by output quantity
-		return Math.round(quantity * ((60 + 40) / 12f));
+		return Math.round(quantity * ((60 + 40) / 8f));
 	}
 	
 	public static class Recipe extends com.zrp200.rkpd2.items.Recipe.SimpleRecipe {
@@ -75,7 +61,7 @@ public class AquaBlast extends TargetedSpell {
 			cost = 2;
 			
 			output = AquaBlast.class;
-			outQuantity = 12;
+			outQuantity = 8;
 		}
 		
 	}

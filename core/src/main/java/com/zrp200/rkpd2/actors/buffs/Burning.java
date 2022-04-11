@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@ import com.zrp200.rkpd2.actors.mobs.Thief;
 import com.zrp200.rkpd2.effects.particles.ElmoParticle;
 import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.artifacts.TimekeepersHourglass;
 import com.zrp200.rkpd2.items.food.ChargrilledMeat;
 import com.zrp200.rkpd2.items.food.FrozenCarpaccio;
 import com.zrp200.rkpd2.items.food.MysteryMeat;
@@ -91,7 +92,7 @@ public class Burning extends Buff implements Hero.Doom {
 			int damage = Random.NormalIntRange( 1, 3 + Dungeon.depth/4 );
 			Buff.detach( target, Chill.class);
 
-			if (target instanceof Hero) {
+			if (target instanceof Hero && target.buff(TimekeepersHourglass.timeStasis.class) == null) {
 				
 				Hero hero = (Hero)target;
 
@@ -180,6 +181,11 @@ public class Burning extends Buff implements Hero.Doom {
 	@Override
 	public float iconFadePercent() {
 		return Math.max(0, (DURATION - left) / DURATION);
+	}
+
+	@Override
+	public String iconTextDisplay() {
+		return Integer.toString((int)left);
 	}
 
 	@Override

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,8 +40,7 @@ import com.zrp200.rkpd2.services.news.NewsImpl;
 import com.zrp200.rkpd2.services.updates.UpdateImpl;
 import com.zrp200.rkpd2.services.updates.Updates;
 import com.watabou.noosa.Game;
-import com.watabou.noosa.ui.Button;
-import com.watabou.utils.DeviceCompat;
+import com.zrp200.rkpd2.ui.Button;
 import com.watabou.utils.FileUtils;
 
 public class AndroidGame extends AndroidApplication {

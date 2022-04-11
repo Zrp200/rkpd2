@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,6 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
-import com.watabou.noosa.Image;
-import com.watabou.utils.Bundle;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
@@ -40,6 +38,9 @@ import com.zrp200.rkpd2.ui.ActionIndicator;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.ui.QuickSlotButton;
 import com.zrp200.rkpd2.utils.GLog;
+
+import com.watabou.noosa.Image;
+import com.watabou.utils.Bundle;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -145,7 +146,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 				buff.cooldown() + time
 		));
 	}
-
+	
 	@Override
 	public boolean attachTo(Char target) {
 		ActionIndicator.setAction(this);
@@ -219,7 +220,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		float duration = duration();
 		return duration() == 0 ? 0 : Math.max(0, (duration - visualcooldown()) / duration);
 	}
-
+	
 	@Override
 	public String toString() {
 		return Messages.get(this, "name");
@@ -236,9 +237,25 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		args[4] = dispTurns();
 		return Messages.get(this, "desc", (Object[])args);
 	}
-	
+
 	@Override
-	public Image getIcon() {
+	public String actionName() {
+		SpiritBow bow = Dungeon.hero.belongings.getItem(SpiritBow.class);
+
+		if (bow == null) return null;
+
+		switch (bow.augment){
+			case NONE: default:
+				return Messages.get(this, "action_name_snapshot");
+			case SPEED:
+				return Messages.get(this, "action_name_volley");
+			case DAMAGE:
+				return Messages.get(this, "action_name_sniper");
+		}
+	}
+
+	@Override
+	public Image actionIcon() {
 		return new ItemSprite(ItemSpriteSheet.SPIRIT_BOW, null);
 	}
 

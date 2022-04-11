@@ -15,7 +15,7 @@ allprojects {
         appName = 'RKPD2'
         appPackageName = 'com.zrp200.rkpd2'
 
-        appVersionCode = 617
+        appVersionCode = 630
         appVersionName = '0.3.1'
 
         appJavaCompatibility = JavaVersion.VERSION_1_8
@@ -25,6 +25,7 @@ allprojects {
         appAndroidTargetSDK = 31
 
         gdxVersion = '1.10.0'
+        gdxControllersVersion = '2.2.1'
         robovmVersion = '2.3.14'
     }
     version = appVersionName

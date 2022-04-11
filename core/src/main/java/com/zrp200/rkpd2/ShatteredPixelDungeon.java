@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,19 +42,25 @@ public class ShatteredPixelDungeon extends Game {
 			v0_0_1=551,
 			v0_0_0=550;
 
-	public static final int v0_7_5e = 382;
-
-	//versions older than v0.9.0b are no longer supported, and data from them is ignored
-	public static final int v0_9_0b  = 489;
-	public static final int v0_9_1d  = 511;
+	//versions older than v0.9.2b are no longer supported, and data from them is ignored
 	public static final int v0_9_2b  = 531;
 	public static final int v0_9_3c  = 557; //557 on iOS, 554 on other platforms
 
 	public static final int v1_0_3   = 574;
-	public static final int v1_1_0   = 583;
-	
+	public static final int v1_1_2   = 587;
+	public static final int v1_2_0   = 609;
+
 	public ShatteredPixelDungeon( PlatformSupport platform ) {
 		super( sceneClass == null ? WelcomeScene.class : sceneClass, platform );
+
+		//v1.2.0
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.items.weapon.missiles.darts.DreamDart.class,
+				"com.zrp200.rkpd2.items.weapon.missiles.darts.SleepDart" );
+
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.levels.rooms.special.CrystalVaultRoom.class,
+				"com.zrp200.rkpd2.levels.rooms.special.VaultRoom" );
 
 		// no idea if this is needed.
 		com.watabou.utils.Bundle.addAlias(com.zrp200.rkpd2.actors.buffs.SoulMark.class,

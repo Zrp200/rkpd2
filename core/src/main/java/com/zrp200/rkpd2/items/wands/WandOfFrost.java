@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.blobs.Fire;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Chill;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
@@ -33,6 +34,7 @@ import com.zrp200.rkpd2.effects.MagicMissile;
 import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
+import com.zrp200.rkpd2.levels.rooms.special.MagicalFireRoom;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
@@ -60,6 +62,21 @@ public class WandOfFrost extends DamageWand {
 		Heap heap = Dungeon.level.heaps.get(bolt.collisionPos);
 		if (heap != null) {
 			heap.freeze();
+		}
+
+		Fire fire = (Fire) Dungeon.level.blobs.get(Fire.class);
+		if (fire != null && fire.volume > 0) {
+			fire.clear( bolt.collisionPos );
+		}
+
+		MagicalFireRoom.EternalFire eternalFire = (MagicalFireRoom.EternalFire)Dungeon.level.blobs.get(MagicalFireRoom.EternalFire.class);
+		if (eternalFire != null && eternalFire.volume > 0) {
+			eternalFire.clear( bolt.collisionPos );
+			//bolt ends 1 tile short of fire, so check next tile too
+			if (bolt.path.size() > bolt.dist){
+				eternalFire.clear( bolt.path.get(bolt.dist+1) );
+			}
+
 		}
 
 		Char ch = Actor.findChar(bolt.collisionPos);

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,27 +24,32 @@ package com.zrp200.rkpd2.items.weapon.missiles.darts;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
-import com.zrp200.rkpd2.actors.buffs.Sleep;
+import com.zrp200.rkpd2.actors.buffs.MagicalSleep;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
+import com.zrp200.rkpd2.items.potions.exotic.PotionOfCleansing;
 
-public class SleepDart extends TippedDart {
+public class DreamDart extends TippedDart {
 	
 	{
-		image = ItemSpriteSheet.SLEEP_DART;
+		image = ItemSpriteSheet.CLEANSING_DART;
 	}
 	
 	@Override
 	public int proc(Char attacker, final Char defender, int damage) {
-		
+
+		if (attacker.alignment == defender.alignment){
+			PotionOfCleansing.cleanse(defender, PotionOfCleansing.Cleanse.DURATION*2f);
+			return 0;
+		}
 		//need to delay this so damage from the dart doesn't break the sleep
 		new FlavourBuff(){
 			{actPriority = VFX_PRIO;}
 			public boolean act() {
-				Buff.affect( defender, Sleep.class );
+				Buff.affect( defender, MagicalSleep.class );
 				return super.act();
 			}
 		}.attachTo(defender);
-		
+
 		return super.proc(attacker, defender, damage);
 	}
 }

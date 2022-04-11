@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.windows;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.QuickSlot;
 import com.zrp200.rkpd2.Rankings;
 import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.hero.Belongings;
@@ -46,7 +47,7 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.noosa.ui.Button;
+import com.zrp200.rkpd2.ui.Button;
 import com.watabou.noosa.ui.Component;
 
 import java.util.Locale;
@@ -287,21 +288,28 @@ public class WndRanking extends WndTabbed {
 			}
 
 			pos = 0;
-			for (int i = 0; i < 4; i++){
-				if (Dungeon.quickslot.getItem(i) != null){
+
+			int slotsActive = 0;
+			for (int i = 0; i < QuickSlot.SIZE; i++){
+				if (Dungeon.quickslot.isNonePlaceholder(i)){
+					slotsActive++;
+				}
+			}
+
+			float slotWidth = Math.min(28, ((WIDTH - slotsActive + 1) / (float)slotsActive));
+
+			for (int i = 0; i < slotsActive; i++){
+				if (Dungeon.quickslot.isNonePlaceholder(i)){
 					QuickSlotButton slot = new QuickSlotButton(Dungeon.quickslot.getItem(i));
 
-					slot.setRect( pos, 120, 28, 23 );
+					slot.setRect( pos, 120, slotWidth, 23 );
+					PixelScene.align(slot);
 
 					add(slot);
 
-				} else {
-					ColorBlock bg = new ColorBlock( 28, 23, 0x9953564D );
-					bg.x = pos;
-					bg.y = 120;
-					add(bg);
+					pos += slotWidth + 1;
+
 				}
-				pos += 29;
 			}
 		}
 		
@@ -410,19 +418,25 @@ public class WndRanking extends WndTabbed {
 
 	private class QuickSlotButton extends ItemSlot{
 
-		public static final int HEIGHT	= 23;
-
 		private Item item;
 		private ColorBlock bg;
 
 		QuickSlotButton(Item item){
 			super(item);
 			this.item = item;
+
+			if (item.cursed && item.cursedKnown) {
+				bg.ra = +0.2f;
+				bg.ga = -0.1f;
+			} else if (!item.isIdentified()) {
+				bg.ra = 0.1f;
+				bg.ba = 0.1f;
+			}
 		}
 
 		@Override
 		protected void createChildren() {
-			bg = new ColorBlock( 28, HEIGHT, 0x9953564D );
+			bg = new ColorBlock( 1, 1, 0x9953564D );
 			add( bg );
 
 			super.createChildren();
@@ -432,6 +446,8 @@ public class WndRanking extends WndTabbed {
 		protected void layout() {
 			bg.x = x;
 			bg.y = y;
+
+			bg.size( width(), height() );
 
 			super.layout();
 		}

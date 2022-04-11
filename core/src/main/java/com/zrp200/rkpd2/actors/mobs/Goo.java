@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -228,6 +228,7 @@ public class Goo extends Mob {
 	public void damage(int dmg, Object src) {
 		if (!BossHealthBar.isAssigned()){
 			BossHealthBar.assignBoss( this );
+			Dungeon.level.seal();
 		}
 		boolean bleeding = (HP*2 <= HT);
 		super.damage(dmg, src);
@@ -271,6 +272,7 @@ public class Goo extends Mob {
 		super.notice();
 		if (!BossHealthBar.isAssigned()) {
 			BossHealthBar.assignBoss(this);
+			Dungeon.level.seal();
 			yell(Messages.get(this, "notice"));
 			for (Char ch : Actor.chars()){
 				if (ch instanceof DriedRose.GhostHero){

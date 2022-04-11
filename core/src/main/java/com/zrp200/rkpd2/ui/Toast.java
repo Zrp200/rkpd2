@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.ui;
 
 import com.zrp200.rkpd2.Chrome;
 import com.zrp200.rkpd2.scenes.PixelScene;
+import com.watabou.input.GameAction;
 import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.ui.Component;
 
@@ -32,7 +33,7 @@ public class Toast extends Component {
 	private static final float MARGIN_VER	= 2;
 
 	protected NinePatch bg;
-	protected SimpleButton close;
+	protected IconButton close;
 	protected RenderedTextBlock text;
 
 	public Toast( String text ) {
@@ -50,11 +51,17 @@ public class Toast extends Component {
 		bg = Chrome.get( Chrome.Type.TOAST_TR );
 		add( bg );
 
-		close = new SimpleButton( Icons.get( Icons.CLOSE ) ) {
+		close = new IconButton( Icons.get( Icons.CLOSE ) ) {
 			protected void onClick() {
 				onClose();
 			}
+
+			@Override
+			public GameAction keyAction() {
+				return GameAction.BACK;
+			}
 		};
+		close.setSize(close.icon.width(), close.icon.height());
 		add( close );
 
 		text = PixelScene.renderTextBlock(8);

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -173,7 +173,7 @@ public class CloakOfShadows extends Artifact {
 		return new cloakStealth();
 	}
 
-	public static final float LC_FACTOR =.2f, LC_FACTOR_RK =0.5f/3f;
+	public static final float LC_FACTOR =.2f, LC_FACTOR_RK =0.75f/3f;
 	@Override
 	public void charge(Hero target, float amount) {
 		if (charge < chargeCap) {
@@ -284,6 +284,11 @@ public class CloakOfShadows extends Artifact {
 		@Override
 		public float iconFadePercent() {
 			return (4f - turnsToCost) / 4f;
+		}
+
+		@Override
+		public String iconTextDisplay() {
+			return Integer.toString(turnsToCost);
 		}
 
 		@Override

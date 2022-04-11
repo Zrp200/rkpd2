@@ -17,15 +17,14 @@ task updateRoboVMProps(){
     def props = new Properties()
     
     props.setProperty ('appName', appName)
-    //append .apple because com.zrp200.rkpd2 was taken =(
-    props.setProperty ('appPackageName', appPackageName + ".apple")
+    props.setProperty ('appPackageName', appPackageName)
 
     props.setProperty ('appVersionCode', appVersionCode.toString())
     props.setProperty ('appVersionName', appVersionName)
     //parse out just #.#.# from version name, this is an apple requirement
     props.setProperty ('appShortVersionName', (appVersionName =~ /\d+\.\d+\.\d+/)[0])
 
-    props.setProperty ('appMainclass', "com.zrp200.rkpd2.ios.IOSLauncher")
+    props.setProperty ('appMainclass', appPackageName + ".ios.IOSLauncher")
     props.setProperty ('appExecutable', "IOSLauncher")
 
     file("robovm.properties").withWriter { props.store(it, "Dynamically generated, do not commit to version control!") }
@@ -49,4 +48,5 @@ dependencies {
     implementation "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
     implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
     implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-ios"
+    implementation "com.badlogicgames.gdx-controllers:gdx-controllers-ios:$gdxControllersVersion"
 }

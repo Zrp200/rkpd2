@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -159,7 +159,8 @@ public enum Talent {
 		// this is why wrath doesn't have any talents...
 		private boolean ratmogrify() {
 			// FIXME this is really brittle, will be an issue if/when I add OmniAbility
-			return GamesInProgress.selectedClass == HeroClass.RAT_KING
+			return Ratmogrify.useRatroicEnergy
+					|| GamesInProgress.selectedClass == HeroClass.RAT_KING
 					|| hero != null
 						&& (hero.heroClass == HeroClass.RAT_KING
 							|| hero.armorAbility instanceof Ratmogrify);
@@ -524,10 +525,17 @@ public enum Talent {
 		hero.byTalent( (talent, points) -> {
 			//3/5 turns of recharging
 			int duration = 1 + 2*points;
-			ArtifactRecharge artifactRecharge = Buff.affect( hero, ArtifactRecharge.class);
-			if(talent == MYSTICAL_MEAL) artifactRecharge.prolong((float)Math.ceil(duration*1.5)); // 5-8 turns of recharge!!!
-			else artifactRecharge.set(duration);
-			artifactRecharge.ignoreHornOfPlenty = foodSource instanceof HornOfPlenty;
+			ArtifactRecharge buff = Buff.affect( hero, ArtifactRecharge.class);
+			boolean newBuff = false;
+			if(talent == MYSTICAL_MEAL) {
+				if(buff.left() == 0) newBuff = true;
+				buff.prolong((float)Math.ceil(duration*1.5)); // 5-8 turns of recharge!!!
+			}
+			else if(buff.left() < duration){
+				newBuff = true;
+				buff.set(duration);
+			}
+			if(newBuff) buff.ignoreHornOfPlenty = foodSource instanceof HornOfPlenty;
 			ScrollOfRecharging.charge( hero );
 		}, ROYAL_MEAL, MYSTICAL_MEAL );
 
@@ -628,7 +636,7 @@ public enum Talent {
 
 	public static void onUpgradeScrollUsed( Hero hero ){
 		if (hero.hasTalent(ENERGIZING_UPGRADE,RESTORATION)){
-			int charge = 1+2*hero.pointsInTalent(ENERGIZING_UPGRADE);
+			int charge = 2+2*hero.pointsInTalent(ENERGIZING_UPGRADE);
 			MagesStaff staff = hero.belongings.getItem(MagesStaff.class);
 			int pointDiff = hero.pointsInTalent(RESTORATION) - hero.pointsInTalent(ENERGIZING_UPGRADE);
 			boolean charged = false;
@@ -749,10 +757,11 @@ public enum Talent {
 		heal = Math.min(heal, hero.HT-hero.HP);
 		if(heal > 0) {
 			hero.HP += heal;
-			Emitter e = hero.sprite.emitter();
-			if (e != null) e.burst(Speck.factory(Speck.HEALING), max(1,Math.round(heal*2f/3)));
+			if(hero.sprite != null) {
+				Emitter e = hero.sprite.emitter();
+				if (e != null) e.burst(Speck.factory(Speck.HEALING), max(1,Math.round(heal*2f/3)));
+			}
 		}
-
 		hero.byTalent( (talent, points) -> {
 			//2/3 turns of wand recharging
 			int duration = 1 + points;
@@ -997,10 +1006,6 @@ public enum Talent {
 		for (int i = 0; i < MAX_TALENT_TIERS; i++){
 			LinkedHashMap<Talent, Integer> tier = hero.talents.get(i);
 			Bundle tierBundle = bundle.contains(TALENT_TIER+(i+1)) ? bundle.getBundle(TALENT_TIER+(i+1)) : null;
-			//pre-0.9.1 saves
-			if (tierBundle == null && i == 0 && bundle.contains("talents")){
-				tierBundle = bundle.getBundle("talents");
-			}
 
 			if (tierBundle != null){
 				for (Talent talent : tier.keySet()){

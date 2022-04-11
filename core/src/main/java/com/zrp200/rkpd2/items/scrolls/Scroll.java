@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -211,8 +211,8 @@ public abstract class Scroll extends Item {
 	}
 	
 	@Override
-	public Item identify() {
-		super.identify();
+	public Item identify( boolean byHero ) {
+		super.identify(byHero);
 
 		if (!isKnown()) {
 			setKnown();

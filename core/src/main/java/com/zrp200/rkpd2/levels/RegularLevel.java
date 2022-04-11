@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,7 @@ import com.zrp200.rkpd2.levels.traps.FrostTrap;
 import com.zrp200.rkpd2.levels.traps.Trap;
 import com.zrp200.rkpd2.levels.traps.WornDartTrap;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -186,7 +187,7 @@ public abstract class RegularLevel extends Level {
 	}
 	
 	@Override
-	public int nMobs() {
+	public int mobLimit() {
 		if (Dungeon.depth <= 1) return 0;
 
 		int mobs = 3 + Dungeon.depth % 5 + Random.Int(3);
@@ -199,7 +200,7 @@ public abstract class RegularLevel extends Level {
 	@Override
 	protected void createMobs() {
 		//on floor 1, 8 pre-set mobs are created so the player can get level 2.
-		int mobsToSpawn = Dungeon.depth == 1 ? 8 : nMobs();
+		int mobsToSpawn = Dungeon.depth == 1 ? 8 : mobLimit();
 
 		ArrayList<Room> stdRooms = new ArrayList<>();
 		for (Room room : rooms) {
@@ -307,10 +308,13 @@ public abstract class RegularLevel extends Level {
 			if (room == null) {
 				continue;
 			}
-			
-			cell = pointToCell(room.random());
-			if (passable[cell] && (!Char.hasProp(ch, Char.Property.LARGE) || openSpace[cell])) {
-				return cell;
+
+			ArrayList<Point> points = room.charPlaceablePoints(this);
+			if (!points.isEmpty()){
+				cell = pointToCell(Random.element(points));
+				if (passable[cell] && (!Char.hasProp(ch, Char.Property.LARGE) || openSpace[cell])) {
+					return cell;
+				}
 			}
 			
 		}
@@ -425,25 +429,34 @@ public abstract class RegularLevel extends Level {
 		}
 
 		//cached rations try to drop in a special room on floors 2/3/4/6/7/8, to a max of 4/6 (3/5 for rogue, but actual rations)
-		if (Dungeon.hero.hasTalent(Talent.CACHED_RATIONS,Talent.ROYAL_PRIVILEGE)){
+		if (Dungeon.hero.hasTalent(Talent.CACHED_RATIONS,Talent.ROYAL_PRIVILEGE)) {
 			Talent.CachedRationsDropped dropped = Buff.affect(Dungeon.hero, Talent.CachedRationsDropped.class);
 			int large = Dungeon.hero.pointsInTalent(Talent.CACHED_RATIONS),
-				small = Dungeon.hero.pointsInTalent(Talent.ROYAL_PRIVILEGE);
-			if(small > 0) small = (small+1)*2;
-			if(large > 0) large++;
+					small = Dungeon.hero.pointsInTalent(Talent.ROYAL_PRIVILEGE);
+			if (small > 0) small = (small + 1) * 2;
+			if (large > 0) large++;
 			int total = small + large;
-			if (dropped.count() < total){
+			if (dropped.count() < total) {
 				int cell;
+				int tries = 100;
+				boolean valid;
 				do {
 					cell = randomDropCell(SpecialRoom.class);
-				} while (room(cell) instanceof SecretRoom);
-				if (map[cell] == Terrain.HIGH_GRASS || map[cell] == Terrain.FURROWED_GRASS) {
-					map[cell] = Terrain.GRASS;
-					losBlocking[cell] = false;
+					valid = cell != -1 && !(room(cell) instanceof SecretRoom)
+							&& !(room(cell) instanceof ShopRoom)
+							&& map[cell] != Terrain.EMPTY_SP
+							&& map[cell] != Terrain.WATER
+							&& map[cell] != Terrain.PEDESTAL;
+				} while (tries-- > 0 && !valid);
+				if (valid) {
+					if (map[cell] == Terrain.HIGH_GRASS || map[cell] == Terrain.FURROWED_GRASS) {
+						map[cell] = Terrain.GRASS;
+						losBlocking[cell] = false;
+					}
+					// rogue gets regular food.
+					drop(dropped.count() < large ? new Food() : new SmallRation(), cell).type = Heap.Type.CHEST;
+					//dropped.countUp(1);
 				}
-				// rogue gets regular food.
-				drop( dropped.count() < large ? new Food() : new SmallRation(), cell).type = Heap.Type.CHEST;
-				dropped.countUp(1);
 			}
 		}
 

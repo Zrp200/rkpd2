@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -214,6 +214,7 @@ public class Item implements Bundlable {
 		if (Dungeon.hero != null && Dungeon.hero.isAlive()) {
 			Badges.validateItemLevelAquired( this );
 			Talent.onItemCollected( Dungeon.hero, this );
+			if (isIdentified()) Catalog.setSeen(getClass());
 		}
 
 		if (stackable) {
@@ -229,8 +230,8 @@ public class Item implements Bundlable {
 		items.add( this );
 		collected = true;
 		Dungeon.quickslot.replacePlaceholder(this);
-		updateQuickslot();
 		Collections.sort( items, itemComparator );
+		updateQuickslot();
 		return true;
 
 	}
@@ -286,13 +287,13 @@ public class Item implements Bundlable {
 	
 	public final Item detachAll( Bag container ) {
 		Dungeon.quickslot.clearItem( this );
-		updateQuickslot();
 
 		for (Item item : container.items) {
 			if (item == this) {
 				container.items.remove(this);
 				item.onDetach();
 				container.grabItems(); //try to put more items into the bag as it now has free space
+				updateQuickslot();
 				return this;
 			} else if (item instanceof Bag) {
 				Bag bag = (Bag)item;
@@ -301,7 +302,8 @@ public class Item implements Bundlable {
 				}
 			}
 		}
-		
+
+		updateQuickslot();
 		return this;
 	}
 	
@@ -311,7 +313,12 @@ public class Item implements Bundlable {
 
 	protected void onDetach(){}
 
-	//returns the true level of the item, only affected by modifiers which are persistent (e.g. curse infusion)
+	//returns the true level of the item, ignoring all modifiers aside from upgrades
+	public final int trueLevel(){
+		return level;
+	}
+
+	//returns the persistant level of the item, only affected by modifiers which are persistent (e.g. curse infusion)
 	public int level(){
 		return level;
 	}
@@ -385,17 +392,22 @@ public class Item implements Bundlable {
 	public boolean isEquipped( Hero hero ) {
 		return false;
 	}
-	
-	public Item identify() {
 
-		if (Dungeon.hero != null && Dungeon.hero.isAlive()){
+	public final Item identify(){
+		return identify(true);
+	}
+
+	public Item identify( boolean byHero ) {
+
+		if (byHero && Dungeon.hero != null && Dungeon.hero.isAlive()){
 			Catalog.setSeen(getClass());
 			if (!isIdentified()) Talent.onItemIdentified(Dungeon.hero, this);
 		}
 
 		levelKnown = true;
 		cursedKnown = true;
-		
+		Item.updateQuickslot();
+
 		return this;
 	}
 	
@@ -485,7 +497,7 @@ public class Item implements Bundlable {
 	}
 
 	public static void updateQuickslot() {
-		QuickSlotButton.refresh();
+		GameScene.updateItemDisplays = true;
 	}
 	
 	private static final String QUANTITY		= "quantity";

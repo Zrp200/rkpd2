@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -245,8 +245,7 @@ public class Armor extends EquipableItem {
 		this.seal = seal;
 		if (seal.level() > 0){
 			//doesn't trigger upgrading logic such as affecting curses/glyphs
-			int newLevel = level()+seal.level();
-			if(curseInfusionBonus) newLevel--;
+			int newLevel = trueLevel()+seal.level();
 			level(newLevel);
 			Badges.validateItemLevelAquired(this);
 		}
@@ -387,7 +386,9 @@ public class Armor extends EquipableItem {
 	
 	@Override
 	public int level() {
-		return super.level() + (curseInfusionBonus ? 1 : 0);
+		int level = super.level();
+		if (curseInfusionBonus) level += 1 + level/6;
+		return level;
 	}
 	
 	/* moved to superclass

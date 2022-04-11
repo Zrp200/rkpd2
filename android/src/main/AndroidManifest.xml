@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
 	package="com.zrp200.rkpd2.android"
-    xmlns:tools="http://schemas.android.com/tools"
 	android:installLocation="auto"
 	android:targetSandboxVersion="2"
 	xmlns:dist="http://schemas.android.com/apk/distribution">
@@ -14,6 +14,9 @@
 	<uses-permission android:name="android.permission.VIBRATE" />
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+	<!-- We perform a runtime check to ensure controllers are disabled on API 14 & 15 -->
+	<uses-sdk tools:overrideLibrary="com.badlogicgames.gdx.controllers" />
 
 	<!-- Note that the game doesn't truly support small screen resolutions,
 		it instead forces downscaling to work on these displays.-->

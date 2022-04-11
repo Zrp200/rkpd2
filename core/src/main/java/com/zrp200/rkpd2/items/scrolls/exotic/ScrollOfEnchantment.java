@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ import com.zrp200.rkpd2.effects.Enchanting;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.bags.Bag;
+import com.zrp200.rkpd2.items.scrolls.InventoryScroll;
 import com.zrp200.rkpd2.items.stones.StoneOfEnchantment;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.Weapon;
@@ -38,6 +39,7 @@ import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.Icons;
+import com.zrp200.rkpd2.ui.Window;
 import com.zrp200.rkpd2.utils.GLog;
 import com.zrp200.rkpd2.windows.WndBag;
 import com.zrp200.rkpd2.windows.WndMessage;
@@ -52,16 +54,44 @@ public class ScrollOfEnchantment extends ExoticScroll {
 
 		unique = true;
 	}
+
+	protected static boolean identifiedByUse = false;
 	
 	@Override
 	public void doRead() {
-		identify();
-		
+		if (!isKnown()) {
+			identify();
+			identifiedByUse = true;
+		} else {
+			identifiedByUse = false;
+		}
 		GameScene.selectItem( itemSelector );
 	}
 
 	public static boolean enchantable( Item item ){
 		return (item instanceof MeleeWeapon || item instanceof SpiritBow || item instanceof Armor);
+	}
+
+	private void confirmCancelation() {
+		GameScene.show( new WndOptions(new ItemSprite(this),
+				Messages.titleCase(name()),
+				Messages.get(InventoryScroll.class, "warning"),
+				Messages.get(InventoryScroll.class, "yes"),
+				Messages.get(InventoryScroll.class, "no") ) {
+			@Override
+			protected void onSelect( int index ) {
+				switch (index) {
+					case 0:
+						curUser.spendAndNext( TIME_TO_READ );
+						identifiedByUse = false;
+						break;
+					case 1:
+						GameScene.selectItem(itemSelector);
+						break;
+				}
+			}
+			public void onBackPressed() {}
+		} );
 	}
 
 	@SuppressWarnings("unchecked")
@@ -196,8 +226,11 @@ public class ScrollOfEnchantment extends ExoticScroll {
 					}
 				});
 			} else {
-				//TODO if this can ever be found un-IDed, need logic for that
-				curItem.collect();
+				if (!identifiedByUse){
+					curItem.collect();
+				} else {
+					((ScrollOfEnchantment)curItem).confirmCancelation();
+				}
 			}
 		}
 	};

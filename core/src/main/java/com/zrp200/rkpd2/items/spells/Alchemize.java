@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,10 +50,12 @@ public class Alchemize extends Spell {
 	{
 		image = ItemSpriteSheet.ALCHEMIZE;
 	}
+
+	private static WndBag parentWnd;
 	
 	@Override
 	protected void onCast(Hero hero) {
-		GameScene.selectItem( itemSelector );
+		parentWnd = GameScene.selectItem( itemSelector );
 	}
 	
 	@Override
@@ -69,7 +71,7 @@ public class Alchemize extends Spell {
 			inputs =  new Class[]{ArcaneCatalyst.class};
 			inQuantity = new int[]{1};
 			
-			cost = 3;
+			cost = 2;
 			
 			output = Alchemize.class;
 			outQuantity = 8;
@@ -92,7 +94,9 @@ public class Alchemize extends Spell {
 		@Override
 		public void onSelect( Item item ) {
 			if (item != null) {
-				WndBag parentWnd = GameScene.selectItem( itemSelector );
+				if (parentWnd != null) {
+					parentWnd = GameScene.selectItem(itemSelector);
+				}
 				GameScene.show( new WndAlchemizeItem( item, parentWnd ) );
 			}
 		}
@@ -120,8 +124,8 @@ public class Alchemize extends Spell {
 						@Override
 						protected void onClick() {
 							WndTradeItem.sell(item);
-							consumeAlchemize();
 							hide();
+							consumeAlchemize();
 						}
 					};
 					btnSell.setRect(0, pos + GAP, width, BTN_HEIGHT);
@@ -137,8 +141,8 @@ public class Alchemize extends Spell {
 						@Override
 						protected void onClick() {
 							WndTradeItem.sellOne(item);
-							consumeAlchemize();
 							hide();
+							consumeAlchemize();
 						}
 					};
 					btnSell1.setRect(0, pos + GAP, width, BTN_HEIGHT);
@@ -148,8 +152,8 @@ public class Alchemize extends Spell {
 						@Override
 						protected void onClick() {
 							WndTradeItem.sell(item);
-							consumeAlchemize();
 							hide();
+							consumeAlchemize();
 						}
 					};
 					btnSellAll.setRect(0, btnSell1.bottom() + 1, width, BTN_HEIGHT);
@@ -168,8 +172,8 @@ public class Alchemize extends Spell {
 						@Override
 						protected void onClick() {
 							WndEnergizeItem.energize(item);
-							consumeAlchemize();
 							hide();
+							consumeAlchemize();
 						}
 					};
 					btnEnergize.setRect(0, pos + GAP, width, BTN_HEIGHT);
@@ -185,8 +189,8 @@ public class Alchemize extends Spell {
 						@Override
 						protected void onClick() {
 							WndEnergizeItem.energizeOne(item);
-							consumeAlchemize();
 							hide();
+							consumeAlchemize();
 						}
 					};
 					btnEnergize1.setRect(0, pos + GAP, width, BTN_HEIGHT);
@@ -196,8 +200,8 @@ public class Alchemize extends Spell {
 						@Override
 						protected void onClick() {
 							WndEnergizeItem.energize(item);
-							consumeAlchemize();
 							hide();
+							consumeAlchemize();
 						}
 					};
 					btnEnergizeAll.setRect(0, btnEnergize1.bottom() + 1, width, BTN_HEIGHT);
@@ -217,22 +221,17 @@ public class Alchemize extends Spell {
 			Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 			if (curItem.quantity() <= 1){
 				curItem.detachAll(Dungeon.hero.belongings.backpack);
-				owner.hide();
-				owner = null;
+				if (owner != null) {
+					owner.hide();
+				}
 			} else {
 				curItem.detach(Dungeon.hero.belongings.backpack);
-			}
-		}
-
-		@Override
-		public void hide() {
-
-			super.hide();
-
-			if (owner != null) {
-				owner.hide();
+				if (owner != null){
+					owner.hide();
+				}
 				GameScene.selectItem(itemSelector);
 			}
 		}
+
 	}
 }

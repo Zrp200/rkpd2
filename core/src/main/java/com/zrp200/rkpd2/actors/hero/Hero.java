@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,10 @@ import com.zrp200.rkpd2.actors.hero.abilities.warrior.Endure;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.Monk;
 import com.zrp200.rkpd2.actors.mobs.Snake;
+import com.zrp200.rkpd2.actors.mobs.npcs.NPC;
+import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.CheckedCell;
+import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.effects.SpellSprite;
 import com.zrp200.rkpd2.items.Amulet;
 import com.zrp200.rkpd2.items.Ankh;
@@ -50,6 +53,7 @@ import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.items.Heap.Type;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.KindOfWeapon;
+import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.items.armor.glyphs.AntiMagic;
 import com.zrp200.rkpd2.items.armor.glyphs.Brimstone;
@@ -60,6 +64,7 @@ import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
 import com.zrp200.rkpd2.items.artifacts.DriedRose;
 import com.zrp200.rkpd2.items.artifacts.EtherealChains;
 import com.zrp200.rkpd2.items.artifacts.HornOfPlenty;
+import com.zrp200.rkpd2.items.artifacts.MasterThievesArmband;
 import com.zrp200.rkpd2.items.artifacts.TalismanOfForesight;
 import com.zrp200.rkpd2.items.artifacts.TimekeepersHourglass;
 import com.zrp200.rkpd2.items.bags.MagicalHolster;
@@ -477,10 +482,11 @@ public class Hero extends Char {
 	}
 	
 	public int tier() {
-		if (belongings.armor() instanceof ClassArmor){
+		Armor armor = belongings.armor();
+		if (armor instanceof ClassArmor){
 			return 6;
-		} else if (belongings.armor() != null){
-			return belongings.armor().tier;
+		} else if (armor != null){
+			return armor.tier;
 		} else {
 			return 0;
 		}
@@ -525,7 +531,7 @@ public class Hero extends Char {
 			}
 		}
 		if(buff(Talent.WarriorLethalMomentumTracker.Chain.class) != null) accuracy *= 2;
-		
+
 		if (wep != null) {
 			return (int)(attackSkill * accuracy * wep.accuracyFactor( this ));
 		} else {
@@ -1048,7 +1054,12 @@ public class Hero extends Char {
 					&& Notes.keyCount(new IronKey(Dungeon.depth)) > 0) {
 				
 				hasKey = true;
-				
+
+			} else if (door == Terrain.CRYSTAL_DOOR
+					&& Notes.keyCount(new CrystalKey(Dungeon.depth)) > 0) {
+
+				hasKey = true;
+
 			} else if (door == Terrain.LOCKED_EXIT
 					&& Notes.keyCount(new SkeletonKey(Dungeon.depth)) > 0) {
 
@@ -1584,7 +1595,7 @@ public class Hero extends Char {
 				curAction = new HeroAction.OpenChest( cell );
 			}
 			
-		} else if (Dungeon.level.map[cell] == Terrain.LOCKED_DOOR || Dungeon.level.map[cell] == Terrain.LOCKED_EXIT) {
+		} else if (Dungeon.level.map[cell] == Terrain.LOCKED_DOOR || Dungeon.level.map[cell] == Terrain.CRYSTAL_DOOR || Dungeon.level.map[cell] == Terrain.LOCKED_EXIT) {
 			
 			curAction = new HeroAction.Unlock( cell );
 			
@@ -1627,7 +1638,10 @@ public class Hero extends Char {
 		
 		AlchemistsToolkit.kitEnergy kit = buff(AlchemistsToolkit.kitEnergy.class);
 		if (kit != null) kit.gainCharge(percent);
-		
+
+		MasterThievesArmband.Thievery armband = buff(MasterThievesArmband.Thievery.class);
+		if (armband != null) armband.gainCharge(percent);
+
 		Berserk berserk = buff(Berserk.class);
 		if (berserk != null) berserk.recover(percent);
 		
@@ -1867,8 +1881,14 @@ public class Hero extends Char {
 			}
 		}
 
-		GameScene.gameOver();
-		
+		Game.runOnRenderThread(new Callback() {
+			@Override
+			public void call() {
+				GameScene.gameOver();
+				Sample.INSTANCE.play( Assets.Sounds.DEATH );
+			}
+		});
+
 		if (cause instanceof Hero.Doom) {
 			((Hero.Doom)cause).onDeath();
 		}
@@ -1957,6 +1977,13 @@ public class Hero extends Char {
 				if (door == Terrain.LOCKED_DOOR) {
 					hasKey = Notes.remove(new IronKey(Dungeon.depth));
 					if (hasKey) Level.set(doorCell, Terrain.DOOR);
+				} else if (door == Terrain.CRYSTAL_DOOR) {
+					hasKey = Notes.remove(new CrystalKey(Dungeon.depth));
+					if (hasKey) {
+						Level.set(doorCell, Terrain.EMPTY);
+						Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
+						CellEmitter.get( doorCell ).start( Speck.factory( Speck.DISCOVER ), 0.025f, 20 );
+					}
 				} else {
 					hasKey = Notes.remove(new SkeletonKey(Dungeon.depth));
 					if (hasKey) Level.set(doorCell, Terrain.UNLOCKED_EXIT);
@@ -1964,7 +1991,6 @@ public class Hero extends Char {
 				
 				if (hasKey) {
 					GameScene.updateKeyDisplay();
-					Level.set(doorCell, door == Terrain.LOCKED_DOOR ? Terrain.DOOR : Terrain.UNLOCKED_EXIT);
 					GameScene.updateMap(doorCell);
 					spend(Key.TIME_TO_UNLOCK);
 				}
@@ -2184,6 +2210,8 @@ public class Hero extends Char {
 				((MagesStaff) i).applyWandChargeBuff(this);
 			}
 		}
+
+		updateHT(false);
 	}
 
 	@Override

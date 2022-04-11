@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,13 +56,15 @@ public class ScrollOfRecharging extends Scroll {
 	}
 	
 	public static void charge( Char user, float intensity ) {
-		Emitter e = user.sprite.centerEmitter();
-		if (e != null) e.burst( EnergyParticle.FACTORY, (int)Math.ceil(15*intensity) );
+		if (user.sprite != null) {
+			Emitter e = user.sprite.centerEmitter();
+			if (e != null) e.burst( EnergyParticle.FACTORY, (int)Math.ceil(15*intensity) );
+		}
 	}
 	public static void charge( Char user ) {
 		charge(user, 1f);
 	}
-	
+
 	@Override
 	public int value() {
 		return isKnown() ? 30 * quantity : super.value();

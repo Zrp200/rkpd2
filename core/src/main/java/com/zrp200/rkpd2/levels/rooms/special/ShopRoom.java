@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -159,25 +159,25 @@ public class ShopRoom extends SpecialRoom {
 		switch (Dungeon.depth) {
 		case 6: default:
 			w = (MeleeWeapon) Generator.random(Generator.wepTiers[1]);
-			itemsToSpawn.add( Generator.random(Generator.misTiers[1]).quantity(2).identify() );
+			itemsToSpawn.add( Generator.random(Generator.misTiers[1]).quantity(2).identify(false) );
 			a = new LeatherArmor();
 			break;
 			
 		case 11:
 			w = (MeleeWeapon) Generator.random(Generator.wepTiers[2]);
-			itemsToSpawn.add( Generator.random(Generator.misTiers[2]).quantity(2).identify() );
+			itemsToSpawn.add( Generator.random(Generator.misTiers[2]).quantity(2).identify(false) );
 			a = new MailArmor();
 			break;
 			
 		case 16:
 			w = (MeleeWeapon) Generator.random(Generator.wepTiers[3]);
-			itemsToSpawn.add( Generator.random(Generator.misTiers[3]).quantity(2).identify() );
+			itemsToSpawn.add( Generator.random(Generator.misTiers[3]).quantity(2).identify(false) );
 			a = new ScaleArmor();
 			break;
 
 		case 20: case 21:
 			w = (MeleeWeapon) Generator.random(Generator.wepTiers[4]);
-			itemsToSpawn.add( Generator.random(Generator.misTiers[4]).quantity(2).identify() );
+			itemsToSpawn.add( Generator.random(Generator.misTiers[4]).quantity(2).identify(false) );
 			a = new PlateArmor();
 			itemsToSpawn.add( new Torch() );
 			itemsToSpawn.add( new Torch() );
@@ -185,15 +185,15 @@ public class ShopRoom extends SpecialRoom {
 			break;
 		}
 		while(w.cursed) w = (MeleeWeapon) w.random();
-		w.identify();
+		w.identify(false);
 		itemsToSpawn.add(w);
 
 		do { a = (Armor) a.random(); } while(a.cursed);
-		itemsToSpawn.add(a.identify());
+		itemsToSpawn.add(a.identify(false));
 
 		itemsToSpawn.add( TippedDart.randomTipped(2) );
 
-		itemsToSpawn.add( new Alchemize().quantity(Random.IntRange(3, 4)));
+		itemsToSpawn.add( new Alchemize().quantity(Random.IntRange(2, 3)));
 
 		itemsToSpawn.add(ChooseBag(Dungeon.hero.belongings));
 

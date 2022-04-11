@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@ import com.zrp200.rkpd2.services.updates.Updates;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.RatKingSprite;
 import com.zrp200.rkpd2.ui.Archs;
+import com.zrp200.rkpd2.ui.ExitButton;
 import com.zrp200.rkpd2.ui.Icons;
 import com.zrp200.rkpd2.ui.StyledButton;
 import com.zrp200.rkpd2.ui.Window;
@@ -208,6 +209,12 @@ public class TitleScene extends PixelScene {
 		version.x = w - version.width() - 4;
 		version.y = h - version.height() - 2;
 		add( version );
+
+		if (DeviceCompat.isDesktop()) {
+			ExitButton btnExit = new ExitButton();
+			btnExit.setPos( w - btnExit.width(), 0 );
+			add( btnExit );
+		}
 
 		fadeIn();
 	}

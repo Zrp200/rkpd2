@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ import com.zrp200.rkpd2.ui.RedButton;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
 import com.zrp200.rkpd2.ui.Window;
 import com.watabou.noosa.Game;
-import com.watabou.noosa.ui.Button;
+import com.zrp200.rkpd2.ui.Button;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.FileUtils;
 
@@ -149,8 +149,7 @@ public class WndGameInProgress extends Window {
 					@Override
 					protected void onSelect( int index ) {
 						if (index == 0) {
-							FileUtils.deleteDir(GamesInProgress.gameFolder(slot));
-							GamesInProgress.setUnknown(slot);
+							Dungeon.deleteGame(slot, true);
 							ShatteredPixelDungeon.switchNoFade(StartScene.class);
 						}
 					}

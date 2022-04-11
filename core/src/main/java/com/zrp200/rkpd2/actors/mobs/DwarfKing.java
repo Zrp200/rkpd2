@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -196,6 +196,10 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 
 	@Override
 	protected boolean act() {
+		if (pos == CityBossLevel.throne){
+			throwItems();
+		}
+
 		if(yellSpecialNotice && paralysed == 0) { // takes him a hot second to realize who he's fighting.
 			yell(Messages.get(this, "notice2"));
 			yellSpecialNotice = false;

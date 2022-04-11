@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.items.weapon.missiles.darts;
 
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.effects.Lightning;
 import com.zrp200.rkpd2.sprites.CharSprite;
@@ -41,7 +42,7 @@ public class ShockingDart extends TippedDart {
 	@Override
 	public int proc(Char attacker, Char defender, int damage) {
 		
-		defender.damage(Random.NormalIntRange(8, 12), this);
+		defender.damage(Random.NormalIntRange(5 + Dungeon.depth/4, 10 + Dungeon.depth/4), this);
 		
 		CharSprite s = defender.sprite;
 		if (s != null && s.parent != null) {

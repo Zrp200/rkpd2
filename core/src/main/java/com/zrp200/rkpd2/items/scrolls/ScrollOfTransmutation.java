@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.items.scrolls;
 
 import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.QuickSlot;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.effects.Transmuting;
 import com.zrp200.rkpd2.items.EquipableItem;
@@ -83,14 +84,25 @@ public class ScrollOfTransmutation extends InventoryScroll {
 			GLog.n( Messages.get(this, "nothing") );
 			curItem.collect( curUser.belongings.backpack );
 		} else {
-			if (item.isEquipped(Dungeon.hero)){
-				item.cursed = false; //to allow it to be unequipped
-				((EquipableItem)item).doUnequip(Dungeon.hero, false);
-				((EquipableItem)result).doEquip(Dungeon.hero);
-			} else {
-				item.detach(Dungeon.hero.belongings.backpack);
-				if (!result.collect()){
-					Dungeon.level.drop(result, curUser.pos).sprite.drop();
+			if (result != item) {
+				int slot = Dungeon.quickslot.getSlot(item);
+				if (item.isEquipped(Dungeon.hero)) {
+					item.cursed = false; //to allow it to be unequipped
+					((EquipableItem) item).doUnequip(Dungeon.hero, false);
+					((EquipableItem) result).doEquip(Dungeon.hero);
+				} else {
+					item.detach(Dungeon.hero.belongings.backpack);
+					if (!result.collect()) {
+						Dungeon.level.drop(result, curUser.pos).sprite.drop();
+					} else if (Dungeon.hero.belongings.getSimilar(result) != null){
+						result = Dungeon.hero.belongings.getSimilar(result);
+					}
+				}
+				if (slot != -1
+						&& result.defaultAction != null
+						&& !Dungeon.quickslot.isNonePlaceholder(slot)
+						&& Dungeon.hero.belongings.contains(result)){
+					Dungeon.quickslot.setSlot(slot, result);
 				}
 			}
 			if (result.isIdentified()){
@@ -170,8 +182,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 			n = (Weapon) Reflection.newInstance(c.classes[Random.chances(c.probs)]);
 		} while (Challenges.isItemBlocked(n) || n.getClass() == w.getClass());
 		
-		int level = w.level();
-		if (w.curseInfusionBonus) level--;
+		int level = w.trueLevel();
 		if (level > 0) {
 			n.upgrade( level );
 		} else if (level < 0) {
@@ -234,9 +245,7 @@ public class ScrollOfTransmutation extends InventoryScroll {
 		} while ( Challenges.isItemBlocked(n) || n.getClass() == w.getClass());
 		
 		n.level( 0 );
-		int level = w.level();
-		if (w.curseInfusionBonus) level--;
-		level -= w.resinBonus;
+		int level = w.trueLevel();
 		n.upgrade( level );
 
 		n.levelKnown = w.levelKnown;

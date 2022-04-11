@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@ import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.particles.ElmoParticle;
+import com.zrp200.rkpd2.items.ArcaneResin;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.artifacts.Artifact;
 import com.zrp200.rkpd2.items.bags.Bag;
@@ -162,7 +163,9 @@ public class MagesStaff extends MeleeWeapon {
 		points = Dungeon.hero.shiftedPoints(Talent.MYSTICAL_CHARGE, Talent.RK_BATTLEMAGE);
 		if (points > 0){
 			for (Buff b : Dungeon.hero.buffs()){
-				if (b instanceof Artifact.ArtifactBuff) ((Artifact.ArtifactBuff) b).charge(Dungeon.hero, points/2f);
+				if (b instanceof Artifact.ArtifactBuff) {
+					if (!((Artifact.ArtifactBuff) b).isCursed()) ((Artifact.ArtifactBuff) b).charge(Dungeon.hero, points/2f);
+				}
 			}
 		}
 
@@ -209,7 +212,7 @@ public class MagesStaff extends MeleeWeapon {
 		if (owner == Dungeon.hero) {
 			boolean preserve = false;
 			if(Dungeon.hero.hasTalent(Talent.WAND_PRESERVATION, Talent.POWER_WITHIN)) {
-				int max = Dungeon.hero.pointsInTalent(Talent.WAND_PRESERVATION) < 2 ? 3 : 8;
+				int max = Dungeon.hero.pointsInTalent(Talent.WAND_PRESERVATION) < 2 ? 5 : 8;
 				Talent.WandPreservationCounter counter = Buff.affect(Dungeon.hero, Talent.WandPreservationCounter.class);
 				if (counter.count() < max && (Dungeon.hero.hasTalent(Talent.WAND_PRESERVATION) || Dungeon.hero.pointsInTalent(Talent.POWER_WITHIN) == 2 || Random.Int(3) > 0)){
 					counter.countUp(1);
@@ -228,6 +231,13 @@ public class MagesStaff extends MeleeWeapon {
 				}
 				GLog.newLine();
 				GLog.p(Messages.get(this, "preserved"));
+			} else {
+				ArcaneResin resin = new ArcaneResin();
+				if (!resin.collect()) {
+					Dungeon.level.drop(resin, owner.pos);
+				}
+				GLog.newLine();
+				GLog.p(Messages.get(this, "preserved_resin"));
 			}
 		}
 
@@ -237,10 +247,10 @@ public class MagesStaff extends MeleeWeapon {
 		wand.updateLevel();
 
 		//syncs the level of the two items.
-		int targetLevel = Math.max(this.level() - (curseInfusionBonus ? 1 : 0), wand.level());
+		int targetLevel = Math.max(this.trueLevel(), wand.trueLevel());
 
 		//if the staff's level is being overridden by the wand, preserve 1 upgrade
-		if (wand.level() >= this.level() && this.level() > (curseInfusionBonus ? 1 : 0)) targetLevel++;
+		if (wand.trueLevel() >= this.trueLevel() && this.trueLevel() > 0) targetLevel++;
 
 		// determine how many levels were wasted
 		wastedUpgrades = this.level() + wand.level() - targetLevel;
@@ -249,7 +259,11 @@ public class MagesStaff extends MeleeWeapon {
 		this.wand = wand;
 		updateWand(false);
 		wand.curCharges = Math.min(wand.maxCharges, wand.curCharges+oldStaffcharges);
-		if (owner != null) wand.charge(owner);
+		if (owner != null){
+			applyWandChargeBuff(owner);
+ 		} else if (Dungeon.hero.belongings.contains(this)){
+			applyWandChargeBuff(Dungeon.hero);
+		}
 
 		//This is necessary to reset any particles.
 		//FIXME this is gross, should implement a better way to fully reset quickslot visuals
@@ -434,24 +448,21 @@ public class MagesStaff extends MeleeWeapon {
 					applyWand((Wand)item);
 				} else {
 					int newLevel;
-					int itemLevel = item.level();
-					itemLevel -= ((Wand)item).resinBonus;
-					if (itemLevel >= level()){
-						if (level() > 0)    newLevel = itemLevel + 1;
-						else                newLevel = itemLevel;
+					int itemLevel = item.trueLevel();
+					if (itemLevel >= trueLevel()){
+						if (trueLevel() > 0)    newLevel = itemLevel + 1;
+						else                    newLevel = itemLevel;
 					} else {
-						newLevel = level();
+						newLevel = trueLevel();
 					}
 
 					String bodyText = Messages.get(MagesStaff.class, "imbue_desc", newLevel);
-					int preservesLeft = Dungeon.hero.pointsInTalent(Talent.WAND_PRESERVATION) == 2 ? 8
-							: Dungeon.hero.pointsInTalent(Talent.WAND_PRESERVATION) == 1 || Dungeon.hero.hasTalent(Talent.POWER_WITHIN) ? 3
-							: 0;
+					int preservesLeft = Dungeon.hero.pointsInTalent(Talent.WAND_PRESERVATION) == 2 ? 8 : Dungeon.hero.pointsInTalent(Talent.WAND_PRESERVATION) == 1 || Dungeon.hero.hasTalent(Talent.POWER_WITHIN) ? 5 : 0;
 					if (Dungeon.hero.buff(Talent.WandPreservationCounter.class) != null){
 						preservesLeft -= Dungeon.hero.buff(Talent.WandPreservationCounter.class).count();
 					}
 					if (preservesLeft > 0){
-						int preserveChance = Dungeon.hero.pointsInTalent(Talent.POWER_WITHIN) == 1 ? 67 : 100;
+						int preserveChance = Dungeon.hero.pointsInTalent(Talent.POWER_WITHIN) == 1 ? 50 : 100;
 						bodyText += "\n\n" + Messages.get(MagesStaff.class, "imbue_talent", preserveChance, wastedUpgrades, preservesLeft);
 					} else {
 						bodyText += "\n\n" + Messages.get(MagesStaff.class, "imbue_lost");

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,7 @@ import com.zrp200.rkpd2.items.scrolls.ScrollOfMagicMapping;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRage;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfUpgrade;
 import com.zrp200.rkpd2.items.wands.Wand;
+import com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfDivination;
 import com.zrp200.rkpd2.items.wands.WandOfMagicMissile;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.melee.Dagger;
@@ -75,10 +76,11 @@ import com.zrp200.rkpd2.items.weapon.missiles.ThrowingKnife;
 import com.zrp200.rkpd2.items.weapon.missiles.ThrowingStone;
 import com.zrp200.rkpd2.messages.Messages;
 
+import com.watabou.utils.DeviceCompat;
+
 import java.util.Locale;
 
 import static com.zrp200.rkpd2.actors.hero.HeroSubClass.*;
-
 public enum HeroClass {
 
 	WARRIOR(BERSERKER, GLADIATOR),
@@ -318,7 +320,7 @@ public enum HeroClass {
 	
 	public boolean isUnlocked(){
 		//always unlock on debug builds
-		return /*DeviceCompat.isDebug() ||*/ this != RAT_KING || Badges.isUnlocked(Badges.Badge.UNLOCK_RAT_KING);
+		return DeviceCompat.isDebug() || this != RAT_KING || Badges.isUnlocked(Badges.Badge.UNLOCK_RAT_KING);
 		/*
 		switch (this){
 			case WARRIOR: default:

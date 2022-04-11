@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,9 @@ package com.zrp200.rkpd2.ui;
 
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.SPDAction;
+import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.PixelScene;
+import com.zrp200.rkpd2.windows.WndKeyBindings;
 import com.watabou.input.GameAction;
 import com.watabou.noosa.Image;
 
@@ -65,7 +67,14 @@ public class ResumeIndicator extends Tag {
 
 	@Override
 	protected void onClick() {
-		Dungeon.hero.resume();
+		if (Dungeon.hero.ready) {
+			Dungeon.hero.resume();
+		}
+	}
+
+	@Override
+	protected String hoverText() {
+		return Messages.titleCase(Messages.get(WndKeyBindings.class, "tag_resume"));
 	}
 
 	@Override

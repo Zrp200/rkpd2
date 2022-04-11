@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,12 +33,14 @@ import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.mobs.npcs.DirectableAlly;
 import com.zrp200.rkpd2.effects.CellEmitter;
+import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.effects.Surprise;
 import com.zrp200.rkpd2.effects.Wound;
 import com.zrp200.rkpd2.effects.particles.ShadowParticle;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Gold;
 import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.artifacts.MasterThievesArmband;
 import com.zrp200.rkpd2.items.artifacts.TimekeepersHourglass;
 import com.zrp200.rkpd2.items.rings.Ring;
 import com.zrp200.rkpd2.items.rings.RingOfWealth;
@@ -601,10 +603,14 @@ public abstract class Mob extends Char {
 		return damage;
 	}
 
-	public boolean surprisedBy( Char enemy ){
+	public final boolean surprisedBy( Char enemy ){
+		return surprisedBy( enemy, true);
+	}
+
+	public boolean surprisedBy( Char enemy, boolean attacking ){
 		return enemy == Dungeon.hero
 				&& (enemy.invisible > 0 || !enemySeen)
-				&& ((Hero)enemy).canSurpriseAttack();
+				&& (!attacking || ((Hero)enemy).canSurpriseAttack());
 	}
 
 	public void aggro( Char ch ) {
@@ -692,16 +698,25 @@ public abstract class Mob extends Char {
 	}
 
 	public final boolean isRewardSuppressed() { return Dungeon.hero.lvl > maxLvl + 2; }
+		
+	public float lootChance(){
+		float lootChance = this.lootChance;
+
+		lootChance *= RingOfWealth.dropChanceMultiplier( Dungeon.hero );
+
+		return lootChance;
+	}
+
 	public void rollToDropLoot(){
 		if (isRewardSuppressed()) return;
-		
-		float lootChance = this.lootChance;
-		lootChance *= RingOfWealth.dropChanceMultiplier( Dungeon.hero );
-		
-		if (Random.Float() < lootChance) {
-			Item loot = createLoot();
-			if (loot != null) {
-				Dungeon.level.drop(loot, pos).sprite.drop();
+
+		MasterThievesArmband.StolenTracker stolen = buff(MasterThievesArmband.StolenTracker.class);
+		if (stolen == null || !stolen.itemWasStolen()) {
+			if (Random.Float() < lootChance()) {
+				Item loot = createLoot();
+				if (loot != null) {
+					Dungeon.level.drop(loot, pos).sprite.drop();
+				}
 			}
 		}
 		
@@ -747,7 +762,7 @@ public abstract class Mob extends Char {
 	protected float lootChance = 0;
 	
 	@SuppressWarnings("unchecked")
-	protected Item createLoot() {
+	public Item createLoot() {
 		Item item;
 		if (loot instanceof Generator.Category) {
 

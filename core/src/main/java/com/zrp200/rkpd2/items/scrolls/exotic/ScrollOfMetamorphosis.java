@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,6 +103,8 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 
 		public static WndMetamorphChoose INSTANCE;
 
+		TalentsPane pane;
+
 		public WndMetamorphChoose(){
 			super();
 
@@ -133,12 +135,12 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 				}
 			}
 
-			TalentsPane p = new TalentsPane(TalentButton.Mode.METAMORPH_CHOOSE, talents);
-			add(p);
-			p.setPos(0, top);
-			p.setSize(120, p.content().height());
-			resize((int)p.width(), (int)p.bottom());
-			p.setPos(0, top);
+			pane = new TalentsPane(TalentButton.Mode.METAMORPH_CHOOSE, talents);
+			add(pane);
+			pane.setPos(0, top);
+			pane.setSize(120, pane.content().height());
+			resize((int)pane.width(), (int)pane.bottom());
+			pane.setPos(0, top);
 		}
 
 		@Override
@@ -156,6 +158,12 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 				super.onBackPressed();
 				curItem.collect();
 			}
+		}
+
+		@Override
+		public void offset(int xOffset, int yOffset) {
+			super.offset(xOffset, yOffset);
+			pane.setPos(pane.left(), pane.top()); //triggers layout
 		}
 	}
 

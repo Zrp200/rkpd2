@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.windows;
 
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.ui.InventoryPane;
 import com.zrp200.rkpd2.ui.RedButton;
 import com.zrp200.rkpd2.ui.Window;
 
@@ -50,6 +51,10 @@ public class WndUseItem extends WndInfoItem {
 						if (owner != null && owner.parent != null) owner.hide();
 						if (Dungeon.hero.isAlive() && Dungeon.hero.belongings.contains(item)){
 							item.execute( Dungeon.hero, action );
+						}
+						Item.updateQuickslot();
+						if (action == item.defaultAction && item.usesTargeting && owner == null){
+							InventoryPane.useTargeting();
 						}
 					}
 				};

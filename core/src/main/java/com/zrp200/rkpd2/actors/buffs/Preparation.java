@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,11 +21,6 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
-import com.badlogic.gdx.utils.IntIntMap;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.PathFinder;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
@@ -44,6 +39,12 @@ import com.zrp200.rkpd2.ui.ActionIndicator;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.utils.BArray;
 import com.zrp200.rkpd2.utils.GLog;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.PathFinder;
+
+import com.badlogic.gdx.utils.IntIntMap;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -198,6 +199,11 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 	}
 
 	@Override
+	public String iconTextDisplay() {
+		return Integer.toString(turnsInvis);
+	}
+
+	@Override
 	public String toString() {
 		return Messages.get(this, "name");
 	}
@@ -246,9 +252,14 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 		super.storeInBundle(bundle);
 		bundle.put(TURNS, turnsInvis);
 	}
-	
+
 	@Override
-	public Image getIcon() {
+	public String actionName() {
+		return Messages.get(this, "action_name");
+	}
+
+	@Override
+	public Image actionIcon() {
 		Image actionIco = Effects.get(Effects.Type.WOUND);
 		tintIcon(actionIco);
 		return actionIco;
@@ -264,7 +275,7 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 		IntIntMap blinkPos = new IntIntMap(); // enemy pos to blink pos
 
 		private boolean canAttack(Char enemy) {
-			return !(enemy == null || Dungeon.hero.isCharmedBy(enemy) || enemy instanceof NPC || !Dungeon.level.heroFOV[enemy.pos]);
+			return !(enemy == null || Dungeon.hero.isCharmedBy(enemy) || enemy instanceof NPC || !Dungeon.level.heroFOV[enemy.pos] || enemy == Dungeon.hero);
 		}
 
 		@Override protected void findTargets() {

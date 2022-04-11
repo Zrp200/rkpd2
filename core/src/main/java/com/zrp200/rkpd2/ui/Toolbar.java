@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,9 +29,11 @@ import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.tiles.DungeonTerrainTilemap;
 import com.zrp200.rkpd2.windows.WndBag;
+import com.zrp200.rkpd2.windows.WndKeyBindings;
 import com.zrp200.rkpd2.windows.WndQuickBag;
 import com.watabou.input.GameAction;
 import com.watabou.noosa.Camera;
@@ -39,7 +41,6 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.PointerArea;
-import com.watabou.noosa.ui.Button;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Point;
 import com.watabou.utils.PointF;
@@ -74,18 +75,21 @@ public class Toolbar extends Component {
 	
 	@Override
 	protected void createChildren() {
-		
-		btnQuick = new QuickslotTool[4];
-		
-		add( btnQuick[3] = new QuickslotTool(64, 0, 22, 24, 3) );
-		add( btnQuick[2] = new QuickslotTool(64, 0, 22, 24, 2) );
-		add( btnQuick[1] = new QuickslotTool(64, 0, 22, 24, 1) );
-		add( btnQuick[0] = new QuickslotTool(64, 0, 22, 24, 0) );
+
+		//TODO add a changer function to the 4th quickslot if there isn't room for 6?
+		int quickSlots = 4;
+		if (PixelScene.uiCamera.width > 152) quickSlots ++;
+		if (PixelScene.uiCamera.width > 170) quickSlots ++;
+
+		btnQuick = new QuickslotTool[quickSlots];
+		for (int i = 0; i < quickSlots; i++){
+			add( btnQuick[i] = new QuickslotTool(64, 0, 22, 24, i) );
+		}
 		
 		add(btnWait = new Tool(24, 0, 20, 26) {
 			@Override
 			protected void onClick() {
-				if (!GameScene.cancel()) {
+				if (Dungeon.hero.ready && !GameScene.cancel()) {
 					examining = false;
 					Dungeon.hero.rest(false);
 				}
@@ -95,9 +99,14 @@ public class Toolbar extends Component {
 			public GameAction keyAction() {
 				return SPDAction.WAIT;
 			}
-			
+
+			@Override
+			protected String hoverText() {
+				return Messages.titleCase(Messages.get(WndKeyBindings.class, "wait"));
+			}
+
 			protected boolean onLongClick() {
-				if (!GameScene.cancel()) {
+				if (Dungeon.hero.ready && !GameScene.cancel()) {
 					examining = false;
 					Dungeon.hero.rest(true);
 				}
@@ -108,31 +117,41 @@ public class Toolbar extends Component {
 		add(new Button(){
 			@Override
 			protected void onClick() {
-				examining = false;
-				Dungeon.hero.rest(true);
+				if (Dungeon.hero.ready && !GameScene.cancel()) {
+					examining = false;
+					Dungeon.hero.rest(true);
+				}
 			}
 
 			@Override
 			public GameAction keyAction() {
-				return SPDAction.REST;
+				if (btnWait.active) return SPDAction.REST;
+				else				return null;
 			}
 		});
 		
 		add(btnSearch = new Tool(44, 0, 20, 26) {
 			@Override
 			protected void onClick() {
-				if (!examining) {
-					GameScene.selectCell(informer);
-					examining = true;
-				} else {
-					informer.onSelect(null);
-					Dungeon.hero.search(true);
+				if (Dungeon.hero.ready) {
+					if (!examining && !GameScene.cancel()) {
+						GameScene.selectCell(informer);
+						examining = true;
+					} else if (examining) {
+						informer.onSelect(null);
+						Dungeon.hero.search(true);
+					}
 				}
 			}
-			
+
 			@Override
 			public GameAction keyAction() {
-				return SPDAction.SEARCH;
+				return SPDAction.EXAMINE;
+			}
+
+			@Override
+			protected String hoverText() {
+				return Messages.titleCase(Messages.get(WndKeyBindings.class, "examine"));
 			}
 			
 			@Override
@@ -145,16 +164,31 @@ public class Toolbar extends Component {
 		add(btnInventory = new Tool(0, 0, 24, 26) {
 			private CurrencyIndicator ind;
 
+			private Image arrow;
+
 			@Override
 			protected void onClick() {
-				GameScene.show(new WndBag(Dungeon.hero.belongings.backpack));
+				if (Dungeon.hero.ready || !Dungeon.hero.isAlive()) {
+					if (SPDSettings.interfaceSize() == 2) {
+						GameScene.toggleInvPane();
+					} else {
+						if (!GameScene.cancel()) {
+							GameScene.show(new WndBag(Dungeon.hero.belongings.backpack));
+						}
+					}
+				}
 			}
-			
+
 			@Override
 			public GameAction keyAction() {
 				return SPDAction.INVENTORY;
 			}
-			
+
+			@Override
+			protected String hoverText() {
+				return Messages.titleCase(Messages.get(WndKeyBindings.class, "inventory"));
+			}
+
 			@Override
 			protected boolean onLongClick() {
 				GameScene.show(new WndQuickBag(null));
@@ -164,6 +198,12 @@ public class Toolbar extends Component {
 			@Override
 			protected void createChildren() {
 				super.createChildren();
+				arrow = Icons.get(Icons.COMPASS);
+				arrow.originToCenter();
+				arrow.visible = SPDSettings.interfaceSize() == 2;
+				arrow.tint(0x3D2E18, 1f);
+				add(arrow);
+
 				ind = new CurrencyIndicator();
 				add(ind);
 			}
@@ -172,6 +212,10 @@ public class Toolbar extends Component {
 			protected void layout() {
 				super.layout();
 				ind.fill(this);
+
+				arrow.x = left() + (width - arrow.width())/2;
+				arrow.y = bottom()-arrow.height-1;
+				arrow.angle = bottom() == camera().height ? 0 : 180;
 			}
 		});
 
@@ -181,13 +225,39 @@ public class Toolbar extends Component {
 	@Override
 	protected void layout() {
 
-		for(int i = 0; i <= 3; i++) {
+		float right = width;
+
+		if (SPDSettings.interfaceSize() > 0){
+			btnInventory.setPos(right - btnInventory.width(), y);
+			btnWait.setPos(btnInventory.left() - btnWait.width(), y);
+			btnSearch.setPos(btnWait.left() - btnSearch.width(), y);
+
+			right = btnSearch.left();
+			for(int i = btnQuick.length-1; i >= 0; i--) {
+				if (i == btnQuick.length-1){
+					btnQuick[i].border(0, 2);
+					btnQuick[i].frame(106, 0, 19, 24);
+				} else if (i == 0){
+					btnQuick[i].border(2, 1);
+					btnQuick[i].frame(86, 0, 20, 24);
+				} else {
+					btnQuick[i].border(0, 1);
+					btnQuick[i].frame(88, 0, 18, 24);
+				}
+				btnQuick[i].setPos(right-btnQuick[i].width(), y+2);
+				right = btnQuick[i].left();
+			}
+
+			return;
+		}
+
+		for(int i = 0; i < btnQuick.length; i++) {
 			if (i == 0 && !SPDSettings.flipToolbar() ||
-				i == 3 && SPDSettings.flipToolbar()){
+				i == btnQuick.length-1 && SPDSettings.flipToolbar()){
 				btnQuick[i].border(0, 2);
 				btnQuick[i].frame(106, 0, 19, 24);
 			} else if (i == 0 && SPDSettings.flipToolbar() ||
-					i == 3 && !SPDSettings.flipToolbar()){
+					i == btnQuick.length-1 && !SPDSettings.flipToolbar()){
 				btnQuick[i].border(2, 1);
 				btnQuick[i].frame(86, 0, 20, 24);
 			} else {
@@ -196,7 +266,6 @@ public class Toolbar extends Component {
 			}
 		}
 
-		float right = width;
 		switch(Mode.valueOf(SPDSettings.toolbarMode())){
 			case SPLIT:
 				btnWait.setPos(x, y);
@@ -204,15 +273,15 @@ public class Toolbar extends Component {
 
 				btnInventory.setPos(right - btnInventory.width(), y);
 
-				btnQuick[0].setPos(btnInventory.left() - btnQuick[0].width(), y+2);
-				btnQuick[1].setPos(btnQuick[0].left() - btnQuick[1].width(), y+2);
-				btnQuick[2].setPos(btnQuick[1].left() - btnQuick[2].width(), y+2);
-				btnQuick[3].setPos(btnQuick[2].left() - btnQuick[3].width(), y+2);
+				btnQuick[0].setPos(btnInventory.left() - btnQuick[0].width(), y + 2);
+				for (int i = 1; i < btnQuick.length; i++) {
+					btnQuick[i].setPos(btnQuick[i-1].left() - btnQuick[i].width(), y + 2);
+				}
 				
 				//center the quickslots if they
-				if (btnQuick[3].left() < btnSearch.right()){
-					float diff = Math.round(btnSearch.right() - btnQuick[3].left())/2;
-					for( int i = 0; i < 4; i++){
+				if (btnQuick[btnQuick.length-1].left() < btnSearch.right()){
+					float diff = Math.round(btnSearch.right() - btnQuick[btnQuick.length-1].left())/2;
+					for( int i = 0; i < btnQuick.length; i++){
 						btnQuick[i].setPos( btnQuick[i].left()+diff, btnQuick[i].top() );
 					}
 				}
@@ -232,14 +301,14 @@ public class Toolbar extends Component {
 				btnSearch.setPos(btnWait.left() - btnSearch.width(), y);
 				btnInventory.setPos(btnSearch.left() - btnInventory.width(), y);
 
-				btnQuick[0].setPos(btnInventory.left() - btnQuick[0].width(), y+2);
-				btnQuick[1].setPos(btnQuick[0].left() - btnQuick[1].width(), y+2);
-				btnQuick[2].setPos(btnQuick[1].left() - btnQuick[2].width(), y+2);
-				btnQuick[3].setPos(btnQuick[2].left() - btnQuick[3].width(), y+2);
+				btnQuick[0].setPos(btnInventory.left() - btnQuick[0].width(), y + 2);
+				for (int i = 1; i < btnQuick.length; i++) {
+					btnQuick[i].setPos(btnQuick[i-1].left() - btnQuick[i].width(), y + 2);
+				}
 				
-				if (btnQuick[3].left() < 0){
-					float diff = -Math.round(btnQuick[3].left())/2;
-					for( int i = 0; i < 4; i++){
+				if (btnQuick[btnQuick.length-1].left() < 0){
+					float diff = -Math.round(btnQuick[btnQuick.length-1].left())/2;
+					for( int i = 0; i < btnQuick.length; i++){
 						btnQuick[i].setPos( btnQuick[i].left()+diff, btnQuick[i].top() );
 					}
 				}
@@ -254,7 +323,7 @@ public class Toolbar extends Component {
 			btnSearch.setPos( (right - btnSearch.right()), y);
 			btnInventory.setPos( (right - btnInventory.right()), y);
 
-			for(int i = 0; i <= 3; i++) {
+			for(int i = 0; i < btnQuick.length; i++) {
 				btnQuick[i].setPos( right - btnQuick[i].right(), y+2);
 			}
 
@@ -388,7 +457,8 @@ public class Toolbar extends Component {
 		@Override
 		protected void layout() {
 			super.layout();
-			slot.setRect( x + borderLeft, y + 2, width - borderLeft-borderRight, height - 4 );
+			slot.setRect( x, y, width, height );
+			slot.slotMargins(borderLeft, 2, borderRight, 2);
 		}
 		
 		@Override

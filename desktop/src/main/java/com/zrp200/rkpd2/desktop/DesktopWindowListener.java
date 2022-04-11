@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,9 @@ public class DesktopWindowListener implements Lwjgl3WindowListener {
 	@Override
 	public void maximized ( boolean b ) {
 		SPDSettings.windowMaximized( b );
+		if (b){
+			SPDSettings.windowResolution(DesktopPlatformSupport.previousSizes[1]);
+		}
 	}
 	
 	@Override

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,14 +37,11 @@ import com.zrp200.rkpd2.actors.mobs.npcs.Blacksmith;
 import com.zrp200.rkpd2.actors.mobs.npcs.Ghost;
 import com.zrp200.rkpd2.actors.mobs.npcs.Imp;
 import com.zrp200.rkpd2.actors.mobs.npcs.Wandmaker;
-import com.zrp200.rkpd2.items.Amulet;
-import com.zrp200.rkpd2.items.Ankh;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.artifacts.TalismanOfForesight;
 import com.zrp200.rkpd2.items.potions.Potion;
-import com.zrp200.rkpd2.items.potions.PotionOfMindVision;
 import com.zrp200.rkpd2.items.rings.Ring;
 import com.zrp200.rkpd2.items.scrolls.Scroll;
 import com.zrp200.rkpd2.items.wands.WandOfRegrowth;
@@ -55,7 +52,6 @@ import com.zrp200.rkpd2.levels.CityLevel;
 import com.zrp200.rkpd2.levels.DeadEndLevel;
 import com.zrp200.rkpd2.levels.HallsLevel;
 import com.zrp200.rkpd2.levels.LastLevel;
-import com.zrp200.rkpd2.levels.LastShopLevel;
 import com.zrp200.rkpd2.levels.Level;
 import com.zrp200.rkpd2.levels.CavesBossLevel;
 import com.zrp200.rkpd2.levels.CityBossLevel;
@@ -668,12 +664,17 @@ public class Dungeon {
 	}
 	
 	public static void deleteGame( int save, boolean deleteLevels ) {
-		
-		FileUtils.deleteFile(GamesInProgress.gameFile(save));
-		
+
 		if (deleteLevels) {
-			FileUtils.deleteDir(GamesInProgress.gameFolder(save));
+			String folder = GamesInProgress.gameFolder(save);
+			for (String file : FileUtils.filesInDir(folder)){
+				if (file.contains("depth")){
+					FileUtils.deleteFile(folder + "/" + file);
+				}
+			}
 		}
+
+		FileUtils.zeroFile(GamesInProgress.gameFile(save), 1);
 		
 		GamesInProgress.delete( save );
 	}
@@ -764,7 +765,7 @@ public class Dungeon {
 
 		for (TalismanOfForesight.CharAwareness c : hero.buffs(TalismanOfForesight.CharAwareness.class)){
 			Char ch = (Char) Actor.findById(c.charID);
-			if (ch == null) continue;
+			if (ch == null || !ch.isAlive()) continue;
 			reveal(ch.pos, 2);
 		}
 

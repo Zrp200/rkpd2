@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,19 @@
 
 package com.zrp200.rkpd2.actors.mobs;
 
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.blobs.Blob;
+import com.zrp200.rkpd2.actors.blobs.ToxicGas;
+import com.zrp200.rkpd2.items.Generator;
+import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.mechanics.Ballistica;
+import com.zrp200.rkpd2.mechanics.ConeAOE;
+import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.sprites.DM200Sprite;
+import com.zrp200.rkpd2.utils.BArray;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
@@ -45,7 +57,7 @@ public class DM200 extends Mob {
 		maxLvl = 17;
 
 		loot = Random.oneOf(Generator.Category.WEAPON, Generator.Category.ARMOR);
-		lootChance = 0.125f; //initially, see rollToDropLoot
+		lootChance = 0.125f; //initially, see lootChance()
 
 		properties.add(Property.INORGANIC);
 		properties.add(Property.LARGE);
@@ -69,14 +81,13 @@ public class DM200 extends Mob {
 	}
 
 	@Override
-	public void rollToDropLoot() {
+	public float lootChance(){
 		//each drop makes future drops 1/2 as likely
 		// so loot chance looks like: 1/8, 1/16, 1/32, 1/64, etc.
-		lootChance *= Math.pow(1/2f, Dungeon.LimitedDrops.DM200_EQUIP.count);
-		super.rollToDropLoot();
+		return super.lootChance() * (float)Math.pow(1/2f, Dungeon.LimitedDrops.DM200_EQUIP.count);
 	}
 
-	protected Item createLoot() {
+	public Item createLoot() {
 		Dungeon.LimitedDrops.DM200_EQUIP.count++;
 		//uses probability tables for dwarf city
 		if (loot == Generator.Category.WEAPON){
@@ -129,6 +140,16 @@ public class DM200 extends Mob {
 
 	}
 
+	private boolean canVent(int target){
+		if (ventCooldown > 0) return false;
+		PathFinder.buildDistanceMap(target, BArray.not(Dungeon.level.solid, null), Dungeon.level.distance(pos, target)+1);
+		//vent can go around blocking terrain, but not through it
+		if (PathFinder.distance[pos] == Integer.MAX_VALUE){
+			return false;
+		}
+		return true;
+	}
+
 	private class Hunting extends Mob.Hunting{
 
 		@Override
@@ -141,7 +162,7 @@ public class DM200 extends Mob {
 
 				int oldPos = pos;
 
-				if (ventCooldown <= 0 && distance(enemy) >= 1 && Random.Int(100/distance(enemy)) == 0){
+				if (distance(enemy) >= 1 && Random.Int(100/distance(enemy)) == 0 && canVent(target)){
 					if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
 						sprite.zap( enemy.pos );
 						return false;
@@ -154,7 +175,7 @@ public class DM200 extends Mob {
 					spend( 1 / speed() );
 					return moveSprite( oldPos,  pos );
 
-				} else if (ventCooldown <= 0) {
+				} else if (canVent(target)) {
 					if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
 						sprite.zap( enemy.pos );
 						return false;

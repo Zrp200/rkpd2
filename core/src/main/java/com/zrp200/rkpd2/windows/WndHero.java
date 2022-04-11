@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ import com.zrp200.rkpd2.ui.TalentsPane;
 import com.zrp200.rkpd2.ui.Window;
 import com.watabou.gltextures.SmartTexture;
 import com.watabou.gltextures.TextureCache;
+import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.TextureFilm;
@@ -83,7 +84,12 @@ public class WndHero extends WndTabbed {
 		add( new IconTab( Icons.get(Icons.RANKINGS) ) {
 			protected void select( boolean value ) {
 				super.select( value );
-				if (selected) lastIdx = 0;
+				if (selected) {
+					lastIdx = 0;
+					if (!stats.visible) {
+						stats.initialize();
+					}
+				}
 				stats.visible = stats.active = selected;
 			}
 		} );
@@ -112,6 +118,13 @@ public class WndHero extends WndTabbed {
 		select( lastIdx );
 	}
 
+	@Override
+	public void offset(int xOffset, int yOffset) {
+		super.offset(xOffset, yOffset);
+		talents.layout();
+		buffs.layout();
+	}
+
 	private class StatsTab extends Group {
 		
 		private static final int GAP = 6;
@@ -119,6 +132,15 @@ public class WndHero extends WndTabbed {
 		private float pos;
 		
 		public StatsTab() {
+			initialize();
+		}
+
+		public void initialize(){
+
+			for (Gizmo g : members){
+				if (g != null) g.destroy();
+			}
+			clear();
 			
 			Hero hero = Dungeon.hero;
 
@@ -136,8 +158,18 @@ public class WndHero extends WndTabbed {
 				@Override
 				protected void onClick() {
 					super.onClick();
-					ShatteredPixelDungeon.scene().addToFront(new WndHeroInfo(hero.heroClass));
+					if (ShatteredPixelDungeon.scene() instanceof GameScene){
+						GameScene.show(new WndHeroInfo(hero.heroClass));
+					} else {
+						ShatteredPixelDungeon.scene().addToFront(new WndHeroInfo(hero.heroClass));
+					}
 				}
+
+				@Override
+				protected String hoverText() {
+					return Messages.titleCase(Messages.get(WndKeyBindings.class, "hero_info"));
+				}
+
 			};
 			infoButton.setRect(title.right(), 0, 16, 16);
 			add(infoButton);

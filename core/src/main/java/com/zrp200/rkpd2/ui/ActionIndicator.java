@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,9 +21,6 @@
 
 package com.zrp200.rkpd2.ui;
 
-import com.watabou.input.GameAction;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.ui.Button;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.SPDAction;
 import com.zrp200.rkpd2.actors.buffs.Buff;
@@ -31,7 +28,11 @@ import com.zrp200.rkpd2.actors.buffs.Combo;
 import com.zrp200.rkpd2.actors.buffs.Momentum;
 import com.zrp200.rkpd2.actors.buffs.Preparation;
 import com.zrp200.rkpd2.actors.buffs.SnipersMark;
+import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.PixelScene;
+import com.zrp200.rkpd2.windows.WndKeyBindings;
+import com.watabou.input.GameAction;
+import com.watabou.noosa.Image;
 
 public class ActionIndicator extends Tag {
 
@@ -104,8 +105,19 @@ public class ActionIndicator extends Tag {
 
 	@Override
 	protected void onClick() {
-		if (action != null && Dungeon.hero.ready)
+		if (action != null && Dungeon.hero.ready) {
 			action.doAction();
+		}
+	}
+
+	@Override
+	protected String hoverText() {
+		String text = action.actionName();
+		if (text != null){
+			return Messages.titleCase(text);
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -156,7 +168,7 @@ public class ActionIndicator extends Tag {
 					instance.icon = null;
 				}
 				if (action != null) {
-					instance.icon = action.getIcon();
+					instance.icon = action.actionIcon();
 					instance.needsLayout = true;
 				}
 			}
@@ -165,7 +177,9 @@ public class ActionIndicator extends Tag {
 
 	public interface Action{
 
-		public Image getIcon();
+		public String actionName();
+
+		public Image actionIcon();
 
 		public void doAction();
 

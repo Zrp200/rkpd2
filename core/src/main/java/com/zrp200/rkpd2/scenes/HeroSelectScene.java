@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,29 @@
 
 package com.zrp200.rkpd2.scenes;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
+import com.zrp200.rkpd2.Badges;
+import com.zrp200.rkpd2.Chrome;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.GamesInProgress;
+import com.zrp200.rkpd2.Rankings;
+import com.zrp200.rkpd2.SPDSettings;
+import com.zrp200.rkpd2.ShatteredPixelDungeon;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
+import com.zrp200.rkpd2.journal.Journal;
+import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.ui.ActionIndicator;
+import com.zrp200.rkpd2.ui.ExitButton;
+import com.zrp200.rkpd2.ui.IconButton;
+import com.zrp200.rkpd2.ui.Icons;
+import com.zrp200.rkpd2.ui.RenderedTextBlock;
+import com.zrp200.rkpd2.ui.StyledButton;
+import com.zrp200.rkpd2.ui.Window;
+import com.zrp200.rkpd2.windows.WndChallenges;
+import com.zrp200.rkpd2.windows.WndHeroInfo;
+import com.zrp200.rkpd2.windows.WndKeyBindings;
+import com.zrp200.rkpd2.windows.WndMessage;
 import com.zrp200.rkpd2.windows.WndHeroInfo;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.input.PointerEvent;
@@ -107,12 +130,6 @@ public class HeroSelectScene extends PixelScene {
 			add(fadeRight);
 		}
 
-		prompt = PixelScene.renderTextBlock(Messages.get(this, "title"), 12);
-		prompt.hardlight(Window.TITLE_COLOR);
-		prompt.setPos( (Camera.main.width - prompt.width())/2f, (Camera.main.height - HeroBtn.HEIGHT - prompt.height() - 4));
-		PixelScene.align(prompt);
-		add(prompt);
-
 		startBtn = new StyledButton(Chrome.Type.GREY_BUTTON_TR, ""){
 			@Override
 			protected void onClick() {
@@ -143,6 +160,11 @@ public class HeroSelectScene extends PixelScene {
 			protected void onClick() {
 				super.onClick();
 				ShatteredPixelDungeon.scene().addToFront(new WndHeroInfo(GamesInProgress.selectedClass));
+			}
+
+			@Override
+			protected String hoverText() {
+				return Messages.titleCase(Messages.get(WndKeyBindings.class, "hero_info"));
 			}
 		};
 		infoButton.visible = false;
@@ -186,6 +208,11 @@ public class HeroSelectScene extends PixelScene {
 				}
 				super.update();
 			}
+
+			@Override
+			protected String hoverText() {
+				return Messages.titleCase(Messages.get(WndChallenges.class, "title"));
+			}
 		};
 		challengeButton.setRect(heroBtnleft + 16, Camera.main.height-HeroBtn.HEIGHT-16, 21, 21);
 		challengeButton.visible = false;
@@ -201,6 +228,12 @@ public class HeroSelectScene extends PixelScene {
 		btnExit.setPos( Camera.main.width - btnExit.width(), 0 );
 		add( btnExit );
 		btnExit.visible = !SPDSettings.intro() || Rankings.INSTANCE.totalNumber > 0;
+
+		prompt = PixelScene.renderTextBlock(Messages.get(this, "title"), 12);
+		prompt.hardlight(Window.TITLE_COLOR);
+		prompt.setPos( (Camera.main.width - prompt.width())/2f, (Camera.main.height - HeroBtn.HEIGHT - prompt.height() - 4));
+		PixelScene.align(prompt);
+		add(prompt);
 
 		PointerArea fadeResetter = new PointerArea(0, 0, Camera.main.width, Camera.main.height){
 			@Override

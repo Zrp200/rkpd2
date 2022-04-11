@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,9 +21,12 @@
 
 package com.zrp200.rkpd2.levels;
 
+import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Bones;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.mobs.Goo;
+import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.levels.builders.Builder;
@@ -37,8 +40,11 @@ import com.zrp200.rkpd2.levels.rooms.sewerboss.SewerBossEntranceRoom;
 import com.zrp200.rkpd2.levels.rooms.sewerboss.SewerBossExitRoom;
 import com.zrp200.rkpd2.levels.rooms.standard.StandardRoom;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
+import com.watabou.noosa.audio.Music;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -52,6 +58,32 @@ public class SewerBossLevel extends SewerLevel {
 	
 	private int stairs = 0;
 	
+	@Override
+	public void playLevelMusic() {
+		if (locked){
+			Music.INSTANCE.play(Assets.Music.SEWERS_BOSS, true);
+			return;
+		}
+
+		boolean gooAlive = false;
+		for (Mob m : mobs){
+			if (m instanceof Goo) {
+				gooAlive = true;
+				break;
+			}
+		}
+
+		if (gooAlive){
+			Music.INSTANCE.end();
+		} else {
+			Music.INSTANCE.playTracks(
+					new String[]{Assets.Music.SEWERS_1, Assets.Music.SEWERS_2, Assets.Music.SEWERS_2},
+					new float[]{1, 1, 0.5f},
+					false);
+		}
+
+	}
+
 	@Override
 	protected ArrayList<Room> initRooms() {
 		ArrayList<Room> initRooms = new ArrayList<>();
@@ -144,6 +176,13 @@ public class SewerBossLevel extends SewerLevel {
 			
 			stairs = entrance;
 			entrance = 0;
+
+			Game.runOnRenderThread(new Callback() {
+				@Override
+				public void call() {
+					Music.INSTANCE.play(Assets.Music.SEWERS_BOSS, true);
+				}
+			});
 		}
 	}
 	
@@ -158,6 +197,12 @@ public class SewerBossLevel extends SewerLevel {
 			set( entrance, Terrain.ENTRANCE );
 			GameScene.updateMap( entrance );
 
+			Game.runOnRenderThread(new Callback() {
+				@Override
+				public void call() {
+					Music.INSTANCE.end();
+				}
+			});
 		}
 	}
 	

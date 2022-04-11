@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -229,10 +229,10 @@ public abstract class Wand extends Item {
 	}
 	
 	@Override
-	public Item identify() {
+	public Item identify( boolean byHero ) {
 		
 		curChargeKnown = true;
-		super.identify();
+		super.identify(byHero);
 		
 		updateQuickslot();
 		
@@ -296,7 +296,10 @@ public abstract class Wand extends Item {
 			curseInfusionBonus = false;
 			updateLevel();
 		}
-		return super.level() + resinBonus + (curseInfusionBonus ? 1 : 0);
+		int level = super.level();
+		if (curseInfusionBonus) level += 1 + level/6;
+		level += resinBonus;
+		return level;
 	}
 	
 	@Override
@@ -599,7 +602,7 @@ public abstract class Wand extends Item {
 				
 				if (target == curUser.pos || cell == curUser.pos) {
 					if (target == curUser.pos){
-						float shield = curUser.HT * (0.05f*curWand.curCharges);
+						float shield = curUser.HT * (0.04f*curWand.curCharges);
 						// shield battery gives 1.5x boost compared to standard, the minus one lets restoration at +2 give the 1.5x boost as well.
 						shield *= Math.pow(1.5f, curUser.shiftedPoints(Talent.SHIELD_BATTERY, Talent.RESTORATION)-1);
 						Buff.affect(curUser, Barrier.class).setShield(Math.round(shield));
