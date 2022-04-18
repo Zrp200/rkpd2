@@ -33,6 +33,7 @@ import com.zrp200.rkpd2.actors.mobs.Mimic;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.Piranha;
 import com.zrp200.rkpd2.actors.mobs.Statue;
+import com.zrp200.rkpd2.actors.mobs.Swarm;
 import com.zrp200.rkpd2.actors.mobs.Wraith;
 import com.zrp200.rkpd2.effects.BlobEmitter;
 import com.zrp200.rkpd2.effects.CellEmitter;
@@ -140,13 +141,16 @@ public class SacrificialFire extends Blob {
 
 			int exp = 0;
 			if (ch instanceof Mob) {
-				//same rates as used in wand of corruption
+				//same rates as used in wand of corruption, except for swarms
 				if (ch instanceof Statue || ch instanceof Mimic){
 					exp = 1 + Dungeon.depth;
 				} else if (ch instanceof Piranha || ch instanceof Bee) {
 					exp = 1 + Dungeon.depth/2;
 				} else if (ch instanceof Wraith) {
 					exp = 1 + Dungeon.depth/3;
+				} else if (ch instanceof Swarm && ((Swarm) ch).EXP == 0){
+					//give 1 exp for child swarms, instead of 0
+					exp = 1;
 				} else {
 					exp = ((Mob)ch).EXP;
 				}
