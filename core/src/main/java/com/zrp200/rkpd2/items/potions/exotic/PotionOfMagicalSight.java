@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.MagicalSight;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.effects.SpellSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
 public class PotionOfMagicalSight extends ExoticPotion {
@@ -37,6 +38,7 @@ public class PotionOfMagicalSight extends ExoticPotion {
 	public void apply(Hero hero) {
 		identify();
 		Buff.affect(hero, MagicalSight.class, MagicalSight.DURATION);
+		SpellSprite.show(hero, SpellSprite.VISION);
 		Dungeon.observe();
 		
 	}

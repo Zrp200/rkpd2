@@ -35,6 +35,7 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.blobs.Blob;
+import com.zrp200.rkpd2.actors.buffs.AscensionChallenge;
 import com.zrp200.rkpd2.actors.buffs.ChampionEnemy;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -106,7 +107,7 @@ public class GameScene extends PixelScene {
 	private BossHealthBar boss;
 
 	private GameLog log;
-
+	
 	private static CellSelector cellSelector;
 	
 	private Group terrain;
@@ -234,9 +235,6 @@ public class GameScene extends PixelScene {
 		
 		for (Mob mob : Dungeon.level.mobs) {
 			addMobSprite( mob );
-			if (Statistics.amuletObtained) {
-				mob.beckon( Dungeon.hero.pos );
-			}
 		}
 		
 		raisedTerrain = new RaisedTerrainTilemap();
@@ -344,15 +342,13 @@ public class GameScene extends PixelScene {
 		}
 
 		layoutTags();
-
+		
 		switch (InterlevelScene.mode) {
 			case RESURRECT:
-				ScrollOfTeleportation.appear(Dungeon.hero, Dungeon.level.entrance);
-				new Flare(8, 32).color(0xFFFF66, true).show(hero, 2f);
 				Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
-				ScrollOfTeleportation.appear(Dungeon.hero, Dungeon.hero.pos);
+				ScrollOfTeleportation.appear( Dungeon.hero, Dungeon.hero.pos );
 				SpellSprite.show(Dungeon.hero, SpellSprite.ANKH);
-				new Flare(5, 16).color(0xFFFF00, true).show(hero, 4f);
+				new Flare( 5, 16 ).color( 0xFFFF00, true ).show( hero, 4f ) ;
 				break;
 			case RETURN:
 				ScrollOfTeleportation.appear(  Dungeon.hero, Dungeon.hero.pos );
@@ -398,7 +394,7 @@ public class GameScene extends PixelScene {
 			}
 			Dungeon.droppedItems.remove( Dungeon.depth );
 		}
-
+		
 		ArrayList<Item> ported = Dungeon.portedItems.get( Dungeon.depth );
 		if (ported != null){
 			//TODO currently items are only ported to boss rooms, so this works well
@@ -437,7 +433,7 @@ public class GameScene extends PixelScene {
 					&& (InterlevelScene.mode == InterlevelScene.Mode.DESCEND || InterlevelScene.mode == InterlevelScene.Mode.FALL)) {
 				GLog.h(Messages.get(this, "descend"), Dungeon.depth);
 				Sample.INSTANCE.play(Assets.Sounds.DESCEND);
-
+				
 				for (Char ch : Actor.chars()){
 					if (ch instanceof DriedRose.GhostHero){
 						((DriedRose.GhostHero) ch).sayAppeared();
@@ -460,6 +456,7 @@ public class GameScene extends PixelScene {
 						}
 					}
 				}
+				
 			} else if (InterlevelScene.mode == InterlevelScene.Mode.RESET) {
 				GLog.h(Messages.get(this, "warp"));
 			} else if (InterlevelScene.mode == InterlevelScene.Mode.RESURRECT) {
@@ -471,11 +468,13 @@ public class GameScene extends PixelScene {
 			if (Dungeon.hero.hasTalent(Talent.ROGUES_FORESIGHT,Talent.POWER_WITHIN)
 					&& Dungeon.level instanceof RegularLevel) {
 				int reqSecrets = Dungeon.level.feeling == Level.Feeling.SECRETS ? 2 : 1;
-				for (Room r : ((RegularLevel) Dungeon.level).rooms()) {
+				for (Room r : ((RegularLevel) Dungeon.level).rooms()){
 					if (r instanceof SecretRoom) reqSecrets--;
 				}
+
 				//50%/75% chance for power within, use level's seed so that we get the same result for the same level
 				//60/90% chance for rogue's foresight
+				//offset seed slightly to avoid output patterns
 				float chance = Dungeon.hero.byTalent(
 						false, false,
 						Talent.ROGUES_FORESIGHT,.30f,
@@ -517,12 +516,16 @@ public class GameScene extends PixelScene {
 				}
 			}
 
+			if (Dungeon.hero.buff(AscensionChallenge.class) != null){
+				Dungeon.hero.buff(AscensionChallenge.class).saySwitch();
+			}
+
 			InterlevelScene.mode = InterlevelScene.Mode.NONE;
 
-
+			
 		}
 
-		if (Rankings.INSTANCE.totalNumber > 0 && !Document.ADVENTURERS_GUIDE.isPageRead(Document.GUIDE_DIEING)) {
+		if (Rankings.INSTANCE.totalNumber > 0 && !Document.ADVENTURERS_GUIDE.isPageRead(Document.GUIDE_DIEING)){
 			GLog.p(Messages.get(Guidebook.class, "hint"));
 			GameScene.flashForDocument(Document.GUIDE_DIEING);
 		}
@@ -531,7 +534,7 @@ public class GameScene extends PixelScene {
 		fadeIn();
 
 		//re-show WndResurrect if needed
-		if (!Dungeon.hero.isAlive()) {
+		if (!Dungeon.hero.isAlive()){
 			//check if hero has an unblessed ankh
 			Ankh ankh = null;
 			for (Ankh i : Dungeon.hero.belongings.getAllItems(Ankh.class)) {
@@ -545,6 +548,7 @@ public class GameScene extends PixelScene {
 				gameOver();
 			}
 		}
+
 	}
 	
 	public void destroy() {
@@ -586,7 +590,7 @@ public class GameScene extends PixelScene {
 			return !Actor.processing();
 		}
 	}
-
+	
 	@Override
 	public synchronized void onPause() {
 		try {
@@ -609,7 +613,7 @@ public class GameScene extends PixelScene {
 	private float notifyDelay = 1/60f;
 
 	public static boolean updateItemDisplays = false;
-
+	
 	@Override
 	public synchronized void update() {
 		lastOffset = null;
@@ -874,6 +878,8 @@ public class GameScene extends PixelScene {
 	
 	public static void add( Heap heap ) {
 		if (scene != null) {
+			//heaps that aren't added as part of levelgen don't count for exploration bonus
+			heap.autoExplored = true;
 			scene.addHeapSprite( heap );
 		}
 	}
@@ -886,8 +892,10 @@ public class GameScene extends PixelScene {
 	
 	public static void add( Mob mob ) {
 		Dungeon.level.mobs.add( mob );
-		scene.addMobSprite( mob );
-		Actor.add( mob );
+		if (scene != null) {
+			scene.addMobSprite(mob);
+			Actor.add(mob);
+		}
 	}
 
 	public static void addSprite( Mob mob ) {
@@ -975,7 +983,7 @@ public class GameScene extends PixelScene {
 	public static void flashForDocument( String page ){
 		if (scene != null) scene.menu.flashForPage( page );
 	}
-
+	
 	public static void updateKeyDisplay(){
 		if (scene != null) scene.menu.updateKeys();
 	}
@@ -1207,7 +1215,7 @@ public class GameScene extends PixelScene {
 	public static void handleCell( int cell ) {
 		cellSelector.select( cell, PointerEvent.LEFT );
 	}
-
+	
 	public static void selectCell( CellSelector.TargetedListener listener) {
 		if(!listener.action()) {
 			listener.highlightCells();
@@ -1230,7 +1238,7 @@ public class GameScene extends PixelScene {
 			scene.prompt(listener.prompt());
 		}
 	}
-
+	
 	private static boolean cancelCellSelector() {
 		cellSelector.resetKeyHold();
 		if (cellSelector.listener != null && cellSelector.listener != defaultCellListener) {
@@ -1255,10 +1263,10 @@ public class GameScene extends PixelScene {
 				return wnd;
 			}
 		}
-
+		
 		return null;
 	}
-
+	
 	public static boolean cancel() {
 		if (Dungeon.hero != null && (Dungeon.hero.curAction != null || Dungeon.hero.resting)) {
 			

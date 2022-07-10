@@ -26,15 +26,15 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Barrier;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Doom;
-import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.buffs.LifeLink;
 import com.zrp200.rkpd2.actors.buffs.LockedFloor;
-import com.zrp200.rkpd2.actors.buffs.ShieldBuff;
+import com.zrp200.rkpd2.actors.mobs.npcs.Sheep;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.effects.Beam;
 import com.zrp200.rkpd2.effects.CellEmitter;
@@ -49,7 +49,10 @@ import com.zrp200.rkpd2.items.KingsCrown;
 import com.zrp200.rkpd2.items.armor.glyphs.Viscosity;
 import com.zrp200.rkpd2.items.artifacts.DriedRose;
 import com.zrp200.rkpd2.items.artifacts.LloydsBeacon;
+import com.zrp200.rkpd2.items.rings.RingOfForce;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
+import com.zrp200.rkpd2.items.wands.Wand;
+import com.zrp200.rkpd2.items.wands.WandOfLightning;
 import com.zrp200.rkpd2.levels.CityBossLevel;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
@@ -71,8 +74,6 @@ import java.util.HashSet;
 import static com.zrp200.rkpd2.Assets.Sounds.CHALLENGE;
 import static com.zrp200.rkpd2.Assets.Sounds.SHATTER;
 import static com.zrp200.rkpd2.actors.hero.HeroClass.RAT_KING;
-
-import sun.jvm.hotspot.opto.Phase;
 
 public class DwarfKing extends Mob implements Hero.DeathCommentator {
 	@Override public void sayHeroKilled() {
@@ -506,6 +507,16 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 
 	@Override
 	public void damage(int dmg, Object src) {
+		//hero only counts as unarmed if they have no weapon and aren't benefiting from force
+		if (src == Dungeon.hero && (Dungeon.hero.belongings.weapon() != null || Dungeon.hero.buff(RingOfForce.Force.class) != null)){
+			Statistics.qualifiedForBossChallengeBadge = false;
+		//Corrosion, corruption, and regrowth do no direct damage and so have their own custom logic
+		//Transfusion damages DK and so doesn't need custom logic
+		//Lightning has custom logic so that chaining it doesn't DQ for the badge
+		} else if (src instanceof Wand && !(src instanceof WandOfLightning)){
+			Statistics.qualifiedForBossChallengeBadge = false;
+		}
+
 		if (isInvulnerable(src.getClass())){
 			super.damage(dmg, src);
 			return;
@@ -655,6 +666,10 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 		}
 
 		Badges.validateBossSlain();
+		if (Statistics.qualifiedForBossChallengeBadge){
+			Badges.validateBossChallengeCompleted();
+		}
+		Statistics.bossScores[3] += 4000;
 
 		Dungeon.level.unseal();
 
@@ -671,7 +686,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 		int MAX_QUOTES = 2;
 		// the special quote is more likely to appear if one is defined, but not guaranteed.
 		//noinspection StringEquality
-		if(defeated == Messages.NULL || Random.Int(MAX_QUOTES) != 0) {
+		if(defeated == Messages.NO_TEXT_FOUND || Random.Int(MAX_QUOTES) != 0) {
 			defeated = Messages.get(this, "defeated_" + Random.Int(1, MAX_QUOTES));
 		}
 		yell( defeated );
@@ -709,6 +724,14 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 	public static class DKWarlock extends Warlock implements Subject {
 		{
 			state = HUNTING;
+		}
+
+		@Override
+		protected void zap() {
+			if (enemy == Dungeon.hero){
+				Statistics.bossScores[3] -= 400;
+			}
+			super.zap();
 		}
 	}
 
@@ -777,6 +800,11 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 					}
 				}
 
+				//kill sheep that are right on top of the spawner instead of failing to spawn
+				if (Actor.findChar(pos) instanceof Sheep){
+					Actor.findChar(pos).die(null);
+				}
+
 				DwarfKing king = king();
 				if (Actor.findChar(pos) == null) {
 					Mob m = Reflection.newInstance(summon);
@@ -791,7 +819,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 					if(firstSummon) {
 						king.yell(Messages.get(king(), "first_summon"));
 						String outmatched = Messages.get(king, "outmatched");
-						if(outmatched != Messages.NULL) king.yell(outmatched);
+						if(outmatched != Messages.NO_TEXT_FOUND) king.yell(outmatched);
 					}
 					if(strong && king.yellStrong) {
 						king.yell(Messages.get(king, "strong"));

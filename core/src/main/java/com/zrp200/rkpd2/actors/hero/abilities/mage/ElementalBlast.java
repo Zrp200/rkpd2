@@ -51,6 +51,7 @@ import com.zrp200.rkpd2.actors.hero.abilities.rat_king.OmniAbility;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.effects.MagicMissile;
 import com.zrp200.rkpd2.effects.Speck;
+import com.zrp200.rkpd2.effects.SpellSprite;
 import com.zrp200.rkpd2.effects.particles.ShadowParticle;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfMagicMapping;
@@ -164,7 +165,7 @@ public class ElementalBlast extends ArmorAbility {
 			);
 		}
 
-		final float effectMulti = 1f + 0.2f*hero.byTalent(
+		final float effectMulti = 1f + 0.25f*hero.byTalent(
 				Talent.ELEMENTAL_POWER,1.5f,
 				Talent.RAT_BLAST,1f);
 
@@ -278,7 +279,9 @@ public class ElementalBlast extends ArmorAbility {
 										WandOfBlastWave.throwChar(mob,
 												new Ballistica(mob.pos, aim.collisionPos, Ballistica.MAGIC_BOLT),
 												knockback,
-												true);
+												true,
+												true,
+												ElementalBlast.class);
 									}
 
 								//*** Wand of Frost ***
@@ -352,6 +355,7 @@ public class ElementalBlast extends ArmorAbility {
 						//*** Wand of Magic Missile ***
 						if (finalWandCls == WandOfMagicMissile.class) {
 							Buff.append(hero, Recharging.class, effectMulti* Recharging.DURATION / 2f);
+							SpellSprite.show( hero, SpellSprite.CHARGE );
 
 						//*** Wand of Living Earth ***
 						} else if (finalWandCls == WandOfLivingEarth.class && charsHit > 0){
@@ -375,9 +379,10 @@ public class ElementalBlast extends ArmorAbility {
 
 						}
 
+						// fixme rat blast has too many targets this way
 						charsHit = Math.min(5, charsHit);
 						if (charsHit > 0 && hero.hasTalent(Talent.REACTIVE_BARRIER, Talent.RAT_BLAST)){
-							Buff.affect(hero, Barrier.class).setShield(charsHit*(int)hero.byTalent(Talent.REACTIVE_BARRIER, 3, Talent.RAT_BLAST, 2));
+							Buff.affect(hero, Barrier.class).setShield(charsHit*(int)hero.byTalent(Talent.REACTIVE_BARRIER, 3, Talent.RAT_BLAST, 2.5f));
 						}
 
 						next.call();
@@ -398,7 +403,7 @@ public class ElementalBlast extends ArmorAbility {
 
 		activate(hero, () -> hero.spendAndNext(Actor.TICK) );
 
-		Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);
+		Sample.INSTANCE.play( Assets.Sounds.CHARGEUP );
 		Invisibility.dispel();
 
 		armor.useCharge(hero, this);

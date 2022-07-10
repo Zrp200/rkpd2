@@ -23,12 +23,14 @@ package com.zrp200.rkpd2.items.wands;
 
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.blobs.Blob;
 import com.zrp200.rkpd2.actors.blobs.CorrosiveGas;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Ooze;
+import com.zrp200.rkpd2.actors.mobs.DwarfKing;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.MagicMissile;
 import com.zrp200.rkpd2.effects.Speck;
@@ -56,7 +58,7 @@ public class WandOfCorrosion extends Wand {
 	public void onZap(Ballistica bolt) {
 		CorrosiveGas gas = Blob.seed(bolt.collisionPos, 50 + 10 * buffedLvl(), CorrosiveGas.class);
 		CellEmitter.get(bolt.collisionPos).burst(Speck.factory(Speck.CORROSION), 10 );
-		gas.setStrength(2 + buffedLvl());
+		gas.setStrength(2 + buffedLvl(), getClass());
 		GameScene.add(gas);
 		Sample.INSTANCE.play(Assets.Sounds.GAS);
 
@@ -64,6 +66,10 @@ public class WandOfCorrosion extends Wand {
 			Char ch = Actor.findChar(bolt.collisionPos + i);
 			if (ch != null) {
 				wandProc(ch, chargesPerCast(),2+buffedLvl());
+
+				if (i == 0 && ch instanceof DwarfKing){
+					Statistics.qualifiedForBossChallengeBadge = false;
+				}
 			}
 		}
 		

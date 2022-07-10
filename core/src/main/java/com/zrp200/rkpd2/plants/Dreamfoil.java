@@ -28,7 +28,6 @@ import com.zrp200.rkpd2.actors.buffs.MagicalSleep;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.mobs.Mob;
-import com.zrp200.rkpd2.items.potions.PotionOfHealing;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
@@ -44,9 +43,9 @@ public class Dreamfoil extends Plant {
 	public void activate( Char ch ) {
 
 		if (ch != null) {
-			/*if (ch instanceof Mob) {
+			if (ch instanceof Mob) {
 				Buff.affect(ch, MagicalSleep.class);
-			} else*/ if (ch instanceof Hero) {
+			} else if (ch instanceof Hero) {
 				GLog.i( Messages.get(this, "refreshed") );
 
 				if (((Hero)ch).subClass == HeroSubClass.WARDEN || ((Hero)ch).subClass == HeroSubClass.KING){
@@ -58,7 +57,7 @@ public class Dreamfoil extends Plant {
 
 	public static class Seed extends Plant.Seed {
 		{
-			image = ItemSpriteSheet.SEED_DREAMFOIL;
+			image = ItemSpriteSheet.SEED_MAGEROYAL;
 
 			plantClass = Dreamfoil.class;
 		}

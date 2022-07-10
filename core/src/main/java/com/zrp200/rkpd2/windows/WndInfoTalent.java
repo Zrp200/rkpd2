@@ -28,10 +28,17 @@ import com.zrp200.rkpd2.ui.Icons;
 import com.zrp200.rkpd2.ui.RedButton;
 import com.zrp200.rkpd2.ui.TalentIcon;
 
+import static com.zrp200.rkpd2.Dungeon.hero;
+
 public class WndInfoTalent extends WndTitledMessage {
 
 	public WndInfoTalent(Talent talent, int points, TalentButtonCallback buttonCallback){
-		super( new TalentIcon( talent ), Messages.titleCase(talent.title() + (points > 0 ? " + " + points: "")), talent.desc(), WIDTH_MIN );
+		super(
+		    new TalentIcon( talent ),
+		    Messages.titleCase(talent.title() + (points > 0 ? " + " + points: "")),
+		    talent.desc((buttonCallback != null && buttonCallback.metamorphDesc()) ||
+		        (hero != null && hero.metamorphedTalents.containsValue(talent))),
+            WIDTH_MIN );
 
 		if (buttonCallback != null) {
 			addToBottom(new RedButton( buttonCallback.prompt() ) {
@@ -52,6 +59,10 @@ public class WndInfoTalent extends WndTitledMessage {
 
 	public interface TalentButtonCallback extends Callback {
 		String prompt();
+
+		default boolean metamorphDesc(){
+		    return false;
+		}
 	}
 
 }

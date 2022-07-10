@@ -28,6 +28,7 @@ import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.ui.BuffIndicator;
+import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
@@ -86,7 +87,12 @@ public class FireImbue extends Buff {
 
 	@Override
 	public int icon() {
-		return BuffIndicator.FIRE;
+		return BuffIndicator.IMBUE;
+	}
+
+	@Override
+	public void tintIcon(Image icon) {
+		icon.hardlight(2f, 0.75f, 0f);
 	}
 
 	@Override

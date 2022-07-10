@@ -23,10 +23,12 @@ package com.zrp200.rkpd2.items.wands;
 
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.*;
 import com.zrp200.rkpd2.actors.mobs.Bee;
+import com.zrp200.rkpd2.actors.mobs.DwarfKing;
 import com.zrp200.rkpd2.actors.mobs.Mimic;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.Piranha;
@@ -104,20 +106,27 @@ public class WandOfCorruption extends Wand {
 
 			Mob enemy = (Mob) ch;
 
+			if (enemy instanceof DwarfKing){
+				Statistics.qualifiedForBossChallengeBadge = false;
+			}
+
 			float corruptingPower = 3 + buffedLvl()/2f;
 			
 			//base enemy resistance is usually based on their exp, but in special cases it is based on other criteria
-			float enemyResist = 1 + enemy.EXP;
+			float enemyResist;
 			if (ch instanceof Mimic || ch instanceof Statue){
 				enemyResist = 1 + Dungeon.depth;
 			} else if (ch instanceof Piranha || ch instanceof Bee) {
 				enemyResist = 1 + Dungeon.depth/2f;
 			} else if (ch instanceof Wraith) {
 				//divide by 5 as wraiths are always at full HP and are therefore ~5x harder to corrupt
-				enemyResist = (1f + Dungeon.depth/3f) / 5f;
+				enemyResist = (1f + Dungeon.scalingDepth()/3f) / 5f;
 			} else if (ch instanceof Swarm){
 				//child swarms don't give exp, so we force this here.
-				enemyResist = 1 + 3;
+				enemyResist = 1 + AscensionChallenge.AscensionExp(enemy);
+				if (enemyResist == 1) enemyResist = 1 + 3;
+			} else {
+				enemyResist = 1 + AscensionChallenge.AscensionExp(enemy);
 			}
 			
 			//100% health: 5x resist   75%: 3.25x resist   50%: 2x resist   25%: 1.25x resist

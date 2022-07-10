@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.actors.blobs;
 
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
@@ -157,6 +158,7 @@ public class SacrificialFire extends Blob {
 				exp *= Random.IntRange( 2, 3 );
 			} else if (ch instanceof Hero) {
 				exp = 1_000_000; //always enough to activate the reward, if you can somehow get it
+				Badges.validateDeathFromSacrifice();
 			}
 
 			if (exp > 0) {

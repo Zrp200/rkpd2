@@ -35,6 +35,7 @@ import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.rings.Ring;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRemoveCurse;
 import com.zrp200.rkpd2.items.wands.Wand;
+import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
@@ -46,6 +47,9 @@ public class Belongings implements Iterable<Item> {
 	private Hero owner;
 
 	public static class Backpack extends Bag {
+		{
+			image = ItemSpriteSheet.BACKPACK;
+		}
 		public int capacity(){
 			int cap = super.capacity();
 			for (Item item : items){

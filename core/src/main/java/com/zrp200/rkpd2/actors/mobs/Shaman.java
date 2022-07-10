@@ -22,8 +22,10 @@
 package com.zrp200.rkpd2.actors.mobs;
 
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.AscensionChallenge;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Hex;
 import com.zrp200.rkpd2.actors.buffs.Vulnerable;
@@ -117,9 +119,11 @@ public abstract class Shaman extends Mob {
 			}
 			
 			int dmg = Random.NormalIntRange( 6, 15 );
+			dmg = Math.round(dmg * AscensionChallenge.statModifier(this));
 			enemy.damage( dmg, new EarthenBolt() );
 			
 			if (!enemy.isAlive() && enemy == Dungeon.hero) {
+				Badges.validateDeathFromEnemyMagic();
 				Dungeon.fail( getClass() );
 				GLog.n( Messages.get(this, "bolt_kill") );
 			}
@@ -172,8 +176,6 @@ public abstract class Shaman extends Mob {
 			Buff.prolong( enemy, Hex.class, Hex.DURATION );
 		}
 	}
-	
-	//TODO a rare variant that helps brutes?
 	
 	public static Class<? extends Shaman> random(){
 		float roll = Random.Float();

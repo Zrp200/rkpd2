@@ -25,12 +25,14 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
 import com.zrp200.rkpd2.items.artifacts.TimekeepersHourglass;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.plants.Swiftthistle;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.BuffIndicator;
+import com.zrp200.rkpd2.utils.SafeCast;
 
 public class Invisibility extends FlavourBuff {
 
@@ -45,10 +47,15 @@ public class Invisibility extends FlavourBuff {
 	public boolean attachTo( Char target ) {
 		if (super.attachTo( target )) {
 			target.invisible++;
-			if (target instanceof Hero
-					&& (((Hero) target).subClass == HeroSubClass.ASSASSIN
-						|| ((Hero)target).subClass == HeroSubClass.KING)) {
-				Buff.affect(target, Preparation.class);
+			Hero hero = SafeCast.cast(target, Hero.class);
+			if(hero != null) {
+				if(hero.subClass == HeroSubClass.ASSASSIN
+						|| hero.subClass == HeroSubClass.KING) {
+					Buff.affect(target, Preparation.class);
+				}
+				if(hero.hasTalent(Talent.MENDING_SHADOWS, Talent.NOBLE_CAUSE)) {
+					 Buff.affect(target, Talent.ProtectiveShadowsTracker.class);
+				}
 			}
 			return true;
 		} else {

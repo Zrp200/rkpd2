@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.items.potions.exotic;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Stamina;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.effects.SpellSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
 public class PotionOfStamina extends ExoticPotion {
@@ -37,6 +38,7 @@ public class PotionOfStamina extends ExoticPotion {
 		identify();
 		
 		Buff.affect(hero, Stamina.class, Stamina.DURATION);
+		SpellSprite.show(hero, SpellSprite.HASTE, 0.5f, 1, 0.5f);
 	}
 	
 }

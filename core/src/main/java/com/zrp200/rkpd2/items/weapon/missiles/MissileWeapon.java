@@ -30,6 +30,7 @@ import com.zrp200.rkpd2.actors.buffs.Corruption;
 import com.zrp200.rkpd2.actors.buffs.MagicImmune;
 import com.zrp200.rkpd2.actors.buffs.Momentum;
 import com.zrp200.rkpd2.actors.buffs.PinCushion;
+import com.zrp200.rkpd2.actors.buffs.RevealedArea;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -198,8 +199,19 @@ abstract public class MissileWeapon extends Weapon {
 	protected void onThrow( int cell ) {
 		Char enemy = Actor.findChar( cell );
 		if (enemy == null || enemy == curUser) {
-				parent = null;
-				super.onThrow( cell );
+			parent = null;
+
+			//metamorphed seer shot logic
+			if (curUser.hasTalent(Talent.SEER_SHOT)
+					&& curUser.heroClass != HeroClass.HUNTRESS
+					&& curUser.buff(Talent.SeerShotCooldown.class) == null){
+				if (Actor.findChar(cell) == null) {
+					// manually made consistent with rkpd2 logic
+					new RevealedArea(cell, Dungeon.depth).attachTo(curUser);
+				}
+			}
+
+			super.onThrow( cell );
 		} else curUser.shoot(enemy, this);
 	}
 

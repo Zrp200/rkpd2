@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
+import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 
 public class LifeLink extends FlavourBuff {
@@ -65,7 +66,12 @@ public class LifeLink extends FlavourBuff {
 
 	@Override
 	public int icon() {
-		return BuffIndicator.HEART;
+		return BuffIndicator.HERB_HEALING;
+	}
+
+	@Override
+	public void tintIcon(Image icon) {
+		icon.hardlight(1, 0, 1);
 	}
 
 	@Override

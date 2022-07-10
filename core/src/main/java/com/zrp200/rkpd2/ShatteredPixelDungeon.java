@@ -36,27 +36,46 @@ public class ShatteredPixelDungeon extends Game {
 
 	//variable constants for specific older versions of shattered, used for data conversion
 	public static final int
-			V0_4_0=630,
+			V0_4_0=642,
 			v0_3_0=616,
 			v0_2_0=597,
 			v0_1_0=557,
 			v0_0_1=551,
 			v0_0_0=550;
 
-	//versions older than v0.9.2b are no longer supported, and data from them is ignored
-	public static final int v0_9_2b  = 531;
-	public static final int v0_9_3c  = 557; //557 on iOS, 554 on other platforms
+	// shattered versions
+	//versions older than v0.9.3c are no longer supported, and data from them is ignored
+	public static final int v0_9_3c = 557; //557 on iOS, 554 on other platforms
 
-	public static final int v1_0_3   = 574;
-	public static final int v1_1_2   = 587;
-	public static final int v1_2_0   = 609;
-
+	public static final int v1_0_3  = 574;
+	public static final int v1_1_2  = 588;
+	public static final int v1_2_3  = 628;
+	public static final int v1_3_0  = 642;
 	public ShatteredPixelDungeon( PlatformSupport platform ) {
 		super( sceneClass == null ? WelcomeScene.class : sceneClass, platform );
 
-		//v1.2.0
+		//pre-v1.3.0
 		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.items.weapon.missiles.darts.DreamDart.class,
+				com.zrp200.rkpd2.actors.buffs.Bleeding.class,
+				"com.zrp200.rkpd2.levels.features.Chasm$FallBleed" );
+		// REJECTED :D
+//		com.watabou.utils.Bundle.addAlias(
+//				com.zrp200.rkpd2.plants.Mageroyal.class,
+//				"com.zrp200.rkpd2.plants.Dreamfoil" );
+//		com.watabou.utils.Bundle.addAlias(
+//				com.zrp200.rkpd2.plants.Mageroyal.Seed.class,
+//				"com.zrp200.rkpd2.plants.Dreamfoil$Seed" );
+
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.items.weapon.curses.Dazzling.class,
+				"com.zrp200.rkpd2.items.weapon.curses.Exhausting" );
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.items.weapon.curses.Explosive.class,
+				"com.zrp200.rkpd2.items.weapon.curses.Fragile" );
+
+		//pre-v1.2.0
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.items.weapon.missiles.darts./*CleansingDart*/DreamDart.class,
 				"com.zrp200.rkpd2.items.weapon.missiles.darts.SleepDart" );
 
 		com.watabou.utils.Bundle.addAlias(
@@ -67,7 +86,7 @@ public class ShatteredPixelDungeon extends Game {
 		com.watabou.utils.Bundle.addAlias(com.zrp200.rkpd2.actors.buffs.SoulMark.class,
 				"com.zrp200.rkpd2.actors.buffs.SoulMark.DelayedMark");
 
-		//v1.1.0
+		//pre-v1.1.0
 		com.watabou.utils.Bundle.addAlias(
 				com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfDread.class,
 				"com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfPetrification" );
@@ -87,72 +106,13 @@ public class ShatteredPixelDungeon extends Game {
 				ScrollOfMetamorphosis.class,
 				"com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfPolymorph" );
 
-		//v1.0.0
+		//pre-v1.0.0
 		com.watabou.utils.Bundle.addAlias(
 				com.zrp200.rkpd2.items.stones.StoneOfFear.class,
 				"com.zrp200.rkpd2.items.stones.StoneOfAffection" );
 		com.watabou.utils.Bundle.addAlias(
 				com.zrp200.rkpd2.items.stones.StoneOfDeepSleep.class,
 				"com.zrp200.rkpd2.items.stones.StoneOfDeepenedSleep" );
-
-		//v0.9.3
-		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.actors.mobs.Tengu.class,
-				"com.zrp200.rkpd2.actors.mobs.NewTengu" );
-		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.levels.PrisonBossLevel.class,
-				"com.zrp200.rkpd2.levels.NewPrisonBossLevel" );
-		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.levels.PrisonBossLevel.ExitVisual.class,
-				"com.zrp200.rkpd2.levels.NewPrisonBossLevel$exitVisual" );
-		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.levels.PrisonBossLevel.ExitVisualWalls.class,
-				"com.zrp200.rkpd2.levels.NewPrisonBossLevel$exitVisualWalls" );
-		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.actors.mobs.DM300.class,
-				"com.zrp200.rkpd2.actors.mobs.NewDM300" );
-		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.levels.CavesBossLevel.class,
-				"com.zrp200.rkpd2.levels.NewCavesBossLevel" );
-		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.levels.CavesBossLevel.PylonEnergy.class,
-				"com.zrp200.rkpd2.levels.NewCavesBossLevel$PylonEnergy" );
-		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.levels.CavesBossLevel.ArenaVisuals.class,
-				"com.zrp200.rkpd2.levels.NewCavesBossLevel$ArenaVisuals" );
-		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.levels.CavesBossLevel.CityEntrance.class,
-				"com.zrp200.rkpd2.levels.NewCavesBossLevel$CityEntrance" );
-		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.levels.CavesBossLevel.EntranceOverhang.class,
-				"com.zrp200.rkpd2.levels.NewCavesBossLevel$EntranceOverhang" );
-		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.levels.CityBossLevel.class,
-				"com.zrp200.rkpd2.levels.NewCityBossLevel" );
-		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.levels.CityBossLevel.CustomGroundVisuals.class,
-				"com.zrp200.rkpd2.levels.NewCityBossLevel$CustomGroundVisuals" );
-		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.levels.CityBossLevel.CustomWallVisuals.class,
-				"com.zrp200.rkpd2.levels.NewCityBossLevel$CustomWallVisuals" );
-		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.levels.HallsBossLevel.class,
-				"com.zrp200.rkpd2.levels.NewHallsBossLevel" );
-		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.levels.HallsBossLevel.CenterPieceVisuals.class,
-				"com.zrp200.rkpd2.levels.NewHallsBossLevel$CenterPieceWalls" );
-		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.levels.HallsBossLevel.CenterPieceWalls.class,
-				"com.zrp200.rkpd2.levels.NewHallsBossLevel$CenterPieceWalls" );
-		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.items.Waterskin.class,
-				"com.zrp200.rkpd2.items.DewVial" );
-		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.items.TengusMask.class,
-				"com.zrp200.rkpd2.items.TomeOfMastery" );
-		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.items.KingsCrown.class,
-				"com.zrp200.rkpd2.items.ArmorKit" );
 		
 	}
 	

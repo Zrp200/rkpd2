@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2021 Evan Debenham
+ * Copyright (C) 2014-2022 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.AllyBuff;
 import com.zrp200.rkpd2.actors.buffs.Amok;
 import com.zrp200.rkpd2.actors.buffs.Blindness;
 import com.zrp200.rkpd2.actors.buffs.Buff;
@@ -59,6 +60,10 @@ import static com.watabou.utils.Reflection.newInstance;
 import static com.zrp200.rkpd2.Dungeon.hero;
 
 public class SmokeBomb extends ArmorAbility {
+
+	{
+		baseChargeUse = 50;
+	}
 
 	@Override
 	public String targetingPrompt() {
@@ -132,7 +137,7 @@ public class SmokeBomb extends ArmorAbility {
 	@Override
 	protected void activate(ClassArmor armor, Hero hero, Integer target) {
 		if (target != null) {
-			if(!isValidTarget(hero, target, 8)) return;
+			if(!isValidTarget(hero, target, 12)) return;
 
 			if (!isShadowStep(hero)) {
 				blindAdjacentMobs(hero);
@@ -185,7 +190,7 @@ public class SmokeBomb extends ArmorAbility {
 			alignment = Alignment.ALLY;
 
 			// TODO isn't it kinda weird that the two variants have the same HP?
-			HP = HT = 20* hero.pointsInTalent(false,Talent.BODY_REPLACEMENT, Talent.SMOKE_AND_MIRRORS);
+			HP = HT = 20*hero.pointsInTalent(false,Talent.BODY_REPLACEMENT, Talent.SMOKE_AND_MIRRORS);
 		}
 
 		protected Talent talent = Talent.BODY_REPLACEMENT;
@@ -203,6 +208,7 @@ public class SmokeBomb extends ArmorAbility {
 			immunities.add( Amok.class );
 			immunities.add( Charm.class );
 			immunities.add( Sleep.class );
+			immunities.add( AllyBuff.class );
 		}
 
 	}

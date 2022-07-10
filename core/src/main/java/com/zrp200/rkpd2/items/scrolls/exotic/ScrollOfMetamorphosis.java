@@ -74,6 +74,10 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 		Sample.INSTANCE.play( Assets.Sounds.READ );
 		curUser.sprite.emitter().start(Speck.factory(Speck.CHANGE), 0.2f, 10);
 		Transmuting.show(curUser, oldTalent, newTalent);
+
+		if (Dungeon.hero.hasTalent(newTalent)) {
+			Talent.onTalentUpgraded(Dungeon.hero, newTalent);
+		}
 	}
 
 	private void confirmCancelation( Window chooseWindow ) {
@@ -170,26 +174,12 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 	public static class WndMetamorphReplace extends Window {
 
 		//talents that can only be used by one hero class
-		//TODO could some of these be made more generic?
 		private static final HashMap<Talent, HeroClass> restrictedTalents = new HashMap<>();
 		static {
-			restrictedTalents.put(IRON_WILL, WARRIOR);
-			restrictedTalents.put(RESTORED_WILLPOWER, WARRIOR);
-			restrictedTalents.put(RUNIC_TRANSFERENCE, WARRIOR);
-
-			restrictedTalents.put(BACKUP_BARRIER, MAGE);
-			restrictedTalents.put(ENERGIZING_UPGRADE, MAGE);
-			restrictedTalents.put(WAND_PRESERVATION, MAGE);
-
-			restrictedTalents.put(MENDING_SHADOWS, ROGUE);
-			restrictedTalents.put(MYSTICAL_UPGRADE, ROGUE);
-			restrictedTalents.put(LIGHT_CLOAK, ROGUE);
-
-			restrictedTalents.put(SEER_SHOT, HUNTRESS);
+			restrictedTalents.put(Talent.RUNIC_TRANSFERENCE, HeroClass.WARRIOR);
+			restrictedTalents.put(Talent.WAND_PRESERVATION, HeroClass.MAGE);
 
 			// rat king talents that contain restricted talents are removed.
-			restrictedTalents.put(NOBLE_CAUSE, RAT_KING);
-			restrictedTalents.put(RESTORATION, RAT_KING);
 			restrictedTalents.put(POWER_WITHIN, RAT_KING);
 		}
 

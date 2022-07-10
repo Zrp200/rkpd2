@@ -128,13 +128,13 @@ public class Buff extends Actor {
 	@Override public String toString() {
 		String name = Messages.get(this, "name");
 		//noinspection StringEquality
-		return name != Messages.NULL ? name : super.toString();
+		return name != Messages.NO_TEXT_FOUND ? name : super.toString();
 	}
 
 	public String desc(){
 		String desc = Messages.get(this, "desc");
 		//noinspection StringEquality
-		return desc != Messages.NULL ? desc : "";
+		return desc != Messages.NO_TEXT_FOUND ? desc : "";
 	}
 
 	//to handle the common case of showing how many turns are remaining in a buff description.

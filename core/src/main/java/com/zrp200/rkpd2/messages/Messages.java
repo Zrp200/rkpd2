@@ -50,12 +50,11 @@ public class Messages {
 	private static ArrayList<I18NBundle> bundles;
 	private static Languages lang;
 
+	public static final String NO_TEXT_FOUND = "!!!NO TEXT FOUND!!!";
+
 	public static Languages lang(){
 		return lang;
 	}
-
-	public static final String NULL = "!!!NO TEXT FOUND!!!";
-
 
 	/**
 	 * Setup Methods
@@ -115,7 +114,7 @@ public class Messages {
 			if(cls != null && key.startsWith("actors")) {
 				String byClass = get(key + "_" + cls.name(), args);
 				//noinspection StringEquality
-				if(byClass != NULL) return byClass;
+				if(byClass != NO_TEXT_FOUND) return byClass;
 			}
 		} else
 			key = k;
@@ -131,7 +130,7 @@ public class Messages {
 			if (c != null && c.getSuperclass() != null){
 				return get(c.getSuperclass(), k, args);
 			} else {
-				return NULL;
+				return NO_TEXT_FOUND;
 			}
 		}
 	}

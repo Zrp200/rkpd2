@@ -200,6 +200,10 @@ public class Ratmogrify extends ArmorAbility {
 
 		}
 
+		public Mob getOriginal(){
+			return original;
+		}
+
 		private float timeLeft = 6f;
 
 		@Override
@@ -211,6 +215,7 @@ public class Ratmogrify extends ArmorAbility {
 				GameScene.add(original);
 				if(original.HP == 0) original.die(this); // avoid shittery.
 
+				EXP = 0;
 				destroy();
 				sprite.killAndErase();
 				CellEmitter.get(original.pos).burst(Speck.factory(Speck.WOOL), 4);

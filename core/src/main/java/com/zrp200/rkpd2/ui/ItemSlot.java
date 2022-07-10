@@ -23,9 +23,8 @@ package com.zrp200.rkpd2.ui;
 
 import static com.zrp200.rkpd2.Dungeon.hero;
 
-import com.watabou.utils.PointF;
 import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.actors.hero.abilities.rat_king.OmniAbility;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.Armor;
@@ -33,7 +32,6 @@ import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.items.rings.Ring;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
@@ -72,21 +70,27 @@ public class ItemSlot extends Button {
 	// Special "virtual items"
 	public static final Item CHEST = new Item() {
 		public int image() { return ItemSpriteSheet.CHEST; }
+		public String name() { return Messages.get(Heap.class, "chest"); }
 	};
 	public static final Item LOCKED_CHEST = new Item() {
 		public int image() { return ItemSpriteSheet.LOCKED_CHEST; }
+		public String name() { return Messages.get(Heap.class, "locked_chest"); }
 	};
 	public static final Item CRYSTAL_CHEST = new Item() {
 		public int image() { return ItemSpriteSheet.CRYSTAL_CHEST; }
+		public String name() { return Messages.get(Heap.class, "crystal_chest"); }
 	};
 	public static final Item TOMB = new Item() {
 		public int image() { return ItemSpriteSheet.TOMB; }
+		public String name() { return Messages.get(Heap.class, "tomb"); }
 	};
 	public static final Item SKELETON = new Item() {
 		public int image() { return ItemSpriteSheet.BONES; }
+		public String name() { return Messages.get(Heap.class, "skeleton"); }
 	};
 	public static final Item REMAINS = new Item() {
 		public int image() { return ItemSpriteSheet.REMAINS; }
+		public String name() { return Messages.get(Heap.class, "remains"); }
 	};
 	
 	public ItemSlot() {

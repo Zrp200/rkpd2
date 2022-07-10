@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.actors.blobs.ToxicGas;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.ui.BuffIndicator;
+import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 
 public class ToxicImbue extends Buff {
@@ -73,7 +74,12 @@ public class ToxicImbue extends Buff {
 
 	@Override
 	public int icon() {
-		return BuffIndicator.IMMUNITY;
+		return BuffIndicator.IMBUE;
+	}
+
+	@Override
+	public void tintIcon(Image icon) {
+		icon.hardlight(1f, 1.5f, 0f);
 	}
 
 	@Override

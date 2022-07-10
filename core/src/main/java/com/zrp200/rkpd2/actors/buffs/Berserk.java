@@ -41,6 +41,10 @@ import java.text.DecimalFormat;
 
 public class Berserk extends Buff {
 
+	{
+		type = buffType.POSITIVE;
+	}
+
 	private enum State{
 		NORMAL, BERSERK, RECOVERING
 	}
@@ -129,11 +133,15 @@ public class Berserk extends Buff {
 		return true;
 	}
 
-	private float damageMult() {
-		return Math.min(1.5f,1+power/2f);
+	public float rageAmount(){
+		return Math.min(1f, power);
 	}
+
 	public int damageFactor(int dmg){
 		return Math.round(dmg * damageMult());
+	}
+	private float damageMult() {
+		return Math.min(1.5f, 1f + (power / 2f));
 	}
 
 	public boolean berserking(){
@@ -160,10 +168,6 @@ public class Berserk extends Buff {
 		Hero hero = (Hero)target;
 		float weight = 0.1f*hero.pointsInTalent(Talent.ENRAGED_CATALYST,Talent.ONE_MAN_ARMY,Talent.ENDLESS_RAGE);
 		return damage/(weight*target.HP+(1-weight)*target.HT)/3f;
-	}
-
-	public float rageAmount(){
-		return Math.min(1f, power);
 	}
 
 	public void damage(int damage){

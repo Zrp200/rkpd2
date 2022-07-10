@@ -22,9 +22,10 @@
 package com.zrp200.rkpd2.actors.mobs.npcs;
 
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.AscensionChallenge;
 import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.mobs.Golem;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.Monk;
@@ -56,7 +57,10 @@ public class Imp extends NPC {
 	
 	@Override
 	protected boolean act() {
-		
+		if (Dungeon.hero.buff(AscensionChallenge.class) != null){
+			die(null);
+			return true;
+		}
 		if (!Quest.given && Dungeon.level.heroFOV[pos]) {
 			if (!seenBefore) {
 				yell( Messages.get(this, "hey", Dungeon.hero.name() ) );
@@ -249,7 +253,8 @@ public class Imp extends NPC {
 		public static void complete() {
 			reward = null;
 			completed = true;
-			
+
+			Statistics.questScores[3] = 4000;
 			Notes.remove( Notes.Landmark.IMP );
 		}
 		

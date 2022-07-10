@@ -27,11 +27,14 @@ import com.zrp200.rkpd2.items.Gold;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.keys.CrystalKey;
 import com.zrp200.rkpd2.items.keys.IronKey;
+import com.zrp200.rkpd2.items.potions.PotionOfExperience;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfTransmutation;
 import com.zrp200.rkpd2.levels.Level;
 import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.levels.painters.Painter;
 import com.zrp200.rkpd2.levels.rooms.Room;
 import com.zrp200.rkpd2.levels.rooms.standard.EmptyRoom;
+import com.sun.tools.javac.jvm.Gen;
 import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 
@@ -126,25 +129,22 @@ public class CrystalPathRoom extends SpecialRoom {
 			Item item;
 			switch (i){
 				case 0: default:
-					item = new Gold(Random.NormalIntRange(5, 12));
+					item = new Gold().random();
 					break;
 				case 1:
-					item = Generator.random(Random.oneOf(
-							Generator.Category.SEED,
-							Generator.Category.STONE)
-					);
+					item = Generator.random(Generator.Category.POTION);
 					break;
 				case 2:
-					item = Generator.random(Random.oneOf(
-							Generator.Category.POTION,
-							Generator.Category.SCROLL)
-					);
+					item = Generator.random(Generator.Category.SCROLL);
 					break;
 				case 3:
-					item = Generator.random(Random.oneOf(
-							Generator.Category.WEAPON,
-							Generator.Category.ARMOR)
-					);
+					if (Random.Int(2) == 0){
+						item = Generator.random(Random.oneOf(Generator.Category.POTION, Generator.Category.SCROLL));
+					} else if (Random.Int(2) == 0) {
+						item = new PotionOfExperience();
+					} else {
+						item = new ScrollOfTransmutation();
+					}
 					break;
 			}
 			level.drop(item, pos);

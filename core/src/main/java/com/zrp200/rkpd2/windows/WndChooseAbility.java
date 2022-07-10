@@ -60,7 +60,7 @@ public class WndChooseAbility extends Window {
 		this.crown = crown;
 		this.armor = armor;
 
-		//crown can be null if hero is choosing from armor, pre-0.9.3 saves
+        //crown can be null if hero is choosing from armor
 		IconTitle titlebar = new IconTitle();
 		titlebar.icon( new ItemSprite( crown == null ? armor.image() : crown.image(), null ) );
 		titlebar.label( Messages.titleCase(title) );
@@ -148,4 +148,5 @@ public class WndChooseAbility extends Window {
 			}
 		});
 	}
+
 }

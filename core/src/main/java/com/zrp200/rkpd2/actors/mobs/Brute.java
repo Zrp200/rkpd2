@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.ShieldBuff;
 import com.zrp200.rkpd2.actors.buffs.Terror;
+import com.zrp200.rkpd2.effects.SpellSprite;
 import com.zrp200.rkpd2.items.Gold;
 import com.zrp200.rkpd2.levels.features.Chasm;
 import com.zrp200.rkpd2.messages.Messages;
@@ -93,7 +94,7 @@ public class Brute extends Mob {
 	protected void triggerEnrage(){
 		Buff.affect(this, BruteRage.class).setShield(HT/2 + 4);
 		if (Dungeon.level.heroFOV[pos]) {
-			sprite.showStatus( CharSprite.NEGATIVE, Messages.get(this, "enraged") );
+			SpellSprite.show( this, SpellSprite.BERSERK);
 		}
 		spend( TICK );
 		hasRaged = true;

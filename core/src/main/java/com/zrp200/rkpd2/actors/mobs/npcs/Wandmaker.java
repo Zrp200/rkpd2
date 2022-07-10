@@ -22,7 +22,9 @@
 package com.zrp200.rkpd2.actors.mobs.npcs;
 
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.AscensionChallenge;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Item;
@@ -61,6 +63,10 @@ public class Wandmaker extends NPC {
 	
 	@Override
 	protected boolean act() {
+		if (Dungeon.hero.buff(AscensionChallenge.class) != null){
+			die(null);
+			return true;
+		}
 		if (Dungeon.level.heroFOV[pos] && Quest.wand1 != null){
 			Notes.add( Notes.Landmark.WANDMAKER );
 		}
@@ -271,7 +277,7 @@ public class Wandmaker extends NPC {
 				do {
 					validPos = true;
 					npc.pos = level.pointToCell(room.random());
-					if (npc.pos == level.entrance){
+					if (npc.pos == level.entrance()){
 						validPos = false;
 					}
 					for (Point door : room.connected.values()){
@@ -331,6 +337,7 @@ public class Wandmaker extends NPC {
 			wand2 = null;
 			
 			Notes.remove( Notes.Landmark.WANDMAKER );
+			Statistics.questScores[1] = 2000;
 		}
 	}
 }

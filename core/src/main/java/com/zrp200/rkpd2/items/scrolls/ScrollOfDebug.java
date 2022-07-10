@@ -24,7 +24,7 @@ import com.zrp200.rkpd2.ui.RenderedTextBlock;
 import com.zrp200.rkpd2.ui.ScrollPane;
 import com.zrp200.rkpd2.ui.Window;
 // WndTextInput (added in v0.9.4)
-import com.zrp200.rkpd2.ui.WndTextInput;
+import com.zrp200.rkpd2.windows.WndTextInput;
 // Output
 import com.zrp200.rkpd2.utils.GLog;
 
@@ -114,7 +114,7 @@ public class ScrollOfDebug extends Scroll {
     @Override
     public void doRead() {
         collect(); // you don't lose scroll of debug.
-        GameScene.show(new WndTextInput("Enter Command:", "", 100, false,
+        GameScene.show(new WndTextInput("Enter Command:", "", "", 100, false,
                 "Execute", "Cancel") {
             @Override public void onSelect(boolean positive, String text) {
                 if(!positive) return;

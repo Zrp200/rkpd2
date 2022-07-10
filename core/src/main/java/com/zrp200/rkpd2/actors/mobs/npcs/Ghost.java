@@ -23,7 +23,9 @@ package com.zrp200.rkpd2.actors.mobs.npcs;
 
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.AscensionChallenge;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.mobs.FetidRat;
 import com.zrp200.rkpd2.actors.mobs.GnollTrickster;
@@ -66,6 +68,10 @@ public class Ghost extends NPC {
 
 	@Override
 	protected boolean act() {
+		if (Dungeon.hero.buff(AscensionChallenge.class) != null){
+			die(null);
+			return true;
+		}
 		if (Quest.processed()) {
 			target = Dungeon.hero.pos;
 		}
@@ -339,6 +345,7 @@ public class Ghost extends NPC {
 				GLog.n( Messages.get(Ghost.class, "find_me") );
 				Sample.INSTANCE.play( Assets.Sounds.GHOST );
 				processed = true;
+				Statistics.questScores[0] = 1000;
 			}
 		}
 		

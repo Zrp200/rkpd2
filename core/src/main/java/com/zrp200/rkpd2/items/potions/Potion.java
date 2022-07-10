@@ -22,10 +22,7 @@
 package com.zrp200.rkpd2.items.potions;
 
 import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.Badges;
-import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.blobs.Fire;

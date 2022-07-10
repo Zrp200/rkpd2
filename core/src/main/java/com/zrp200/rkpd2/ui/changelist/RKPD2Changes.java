@@ -32,7 +32,6 @@ import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.enchantments.Explosive;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.ChangesScene;
-import com.zrp200.rkpd2.sprites.HeroSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.KingSprite;
 import com.zrp200.rkpd2.ui.Icons;
@@ -264,7 +263,7 @@ public class RKPD2Changes {
                         + list("Smart targeting not prompting when no targets are around.")
                         + list("Dwarf King having an incorrect amount of health for phase 3 in Badder Bosses.", "Dwarf King not saying lines in Badder Bosses when partially skipped.", "Dwarf King sometimes saying lines out of order.")
                         // TODO
-                        + list(Messages.NULL + " when looking at Elemental Blast description of firebolt", Messages.NULL + " when targeting yourself with shadowstepping Wrath.")
+                        + list(Messages.NO_TEXT_FOUND + " when looking at Elemental Blast description of firebolt", Messages.NO_TEXT_FOUND + " when targeting yourself with shadowstepping Wrath.")
                         + list("Rat statues not being given the respect they deserve."))
             ),
             Nerfs(

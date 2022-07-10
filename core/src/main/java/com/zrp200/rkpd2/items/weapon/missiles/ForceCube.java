@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.items.weapon.missiles;
 
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;

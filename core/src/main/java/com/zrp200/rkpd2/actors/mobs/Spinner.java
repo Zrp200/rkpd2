@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.blobs.Blob;
 import com.zrp200.rkpd2.actors.blobs.Web;
+import com.zrp200.rkpd2.actors.buffs.AscensionChallenge;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Dread;
 import com.zrp200.rkpd2.actors.buffs.Poison;
@@ -119,7 +120,10 @@ public class Spinner extends Mob {
 	public int attackProc(Char enemy, int damage) {
 		damage = super.attackProc( enemy, damage );
 		if (Random.Int(2) == 0) {
-			Buff.affect(enemy, Poison.class).set(Random.Int(7, 9) );
+			int duration = Random.IntRange(7, 8);
+			//we only use half the ascension modifier here as total poison dmg doesn't scale linearly
+			duration = Math.round(duration * (AscensionChallenge.statModifier(this)/2f + 0.5f));
+			Buff.affect(enemy, Poison.class).set(duration);
 			webCoolDown = 0;
 			state = FLEEING;
 		}

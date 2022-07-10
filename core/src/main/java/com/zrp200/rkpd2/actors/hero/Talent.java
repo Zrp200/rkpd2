@@ -25,7 +25,6 @@ import static com.zrp200.rkpd2.Dungeon.hero;
 
 import static java.lang.Math.max;
 
-import com.watabou.noosa.Image;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.GamesInProgress;
@@ -34,12 +33,14 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Adrenaline;
 import com.zrp200.rkpd2.actors.buffs.AllyBuff;
 import com.zrp200.rkpd2.actors.buffs.ArtifactRecharge;
+import com.zrp200.rkpd2.actors.buffs.Barrier;
 import com.zrp200.rkpd2.actors.buffs.Berserk;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.CounterBuff;
 import com.zrp200.rkpd2.actors.buffs.EnhancedRings;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.buffs.Haste;
+import com.zrp200.rkpd2.actors.buffs.Hunger;
 import com.zrp200.rkpd2.actors.buffs.LostInventory;
 import com.zrp200.rkpd2.actors.buffs.Preparation;
 import com.zrp200.rkpd2.actors.buffs.Recharging;
@@ -72,6 +73,7 @@ import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.levels.features.HighGrass;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundle;
@@ -290,7 +292,7 @@ public enum Talent {
 				String desc = super.desc();
 				String effect = Messages.get(this, "effect");
 				//noinspection StringEquality
-				if(effect != Messages.NULL) desc += "\n" + effect;
+				if(effect != Messages.NO_TEXT_FOUND) desc += "\n" + effect;
 				return desc;
 			}
 		}
@@ -328,6 +330,61 @@ public enum Talent {
 	public static class StrikingWaveTracker extends FlavourBuff{};
 	public static class WandPreservationCounter extends CounterBuff{};
 	public static class EmpoweredStrikeTracker extends FlavourBuff{};
+	public static class ProtectiveShadowsTracker extends Buff {
+		private float incHeal = 1, incShield = 1;
+
+		@Override
+		public boolean act() {
+			Hero target = (Hero) this.target;
+			if (target.invisible > 0) {
+				if (target.hasTalent(Talent.MENDING_SHADOWS)
+						&& !Buff.affect(target, Hunger.class).isStarving()) {
+					// heal every 4/2 turns when not starving. effectively a 1.5x boost to standard protective shadows, plus it doesn't go away.
+					incHeal += target.pointsInTalent(Talent.MENDING_SHADOWS) / 4f;
+					if (incHeal >= 1 && target.HP < target.HT) {
+						incHeal = 0;
+						target.HP++;
+						target.sprite.emitter().burst(Speck.factory(Speck.HEALING), 1);
+					}
+				}
+				//barrier every 2/1 turns, to a max of 3/5
+				if (target.hasTalent(Talent.MENDING_SHADOWS, Talent.NOBLE_CAUSE)) {
+					Barrier barrier = Buff.affect(target, Barrier.class);
+					int points = target.pointsInTalent(Talent.MENDING_SHADOWS, Talent.NOBLE_CAUSE);
+					if (barrier.shielding() < 1 + 2 * points) {
+						incShield += 0.5f * points;
+					}
+					if (incShield >= 1) {
+						incShield = 0;
+						barrier.incShield(1);
+					} else {
+						barrier.incShield(0);
+					}
+				}
+			} else {
+				detach();
+			}
+			spend(TICK);
+			return true;
+		}
+
+		private static final String
+				BARRIER_INC = "barrier_inc",
+				HEAL_INC = "incHeal";
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put( BARRIER_INC, incShield );
+			bundle.put( HEAL_INC, incHeal );
+		}
+
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			incShield = bundle.getFloat( BARRIER_INC );
+			incHeal = bundle.getFloat( HEAL_INC );
+		}
+	}
 	public static class BountyHunterTracker extends FlavourBuff{};
 	public static class RejuvenatingStepsCooldown extends Cooldown{
 		{ revivePersists = true; }
@@ -412,16 +469,31 @@ public enum Talent {
 		return Messages.get(this, name() + ".title");
 	}
 
-	public String desc(){
-		String desc = Messages.get(this, name() + ".desc");
-		String comment = Messages.get(this, name() + ".comment");
-		//noinspection StringEquality
-		return comment == Messages.NULL ? desc : desc + "\n\n" + comment;
+	public final String desc(){
+		return desc(false);
+	}
+
+    // fixme there's gotta be a way to truncate the sheer amount of extra text that's about to show up.
+    // todo also should decide if I want the comment to show up before or after the meta desc. currently it is set after
+	public String desc(boolean metamorphed){
+        String desc = Messages.get(this, name() + ".desc");
+		if (metamorphed){
+			String metaDesc = Messages.get(this, name() + ".meta_desc");
+			if (!metaDesc.equals(Messages.NO_TEXT_FOUND)){
+				desc += "\n\n" + metaDesc;
+			}
+		}
+        String comment = Messages.get(this, name() + ".comment");
+        //noinspection StringEquality
+        return comment == Messages.NO_TEXT_FOUND ? desc : desc + "\n\n" + comment;
 	}
 
 	public static void onTalentUpgraded( Hero hero, Talent talent){
 		int points = hero.pointsInTalent(talent);
 		switch(talent) {
+		    case IRON_WILL:
+		        // lazily implementing this without checking hero class.
+		        Buff.affect(hero, BrokenSeal.WarriorShield.class);
 			case ROYAL_PRIVILEGE: case NATURES_BOUNTY:
 				int count = talent == NATURES_BOUNTY ? 3 : 2;
 				if(points == 1) count *= 2; // for the initial upgrade.
@@ -445,7 +517,9 @@ public enum Talent {
 					}
 				}
 				break;
-			case LIGHT_CLOAK: case RK_FREERUNNER:
+			case LIGHT_CLOAK:
+				// shpd does a check to make sure it's the rogue before doing this, but I don't see why I should bother checking.
+			case RK_FREERUNNER:
 				if (hero.pointsInTalent(LIGHT_CLOAK, RK_FREERUNNER) == 1) {
 					for (Item item : hero.belongings.backpack) {
 						if (item instanceof CloakOfShadows) {
@@ -472,7 +546,8 @@ public enum Talent {
 	}
 
 	public static class CachedRationsDropped extends CounterBuff{{revivePersists = true;}};
-	public static class NatureBerriesAvailable extends CounterBuff{{revivePersists = true;}};
+	public static class NatureBerriesAvailable extends CounterBuff{{revivePersists = true;}}; //for pre-1.3.0 saves
+	public static class NatureBerriesDropped extends CounterBuff{{revivePersists = true;}};
 
 	public static void onFoodEaten( Hero hero, float foodVal, Item foodSource ){
 		final int[] heartyMeal = new int[2];
@@ -537,6 +612,7 @@ public enum Talent {
 			}
 			if(newBuff) buff.ignoreHornOfPlenty = foodSource instanceof HornOfPlenty;
 			ScrollOfRecharging.charge( hero );
+			SpellSprite.show(hero, SpellSprite.CHARGE, 0, 1, 1);
 		}, ROYAL_MEAL, MYSTICAL_MEAL );
 
 		// 4.5/6 tiles -> 3/5 turns
@@ -583,13 +659,21 @@ public enum Talent {
 
 	public static void onHealingPotionUsed( Hero hero ){
 		if (hero.hasTalent(RESTORED_WILLPOWER,RESTORATION)){
+			float[] multiplier = {0/*seal*/,0/*noSeal*/};
+			hero.byTalent( (talent, points) -> {
+				points++;
+				multiplier[0] += points/(talent == RESTORED_WILLPOWER ? 2f : 3f);
+				float noSeal = 0.025f * points;
+				multiplier[1] += talent == RESTORED_WILLPOWER ? noSeal * 1.5f : noSeal;
+			});
 			BrokenSeal.WarriorShield shield = hero.buff(BrokenSeal.WarriorShield.class);
-			if (shield != null){
-				// Hero#byTalent can't save me here.
-				double multiplier = max(
-						hero.hasTalent(RESTORED_WILLPOWER) ? hero.shiftedPoints(RESTORED_WILLPOWER)/2f : 0,
-						hero.hasTalent(RESTORATION) ? hero.shiftedPoints(RESTORATION)/3f : 0);
-				shield.supercharge((int)Math.round(shield.maxShield()*multiplier));
+			int shieldToGive;
+			if (shield != null) {
+				shieldToGive = Math.round(shield.maxShield()*multiplier[0]);
+				shield.supercharge(shieldToGive);
+			} else {
+				shieldToGive = Math.round(hero.HT * multiplier[1]);
+				Buff.affect(hero, Barrier.class).setShield(shieldToGive);
 			}
 		}
 		if (hero.hasTalent(RESTORED_NATURE,RESTORATION)){
@@ -635,6 +719,7 @@ public enum Talent {
 	}
 
 	public static void onUpgradeScrollUsed( Hero hero ){
+		// fixme it's probably going to look like someone threw up spellsprites
 		if (hero.hasTalent(ENERGIZING_UPGRADE,RESTORATION)){
 			int charge = 2+2*hero.pointsInTalent(ENERGIZING_UPGRADE);
 			MagesStaff staff = hero.belongings.getItem(MagesStaff.class);
@@ -646,6 +731,10 @@ public enum Talent {
 			if (staff != null && pointDiff > 0){
 				staff.gainCharge( charge + 2*pointDiff, true);
 				charged = true;
+			}
+			if(staff == null && hero.hasTalent(RESTORATION)) {
+			    Buff.affect(hero, Recharging.class, 4 + 8 * hero.pointsInTalent(RESTORATION));
+			    charged = true;
 			}
 			if(charged) {
 				ScrollOfRecharging.charge(hero);
@@ -666,10 +755,13 @@ public enum Talent {
 			if (cloak != null){
 				cloak.overCharge(1+hero.pointsInTalent(false, MYSTICAL_UPGRADE, RESTORATION));
 				charge = true;
+			} else if(hero.hasTalent(RESTORATION)) {
+			    Buff.affect(hero, ArtifactRecharge.class).set( 2 + 4*hero.pointsInTalent(RESTORATION) ).ignoreHornOfPlenty = false;
+			    charge = true;
 			}
 			if(charge) {
 				ScrollOfRecharging.charge(hero);
-				SpellSprite.show( hero, SpellSprite.CHARGE );
+				SpellSprite.show( hero, SpellSprite.CHARGE, 0, 1, 1 );
 			}
 		}
 	}

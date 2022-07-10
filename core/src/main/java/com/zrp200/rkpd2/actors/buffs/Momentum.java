@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.Speck;
+import com.zrp200.rkpd2.effects.SpellSprite;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.ActionIndicator;
@@ -220,6 +221,7 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 		freerunCooldown = 10 + 2*momentumStacks + freerunTurns;
 		Sample.INSTANCE.play(Assets.Sounds.MISS, 1f, 0.8f);
 		target.sprite.emitter().burst(Speck.factory(Speck.JET), 5+ momentumStacks);
+		SpellSprite.show(target, SpellSprite.HASTE, 1, 1, 0);
 		momentumStacks = 0;
 		Item.updateQuickslot();
 		BuffIndicator.refreshHero();

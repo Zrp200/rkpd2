@@ -40,6 +40,7 @@ import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.ui.HeroIcon;
 import com.zrp200.rkpd2.utils.BArray;
 import com.zrp200.rkpd2.utils.GLog;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
@@ -164,7 +165,12 @@ public class DeathMark extends ArmorAbility {
 
 		@Override
 		public int icon() {
-			return BuffIndicator.MARK;
+			return BuffIndicator.INVERT_MARK;
+		}
+
+		@Override
+		public void tintIcon(Image icon) {
+			icon.hardlight(1f, 0.2f, 0.2f);
 		}
 
 		@Override

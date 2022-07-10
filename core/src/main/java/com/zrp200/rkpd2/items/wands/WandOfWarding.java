@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.items.wands;
 
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
@@ -288,7 +289,7 @@ public class WandOfWarding extends Wand {
 		@Override
 		public int defenseSkill(Char enemy) {
 			if (tier > 3){
-				defenseSkill = 4 + Dungeon.depth;
+				defenseSkill = 4 + Dungeon.scalingDepth();
 			}
 			return super.defenseSkill(enemy);
 		}
@@ -296,7 +297,7 @@ public class WandOfWarding extends Wand {
 		@Override
 		public int drRoll() {
 			if (tier > 3){
-				return Math.round(Random.NormalIntRange(0, 3 + Dungeon.depth/2) / (7f - tier));
+				return Math.round(Random.NormalIntRange(0, 3 + Dungeon.scalingDepth()/2) / (7f - tier));
 			} else {
 				return 0;
 			}
@@ -330,6 +331,7 @@ public class WandOfWarding extends Wand {
 			enemy.damage( dmg, this );
 
 			if (!enemy.isAlive() && enemy == Dungeon.hero) {
+				Badges.validateDeathFromFriendlyMagic();
 				Dungeon.fail( getClass() );
 			}
 

@@ -141,6 +141,11 @@ public class TalentButton extends Button {
 				}
 
 				@Override
+				public boolean metamorphDesc() {
+					return true;
+				}
+
+				@Override
 				public void call() {
 					if (ScrollOfMetamorphosis.WndMetamorphChoose.INSTANCE != null){
 						ScrollOfMetamorphosis.WndMetamorphChoose.INSTANCE.hide();
@@ -154,6 +159,11 @@ public class TalentButton extends Button {
 				@Override
 				public String prompt() {
 					return Messages.titleCase(Messages.get(ScrollOfMetamorphosis.class, "metamorphose_talent"));
+				}
+
+				@Override
+				public boolean metamorphDesc() {
+					return true;
 				}
 
 				@Override

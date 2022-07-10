@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.actors.mobs.npcs;
 
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.buffs.AscensionChallenge;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.effects.particles.ElmoParticle;
@@ -41,7 +42,11 @@ public class ImpShopkeeper extends Shopkeeper {
 	protected boolean act() {
 
 		if (!seenBefore && Dungeon.level.heroFOV[pos]) {
-			yell( Messages.get(this, "greetings", Dungeon.hero.name() ) );
+			if (Dungeon.hero.buff(AscensionChallenge.class) == null) {
+				yell(Messages.get(this, "greetings", Dungeon.hero.name()));
+			} else {
+				yell(Messages.get(this, "greetings_ascent", Dungeon.hero.name()));
+			}
 			seenBefore = true;
 		}
 		

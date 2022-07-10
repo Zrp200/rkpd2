@@ -28,7 +28,6 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.buffs.Vulnerable;
-import com.zrp200.rkpd2.actors.buffs.Weakness;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
@@ -40,14 +39,13 @@ import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.ui.HeroIcon;
 import com.watabou.noosa.Camera;
-import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 public class HeroicLeap extends ArmorAbility {
 
 	{
-		baseChargeUse = 25f;
+		baseChargeUse = 35f;
 	}
 
 	@Override
@@ -59,8 +57,8 @@ public class HeroicLeap extends ArmorAbility {
 	public float chargeUse( Hero hero ) {
 		float chargeUse = super.chargeUse(hero);
 		if (hero.buff(DoubleJumpTracker.class) != null){
-			//reduced charge use by 16%/30%/41%/50/59%
-			chargeUse *= Math.pow(0.84, hero.shiftedPoints(Talent.DOUBLE_JUMP));
+			//reduced charge use by 20%/36%/50%/60%/68%
+			chargeUse *= Math.pow(0.795, hero.pointsInTalent(Talent.DOUBLE_JUMP));
 		}
 		return chargeUse;
 	}
@@ -93,15 +91,16 @@ public class HeroicLeap extends ArmorAbility {
 					Char mob = Actor.findChar(hero.pos + i);
 					if (mob != null && mob != hero && mob.alignment != Char.Alignment.ALLY) {
 						if (hero.canHaveTalent(Talent.BODY_SLAM)){
-							int damage = hero.drRoll();
-							damage = Math.round(damage*0.25f*hero.shiftedPoints(Talent.BODY_SLAM));
+						    int points = hero.shiftedPoints(Talent.BODY_SLAM);
+							int damage = Random.NormalIntRange(points, 4*points);
+							damage += Math.round(hero.drRoll()*0.25f*points);
 							mob.damage(damage, hero);
 						}
 						if (mob.pos == hero.pos + i && hero.hasTalent(Talent.IMPACT_WAVE)){
 							Ballistica trajectory = new Ballistica(mob.pos, mob.pos + i, Ballistica.MAGIC_BOLT);
 							int strength = 1+hero.pointsInTalent(Talent.IMPACT_WAVE);
 							strength *= 1.5; // 3/4/6 instead of 2/3/4
-							WandOfBlastWave.throwChar(mob, trajectory, strength, true);
+							WandOfBlastWave.throwChar(mob, trajectory, strength, true, true, HeroicLeap.this.getClass());
 							// 40/60/80/100
 							if (Random.Int(5) < 1+hero.pointsInTalent(Talent.IMPACT_WAVE)){
 								Buff.prolong(mob, Vulnerable.class, 5f); // 3 -> 5

@@ -23,7 +23,9 @@ package com.zrp200.rkpd2.actors.mobs.npcs;
 
 import com.watabou.utils.Reflection;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.AscensionChallenge;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.particles.ElmoParticle;
@@ -52,6 +54,11 @@ public class Shopkeeper extends NPC {
 
 		if (Dungeon.level.heroFOV[pos]){
 			Notes.add(Notes.Landmark.SHOP);
+		}
+
+		if (Statistics.highestAscent < 20 && Dungeon.hero.buff(AscensionChallenge.class) != null){
+			flee();
+			return true;
 		}
 		
 		sprite.turnTo( pos, Dungeon.hero.pos );

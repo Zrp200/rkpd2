@@ -35,7 +35,7 @@ import static com.zrp200.rkpd2.actors.hero.Talent.SMOKE_AND_MIRRORS;
 public class Wrath extends ArmorAbility {
 
     {
-        baseChargeUse = 60;
+        baseChargeUse = 70;
     }
 
     @Override public String targetingPrompt() {
@@ -94,7 +94,7 @@ public class Wrath extends ArmorAbility {
     }
 
     private boolean doSmokeBomb() {
-        if( !SmokeBomb.isValidTarget(hero, target, 6) ) return false;
+        if( !SmokeBomb.isValidTarget(hero, target, 10) ) return false;
 
         boolean isShadowStep = SmokeBomb.isShadowStep(hero);
         if(!isShadowStep) {

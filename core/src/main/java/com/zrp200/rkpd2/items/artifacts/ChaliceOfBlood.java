@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.items.artifacts;
 
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.effects.particles.ShadowParticle;
@@ -116,6 +117,7 @@ public class ChaliceOfBlood extends Artifact {
 		hero.damage(damage, this);
 
 		if (!hero.isAlive()) {
+			Badges.validateDeathFromFriendlyMagic();
 			Dungeon.fail( getClass() );
 			GLog.n( Messages.get(this, "ondeath") );
 		} else {

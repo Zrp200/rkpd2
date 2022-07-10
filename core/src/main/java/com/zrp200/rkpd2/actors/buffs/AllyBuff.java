@@ -67,6 +67,7 @@ public abstract class AllyBuff extends Buff{
 			} else {
 				hero.earnExp(0, enemy.getClass());
 			}
+			if (droppingLoot) AscensionChallenge.processEnemyKill(enemy);
 		}
 	}
 

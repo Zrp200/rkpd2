@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
+import com.watabou.noosa.Image;
 
 public class Adrenaline extends FlavourBuff {
 	

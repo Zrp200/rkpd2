@@ -73,7 +73,7 @@ public class ShadowClone extends ArmorAbility {
 	}
 
 	{
-		baseChargeUse = 50f;
+		baseChargeUse = 35f;
 	}
 
 	@Override
@@ -148,7 +148,7 @@ public class ShadowClone extends ArmorAbility {
 		{
 			spriteClass = ShadowSprite.class;
 
-			HP = HT = 100;
+			HP = HT = 80;
 
 			immunities.add(AllyBuff.class);
 		}
@@ -206,7 +206,7 @@ public class ShadowClone extends ArmorAbility {
 			int damage = Random.NormalIntRange(10, 20);
 			int heroDamage = hero.damageRoll();
 			heroDamage /= hero.attackDelay(); //normalize hero damage based on atk speed
-			heroDamage = Math.round(/*0.075f*/0.1f * hero.pointsInTalent(Talent.SHADOW_BLADE) * heroDamage);
+			heroDamage = Math.round(/*0.08f*/0.1f * hero.pointsInTalent(Talent.SHADOW_BLADE) * heroDamage);
 			if (heroDamage > 0){
 				damage += heroDamage;
 			}
@@ -228,7 +228,7 @@ public class ShadowClone extends ArmorAbility {
 		public int drRoll() {
 			int dr = super.drRoll();
 			int heroRoll = hero.drRoll();
-			heroRoll = Math.round(/*0.15f*/0.2f * hero.pointsInTalent(Talent.CLONED_ARMOR) * heroRoll);
+			heroRoll = Math.round(/*0.12f*/0.16f * hero.pointsInTalent(Talent.CLONED_ARMOR) * heroRoll);
 			if (heroRoll > 0){
 				dr += heroRoll;
 			}
@@ -238,7 +238,6 @@ public class ShadowClone extends ArmorAbility {
 		@Override
 		public int defenseProc(Char enemy, int damage) {
 			damage = super.defenseProc(enemy, damage);
-			// shifted to work
 			if (Random.Int(4) < hero.pointsInTalent(Talent.CLONED_ARMOR)
 					&& hero.belongings.armor() != null){
 				return hero.belongings.armor().proc( enemy, this, damage );

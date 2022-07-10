@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.actors.mobs;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.AscensionChallenge;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.levels.features.Chasm;
@@ -68,7 +69,8 @@ public class Skeleton extends Mob {
 		for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
 			Char ch = findChar( pos + PathFinder.NEIGHBOURS8[i] );
 			if (ch != null && ch.isAlive()) {
-				int damage = Random.NormalIntRange(6, 12);
+				int damage = Math.round(Random.NormalIntRange(6, 12));
+				damage = Math.round( damage * AscensionChallenge.statModifier(this));
 				damage = Math.max( 0,  damage - (ch.drRoll() + ch.drRoll()) );
 				ch.damage( damage, this );
 				if (ch == Dungeon.hero && !ch.isAlive()) {

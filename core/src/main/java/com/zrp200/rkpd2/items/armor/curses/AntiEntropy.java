@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.items.armor.curses;
 
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.blobs.Freezing;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Burning;
 import com.zrp200.rkpd2.actors.buffs.Frost;
@@ -33,6 +34,7 @@ import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.armor.Armor.Glyph;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite.Glowing;
+import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 public class AntiEntropy extends Glyph {
@@ -44,12 +46,13 @@ public class AntiEntropy extends Glyph {
 
 		if (Random.Int( 8 ) == 0) {
 
-			if (Dungeon.level.adjacent( attacker.pos, defender.pos )) {
-				Buff.prolong(attacker, Frost.class, Frost.DURATION);
-				CellEmitter.get(attacker.pos).start(SnowParticle.FACTORY, 0.2f, 6);
+			for (int i : PathFinder.NEIGHBOURS8){
+				Freezing.affect(defender.pos+i);
 			}
-			
-			Buff.affect( defender, Burning.class ).reignite( defender );
+
+			if (!Dungeon.level.water[defender.pos]) {
+				Buff.affect(defender, Burning.class).reignite(defender, 4);
+			}
 			defender.sprite.emitter().burst( FlameParticle.FACTORY, 5 );
 
 		}

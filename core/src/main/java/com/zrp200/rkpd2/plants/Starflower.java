@@ -27,6 +27,8 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Recharging;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
+import com.zrp200.rkpd2.effects.Flare;
+import com.zrp200.rkpd2.effects.SpellSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
 public class Starflower extends Plant {
@@ -41,8 +43,10 @@ public class Starflower extends Plant {
 
 		if (ch != null) {
 			Buff.prolong(ch, Bless.class, Bless.DURATION);
+			new Flare( 6, 32 ).color(0xFFFF00, true).show( ch.sprite, 2f );
 			if (ch instanceof Hero && (((Hero)ch).subClass == HeroSubClass.WARDEN || ((Hero)ch).subClass == HeroSubClass.KING)){
 				Buff.prolong(ch, Recharging.class, Recharging.DURATION);
+				SpellSprite.show( ch, SpellSprite.CHARGE );
 			}
 		}
 

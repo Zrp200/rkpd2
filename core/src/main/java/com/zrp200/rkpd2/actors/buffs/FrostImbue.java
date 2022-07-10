@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.effects.particles.SnowParticle;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
+import com.watabou.noosa.Image;
 
 public class FrostImbue extends FlavourBuff {
 	
@@ -42,7 +43,12 @@ public class FrostImbue extends FlavourBuff {
 	
 	@Override
 	public int icon() {
-		return BuffIndicator.FROST;
+		return BuffIndicator.IMBUE;
+	}
+
+	@Override
+	public void tintIcon(Image icon) {
+		icon.hardlight(0, 2f, 3f);
 	}
 
 	@Override

@@ -22,9 +22,12 @@
 package com.zrp200.rkpd2.items.wands;
 
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.mobs.DwarfKing;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.Lightning;
 import com.zrp200.rkpd2.effects.particles.SparkParticle;
@@ -85,6 +88,7 @@ public class WandOfLightning extends DamageWand {
 		}
 
 		if (!curUser.isAlive()) {
+			Badges.validateDeathFromFriendlyMagic();
 			Dungeon.fail( getClass() );
 			GLog.n(Messages.get(this, "ondeath"));
 		}
@@ -131,6 +135,10 @@ public class WandOfLightning extends DamageWand {
 
 		Char ch = Actor.findChar( cell );
 		if (ch != null) {
+			if (ch instanceof DwarfKing){
+				Statistics.qualifiedForBossChallengeBadge = false;
+			}
+
 			affected.add( ch );
 			arcs.add( new Lightning.Arc(curUser.sprite.center(), ch.sprite.center()));
 			arc(ch);

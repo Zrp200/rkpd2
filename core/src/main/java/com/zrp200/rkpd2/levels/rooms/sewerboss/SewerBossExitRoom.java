@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.levels.rooms.sewerboss;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.levels.Level;
 import com.zrp200.rkpd2.levels.Terrain;
+import com.zrp200.rkpd2.levels.features.LevelTransition;
 import com.zrp200.rkpd2.levels.painters.Painter;
 import com.zrp200.rkpd2.levels.rooms.Room;
 import com.zrp200.rkpd2.levels.rooms.standard.ExitRoom;
@@ -58,8 +59,13 @@ public class SewerBossExitRoom extends ExitRoom {
 		Painter.fill( level, c.x-1, c.y-1, 3, 2, Terrain.WALL );
 		Painter.fill( level, c.x-1, c.y+1, 3, 1, Terrain.EMPTY_SP );
 		
-		level.exit = level.pointToCell(c);
-		Painter.set( level, level.exit, Terrain.LOCKED_EXIT );
+		int exitCell = level.pointToCell(c);
+		Painter.set( level, exitCell, Terrain.LOCKED_EXIT );
+		LevelTransition exit = new LevelTransition(level, exitCell, LevelTransition.Type.REGULAR_EXIT);
+		exit.top--;
+		exit.left--;
+		exit.right++;
+		level.transitions.add(exit);
 		
 		CustomTilemap vis = new SewerExit();
 		vis.pos(c.x-1, c.y);

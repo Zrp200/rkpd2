@@ -21,22 +21,16 @@
 
 package com.zrp200.rkpd2.items.artifacts;
 
-
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Bundle;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.buffs.Barrier;
 import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.Hunger;
 import com.zrp200.rkpd2.actors.buffs.LockedFloor;
 import com.zrp200.rkpd2.actors.buffs.Preparation;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
-import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.rings.RingOfEnergy;
@@ -45,6 +39,11 @@ import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.utils.GLog;
+import com.zrp200.rkpd2.utils.SafeCast;
+
+import com.watabou.noosa.Image;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
 
 import java.util.ArrayList;
 
@@ -282,6 +281,11 @@ public class CloakOfShadows extends Artifact {
 		}
 
 		@Override
+		public void tintIcon(Image icon) {
+			icon.brightness(0.6f);
+		}
+
+		@Override
 		public float iconFadePercent() {
 			return (4f - turnsToCost) / 4f;
 		}
@@ -293,12 +297,15 @@ public class CloakOfShadows extends Artifact {
 
 		@Override
 		public boolean attachTo( Char target ) {
-			if (super.attachTo(target)) {
+			Hero hero = SafeCast.cast(target, Hero.class);
+			if (hero != null && super.attachTo(target)) {
 				target.invisible++;
-				if (target instanceof Hero
-						&& (((Hero) target).subClass == HeroSubClass.ASSASSIN
-						|| ((Hero)target).subClass == HeroSubClass.KING)) {
+				if (hero.subClass == HeroSubClass.ASSASSIN
+						|| hero.subClass == HeroSubClass.KING) {
 					Buff.affect(target, Preparation.class);
+				}
+				if (hero.hasTalent(Talent.MENDING_SHADOWS,Talent.NOBLE_CAUSE)){
+					Buff.affect(target, Talent.ProtectiveShadowsTracker.class);
 				}
 				return true;
 			} else {
@@ -306,35 +313,10 @@ public class CloakOfShadows extends Artifact {
 			}
 		}
 
-		private float incHeal = 1, incShield = 1;
-
 		@Override
 		public boolean act(){
 			turnsToCost--;
 			Hero target = (Hero)this.target;
-			if(target.hasTalent(Talent.MENDING_SHADOWS)
-					&& !Buff.affect(target, Hunger.class).isStarving()) {
-				// heal every 4/2 turns when not starving. effectively a 1.5x boost to standard protective shadows, plus it doesn't go away.
-				incHeal += target.pointsInTalent(Talent.MENDING_SHADOWS)/4f;
-				if (incHeal >= 1 && target.HP < target.HT){
-					incHeal = 0;
-					target.HP++;
-					target.sprite.emitter().burst(Speck.factory(Speck.HEALING), 1);
-				}
-			}
-			//barrier every 2/1 turns, to a max of 3/5
-			if (target.hasTalent(Talent.MENDING_SHADOWS, Talent.NOBLE_CAUSE)){
-				Barrier barrier = Buff.affect(target, Barrier.class);
-				int points = target.pointsInTalent(Talent.MENDING_SHADOWS, Talent.NOBLE_CAUSE);
-				if (barrier.shielding() < 1 + 2*points) {
-					incShield += 0.5f*points;
-				}
-				if (incShield >= 1 ){
-					incShield = 0;
-					barrier.incShield(1);
-				}
-			}
-			
 			if (turnsToCost <= 0){
 				charge--;
 				if (charge < 0) {
@@ -401,18 +383,14 @@ public class CloakOfShadows extends Artifact {
 			super.detach();
 			updateQuickslot();
 		}
-		
+
 		private static final String TURNSTOCOST = "turnsToCost";
-		private static final String BARRIER_INC = "barrier_inc",
-				INC_HEAL="incHeal";
 
 		@Override
 		public void storeInBundle(Bundle bundle) {
 			super.storeInBundle(bundle);
 			
 			bundle.put( TURNSTOCOST , turnsToCost);
-			bundle.put( BARRIER_INC, incShield);
-			bundle.put( INC_HEAL, incHeal);
 		}
 		
 		@Override
@@ -420,8 +398,6 @@ public class CloakOfShadows extends Artifact {
 			super.restoreFromBundle(bundle);
 			
 			turnsToCost = bundle.getInt( TURNSTOCOST );
-			incShield = bundle.getFloat( BARRIER_INC );
-			incHeal = Math.max(incHeal, bundle.getFloat(INC_HEAL));
 		}
 	}
 }

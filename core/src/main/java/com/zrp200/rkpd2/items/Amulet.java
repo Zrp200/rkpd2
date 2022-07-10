@@ -27,7 +27,9 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.ShatteredPixelDungeon;
 import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Actor;
+import com.zrp200.rkpd2.actors.buffs.AscensionChallenge;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.AmuletScene;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.watabou.noosa.Game;
@@ -48,7 +50,11 @@ public class Amulet extends Item {
 	@Override
 	public ArrayList<String> actions( Hero hero ) {
 		ArrayList<String> actions = super.actions( hero );
-		actions.add( AC_END );
+		if (hero.buff(AscensionChallenge.class) != null){
+			actions.clear();
+		} else {
+			actions.add(AC_END);
+		}
 		return actions;
 	}
 	
@@ -120,4 +126,16 @@ public class Amulet extends Item {
 		return false;
 	}
 
+	@Override
+	public String desc() {
+		String desc = super.desc();
+
+		if (Dungeon.hero.buff(AscensionChallenge.class) == null){
+			desc += "\n\n" + Messages.get(this, "desc_origins");
+		} else {
+			desc += "\n\n" + Messages.get(this, "desc_ascent");
+		}
+
+		return desc;
+	}
 }

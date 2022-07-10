@@ -462,7 +462,7 @@ public class MagesStaff extends MeleeWeapon {
 						preservesLeft -= Dungeon.hero.buff(Talent.WandPreservationCounter.class).count();
 					}
 					if (preservesLeft > 0){
-						int preserveChance = Dungeon.hero.pointsInTalent(Talent.POWER_WITHIN) == 1 ? 50 : 100;
+						int preserveChance = Dungeon.hero.pointsInTalent(Talent.POWER_WITHIN) == 1 ? 67 : 100;
 						bodyText += "\n\n" + Messages.get(MagesStaff.class, "imbue_talent", preserveChance, wastedUpgrades, preservesLeft);
 					} else {
 						bodyText += "\n\n" + Messages.get(MagesStaff.class, "imbue_lost");

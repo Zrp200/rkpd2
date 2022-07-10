@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.scenes;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.GamesInProgress;
+import com.zrp200.rkpd2.effects.BadgeBanner;
 import com.zrp200.rkpd2.effects.Flare;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.Amulet;
@@ -33,6 +34,7 @@ import com.zrp200.rkpd2.ui.RenderedTextBlock;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.tweeners.Delayer;
 import com.watabou.utils.Random;
 
 public class AmuletScene extends PixelScene {
@@ -49,6 +51,9 @@ public class AmuletScene extends PixelScene {
 	{
 		inGameScene = true;
 	}
+
+	RedButton btnExit = null;
+	RedButton btnStay = null;
 	
 	@Override
 	public void create() {
@@ -63,22 +68,41 @@ public class AmuletScene extends PixelScene {
 		
 		amulet = new Image( Assets.Sprites.AMULET );
 		add( amulet );
-		
-		RedButton btnExit = new RedButton( Messages.get(this, "exit") ) {
+
+		btnExit = new RedButton( Messages.get(this, "exit") ) {
 			@Override
 			protected void onClick() {
 				Dungeon.win( Amulet.class );
 				Dungeon.deleteGame( GamesInProgress.curSlot, true );
-				Game.switchScene( RankingsScene.class );
+				btnExit.enable(false);
+				btnStay.enable(false);
+
+				AmuletScene.this.add(new Delayer(0.1f){
+					@Override
+					protected void onComplete() {
+						if (BadgeBanner.isShowingBadges()){
+							AmuletScene.this.add(new Delayer(3f){
+								@Override
+								protected void onComplete() {
+									Game.switchScene( RankingsScene.class );
+								}
+							});
+						} else {
+							Game.switchScene( RankingsScene.class );
+						}
+					}
+				});
 			}
 		};
 		btnExit.setSize( WIDTH, BTN_HEIGHT );
 		add( btnExit );
 		
-		RedButton btnStay = new RedButton( Messages.get(this, "stay") ) {
+		btnStay = new RedButton( Messages.get(this, "stay") ) {
 			@Override
 			protected void onClick() {
 				onBackPressed();
+				btnExit.enable(false);
+				btnStay.enable(false);
 			}
 		};
 		btnStay.setSize( WIDTH, BTN_HEIGHT );
@@ -116,8 +140,10 @@ public class AmuletScene extends PixelScene {
 	
 	@Override
 	protected void onBackPressed() {
-		InterlevelScene.mode = InterlevelScene.Mode.CONTINUE;
-		Game.switchScene( InterlevelScene.class );
+		if (btnExit.isActive()) {
+			InterlevelScene.mode = InterlevelScene.Mode.CONTINUE;
+			Game.switchScene(InterlevelScene.class);
+		}
 	}
 	
 	private float timer = 0;

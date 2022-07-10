@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.items.stones;
 
+import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
@@ -52,6 +53,8 @@ public class StoneOfBlink extends Runestone {
 	
 	@Override
 	protected void activate(int cell) {
-		ScrollOfTeleportation.teleportToLocation(curUser, cell);
+		if (!ScrollOfTeleportation.teleportToLocation(curUser, cell)){
+			Dungeon.level.drop(this, cell).sprite.drop();
+		}
 	}
 }

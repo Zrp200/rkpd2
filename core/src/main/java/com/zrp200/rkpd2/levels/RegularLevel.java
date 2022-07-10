@@ -23,14 +23,18 @@ package com.zrp200.rkpd2.levels;
 
 import com.zrp200.rkpd2.Bones;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.blobs.Blob;
+import com.zrp200.rkpd2.actors.blobs.SacrificialFire;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.mobs.GoldenMimic;
 import com.zrp200.rkpd2.actors.mobs.Mimic;
 import com.zrp200.rkpd2.actors.mobs.Mob;
+import com.zrp200.rkpd2.actors.mobs.Statue;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.items.Item;
@@ -40,13 +44,17 @@ import com.zrp200.rkpd2.items.food.Food;
 import com.zrp200.rkpd2.items.food.SmallRation;
 import com.zrp200.rkpd2.items.journal.GuidePage;
 import com.zrp200.rkpd2.items.keys.GoldenKey;
+import com.zrp200.rkpd2.items.keys.Key;
 import com.zrp200.rkpd2.journal.Document;
+import com.zrp200.rkpd2.journal.Journal;
+import com.zrp200.rkpd2.journal.Notes;
 import com.zrp200.rkpd2.levels.builders.Builder;
 import com.zrp200.rkpd2.levels.builders.FigureEightBuilder;
 import com.zrp200.rkpd2.levels.builders.LoopBuilder;
 import com.zrp200.rkpd2.levels.painters.Painter;
 import com.zrp200.rkpd2.levels.rooms.Room;
 import com.zrp200.rkpd2.levels.rooms.secret.SecretRoom;
+import com.zrp200.rkpd2.levels.rooms.special.MagicalFireRoom;
 import com.zrp200.rkpd2.levels.rooms.special.PitRoom;
 import com.zrp200.rkpd2.levels.rooms.special.ShopRoom;
 import com.zrp200.rkpd2.levels.rooms.special.SpecialRoom;
@@ -188,7 +196,10 @@ public abstract class RegularLevel extends Level {
 	
 	@Override
 	public int mobLimit() {
-		if (Dungeon.depth <= 1) return 0;
+		if (Dungeon.depth <= 1){
+			if (!Statistics.amuletObtained) return 0;
+			else                            return 10;
+		}
 
 		int mobs = 3 + Dungeon.depth % 5 + Random.Int(3);
 		if (feeling == Feeling.LARGE){
@@ -226,7 +237,7 @@ public abstract class RegularLevel extends Level {
 			do {
 				mob.pos = pointToCell(roomToSpawn.random());
 				tries--;
-			} while (tries >= 0 && (findMob(mob.pos) != null || !passable[mob.pos] || solid[mob.pos] || mob.pos == exit
+			} while (tries >= 0 && (findMob(mob.pos) != null || !passable[mob.pos] || solid[mob.pos] || mob.pos == exit()
 					|| (!openSpace[mob.pos] && mob.properties().contains(Char.Property.LARGE))));
 
 			if (tries >= 0) {
@@ -241,7 +252,7 @@ public abstract class RegularLevel extends Level {
 					do {
 						mob.pos = pointToCell(roomToSpawn.random());
 						tries--;
-					} while (tries >= 0 && (findMob(mob.pos) != null || !passable[mob.pos] || solid[mob.pos] || mob.pos == exit
+					} while (tries >= 0 && (findMob(mob.pos) != null || !passable[mob.pos] || solid[mob.pos] || mob.pos == exit()
 							|| (!openSpace[mob.pos] && mob.properties().contains(Char.Property.LARGE))));
 
 					if (tries >= 0) {
@@ -285,7 +296,7 @@ public abstract class RegularLevel extends Level {
 					&& !solid[cell]
 					&& (!Char.hasProp(ch, Char.Property.LARGE) || openSpace[cell])
 					&& room.canPlaceCharacter(cellToPoint(cell), this)
-					&& cell != exit) {
+					&& cell != exit()) {
 				return cell;
 			}
 
@@ -396,7 +407,8 @@ public abstract class RegularLevel extends Level {
 		}
 
 		//use a separate generator for this to prevent held items, meta progress, and talents from affecting levelgen
-		Random.pushGenerator( Dungeon.seedCurDepth() );
+		//we can use a random long for the seed as it will be the same long every time
+		Random.pushGenerator( Random.Long() );
 
 		Item item = Bones.get();
 		if (item != null) {
@@ -534,7 +546,7 @@ public abstract class RegularLevel extends Level {
 			if (room != null && room != roomEntrance) {
 				int pos = pointToCell(room.random());
 				if (passable[pos] && !solid[pos]
-						&& pos != exit
+						&& pos != exit()
 						&& heaps.get(pos) == null
 						&& findMob(pos) == null) {
 					
@@ -572,7 +584,57 @@ public abstract class RegularLevel extends Level {
 		
 		return super.fallCell( false );
 	}
-	
+
+	@Override
+	public boolean isLevelExplored( int depth ) {
+		//A level is considered fully explored if:
+
+		//There are no levelgen heaps which are undiscovered, in an openable container, or which contain keys
+		for (Heap h : heaps.valueList()){
+			if (h.autoExplored) continue;
+
+			if (!h.seen || (h.type != Heap.Type.HEAP && h.type != Heap.Type.FOR_SALE && h.type != Heap.Type.CRYSTAL_CHEST)){
+				return false;
+			}
+			for (Item i : h.items){
+				if (i instanceof Key){
+					return false;
+				}
+			}
+		}
+
+		//There is no magical fire or sacrificial fire
+		for (Blob b : blobs.values()){
+			if (b.volume > 0 && (b instanceof MagicalFireRoom.EternalFire || b instanceof SacrificialFire)){
+				return false;
+			}
+		}
+
+		//There are no statues or mimics (unless they were made allies)
+		for (Mob m : mobs.toArray(new Mob[0])){
+			if (m.alignment != Char.Alignment.ALLY && (m instanceof Statue || m instanceof Mimic)){
+				return false;
+			}
+		}
+
+		//There are no barricades, locked doors, or hidden doors
+		for (int i = 0; i < length; i++){
+			if (map[i] == Terrain.BARRICADE || map[i] == Terrain.LOCKED_DOOR || map[i] == Terrain.SECRET_DOOR){
+				return false;
+			}
+		}
+
+		//There are no unused keys for this depth in the journal
+		for (Notes.KeyRecord rec : Notes.getRecords(Notes.KeyRecord.class)){
+			if (rec.depth() == depth){
+				return false;
+			}
+		}
+
+		//Note that it is NOT required for the player to see every tile or discover every trap.
+		return true;
+	}
+
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );

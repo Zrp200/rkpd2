@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.items.scrolls.exotic;
 
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.buffs.Blindness;
 import com.zrp200.rkpd2.actors.buffs.Buff;
@@ -64,6 +65,7 @@ public class ScrollOfPsionicBlast extends ExoticScroll {
 			Dungeon.observe();
 			readAnimation();
 		} else {
+			Badges.validateDeathFromFriendlyMagic();
 			Dungeon.fail( getClass() );
 			GLog.n( Messages.get(this, "ondeath") );
 		}

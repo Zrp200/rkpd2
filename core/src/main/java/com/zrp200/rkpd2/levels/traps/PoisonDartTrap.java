@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.levels.traps;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.ShatteredPixelDungeon;
+import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
@@ -94,8 +95,15 @@ public class PoisonDartTrap extends Trap {
 								public void call() {
 									int dmg = Random.NormalIntRange(4, 8) - finalTarget.drRoll();
 									finalTarget.damage(dmg, trap);
-									if (finalTarget == Dungeon.hero && !finalTarget.isAlive()){
-										Dungeon.fail( trap.getClass() );
+									if (finalTarget == Dungeon.hero){
+										//for the poison dart traps in the Tengu fight
+										if (Dungeon.depth == 10) {
+											Statistics.qualifiedForBossChallengeBadge = false;
+											Statistics.bossScores[1] -= 100;
+										}
+										if (!finalTarget.isAlive()) {
+											Dungeon.fail(trap.getClass());
+										}
 									}
 									Buff.affect( finalTarget, Poison.class ).set( poisonAmount() );
 									Sample.INSTANCE.play(Assets.Sounds.HIT, 1, 1, Random.Float(0.8f, 1.25f));

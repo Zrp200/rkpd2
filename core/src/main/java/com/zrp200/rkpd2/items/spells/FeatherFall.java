@@ -29,7 +29,9 @@ import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.potions.PotionOfLevitation;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
+import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.utils.GLog;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 
 public class FeatherFall extends Spell {
@@ -40,7 +42,7 @@ public class FeatherFall extends Spell {
 	
 	@Override
 	protected void onCast(Hero hero) {
-		Buff.append(hero, FeatherBuff.class, 30f);
+		Buff.append(hero, FeatherBuff.class, FeatherBuff.DURATION);
 		hero.sprite.operate(hero.pos);
 		Sample.INSTANCE.play(Assets.Sounds.READ );
 		hero.sprite.emitter().burst( Speck.factory( Speck.JET ), 20);
@@ -54,6 +56,36 @@ public class FeatherFall extends Spell {
 	
 	public static class FeatherBuff extends FlavourBuff {
 		//does nothing, just waits to be triggered by chasm falling
+		{
+			type = buffType.POSITIVE;
+		}
+
+		public static final float DURATION	= 30f;
+
+		@Override
+		public int icon() {
+			return BuffIndicator.LEVITATION;
+		}
+
+		@Override
+		public void tintIcon(Image icon) {
+			icon.hardlight(1f, 2f, 1.25f);
+		}
+
+		@Override
+		public float iconFadePercent() {
+			return Math.max(0, (DURATION - visualcooldown()) / DURATION);
+		}
+
+		@Override
+		public String toString() {
+			return Messages.get(this, "name");
+		}
+
+		@Override
+		public String desc() {
+			return Messages.get(this, "desc", dispTurns());
+		}
 	}
 	
 	@Override

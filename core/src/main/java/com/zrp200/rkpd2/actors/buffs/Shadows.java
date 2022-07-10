@@ -39,6 +39,7 @@ public class Shadows extends Invisibility {
 
 	{
 		announced = false;
+		type = buffType.POSITIVE;
 	}
 
 	@Override

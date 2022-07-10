@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.actors.mobs;
 
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.blobs.Blob;
 import com.zrp200.rkpd2.actors.blobs.ToxicGas;
@@ -101,6 +102,7 @@ public class RotHeart extends Mob {
 	public void die(Object cause) {
 		super.die(cause);
 		Dungeon.level.drop( new Rotberry.Seed(), pos ).sprite.drop();
+		Statistics.questScores[1] = 2000;
 	}
 
 	@Override

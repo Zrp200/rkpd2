@@ -21,20 +21,6 @@
 
 package com.zrp200.rkpd2.levels;
 
-import com.watabou.noosa.Camera;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.Group;
-import com.watabou.noosa.Tilemap;
-import com.watabou.noosa.audio.Music;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.noosa.tweeners.AlphaTweener;
-import com.watabou.utils.Bundlable;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.Callback;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Point;
-import com.watabou.utils.Random;
-import com.watabou.utils.Rect;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Bones;
 import com.zrp200.rkpd2.Challenges;
@@ -53,6 +39,7 @@ import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.keys.IronKey;
 import com.zrp200.rkpd2.items.weapon.missiles.HeavyBoomerang;
+import com.zrp200.rkpd2.levels.features.LevelTransition;
 import com.zrp200.rkpd2.levels.painters.Painter;
 import com.zrp200.rkpd2.levels.traps.TenguDartTrap;
 import com.zrp200.rkpd2.levels.traps.Trap;
@@ -62,6 +49,20 @@ import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.tiles.CustomTilemap;
 import com.zrp200.rkpd2.ui.TargetHealthIndicator;
 import com.zrp200.rkpd2.utils.BArray;
+import com.watabou.noosa.Camera;
+import com.watabou.noosa.Game;
+import com.watabou.noosa.Group;
+import com.watabou.noosa.Tilemap;
+import com.watabou.noosa.audio.Music;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.noosa.tweeners.AlphaTweener;
+import com.watabou.utils.Bundlable;
+import com.watabou.utils.Bundle;
+import com.watabou.utils.Callback;
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Point;
+import com.watabou.utils.Random;
+import com.watabou.utils.Rect;
 
 import java.util.ArrayList;
 
@@ -132,7 +133,21 @@ public class PrisonBossLevel extends Level {
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle(bundle);
 		state = bundle.getEnum( STATE, State.class );
-		
+
+		//pre-1.3.0 saves, recreates custom exit and entrance transitions
+		if (bundle.contains("entrance")){
+			transitions.clear();
+			if (state == State.START || state == State.WON){
+				transitions.add(new LevelTransition(this, ENTRANCE_POS, LevelTransition.Type.REGULAR_ENTRANCE));
+			}
+			if (state == State.WON){
+				LevelTransition exit = new LevelTransition(this, pointToCell(levelExit), LevelTransition.Type.REGULAR_EXIT);
+				exit.right+=2;
+				exit.bottom+=3;
+				transitions.add(exit);
+			}
+		}
+
 		//in some states tengu won't be in the world, in others he will be.
 		if (state == State.START || state == State.FIGHT_PAUSE) {
 			tengu = (Tengu)bundle.get( TENGU );
@@ -177,15 +192,14 @@ public class PrisonBossLevel extends Level {
 	                                       new Point(8, 23), new Point(12, 23)};
 	
 	private void setMapStart(){
-		entrance = ENTRANCE_POS;
-		exit = 0;
+		transitions.add(new LevelTransition(this, ENTRANCE_POS, LevelTransition.Type.REGULAR_ENTRANCE));
 		
 		Painter.fill(this, 0, 0, 32, 32, Terrain.WALL);
 		
 		//Start
 		Painter.fill(this, entranceRoom, Terrain.WALL);
 		Painter.fill(this, entranceRoom, 1, Terrain.EMPTY);
-		Painter.set(this, entrance, Terrain.ENTRANCE);
+		Painter.set(this, ENTRANCE_POS, Terrain.ENTRANCE);
 		
 		Painter.fill(this, startHallway, Terrain.WALL);
 		Painter.fill(this, startHallway, 1, Terrain.EMPTY);
@@ -217,8 +231,7 @@ public class PrisonBossLevel extends Level {
 
 	private void setMapPause(){
 		setMapStart();
-
-		exit = entrance = 0;
+		transitions.clear();
 
 		Painter.set(this, tenguCell.left+4, tenguCell.top, Terrain.DOOR);
 
@@ -234,8 +247,8 @@ public class PrisonBossLevel extends Level {
 	private static final Rect arena = new Rect(3, 1, 18, 16);
 	
 	private void setMapArena(){
-		exit = entrance = 0;
-		
+		transitions.clear();
+
 		Painter.fill(this, 0, 0, 32, 32, Terrain.WALL);
 		
 		Painter.fill(this, arena, Terrain.WALL);
@@ -250,7 +263,7 @@ public class PrisonBossLevel extends Level {
 	private static int C = Terrain.CHASM;
 	
 	private static final Point endStart = new Point( startHallway.left+2, startHallway.top+2);
-	private static final Point levelExit = new Point( endStart.x+12, endStart.y+6);
+	private static final Point levelExit = new Point( endStart.x+11, endStart.y+6);
 	private static final int[] endMap = new int[]{
 			W, W, D, W, W, W, W, W, W, W, W, W, W, W,
 			W, e, e, e, W, W, W, W, W, W, W, W, W, W,
@@ -308,8 +321,11 @@ public class PrisonBossLevel extends Level {
 			i += 14;
 			cell += width();
 		}
-		
-		exit = pointToCell(levelExit);
+
+		LevelTransition exit = new LevelTransition(this, pointToCell(levelExit), LevelTransition.Type.REGULAR_EXIT);
+		exit.right+=2;
+		exit.bottom+=3;
+		transitions.add(exit);
 	}
 	
 	//keep track of removed items as the level is changed. Dump them back into the level at the end.
@@ -356,7 +372,7 @@ public class PrisonBossLevel extends Level {
 		}
 		addVisuals(); //this also resets existing visuals
 		traps.clear();
-		
+
 		GameScene.resetMap();
 		Dungeon.observe();
 	}
@@ -586,9 +602,9 @@ public class PrisonBossLevel extends Level {
 		traps.clear();
 		Painter.fill(this, tenguCell, 1, Terrain.EMPTY);
 		buildFlagMaps();
-		
+
 	}
-	
+
 	public void placeTrapsInTenguCell(float fill){
 
 		for (CustomTilemap vis : customTiles){
@@ -596,7 +612,7 @@ public class PrisonBossLevel extends Level {
 				((FadingTraps) vis).remove();
 			}
 		}
-		
+
 		Point tenguPoint = cellToPoint(tengu.pos);
 		Point heroPoint = cellToPoint(Dungeon.hero.pos);
 		

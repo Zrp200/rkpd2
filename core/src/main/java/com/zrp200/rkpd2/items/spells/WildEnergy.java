@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.actors.buffs.ArtifactRecharge;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Recharging;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.effects.SpellSprite;
 import com.zrp200.rkpd2.items.artifacts.Artifact;
 import com.zrp200.rkpd2.items.quest.MetalShard;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRecharging;
@@ -54,6 +55,7 @@ public class WildEnergy extends TargetedSpell {
 		Sample.INSTANCE.play( Assets.Sounds.LIGHTNING );
 		Sample.INSTANCE.play( Assets.Sounds.CHARGEUP );
 		ScrollOfRecharging.charge(hero);
+		SpellSprite.show(hero, SpellSprite.CHARGE);
 
 		hero.belongings.charge(1f);
 		for (Buff b : hero.buffs()){

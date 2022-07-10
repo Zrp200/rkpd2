@@ -24,10 +24,10 @@ package com.zrp200.rkpd2.actors.mobs;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.blobs.Electricity;
-import com.zrp200.rkpd2.actors.blobs.ToxicGas;
 import com.zrp200.rkpd2.actors.buffs.Amok;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Dread;
@@ -38,7 +38,6 @@ import com.zrp200.rkpd2.actors.buffs.Vertigo;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.Lightning;
 import com.zrp200.rkpd2.effects.particles.SparkParticle;
-import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.levels.CavesBossLevel;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.CharSprite;
@@ -124,9 +123,13 @@ public class Pylon extends Mob {
 			ch.sprite.flash();
 			ch.damage(Random.NormalIntRange(10, 20), new Electricity());
 
-			if (ch == Dungeon.hero && !ch.isAlive()){
-				Dungeon.fail(DM300.class);
-				GLog.n( Messages.get(Electricity.class, "ondeath") );
+			if (ch == Dungeon.hero) {
+				Statistics.qualifiedForBossChallengeBadge = false;
+				Statistics.bossScores[2] -= 100;
+				if (!ch.isAlive()) {
+					Dungeon.fail(DM300.class);
+					GLog.n(Messages.get(Electricity.class, "ondeath"));
+				}
 			}
 		}
 	}

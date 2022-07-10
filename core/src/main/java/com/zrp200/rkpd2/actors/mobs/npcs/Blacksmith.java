@@ -24,7 +24,9 @@ package com.zrp200.rkpd2.actors.mobs.npcs;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.AscensionChallenge;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.items.BrokenSeal;
 import com.zrp200.rkpd2.items.EquipableItem;
@@ -60,6 +62,10 @@ public class Blacksmith extends NPC {
 	
 	@Override
 	protected boolean act() {
+		if (Dungeon.hero.buff(AscensionChallenge.class) != null){
+			die(null);
+			return true;
+		}
 		if (Dungeon.level.heroFOV[pos] && !Quest.reforged){
 			Notes.add( Notes.Landmark.TROLL );
 		}
@@ -127,6 +133,7 @@ public class Blacksmith extends NPC {
 					
 					Quest.completed = true;
 					Quest.reforged = false;
+					Statistics.questScores[2] = 3000;
 				}
 			} else {
 				*/
@@ -146,6 +153,7 @@ public class Blacksmith extends NPC {
 
 					Quest.completed = true;
 					Quest.reforged = false;
+					Statistics.questScores[2] = 3000;
 				}
 				//}
 			}

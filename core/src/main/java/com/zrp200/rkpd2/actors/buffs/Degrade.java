@@ -21,10 +21,13 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
+import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 
 public class Degrade extends FlavourBuff {
@@ -40,7 +43,7 @@ public class Degrade extends FlavourBuff {
 	public boolean attachTo(Char target) {
 		if (super.attachTo(target)){
 			Item.updateQuickslot();
-			if (target instanceof Hero) ((Hero) target).updateHT(false);
+			if (target == Dungeon.hero) ((Hero) target).updateHT(false);
 			return true;
 		}
 		return false;
@@ -49,7 +52,7 @@ public class Degrade extends FlavourBuff {
 	@Override
 	public void detach() {
 		super.detach();
-		if (target instanceof Hero) ((Hero) target).updateHT(false);
+		if (target == Dungeon.hero) ((Hero) target).updateHT(false);
 		Item.updateQuickslot();
 	}
 

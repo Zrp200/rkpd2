@@ -49,11 +49,12 @@ import com.watabou.noosa.audio.Music;
 import com.watabou.utils.FileUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 public class WelcomeScene extends PixelScene {
 
 	private static final int LATEST_UPDATE = ShatteredPixelDungeon.V0_4_0;
-
 	@Override
 	public void create() {
 		super.create();
@@ -219,6 +220,7 @@ public class WelcomeScene extends PixelScene {
 						ShatteredPixelDungeon.reportException(e);
 					}
 				}
+				Collections.sort(Rankings.INSTANCE.records, Rankings.scoreComparator);
 				Rankings.INSTANCE.save();
 			} catch (Exception e) {
 				//if we encounter a fatal error, then just clear the rankings
@@ -248,6 +250,12 @@ public class WelcomeScene extends PixelScene {
 			Messages.setup(Languages.FINNISH);
 		}
 		*/
+
+		//defaults to false for older users
+		if (previousVersion <= ShatteredPixelDungeon.V0_4_0){
+			SPDSettings.quickSwapper(false);
+		}
+
 		SPDSettings.version(ShatteredPixelDungeon.versionCode);
 	}
 	

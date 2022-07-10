@@ -29,6 +29,7 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.Speck;
+import com.zrp200.rkpd2.effects.SpellSprite;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.BArray;
@@ -92,6 +93,7 @@ public class PotionOfPurity extends Potion {
 	public void apply( Hero hero ) {
 		GLog.w( Messages.get(this, "protected") );
 		Buff.prolong( hero, BlobImmunity.class, BlobImmunity.DURATION );
+		SpellSprite.show(hero, SpellSprite.PURITY);
 		identify();
 	}
 	

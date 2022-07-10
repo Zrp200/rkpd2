@@ -21,8 +21,10 @@
 
 package com.zrp200.rkpd2.actors.mobs;
 
+import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.AscensionChallenge;
 import com.zrp200.rkpd2.effects.particles.SparkParticle;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.mechanics.Ballistica;
@@ -90,6 +92,7 @@ public class DM100 extends Mob implements Callback {
 			
 			if (hit( this, enemy, true )) {
 				int dmg = Random.NormalIntRange(3, 10);
+				dmg = Math.round(dmg * AscensionChallenge.statModifier(this));
 				enemy.damage( dmg, new LightningBolt() );
 
 				if (enemy.sprite.visible) {
@@ -102,6 +105,7 @@ public class DM100 extends Mob implements Callback {
 					Camera.main.shake( 2, 0.3f );
 					
 					if (!enemy.isAlive()) {
+						Badges.validateDeathFromEnemyMagic();
 						Dungeon.fail( getClass() );
 						GLog.n( Messages.get(this, "zap_kill") );
 					}

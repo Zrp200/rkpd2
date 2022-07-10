@@ -30,6 +30,7 @@ import com.zrp200.rkpd2.actors.mobs.npcs.Imp;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
+import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.GolemSprite;
 import com.zrp200.rkpd2.utils.BArray;
 import com.watabou.utils.Bundle;
@@ -164,6 +165,7 @@ public class Golem extends Mob {
 			if (enemy instanceof Hero){
 				((Hero) enemy).interrupt();
 				Dungeon.observe();
+				GameScene.updateFog();
 			}
 		}
 
