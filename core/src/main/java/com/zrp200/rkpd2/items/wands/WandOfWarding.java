@@ -26,9 +26,7 @@ import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.buffs.AllyBuff;
-import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.Corruption;
+import com.zrp200.rkpd2.actors.buffs.*;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.mobs.npcs.NPC;
 import com.zrp200.rkpd2.effects.MagicMissile;
@@ -426,6 +424,10 @@ public class WandOfWarding extends Wand {
 		}
 		
 		{
+			immunities.add( Sleep.class );
+			immunities.add( Terror.class );
+			immunities.add( Dread.class );
+			immunities.add( Vertigo.class );
 			immunities.add( AllyBuff.class );
 		}
 
@@ -448,10 +450,6 @@ public class WandOfWarding extends Wand {
 			viewDistance = 3 + tier;
 			wandLevel = bundle.getInt(WAND_LEVEL);
 			totalZaps = bundle.getInt(TOTAL_ZAPS);
-		}
-		
-		{
-			properties.add(Property.IMMOVABLE);
 		}
 	}
 }
