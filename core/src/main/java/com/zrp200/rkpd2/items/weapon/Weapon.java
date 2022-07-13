@@ -36,6 +36,7 @@ import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
 import com.zrp200.rkpd2.items.rings.RingOfFuror;
 import com.zrp200.rkpd2.items.wands.WandOfDisintegration;
 import com.zrp200.rkpd2.items.weapon.curses.Annoying;
+import com.zrp200.rkpd2.items.weapon.curses.Chaotic;
 import com.zrp200.rkpd2.items.weapon.curses.Displacing;
 import com.zrp200.rkpd2.items.weapon.curses.Dazzling;
 import com.zrp200.rkpd2.items.weapon.curses.Explosive;
@@ -377,7 +378,8 @@ abstract public class Weapon extends KindOfWeapon {
 		
 		private static final Class<?>[] curses = new Class<?>[]{
 				Annoying.class, Displacing.class, Dazzling.class, Explosive.class,
-				Sacrificial.class, Wayward.class, Polarized.class, Friendly.class
+				Sacrificial.class, Wayward.class, Polarized.class, Friendly.class,
+				Chaotic.class
 		};
 		
 			
