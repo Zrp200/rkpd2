@@ -92,6 +92,12 @@ public class WndTitledMessage extends Window {
 		bringToFront(titlebar);
 	}
 
+	@Override
+	public void offset(int xOffset, int yOffset) {
+		super.offset(xOffset, yOffset);
+		// refresh the scrollbar pane
+		sp.setPos(sp.left(), sp.top());
+	}
 
 	// adds to the bottom of a titled message, below the message itself.
 	// this only works ONCE currently.
