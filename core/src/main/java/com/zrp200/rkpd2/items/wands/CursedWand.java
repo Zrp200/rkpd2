@@ -421,7 +421,7 @@ public class CursedWand {
 			//random transmogrification
 			case 3:
 				//skips this effect if there is no item to transmogrify
-				if (origin == null || user != Dungeon.hero || !Dungeon.hero.belongings.contains(origin)){
+				if (origin == null || origin.unique || user != Dungeon.hero || !Dungeon.hero.belongings.contains(origin)){
 					return cursedEffect(origin, user, targetPos);
 				}
 				origin.detach(Dungeon.hero.belongings.backpack);
