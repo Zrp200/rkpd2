@@ -54,6 +54,7 @@ public class Dart extends MissileWeapon {
 		
 		//infinite, even with penalties
 		baseUses = 1000;
+		unique = true;
 	}
 	
 	protected static final String AC_TIP = "TIP";
