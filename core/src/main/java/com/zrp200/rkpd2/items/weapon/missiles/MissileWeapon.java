@@ -251,10 +251,7 @@ abstract public class MissileWeapon extends Weapon {
 	
 	@Override
 	public float castDelay(Char user, int dst) {
-		if(user.buff(Talent.LethalMomentumTracker.class) != null) {
-			Buff.detach(user, Talent.LethalMomentumTracker.class);
-			return 0;
-		}
+		if(Talent.LethalMomentumTracker.apply(user)) return 0;
 		float speedFactor = delayFactor( user );
 		if(user instanceof Hero && ((Hero)user).hasTalent(Talent.ONE_MAN_ARMY)) {
 			Hero hero = (Hero)user;

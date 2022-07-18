@@ -232,6 +232,14 @@ public enum Talent {
 				Buff.prolong(hero, LethalMomentumTracker.class, 1f);
 			}
 		};
+		// check if it applies
+		public static boolean apply(Char ch) {
+			if(ch.buff(LethalMomentumTracker.class) != null) {
+				detach(ch, LethalMomentumTracker.class);
+				return true;
+			}
+			return false;
+		}
 	};
 
 	// this is my idea of buffing lethal momentum: remove all possible inconsistencies with it.

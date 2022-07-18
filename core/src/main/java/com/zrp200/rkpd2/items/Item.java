@@ -602,8 +602,7 @@ public class Item implements Bundlable {
 								}
 							}
 							if(!forceSkipDelay) {
-								if (user.buff(Talent.LethalMomentumTracker.class) != null){
-									user.buff(Talent.LethalMomentumTracker.class).detach();
+								if (Talent.LethalMomentumTracker.apply(user)){
 									user.next();
 								} else {
 									user.spendAndNext(delay);
