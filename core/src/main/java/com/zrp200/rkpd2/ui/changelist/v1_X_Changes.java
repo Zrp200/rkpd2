@@ -87,11 +87,11 @@ public class v1_X_Changes {
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);
 
-		changes = new ChangeInfo("", false, null);
+		changes = new ChangeInfo("", false);
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);
 
-		changes = new ChangeInfo("v1.3.1", false, null);
+		changes = new ChangeInfo("v1.3.1", false);
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);
 
@@ -105,7 +105,7 @@ public class v1_X_Changes {
 				"_-_ Bugs with new hero armor transferring ability\n" +
 				"_-_ Text for daily run dates not being language-neutral"));
 
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false);
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);
 
@@ -160,7 +160,7 @@ public class v1_X_Changes {
 				"_- Exhausting_ has been replaced by _dazzling,_ which can blind both the attacker and defender.\n\n" +
 				"_Anti-entropy_ and _sacrifice_ have also been nerfed (i.e. made less harsh), look at the nerfs section for more details on that."));
 
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false);
 		changes.hardlight(CharSprite.WARNING);
 		changeInfos.add(changes);
 
@@ -211,7 +211,7 @@ public class v1_X_Changes {
 				"_-_ Earthen guardian not being immune to poison, gas, and bleed\n" +
 				"_-_ Transmogrified enemies awarding exp when the effect ends"));
 
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false);
 		changes.hardlight(CharSprite.POSITIVE);
 		changeInfos.add(changes);
 
@@ -244,7 +244,7 @@ public class v1_X_Changes {
 				"_- Adrenaline Dart_ turns of adrenaline reverted to 10 from 30, now cripples enemies for 5 turns, instead of giving them adrenaline\n\n" +
 				"_- Cleansing Dart_ now clears positive buffs from enemies, and causes them to start wandering (note that they may immediately re-aggro if they are close enough)"));
 
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false);
 		changes.hardlight(CharSprite.NEGATIVE);
 		changeInfos.add(changes);
 
@@ -276,7 +276,7 @@ public class v1_X_Changes {
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);
 
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false);
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);
 
@@ -316,7 +316,7 @@ public class v1_X_Changes {
 				"Just as before, these tracks are all composed by Kristjan Harristo, check the about scene for more details on them.\n\n" +
 				"All of the boss tracks take cues from the region tracks, but add enough to be more than simple remixes."));
 
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false);
 		changes.hardlight(CharSprite.WARNING);
 		changeInfos.add(changes);
 
@@ -379,7 +379,7 @@ public class v1_X_Changes {
 				"_-_ Cases where heroic energy talent would use the wrong name/icon\n" +
 				"_-_ Curse status of quickslot items not showing in rankings"));
 
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false);
 		changes.hardlight(CharSprite.POSITIVE);
 		changeInfos.add(changes);
 
@@ -429,7 +429,7 @@ public class v1_X_Changes {
 				"_- Light Cloak_ charging rate boosted to 25%/50%/75%, from 17%/33%/50%\n\n" +
 				"_- Shared Upgrades_ bugfixed to give the bonus damage stated in the description, instead of slightly less."));
 
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false);
 		changes.hardlight(CharSprite.NEGATIVE);
 		changeInfos.add(changes);
 
@@ -463,7 +463,7 @@ public class v1_X_Changes {
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);
 
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false);
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);
 
@@ -492,7 +492,7 @@ public class v1_X_Changes {
 				"Each of these tracks use a similar variable looping method to the sewers track, to try and reduce repetitiveness.\n\n" +
 				"There have also been some small tweaks made to the existing sewers and title theme tracks."));
 
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false);
 		changes.hardlight(CharSprite.WARNING);
 		changeInfos.add(changes);
 
@@ -578,7 +578,7 @@ public class v1_X_Changes {
 				"_-_ Specific cases where guidebook windows could be stacked\n" +
 				"_-_ Remove curse stating nothing was cleansed when it removed the degrade debuff"));
 
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false);
 		changes.hardlight(CharSprite.POSITIVE);
 		changeInfos.add(changes);
 
@@ -616,7 +616,7 @@ public class v1_X_Changes {
 				"_- Light Cloak_ now grants 16.6% charge speed per rank, up from 13.3%\n" +
 				"_- Shrug it Off_ now caps damage taken at 20% at +4, up from 25%."));
 
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false);
 		changes.hardlight(CharSprite.NEGATIVE);
 		changeInfos.add(changes);
 
@@ -642,7 +642,7 @@ public class v1_X_Changes {
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);
 
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false);
 		changes.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes);
 
@@ -691,7 +691,7 @@ public class v1_X_Changes {
 				"_Regular Ankhs_ have been totally redesigned, and now give the player a chance to save all of their equipment! Be careful though, you'll have to fight your way back to your lost gear.\n\n" +
 				"_Blessed Ankhs_ have received comparatively minor changes. In addition to the resurrection effect, these ankhs now also give the player 3 turns of invulnerability. This should help give players a moment to heal up after being revived."));
 
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false);
 		changes.hardlight(CharSprite.WARNING);
 		changeInfos.add(changes);
 
@@ -759,7 +759,7 @@ public class v1_X_Changes {
 				"_-_ perfect copy talent giving very slightly more HP than intended\n" +
 				"_-_ wild magic using cursed wands as if they're normal"));
 
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false);
 		changes.hardlight(CharSprite.POSITIVE);
 		changeInfos.add(changes);
 
@@ -775,7 +775,7 @@ public class v1_X_Changes {
 				"_- Elemental Power_ now boosts power by 20% per level, up from 15%.\n\n" +
 				"_- Remote Beacon_ range per level increased to 4, from 3."));
 
-		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.CROWN, null), "Armor Ability Buffs pt.2",
+		changes.addButton( new ChangeButton(new ItemSprite(ItemSpriteSheet.CROWN), "Armor Ability Buffs pt.2",
 				"_- Shadow Clone_ now follows the hero at 2x speed.\n" +
 				"_- Shadow Blade_ damage per level increased to 7.5% from 6.25%.\n" +
 				"_- Cloned Armor_ armor per level increased to 15% from 12.5%.\n\n" +
@@ -789,7 +789,7 @@ public class v1_X_Changes {
 				"_-_ AOE size up to 9x9 from 5x5\n" +
 				"_-_ Sheep duration up to 12-16 from 8-16"));
 
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false);
 		changes.hardlight(CharSprite.NEGATIVE);
 		changeInfos.add(changes);
 

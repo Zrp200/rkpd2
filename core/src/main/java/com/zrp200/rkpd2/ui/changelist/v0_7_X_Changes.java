@@ -71,7 +71,7 @@ public class v0_7_X_Changes {
 		changes.hardlight( Window.TITLE_COLOR );
 		changeInfos.add(changes);
 		
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false);
 		changes.hardlight( Window.TITLE_COLOR );
 		changeInfos.add(changes);
 		
@@ -103,7 +103,7 @@ public class v0_7_X_Changes {
 				"The game's text renderer is now using libGDX freetype. This looks almost identical to the existing text but is slightly crisper, platform-independent, and much more efficient!\n\n" +
 				"Text rendering was the last bit of android-dependant code, so the game's core code modules (~98% of its code) are now being compiled as general code and not android-specific code!"));
 
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false);
 		changes.hardlight( CharSprite.WARNING );
 		changeInfos.add(changes);
 		
@@ -141,7 +141,7 @@ public class v0_7_X_Changes {
 				"Added new Language: Japanese!\n\n" +
 				"Updated Translations and Translator Credits!"));
 		
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false);
 		changes.hardlight( CharSprite.POSITIVE );
 		changeInfos.add(changes);
 		
@@ -163,7 +163,7 @@ public class v0_7_X_Changes {
 				"_-_ Proc chance for corruption enchant increased by ~25% at all levels\n\n" +
 				"_-_ Proc chance for glyph of affection increased by ~50% at +0, scaling to ~10% at +10"));
 		
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false);
 		changes.hardlight( CharSprite.NEGATIVE );
 		changeInfos.add(changes);
 		
@@ -187,7 +187,7 @@ public class v0_7_X_Changes {
 		changes.hardlight( Window.TITLE_COLOR );
 		changeInfos.add(changes);
 		
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false);
 		changes.hardlight( Window.TITLE_COLOR );
 		changeInfos.add(changes);
 		
@@ -214,7 +214,7 @@ public class v0_7_X_Changes {
 				"Keyboard input handling and text rendering are still coupled to Android however. I will convert these game systems to use libGDX in a later update.\n\n" +
 				"Note that Shattered will not immediately release on other platforms once libGDX conversion is complete, but it is a big step towards that."));
 
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false);
 		changes.hardlight( CharSprite.WARNING );
 		changeInfos.add(changes);
 
@@ -254,7 +254,7 @@ public class v0_7_X_Changes {
 		changes.addButton( new ChangeButton(Icons.get(Icons.LANGS), Messages.get(ChangesScene.class, "language"),
 				"Updated Translations"));
 
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false);
 		changes.hardlight( CharSprite.POSITIVE );
 		changeInfos.add(changes);
 
@@ -288,7 +288,7 @@ public class v0_7_X_Changes {
 				"_-_ Stone of Clairvoyance radius increased to 12 from 8. This increases the area by ~2.25x.\n\n" +
 				"_-_ Allies are now healed by magical sleep, just like the hero."));
 
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false);
 		changes.hardlight( CharSprite.NEGATIVE );
 		changeInfos.add(changes);
 		
@@ -317,7 +317,7 @@ public class v0_7_X_Changes {
 		changes.hardlight( Window.TITLE_COLOR );
 		changeInfos.add(changes);
 		
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false);
 		changes.hardlight( Window.TITLE_COLOR );
 		changeInfos.add(changes);
 		
@@ -348,7 +348,7 @@ public class v0_7_X_Changes {
 				"_-_ Elixir of arcane armor requires a goo blob and a potion of earthen armor. It grants a long-lasting resistance to magic.\n\n" +
 				"_-_ Wild energy requires a metal shard and a scroll of mystical energy. It grants large amounts of recharging, but with some unpredictable effects attached!"));
 		
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false);
 		changes.hardlight( CharSprite.WARNING );
 		changeInfos.add(changes);
 		
@@ -383,7 +383,7 @@ public class v0_7_X_Changes {
 		changes.addButton( new ChangeButton(Icons.get(Icons.LANGS), Messages.get(ChangesScene.class, "language"),
 				"Updated Translations"));
 		
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false);
 		changes.hardlight( CharSprite.POSITIVE );
 		changeInfos.add(changes);
 		
@@ -414,7 +414,7 @@ public class v0_7_X_Changes {
 				"_-_ Affection charm duration up to 8-12 from 4-12. This means an affection proc now guarantees a free hit.\n\n" +
 				"_-_ Potential no longer grants small amounts of partial charge on every hit, now has a chance to grant one full charge instead. Overall amount of charge given increased by ~20%."));
 		
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false);
 		changes.hardlight( CharSprite.NEGATIVE );
 		changeInfos.add(changes);
 		
@@ -449,7 +449,7 @@ public class v0_7_X_Changes {
 		changes.hardlight( Window.TITLE_COLOR );
 		changeInfos.add(changes);
 		
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false);
 		changes.hardlight( Window.TITLE_COLOR );
 		changeInfos.add(changes);
 		
@@ -484,7 +484,7 @@ public class v0_7_X_Changes {
 				"_-_ Recipe changed to: upgrade + catalyst + 4 energy.\n" +
 				"_-_ No longer applies an enchant/glyph, instead is guaranteed to preserve one while upgrading."));
 		
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false);
 		changes.hardlight( CharSprite.WARNING );
 		changeInfos.add(changes);
 		
@@ -557,7 +557,7 @@ public class v0_7_X_Changes {
 				"_-_ Tengu spawning on top of other characters\n" +
 				"_-_ Cloak of shadows only being usable from quickslots if it has 1 charge"));
 		
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false);
 		changes.hardlight( CharSprite.POSITIVE );
 		changeInfos.add(changes);
 		
@@ -591,7 +591,7 @@ public class v0_7_X_Changes {
 				"This means more damage versus regular enemies, and less versus bosses. " +
 				"Several bosses have lost their resistances to these effects as a result of this change."));
 		
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false);
 		changes.hardlight( CharSprite.NEGATIVE );
 		changeInfos.add(changes);
 		
@@ -607,7 +607,7 @@ public class v0_7_X_Changes {
 		changes.hardlight( Window.TITLE_COLOR );
 		changeInfos.add(changes);
 		
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false);
 		changes.hardlight( Window.TITLE_COLOR );
 		changeInfos.add(changes);
 		
@@ -643,7 +643,7 @@ public class v0_7_X_Changes {
 				"_-_ Darts are not upgradeable, but tipped darts can get extra durability\n\n" +
 				"Ring of sharpshooting has been slightly adjusted to tie into this new upgrade system."));
 		
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false);
 		changes.hardlight( CharSprite.WARNING );
 		changeInfos.add(changes);
 		
@@ -681,7 +681,7 @@ public class v0_7_X_Changes {
 				"Updated translations\n\n" +
 				"Updated translator credits"));
 		
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false);
 		changes.hardlight( CharSprite.POSITIVE );
 		changeInfos.add(changes);
 		
@@ -711,7 +711,7 @@ public class v0_7_X_Changes {
 				"_-_ Dwarf King is now able to summon skeletons even if he cannot see the hero\n" +
 				"_-_ Dwarf King is now resistant to fire and toxic gas"));
 		
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false);
 		changes.hardlight( CharSprite.NEGATIVE );
 		changeInfos.add(changes);
 		
@@ -741,7 +741,7 @@ public class v0_7_X_Changes {
 		changes.hardlight( Window.TITLE_COLOR );
 		changeInfos.add(changes);
 		
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "new"), false);
 		changes.hardlight( Window.TITLE_COLOR );
 		changeInfos.add(changes);
 		
@@ -793,7 +793,7 @@ public class v0_7_X_Changes {
 				"Most of these recipes require alchemical energy, and information about them can be found within alchemy guidebook pages in the prison and deeper in the dungeon.\n\n" +
 				"All of these items are only available through alchemy."));
 		
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "changes"), false);
 		changes.hardlight( CharSprite.WARNING );
 		changeInfos.add(changes);
 		
@@ -880,7 +880,7 @@ public class v0_7_X_Changes {
 		changes.addButton( new ChangeButton(Icons.get(Icons.LANGS), Messages.get(ChangesScene.class, "language"),
 				"Updated Translations\n\nUpdated translator credits\n\nAdded new language: Basque!"));
 		
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "buffs"), false);
 		changes.hardlight( CharSprite.POSITIVE );
 		changeInfos.add(changes);
 		
@@ -907,7 +907,7 @@ public class v0_7_X_Changes {
 				"Terror now has it's duration reduced by 5 whenever damage is taken, rather than being removed entirely. Scroll of terror duration has been increased to 20 from 10.\n\n" +
 				"Charm now has it's duration reduced by 5 whenever damage is taken, rather than not losing any duration. Succubi have been given a life-drain ability in compensation, and various charming effects have had their durations adjusted."));
 		
-		changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false, null);
+		changes = new ChangeInfo(Messages.get(ChangesScene.class, "nerfs"), false);
 		changes.hardlight( CharSprite.NEGATIVE );
 		changeInfos.add(changes);
 		

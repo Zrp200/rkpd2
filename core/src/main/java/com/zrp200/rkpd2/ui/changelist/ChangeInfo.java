@@ -38,33 +38,39 @@ public class ChangeInfo extends Component {
 	
 	private RenderedTextBlock text;
 	
-	private ArrayList<ChangeButton> buttons = new ArrayList<>();
+	private final ArrayList<ChangeButton> buttons = new ArrayList<>();
 
 	public ChangeInfo( String title, boolean majorTitle, String text, ChangeButton... buttons) {
 		this(title, majorTitle, text);
 		for(ChangeButton button : buttons) addButton(button);
 	}
+	public ChangeInfo( String title, boolean majorTitle, ChangeButton... buttons) {
+		this(title, majorTitle, null, buttons);
+	}
+
 	public ChangeInfo( String title, boolean majorTitle, int color, String text, ChangeButton... buttons) {
 		this(title, majorTitle, text, buttons);
 		hardlight(color);
 	}
+	public ChangeInfo( String title, boolean majorTitle, int color, ChangeButton... buttons) {
+		this(title, majorTitle, color, null, buttons);
+	}
 	
 	public ChangeInfo( String title, boolean majorTitle, String text){
 		super();
-		
+
+		int size, color;
 		if (majorTitle){
-			this.title = PixelScene.renderTextBlock( title, 9 );
-			line = new ColorBlock( 1, 1, 0xFF222222);
-			add(line);
+			size = 9;
+			color = 0xFF222222;
 		} else {
-			this.title = PixelScene.renderTextBlock( title, 6 );
-			line = new ColorBlock( 1, 1, 0xFF333333);
-			add(line);
+			size = 6;
+			color = 0xFF333333;
 		}
+		add(line = new ColorBlock( 1, 1, color));
 		major = majorTitle;
-		
-		add(this.title);
-		
+		add(this.title = PixelScene.renderTextBlock( title, size ));
+
 		if (text != null && !text.equals("")){
 			this.text = PixelScene.renderTextBlock(text, 6);
 			add(this.text);
