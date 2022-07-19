@@ -811,9 +811,9 @@ public enum Talent {
 			else if( hero.shiftedPoints(THIEFS_INTUITION, ROYAL_INTUITION) == 2 && item instanceof Ring) {
 				((Ring) item).setKnown();
 			}
-			else if(hero.canHaveTalent(THIEFS_INTUITION)
+			else if(hero.hasTalent(THIEFS_INTUITION)
 					&& !item.collected && item.cursed && !item.cursedKnown
-					&& Random.Int(2) == 0) {
+					&& Random.Int(3) == 0) {
 				curseID = item.cursedKnown = true;
 			}
 		}
