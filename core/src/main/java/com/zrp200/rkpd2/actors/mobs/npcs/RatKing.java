@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.actors.mobs.npcs;
 
 import com.zrp200.rkpd2.Badges;
+import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
 import com.zrp200.rkpd2.items.KingsCrown;
 import com.zrp200.rkpd2.scenes.GameScene;
@@ -122,6 +123,7 @@ public class RatKing extends NPC {
 					GameScene.show(new WndQuest(RatKing.this, Messages.get(RatKing.this,"amulet")){
 						@Override
 						public void hide() {
+							Statistics.ascended = true;
 							Dungeon.win(RatKing.class);
 							Dungeon.deleteGame( GamesInProgress.curSlot, true );
 							Game.switchScene(RankingsScene.class);
