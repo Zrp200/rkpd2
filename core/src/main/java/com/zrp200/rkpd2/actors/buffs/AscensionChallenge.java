@@ -76,6 +76,8 @@ public class AscensionChallenge extends Buff {
 			return 1;
 		}
 
+		if(ch instanceof Ratmogrify.Ratforcements) return 1; // handled already
+
 		if (ch instanceof Ratmogrify.TransmogRat){
 			ch = ((Ratmogrify.TransmogRat) ch).getOriginal();
 		}

@@ -301,8 +301,11 @@ public class Ratmogrify extends ArmorAbility {
 	}
 
 	// summons.
-	private static float getModifier() { return Math.max(1, Dungeon.depth/5f)*.8f; }
-	public static class SummonedRat extends Rat {
+	private static float getModifier() { return Math.max(1, Dungeon.scalingDepth()/5f)*.8f; }
+
+	public interface Ratforcements { }
+
+	public static class SummonedRat extends Rat implements Ratforcements {
 		{
 			HP = HT = (int)Math.ceil( HT * getModifier() );
 
@@ -321,7 +324,7 @@ public class Ratmogrify extends ArmorAbility {
 			return Random.round( super.attackSkill(target) * getModifier() );
 		}
 	}
-	public static class SummonedAlbino extends Albino {
+	public static class SummonedAlbino extends Albino implements Ratforcements {
 		{
 			HP = HT = (int)Math.ceil( HT * getModifier() );
 
