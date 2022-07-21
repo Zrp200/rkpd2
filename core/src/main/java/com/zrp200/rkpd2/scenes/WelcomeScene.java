@@ -54,7 +54,7 @@ import java.util.Collections;
 
 public class WelcomeScene extends PixelScene {
 
-	private static final int LATEST_UPDATE = ShatteredPixelDungeon.V0_4_0;
+	private static final int LATEST_UPDATE = ShatteredPixelDungeon.V1_0_0;
 	@Override
 	public void create() {
 		super.create();
@@ -252,7 +252,7 @@ public class WelcomeScene extends PixelScene {
 		*/
 
 		//defaults to false for older users
-		if (previousVersion <= ShatteredPixelDungeon.V0_4_0){
+		if (previousVersion <= ShatteredPixelDungeon.V1_0_0){
 			SPDSettings.quickSwapper(false);
 		}
 
