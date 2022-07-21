@@ -24,7 +24,9 @@ package com.zrp200.rkpd2.ui.changelist;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Badges.Badge;
 import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath;
+import com.zrp200.rkpd2.effects.BadgeBanner;
 import com.zrp200.rkpd2.items.armor.WarriorArmor;
 import com.zrp200.rkpd2.items.bags.VelvetPouch;
 import com.zrp200.rkpd2.items.wands.WandOfFirebolt;
@@ -32,8 +34,13 @@ import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.enchantments.Explosive;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.ChangesScene;
+import com.zrp200.rkpd2.scenes.WelcomeScene;
+import com.zrp200.rkpd2.sprites.ElementalSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
+import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.sprites.KingSprite;
+import com.zrp200.rkpd2.ui.BuffIcon;
+import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.ui.Icons;
 
 import java.util.ArrayList;
@@ -51,6 +58,7 @@ import static com.zrp200.rkpd2.sprites.ItemSpriteSheet.*;
 import static com.zrp200.rkpd2.ui.Icons.DEPTH;
 import static com.zrp200.rkpd2.ui.Icons.DISPLAY_LAND;
 import static com.zrp200.rkpd2.ui.Icons.INFO;
+import static com.zrp200.rkpd2.ui.Icons.TALENT;
 import static com.zrp200.rkpd2.ui.Icons.TARGET;
 import static com.zrp200.rkpd2.ui.Icons.PREFS;
 import static com.zrp200.rkpd2.ui.Icons.get;
@@ -129,111 +137,101 @@ public class RKPD2Changes {
 
     final ChangeInfo[][] changes = {
         { // v0.4
-            new ChangeInfo("v0.4.0-BETA",true,TITLE_COLOR,"Virtually all changes currently are from SHPD v.1.2.X",
-                info(Messages.get(com.zrp200.rkpd2.scenes.WelcomeScene.class, "update_msg")),
-                new ChangeButton(Icons.get(DISPLAY_LAND), "UX Enhancements",
-                    list(
-                        "new main UI for larger displays",
-                        "Full controller support, better keyboard controls, better mouse support",
-                        "Two additional quickslots")
-                    + list(
-                        "Boss music implemented",
-                            "Badge changes implemented from Shattered"
-                    )),
-                new ChangeButton(new Image(Assets.Environment.TILES_SEWERS, 48, 80, 16, 16), "Special Room Additions", "Implemented new special rooms, including sacrificial fire room."),
-                new ChangeButton(Icons.get(Icons.CHANGES), "Buffs",
-                        "Armband reworked, now lets you steal from enemies as well as shops" +
-                        "\n\n_Alchemy Costs:_"+list(
-                                "_ Bomb Recipe_ energy costs down across the board\n",
-                                "_ Infernal, Blizzard, and Caustic Brew_ energy costs down by 1\n",
-                                "_ Telekinetic Grab_ energy cost down to 2 from 4, liquid metal cost reduced to 10 from 15",
-                                "_ Phase Shift_ energy cost down to 4 from 6",
-                                "_ Wild Energy_ energy cost down to 4 from 6",
-                                "_ Beacon of Returning_ energy cost down to 6 from 8",
-                                "_ Summon Elemental_ energy cost down to 6 from 8",
-                                "_ Alchemize_ energy cost down to 2 from 3")
-                                + list(
-                                "_ Scroll of Foresight_ duration up to 400 from 250",
-                                "_ Scroll of Dread_ now grants 1/2 exp for defeated enemies",
-                                "_ Potion of Shrouding Fog_ gas quantity increased bt 50%\n",
-                                "__ Items and effects which create water now douse fire\n",
-                                "_ Caustic Brew_ damage per turn increased by 1",
-                                "_ Infernal and Blizzard Brew_ now start their gas in a 3x3 AOE",
-                                "_ Shocking Brew_ AOE up to 7x7 from 5x5\n",
-                                "_ Phase Shift_ now stuns whatever it teleports",
-                                "_ Summon Elemental_ quantity up to 5 from 3, elemental's stats now scale with depth, and elementals can be re-summoned",
-                                "_ Aqua Blast_ now acts like a geyser trap, quantity down to 8 from 12",
-                                "_ Reclaim Trap_ quantity up to 4 from 3",
-                                "_ Curse Infusion_ now boosts highly levelled gear by more than +1, quantity up to 4 from 3.",
-                                "_ Recycle_ quantity up to 12 from 8, cost up to 8 from 6")
-                        + "\n\n_Dart Buffs:_"+list(
-                            "Rot Dart uses increased to 5 from 1",
-                                "Adrenaline Dart duration up to 30 from 10",
-                                "Shocking Dart damage now slightly scales with depth",
-                                "Poison Dart damage scaling increased",
-                                "Holy Dart duration up to 100 from 30",
-                                "Displacing Dart now more consistently teleports enemies away"
-                        )
-                        + "\nEvan also nerfed Sleep Darts by changing them into Cleansing Darts, but RAT KING in his infinite wisdom decided this change should be made instead:\n"
-                        + list("_Sleep Dart_ now _Dream Dart_, makes allies immune to debuffs for several turns _and inflicts magical sleep when used on enemies_")
-                        + "\n_Talent Buffs_:"
-                                +list(
-                            "Energizing Upgrade/Restoration charge boost up to 4/6, from 3/5",
-                            "Power Within wand preserve chance at +1 reduced to 50%, but now grants 1 arcane resin if it fails to preserve. Max uses increased to 5.",
-                            "Rat Magic's empowering scrolls now gives +3 on the next 1/2/3 wand zaps",
-                            "Timeless Running's light cloak charge rate boosted to 25/50/75%, from 17/33/50%. It is numerically better than Light Cloak currently, but still charges slower."
-                            //"Shared Upgrades bugfixed to give the bonus damage in the description instead of slightly less"
-                        )
-                ),
-                new ChangeButton(Icons.get(Icons.CHANGES), "Nerfs", list(
-                        "_Magical Infusion_ energy cost up to 4 from 3",
-                                "_Holy Bomb_ bonus damage reduced to 50% from 67%",
-                                "_Goo Blob and Metal Shard_ energy value reduced to 3",
-                                "_Alchemize_ quantity in shops reduced by 1\n",
-                                "While not a direct alchemy item nerf, I've also made some of the final bosses' fists less susceptible to certain mechanics:",
-                                "_Soiled Fist_ is now immune to burning, but the grass it generates still burns",
-                                "_Burning Fist_ is now immune to freezing, but it can still be chilled",
-                                "_Rotting and Rusted Fists_ now take less damage from retribution, grim, and psionic blast")
-                        + "\n"+ list("Dreamfoil ability to inflict sleep removed, use Dream Darts instead.")
-                        //+ "\n Talents:"
-                        + list(
-                            "Restoration's Shield Battery nerfed to 4%/6%", "Mage's Shield Battery nerfed to 6/9%", "Inevitability's Enraged Catalyst proc boost now 15/30/45%",
-                            "Invevitability's max rage boost now +10%/+20%/+30%"
-                        )
-                ),
-                misc(
-                        list("Improved blinking behavior of journal",
-                                "Improved depth display to include level feelings",
-                                "Added challenge indicator",
-                                "Secrets level feeling less extreme in hiding things",
-                                "Improved save system resilience")),
-                bugFixes(
-                    list("Dwarf King sometimes becoming unbeatable when assassinated") +
-                    "\nImplemented from SHPD: " + list(
-                        "Very rare cases where dried rose is unusable",
-                        "Corruption affecting smoke bomb decoy",
-                        "Character mind vision persisting after a character dies",
-                        "Dwarf King not being targeted by wands or thrown weapons while on his throne",
-                        "Floor 5 entrance rooms sometimes being smaller than intended",
-                        "Exploits involving Corruption and Ratmogrify",
-                        "Rare cases where lullaby scrolls were generated by the Unstable Spellbook",
-                        "Red flash effects stacking on each other in some cases",
-                        "Game forgetting previous window size when maximized and minimized",
-                        "Various rare cases of save corruption on Android",
-                        "Various minor textual and visual errors",
-                        "Unidentified wands being usable in alchemy",
-                        "Various rare cases where the hero could perform two actions at once",
-                        "Pharmacophobia challenge incorrectly blocking some alchemy recipes",
-                        "Various rare cases where giant enemies could enter enclosed spaces",
-                        "Rare cases where the freerunner could gain momentum while freerunning",
-                        "On-hit effects still triggering when the great crab blocks",
-                        "Various bugs with the potion of dragon's breath",
-                        "Assassinate killing enemies right after they were corrupted by a corrupting weapon",
-                        "Layout issues with the loot indicator",
-                        "Artifact recharging not charging the horn of plenty in some cases when it should",
-                        "Some items rarely not being consumed when they should be",
-                        "Fog of War not properly updating when warp beacon is used"
+            new ChangeInfo("v1.0.0-BETA",true,TITLE_COLOR,
+                    info(Messages.get(WelcomeScene.class, "update_msg")),
+                    new ChangeButton(new ItemSprite(ItemSpriteSheet.SHORTSWORD, new ItemSprite.Glowing(0x000000)), "New Curse!", "In addition to the new curses added in Shattered v1.3, I've added an RKPD2-exclusive curse:\n\n_Chaotic_ weapons will usually roll a random weapon curse on hit, but every once in a while it'll roll a wand curse!"),
+                    new ChangeButton(new ItemSprite(CLEANSING_DART), "Vetoed Sleep Dart Removal",
+                            "In Shattered v1.2, Evan came up with the brilliant idea of nerfing _sleep darts_ into the ground. To avoid suspicion, he also made _dreamfoil_ unable to inflict magical sleep, so as to appear to be fair."
+                                    + "\n\nIn Shattered v1.3, it became clear that this was a horrible mistake---dreamfoil not being able to inflict sleep proved incredibly confusing to players, and the 'nerfed' sleep darts---now cleansing darts---were almost completely useless.\n\nHowever, Evan was unwilling to go back, and instead retconned Dreamfoil, renaming it to Mageroyal without changing its description at all. He also buffed what were now cleansing darts to have certain 'sleep dart-like' properties, while keeping them almost completely useless for what we really wanted to use them for.\n\nFEAR NOT, HOWEVER!\n\nNot only does dreamfoil still inflict magical sleep in this game blessed by the King himself, RAT KING in his infinite wisdom has decided to enhance the sleep dart into Dream™ darts!"),
+                    new ChangeButton(Icons.get(TALENT), "Talent and Armor Ability Changes",
+                            "Several talents that were previously exempt from being chosen by the scroll of metamorphosis now have alternative effects that let them be used by any hero:"+list("Iron Will", "Light Cloak", "Noble Cause", "Restored Willpower", "Energizing Upgrade","Mystical Upgrade","Restoration","Seer Shot","Light Cloak")
+                                    +"\nBuffs from Shattered v1.2:"+list("_Energizing Upgrade_/_Restoration_ charge boost up to 4/6, from 3/5", "_Power Within_ wand preserve chance at +1 reduced to 50%, but now grants 1 arcane resin if it fails to preserve. Max uses increased to 5.", "_Rat Magic_'s empowering scrolls now gives +3 on the next 1/2/3 wand zaps", "_Timeless Running_ light cloak charge rate boosted to 25/50/75%, from 17/33/50%.")
+                                    +"\nNerfs from Shattered v1.2:"+list("_Restoration_ Shield Battery nerfed to 4%/6%", "_Shield Battery_ nerfed to 6/9%", "_Inevitability_ Enraged Catalyst proc boost now 15/30/45%, standard enraged catalyst unchanged.", "_Inevitability_ max rage boost now +10%/+20%/+30%") + list("_Wand Preservation_ chance to preserve at +1 reverted to 67% from 50%, still grants 1 arcane resin if it fails to preserve")),
+                    new ChangeButton(new ItemSprite(CROWN), "Armor Abilities",
+                            list("_Endure_ damage bonus increased to 1/2 of damage taken from 1/3")
+                                    +list("_Wild Magic_ base wand boost and max boost increased by 1","_Fire Everything_ now has a 25% chance per point to let a wand be usable 3 times","_Conserved Magic_ no longer lets a wand be usable 3 times, now grants a chance for wild magic to take 0 turns instead")
+                                    +list("_Elemental power_ boost per point up to 33%, from 25%, to match Shattered's buff from 20% to 25%","_Reactive Barrier_ shielding per point up to 2.5, from 2, and max targets now increases by 1 per point.")
+                                    +list("_Shadow Clone_ now costs 35 energy, down from 50. Initial HP down to 80 from 100","_Shadow Blade_ damage per point up to 8%, from 7.5%","_Cloned Armor_ armor per point down to 16%, from 20%, to match Shattered's nerf from 15% to 12%.")
+                                    +list("_Eagle Eye_ now grants 9 and 10 vision range at 3 and 4 points", "_Go for the Eyes_ now cripples at ranks 3 and 4","_Swift Spirit_ now grants 2/4/6/8 dodges, up from 2/3/4/5")
+                                    +list("_Heroic Leap_ energy cost up to 35 from 25", "_Body Slam_ now adds 1-4 base damage per point in talent", "_Impact Wave_ now applies vulnerable for 5 turns, up from 3", "_Double Jump_ energy cost reduction increased by 20%")
+                                    +list("_Smoke Bomb_ energy cost up to 50 from 35, but max range up to 12 from 8 (Shattered buffed it from 6 to 10)")
+                                    + "\nThis has led me to adjust _Rat King's Wrath:_"
+                                    +list("Energy cost up to 70 from 60", "Range up to 10 from 6", "_Rat Blast_ boost per point up to 25% from 20%", "_Rat Blast_ shielding per point up to 2.5, from 2, and max targets now increases by 1 per point.")
+                                    +list("_Ratforcements_ stat-scaling adjusted to take into account ascension challenge")
+                    ),
+                    misc(list(
+                            "Ability to run challenges before winning temporarily disabled.")
+                            + "\n\nFrom Shattered v1.3:"
+                            // buff and spell icons
+                            +list("All buffs now have a unique image, even if it is just a recolor.", "A few new overhead spell icons have been added as well")
+                            // misc
+                            +list("Updated various code dependencies", "Made major internal changes in prep for quest improvements in v1.4", "Added a slight delay to chasm jump confirmation window, to prevent mistaps", "Progress is now shown for badges that need to be unlocked with multiple heroes", " Multiple unlocked badges can now be shown at once", "Various minor tweaks to item and level generation to support seeded runs", "Keys now appear on top of other items in pit rooms", "Large floors now spawn two torches with the 'into darkness' challenge enabled", "Blazing champions no longer explode if they are killed by chasms", "Red sentries no longer fire on players with lost inventories")
+                            + "\n\nFrom v1.2:"
+                            + list("Improved blinking behavior of journal", "Improved depth display to include level feelings", "Added challenge indicator", "Secrets level feeling less extreme in hiding things", "Improved save system resilience")
+                    ),
+                    bugFixes(
+                            // rkpd2
+                            list("Dwarf King's health being handled incorrectly in Badder Bosses",
+                                    "Thief's Intuition having incorrect mechanics; now has 33% chance to id curse at +1, rather than 50% chance at +0.")
+                            //v1.2
+                            +list("Very rare cases where dried rose is unusable", "Corruption affecting smoke bomb decoy", "Character mind vision persisting after a character dies", "Dwarf King not being targeted by wands or thrown weapons while on his throne", "Floor 5 entrance rooms sometimes being smaller than intended", "Exploits involving Corruption and Ratmogrify", "Rare cases where lullaby scrolls were generated by the Unstable Spellbook", "Red flash effects stacking on each other in some cases", "Game forgetting previous window size when maximized and minimized", "Various rare cases of save corruption on Android", "Various minor textual and visual errors", "Unidentified wands being usable in alchemy", "Various rare cases where the hero could perform two actions at once", "Pharmacophobia challenge incorrectly blocking some alchemy recipes", "Various rare cases where giant enemies could enter enclosed spaces", "Rare cases where the freerunner could gain momentum while freerunning", "On-hit effects still triggering when the great crab blocks", "Various bugs with the potion of dragon's breath", "Assassinate killing enemies right after they were corrupted by a corrupting weapon", "Layout issues with the loot indicator", "Artifact recharging not charging the horn of plenty in some cases when it should", "Some items rarely not being consumed when they should be", "Fog of War not properly updating when warp beacon is used")
+                            //v1.3
+                            +list("Various minor textual and visual bugs", "Final boss's summons being slightly weaker than intended when badder bosses is enabled", "Great crab not blocking right after loading a save", "Exploits that could force DM-300 to dig outside of its arena", "Various 'cause of death' badges not being awarded if death occurred with an ankh.", "Wraiths from spectral necromancers not always dying when the necromancer dies", "The mystical charge talent giving more charge than intended", "Ring of might HP bonus not applying in specific cases", "Stones of blink disappearing if they fail to teleport", "Beacon of returning not working at all in boss arenas", "Earthen guardian not being immune to poison, gas, and bleed", "Transmogrified enemies awarding exp when the effect ends")
                     )
+            ),
+            new ChangeInfo("From SHPD v1.2,v1.3", false, SHPX_COLOR,
+                    new ChangeButton(Icons.get(Icons.SEED), "Seeded Runs!",
+                            "_It's now possible to enter a custom seed when starting a new game!_\n\n" +
+                                    "Seeds are used to determine dungeon generation, and two runs with the same seed and game version will produce the exact same dungeon to play though.\n\n" +
+                                    "If you don't enter a custom seed, the game will use a random one to generate a random dungeon, just like it did prior to this update.\n\n" +
+                                    "Note that only players who have won at least once can enter custom seeds, and games with custom seeds are not eligible to appear in rankings."
+                                    + "\n\n"
+                                    + "_Daily runs_ have also been implemented. Each day there is a specific seeded run that is available to all players, making it easy to compete against others."
+                    ) {{ icon.hardlight(1f, 1.5f, 0.67f); }},
+                    new ChangeButton(BadgeBanner.image( Badge.HIGH_SCORE_2.image ), "Ascension and New Score System!",
+                            "_The game's scoring system has been overhauled to go along with seeded runs and dailies!_\n\n"
+                                    + "The score system now factors in a bunch of new criteria like exploration, performance during boss fights, quest completions, and enabled challenges. This should make score a much better measure of player performance.\n\n"
+                                    + "A score breakdown page has also been added to the rankings screen. This page even works for old games, and retroactively applies the challenge bonus!"
+                                    +"\n\n" +
+                                    "_A bunch of adjustments have been made to the ascension route to make it a proper challenge!_\n\n"
+                                    + "Enemies will get much stronger as you ascend, and it's impossible to teleport back up or flee and avoid all combat. Expect to have to work a little bit more for an ascension win!"),
+                    new ChangeButton(Icons.get(DISPLAY_LAND), "UI/UX improvements", ""
+                            +list("new main UI for larger displays", "Full controller support, better keyboard controls, better mouse support", "Two additional quickslots")
+                            +list("Boss music implemented", "Badge changes implemented from Shattered")
+                            +"\n"
+                            +list("The settings menu has been adjusted with a few new and rearranged options.","Added radial menus for controller users, and redid default controller bindings.","Keyboard and controller key bindings now have separate windows", "Added a few new key/button bindings actions")),
+
+                    // this is the merge of 3 different shpd stuff
+                    new ChangeButton(BadgeBanner.image( Badge.BOSS_CHALLENGE_5.image ), "Implemented Badge Changes",
+                            "_Badges now have names, and 21 new badges have been added!_"
+                                + "\n"
+                                + list("8 of these new badges are mostly part of the existing series badges (e.g. defeat X enemies), and exist around the gold badge level.","Five of these badges are 'high score' badges, meant to tie into the new score system.", "Another five of these badges are 'boss challenge' badges, which each require you to defeat a boss in a particular way", "Four new 'cause of death' badges have also been added, which should be a little trickier than the existing ones.")
+                                + "\n"
+                                + "Several of these badges are on the harder end, in particular the final high score and boss challenge badge should be a real challenge, even for veteran players."
+                                + "\n\n"
+                                + "The 'games played' badges have also been adjusted to unlock either on a large number of games played, or a smaller number of games won."
+                    )
+            ),
+            new ChangeInfo("From SHPD v1.2,v1.3", false, SHPX_COLOR,
+                new ChangeButton(new Image(Assets.Environment.TILES_SEWERS, 48, 80, 16, 16), "Levelgen and Enemies", "Implemented new special rooms from Shattered v1.2:" + list("sacrifical fire room", "crystal path rooms", "crystal choice rooms", "sentry room", "magical fire room", "toxic gas room")
+                        +"\nFloor 16's spawn rates have been adjusted to smooth over a difficulty spike on that floor" + list("Ghouls up to 60% from 40%","Elementals down to 20% from 40%")
+                        + "\nOther changes:"+list("_Soiled Fist_ is now immune to burning, but the grass it generates still burns", "_Burning Fist_ is now immune to freezing, but it can still be chilled", "_Rotting and Rusted Fists_ now take less damage from retribution, grim, and psionic blast")
+                ),
+                new ChangeButton(new ItemSprite(ARTIFACT_ARMBAND), "Armband", "Armband reworked, now lets you steal from enemies as well as shops."
+                ),
+                new ChangeButton(new ItemSprite(ItemSpriteSheet.SHORTSWORD, new ItemSprite.Glowing(0x000000)), "Curse Redesigns",
+                        "Weapon and Armor curses have been redesigned:"
+                                +list("_Fragile_ has been replaced by _explosive,_ which builds power and then explodes!","_Wayward_ has been redesigned to sometimes apply an accuracy reducing debuff, instead of always reducing accuracy.","_Exhausting_ has been replaced by _dazzling,_ which can blind both the attacker and defender.")
+                                +list("_Anti-Entropy_ now spreads less fire to the player, and freezes all adjacent tiles instead of just the enemy.", "_Sacrifical_ now more heavily scales on current HP, bleeding for a bit more at high health, and very little at medium to low health.")),
+                new ChangeButton(new ItemSprite(ItemSpriteSheet.CLEANSING_DART), "Alchemy", "Buffs from v1.3:"
+                        + list("_Woolly Bombs_ now summon sheep for 200 turns, or 20 turns during boss fights, up from 12-16 turns. However, sheep no longer totally prevent bosses from summoning minions.")
+                        +list("_Rot Dart_ uses increased to 5 from 1","_Shocking Dart_ damage now slightly scales with depth", "_Poison Dart_ damage scaling increased", "_Displacing Dart_ now more consistently teleports enemies away", "_Holy Dart_ now heavily damages undead or demonic enemies, instead of blessing them", "_Adrenaline Dart_ now cripples enemies for 5 turns, instead of giving them adrenaline")
+                        +"\nBuffs from v1.2:"
+                        +list("_ Bomb Recipe_ energy costs down across the board\n", "_ Infernal, Blizzard, and Caustic Brew_ energy costs down by 1\n", "_ Telekinetic Grab_ energy cost down to 2 from 4, liquid metal cost reduced to 10 from 15", "_ Phase Shift_ energy cost down to 4 from 6", "_ Wild Energy_ energy cost down to 4 from 6", "_ Beacon of Returning_ energy cost down to 6 from 8", "_ Summon Elemental_ energy cost down to 6 from 8", "_ Alchemize_ energy cost down to 2 from 3")
+                        + list("_ Scroll of Foresight_ duration up to 400 from 250", "_ Scroll of Dread_ now grants 1/2 exp for defeated enemies", "_ Potion of Shrouding Fog_ gas quantity increased bt 50%\n", "Items and effects which create water now douse fire")
+                        +list("_Caustic Brew_ damage per turn increased by 1", "_ Infernal and Blizzard Brew_ now start their gas in a 3x3 AOE", "_ Shocking Brew_ AOE up to 7x7 from 5x5\n", "_ Phase Shift_ now stuns whatever it teleports", "_ Summon Elemental_ quantity up to 5 from 3, elemental's stats now scale with depth, and elementals can be re-summoned", "_ Aqua Blast_ now acts like a geyser trap, quantity down to 8 from 12", "_ Reclaim Trap_ quantity up to 4 from 3", "_Curse Infusion_ now boosts highly levelled gear by more than +1, quantity up to 4 from 3.", "_Recycle_ quantity up to 12 from 8, cost up to 8 from 6")
+                        +"\nNerfs from v1.2:"
+                        +list("_Magical Infusion_ energy cost up to 4 from 3", "_Holy Bomb_ bonus damage reduced to 50% from 67%", "_Goo Blob and Metal Shard_ energy value reduced to 3", "_Alchemize_ quantity in shops reduced by 1")
                 )
             )
         },
