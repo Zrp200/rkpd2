@@ -629,7 +629,7 @@ public class ScrollOfDebug extends Scroll {
     public static PackageTrie trie = null; // loaded when needed.
     static {
         try {
-            trie = PackageTrie.getClassesForPackage(ROOT);
+            trie = ShatteredPixelDungeon.platform.findClasses(ROOT);
         } catch (ClassNotFoundException e) { ShatteredPixelDungeon.reportException(e); }
     }
 

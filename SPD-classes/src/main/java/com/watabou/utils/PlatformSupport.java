@@ -30,7 +30,12 @@ import com.watabou.noosa.Game;
 
 import java.util.HashMap;
 
+import com.zrp200.scrollofdebug.PackageTrie;
+
 public abstract class PlatformSupport {
+	public PackageTrie findClasses(String pckgname) throws ClassNotFoundException {
+		return PackageTrie.getClassesForPackage(pckgname);
+	}
 	
 	public abstract void updateDisplaySize();
 	
