@@ -502,10 +502,6 @@ public enum Talent {
 		    case IRON_WILL:
 		        // lazily implementing this without checking hero class.
 		        Buff.affect(hero, BrokenSeal.WarriorShield.class);
-			case ROYAL_PRIVILEGE: case NATURES_BOUNTY:
-				int count = talent == NATURES_BOUNTY ? 3 : 2;
-				if(points == 1) count *= 2; // for the initial upgrade.
-				Buff.count(hero, NatureBerriesAvailable.class, count);
 				break;
 			case ARMSMASTERS_INTUITION: case THIEFS_INTUITION: case ROYAL_INTUITION:
 				for(Item item : hero.belongings)

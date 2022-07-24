@@ -21,6 +21,8 @@
 
 package com.zrp200.rkpd2.levels.features;
 
+import static com.zrp200.rkpd2.utils.SafeCast.cast;
+
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.ShatteredPixelDungeon;
@@ -106,31 +108,38 @@ public class HighGrass {
 				}
 
 				//berries try to drop on floors 2/3/4/6/7/8, to a max of 4/6
-				if (ch instanceof Hero && ((Hero) ch).hasTalent(Talent.NATURES_BOUNTY)){
-					int berriesAvailable = 2 + 2*((Hero) ch).pointsInTalent(Talent.NATURES_BOUNTY);
+				Hero hero = cast(ch, Hero.class);
+				int totalBerries = hero == null
+						// drawback of using shifted points is that I have to make this check
+						|| !hero.hasTalent(Talent.NATURES_BOUNTY, Talent.ROYAL_PRIVILEGE)
+						? 0 : (int)hero.byTalent(false, true,
+													Talent.NATURES_BOUNTY , 3,
+													Talent.ROYAL_PRIVILEGE, 2);
+				if (totalBerries > 0){
 
 					//pre-1.3.0 saves
 					Talent.NatureBerriesAvailable oldAvailable = ch.buff(Talent.NatureBerriesAvailable.class);
 					if (oldAvailable != null){
-						Buff.affect(ch, Talent.NatureBerriesDropped.class).countUp(berriesAvailable - oldAvailable.count());
+						Buff.affect(ch, Talent.NatureBerriesDropped.class).countUp(totalBerries - oldAvailable.count());
 						oldAvailable.detach();
 					}
 
 					Talent.NatureBerriesDropped dropped = Buff.affect(ch, Talent.NatureBerriesDropped.class);
-					berriesAvailable -= dropped.count();
+					// this is strictly equivalent to what shattered did.
+					int droppedBerries = (int)dropped.count();
 
-					if (berriesAvailable > 0) {
-						int targetFloor = 2 + 2 * ((Hero) ch).pointsInTalent(Talent.NATURES_BOUNTY);
-						targetFloor -= berriesAvailable;
-						targetFloor += (targetFloor >= 5) ? 3 : 2;
+					if (totalBerries > droppedBerries) {
+						int targetFloor = droppedBerries + (droppedBerries >= 5 ? 3 : 2);
 
-						//If we're behind: 1/10, if we're on page: 1/30, if we're ahead: 1/90
-						boolean droppingBerry = false;
-						if (Dungeon.depth > targetFloor) droppingBerry = Random.Int(10) == 0;
-						else if (Dungeon.depth == targetFloor) droppingBerry = Random.Int(30) == 0;
-						else if (Dungeon.depth < targetFloor) droppingBerry = Random.Int(90) == 0;
-
-						if (droppingBerry) {
+						//If we're behind: 1/10, if we're on page: 1/30, if we're ahead: 1/90;
+						int difference = Dungeon.depth - targetFloor;
+						if (Random.Int(
+								difference > 0
+									? 10 :
+								difference == 0
+									? 30
+									: 90
+						) == 0) {
 							dropped.countUp(1);
 							level.drop(new Berry(), pos).sprite.drop();
 						}
