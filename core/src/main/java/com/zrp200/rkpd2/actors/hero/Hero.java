@@ -85,7 +85,6 @@ import com.zrp200.rkpd2.items.rings.RingOfHaste;
 import com.zrp200.rkpd2.items.rings.RingOfMight;
 import com.zrp200.rkpd2.items.rings.RingOfTenacity;
 import com.zrp200.rkpd2.items.scrolls.Scroll;
-import com.zrp200.rkpd2.items.scrolls.ScrollOfDebug;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfMagicMapping;
 import com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfChallenge;
 import com.zrp200.rkpd2.items.wands.Wand;
