@@ -499,7 +499,7 @@ public enum Talent {
 	public static void onTalentUpgraded( Hero hero, Talent talent){
 		int points = hero.pointsInTalent(talent);
 		switch(talent) {
-		    case IRON_WILL:
+		    case IRON_WILL: case NOBLE_CAUSE:
 		        // lazily implementing this without checking hero class.
 		        Buff.affect(hero, BrokenSeal.WarriorShield.class);
 				break;
@@ -669,7 +669,7 @@ public enum Talent {
 				multiplier[0] += points/(talent == RESTORED_WILLPOWER ? 2f : 3f);
 				float noSeal = 0.025f * points;
 				multiplier[1] += talent == RESTORED_WILLPOWER ? noSeal * 1.5f : noSeal;
-			});
+			}, RESTORED_WILLPOWER, RESTORATION);
 			BrokenSeal.WarriorShield shield = hero.buff(BrokenSeal.WarriorShield.class);
 			int shieldToGive;
 			if (shield != null) {
