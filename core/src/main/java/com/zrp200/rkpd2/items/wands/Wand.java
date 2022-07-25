@@ -407,20 +407,20 @@ public abstract class Wand extends Item {
 
 	protected void wandUsed() {
 		if (!isIdentified()) {
-			float uses = Math.min( availableUsesToID, Talent.itemIDSpeedFactor(Dungeon.hero, this) );
+			float uses = Math.min(availableUsesToID, Talent.itemIDSpeedFactor(Dungeon.hero, this));
 			availableUsesToID -= uses;
 			usesLeftToID -= uses;
 			if (usesLeftToID <= 0 || Dungeon.hero.pointsInTalent(Talent.SCHOLARS_INTUITION, Talent.ROYAL_INTUITION) == 2) {
 				identify();
-				GLog.p( Messages.get(Wand.class, "identify") );
-				Badges.validateItemLevelAquired( this );
-			} else if(!levelKnown && Dungeon.hero.hasTalent(Talent.SCHOLARS_INTUITION)) {
+				GLog.p(Messages.get(Wand.class, "identify"));
+				Badges.validateItemLevelAquired(this);
+			} else if (!levelKnown && Dungeon.hero.hasTalent(Talent.SCHOLARS_INTUITION)) {
 				levelKnown = true;
 				updateQuickslot();
-				Badges.validateItemLevelAquired( this );
+				Badges.validateItemLevelAquired(this);
 			}
 		}
-		
+
 		curCharges -= cursed ? 1 : chargesPerCast();
 
 		//remove magic charge at a higher priority, if we are benefiting from it are and not the
@@ -430,11 +430,11 @@ public abstract class Wand extends Item {
 		if (buff != null
 				&& buff.wandJustApplied() != this
 				&& buff.level() == buffedLvl()
-				&& buffedLvl() > super.buffedLvl()){
+				&& buffedLvl() > super.buffedLvl()) {
 			buff.detach();
 		} else {
 			ScrollEmpower empower = curUser.buff(ScrollEmpower.class);
-			if (empower != null){
+			if (empower != null) {
 				empower.use();
 			}
 		}
@@ -442,38 +442,34 @@ public abstract class Wand extends Item {
 		if (charger != null
 				&& charger.target == Dungeon.hero){
 
-			//if the wand is owned by the hero, but not in their inventory, it must be in the staff
-			if (!Dungeon.hero.belongings.contains(this)) {
-				if (curCharges == 0 && Dungeon.hero.hasTalent(Talent.BACKUP_BARRIER,Talent.NOBLE_CAUSE)) {
-					//grants 3/5 shielding
-				final int[] total = new int[1];
-				// currently this stacks.
-				Dungeon.hero.byTalent( (talent, points) -> {
-					int shielding = 1 + 2 * points;
-					if (talent == Talent.BACKUP_BARRIER)
-						shielding = (int) Math.ceil(shielding * 1.5f);
-					total[0] += shielding;
-				}, Talent.BACKUP_BARRIER, Talent.NOBLE_CAUSE);
-				Buff.affect(Dungeon.hero, Barrier.class).setShield(total[0]);
-				}
-				if (Dungeon.hero.hasTalent(Talent.EMPOWERED_STRIKE,Talent.RK_BATTLEMAGE)) {
-					Buff.prolong(Dungeon.hero, Talent.EmpoweredStrikeTracker.class, 10f);
-				}
-
-			//otherwise process logic for metamorphed backup barrier
-			} else if (curCharges == 0
-					&& Dungeon.hero.heroClass != HeroClass.MAGE
-					&& Dungeon.hero.hasTalent(Talent.BACKUP_BARRIER)){
-				boolean highest = true;
-				for (Item i : Dungeon.hero.belongings.getAllItems(Wand.class)){
-					if (i.level() > level()){
-						highest = false;
+			if (curCharges == 0 && Dungeon.hero.hasTalent(Talent.BACKUP_BARRIER, Talent.NOBLE_CAUSE)) {
+				//if the wand is owned by the hero, but not in their inventory, it must be in the staff
+				boolean backupBarrierWand = !Dungeon.hero.belongings.contains(this);
+				//otherwise process logic for metamorphed backup barrier
+				if (!backupBarrierWand && Dungeon.hero.belongings.getItem(MagesStaff.class) == null) {
+					boolean highest = true;
+					for (Item i : Dungeon.hero.belongings.getAllItems(Wand.class)) {
+						if (i.level() > level()) {
+							highest = false;
+						}
 					}
+					backupBarrierWand = highest;
 				}
-				if (highest){
+				if (backupBarrierWand) {
 					//grants 3/5 shielding
-					Buff.affect(Dungeon.hero, Barrier.class).setShield(1 + 2 * Dungeon.hero.pointsInTalent(Talent.BACKUP_BARRIER));
+					final int[] total = new int[1];
+					// currently this stacks.
+					Dungeon.hero.byTalent((talent, points) -> {
+						int shielding = 1 + 2 * points;
+						if (talent == Talent.BACKUP_BARRIER)
+							shielding = (int) Math.ceil(shielding * 1.5f);
+						total[0] += shielding;
+					}, Talent.BACKUP_BARRIER, Talent.NOBLE_CAUSE);
+					Buff.affect(Dungeon.hero, Barrier.class).setShield(total[0]);
 				}
+			}
+			if (Dungeon.hero.hasTalent(Talent.EMPOWERED_STRIKE,Talent.RK_BATTLEMAGE)) {
+				Buff.prolong(Dungeon.hero, Talent.EmpoweredStrikeTracker.class, 10f);
 			}
 		}
 		Invisibility.dispel();
