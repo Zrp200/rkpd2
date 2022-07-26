@@ -179,6 +179,9 @@ public class RKPD2Changes {
                             +list("Various minor textual and visual bugs", "Final boss's summons being slightly weaker than intended when badder bosses is enabled", "Great crab not blocking right after loading a save", "Exploits that could force DM-300 to dig outside of its arena", "Various 'cause of death' badges not being awarded if death occurred with an ankh.", "Wraiths from spectral necromancers not always dying when the necromancer dies", "The mystical charge talent giving more charge than intended", "Ring of might HP bonus not applying in specific cases", "Stones of blink disappearing if they fail to teleport", "Beacon of returning not working at all in boss arenas", "Earthen guardian not being immune to poison, gas, and bleed", "Transmogrified enemies awarding exp when the effect ends")
                     )
             ),
+            new ChangeInfo("BETA-2",false,TITLE_COLOR,
+                    misc("Iron Will can no longer be metamorphed."),
+                    bugFixes(list("Dreamfoil incorrectly missing its namesake description.", "dream™ darts missing the ™.", "")+list("Erratic behavior with Nature's Bounty", "Royal Privilege not providing berries.", "Restored Willpower not working", "Noble Cause not providing backup barrier or shielding."))),
             new ChangeInfo("From SHPD v1.2,v1.3", false, SHPX_COLOR,
                     new ChangeButton(Icons.get(Icons.SEED), "Seeded Runs!",
                             "_It's now possible to enter a custom seed when starting a new game!_\n\n" +
