@@ -71,12 +71,20 @@ public class BrokenSeal extends Item {
 		this.glyph = glyph;
 	}
 
-	public int maxShield( int armTier, int armLvl ){
+	/** Amount of shield given by just talents */
+	public static int maxShieldFromTalents(boolean armorAttached) {
 		// iron will is 1 (0+1) / 3 (1+2) / 5 (2+3)
 		// noble cause is 0/1/2
-		// fixme verify that behavior has or hasn't changed.
-		int bonus = hero.pointsInTalent(Talent.NOBLE_CAUSE, Talent.IRON_WILL) + hero.shiftedPoints(Talent.IRON_WILL);
-		return armTier + armLvl + bonus;
+		int points = 0;
+		if(armorAttached || hero.heroClass != HeroClass.RAT_KING)
+			points += hero.pointsInTalent(Talent.NOBLE_CAUSE);
+		if(armorAttached || hero.heroClass != HeroClass.WARRIOR)
+			points += hero.pointsInTalent(Talent.IRON_WILL) + hero.shiftedPoints(Talent.IRON_WILL);
+		return points;
+	}
+
+	public int maxShield( int armTier, int armLvl ){
+		return armTier + armLvl + maxShieldFromTalents(true);
 	}
 
 	@Override
@@ -229,14 +237,11 @@ public class BrokenSeal extends Item {
 
 		public synchronized int maxShield() {
 			//metamorphed iron will logic
-			if (((Hero)target).heroClass != HeroClass.WARRIOR && ((Hero) target).hasTalent(Talent.IRON_WILL)){
-				return ((Hero) target).pointsInTalent(Talent.IRON_WILL);
-			}
 
 			if (armor != null && armor.isEquipped((Hero)target) && armor.checkSeal() != null) {
 				return armor.checkSeal().maxShield(armor.tier, armor.level());
 			} else {
-				return 0;
+				return maxShieldFromTalents(false);
 			}
 		}
 		
