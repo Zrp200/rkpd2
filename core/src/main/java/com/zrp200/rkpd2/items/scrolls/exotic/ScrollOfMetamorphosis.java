@@ -176,6 +176,10 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 		//talents that can only be used by one hero class
 		private static final HashMap<Talent, HeroClass> restrictedTalents = new HashMap<>();
 		static {
+
+			// rework made metamorph effect unreasonable.
+			restrictedTalents.put(IRON_WILL, WARRIOR);
+
 			restrictedTalents.put(Talent.RUNIC_TRANSFERENCE, HeroClass.WARRIOR);
 			restrictedTalents.put(Talent.WAND_PRESERVATION, HeroClass.MAGE);
 
