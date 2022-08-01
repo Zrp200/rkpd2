@@ -298,6 +298,7 @@ public class ChangesScene extends PixelScene {
 		fadeIn();
 	}
 
+	ScrollPane sp;
 	private void updateChangesText(Image icon, String title, String message){
 		if (changeTitle != null){
 			changeTitle.icon(icon);
@@ -306,13 +307,23 @@ public class ChangesScene extends PixelScene {
 
 			int pw = 135 + rightPanel.marginHor() - 2;
 			changeBody.text(message, pw - rightPanel.marginHor());
-			while (changeBody.height() > rightPanel.height()-25
-					&& changeBody.right() + 5 < Camera.main.width){
-				changeBody.maxWidth(changeBody.maxWidth()+5);
+//			while (changeBody.height() > rightPanel.height()-25
+//					&& changeBody.right() + 5 < Camera.main.width){
+//				changeBody.maxWidth(changeBody.maxWidth()+5);
+			if(sp == null) {
+				remove(changeBody);
+				add(sp = new ScrollPane(changeBody));
 			}
-			int ph = Camera.main.height - 36;
-			rightPanel.size(changeBody.maxWidth() + rightPanel.marginHor(), Math.max(ph, changeBody.height()+18+rightPanel.marginVer()));
-			changeBody.setPos(changeBody.left(), changeTitle.bottom()+2);
+			//sp.setHeight(rightPanel.height()-25);
+			//int ph = Camera.main.height - 36;
+			//rightPanel.size(changeBody.maxWidth() + rightPanel.marginHor(), Math.max(ph, changeBody.height()+18+rightPanel.marginVer()));
+			//changeBody.setPos(changeBody.left(), changeTitle.bottom()+2);
+			sp.setRect(
+					rightPanel.x + rightPanel.marginLeft(),
+					changeTitle.bottom() + 2,
+					rightPanel.innerWidth() + 2,
+					rightPanel.innerHeight() - changeTitle.height() - 1);
+			sp.scrollTo(0,0);
 
 		} else {
 			addToFront(new ChangesWindow(icon, title, message));
