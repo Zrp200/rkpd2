@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Bones;
 import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.blobs.Blob;
@@ -37,6 +38,7 @@ import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.bombs.Bomb;
 import com.zrp200.rkpd2.items.keys.IronKey;
 import com.zrp200.rkpd2.items.weapon.missiles.HeavyBoomerang;
 import com.zrp200.rkpd2.levels.features.LevelTransition;
@@ -334,7 +336,11 @@ public class PrisonBossLevel extends Level {
 	private void clearEntities(Rect safeArea){
 		for (Heap heap : heaps.valueList()){
 			if (safeArea == null || !safeArea.inside(cellToPoint(heap.pos))){
-				storedItems.addAll(heap.items);
+				for (Item item : heap.items){
+					if (!(item instanceof Bomb) || ((Bomb)item).fuse == null){
+						storedItems.add(item);
+					}
+				}
 				heap.destroy();
 			}
 		}
@@ -408,6 +414,7 @@ public class PrisonBossLevel extends Level {
 				}
 				
 				seal();
+				Statistics.qualifiedForBossChallengeBadge = true;
 				set(pointToCell(tenguCellDoor), Terrain.LOCKED_DOOR);
 				GameScene.updateMap(pointToCell(tenguCellDoor));
 

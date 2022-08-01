@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.scenes;
 
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Chrome;
+import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.GamesInProgress;
 import com.zrp200.rkpd2.SPDSettings;
 import com.zrp200.rkpd2.ShatteredPixelDungeon;
@@ -146,6 +147,7 @@ public class TitleScene extends PixelScene {
 		};
 		btnRankings.icon(Icons.get(Icons.RANKINGS));
 		add(btnRankings);
+		Dungeon.daily = false;
 
 		StyledButton btnBadges = new StyledButton(GREY_TR, Messages.get(this, "badges")){
 			@Override

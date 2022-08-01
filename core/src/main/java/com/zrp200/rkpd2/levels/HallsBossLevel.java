@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.levels;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Bones;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.mobs.Mob;
@@ -220,6 +221,7 @@ public class HallsBossLevel extends Level {
 	@Override
 	public void seal() {
 		super.seal();
+		Statistics.qualifiedForBossChallengeBadge = true;
 		int entrance = entrance();
 		set( entrance, Terrain.EMPTY_SP );
 		GameScene.updateMap( entrance );

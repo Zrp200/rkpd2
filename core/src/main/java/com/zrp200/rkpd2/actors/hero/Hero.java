@@ -67,11 +67,7 @@ import com.zrp200.rkpd2.items.artifacts.TalismanOfForesight;
 import com.zrp200.rkpd2.items.artifacts.TimekeepersHourglass;
 import com.zrp200.rkpd2.items.bags.MagicalHolster;
 import com.zrp200.rkpd2.items.journal.Guidebook;
-import com.zrp200.rkpd2.items.keys.CrystalKey;
-import com.zrp200.rkpd2.items.keys.GoldenKey;
-import com.zrp200.rkpd2.items.keys.IronKey;
-import com.zrp200.rkpd2.items.keys.Key;
-import com.zrp200.rkpd2.items.keys.SkeletonKey;
+import com.zrp200.rkpd2.items.keys.*;
 import com.zrp200.rkpd2.items.potions.Potion;
 import com.zrp200.rkpd2.items.potions.PotionOfExperience;
 import com.zrp200.rkpd2.items.potions.PotionOfHealing;
@@ -817,7 +813,8 @@ public class Hero extends Char {
 		ready = true;
 
 		AttackIndicator.updateState();
-		
+		BuffIndicator.refreshBoss();
+
 		GameScene.ready();
 	}
 	
@@ -1433,6 +1430,10 @@ public class Hero extends Char {
 	}
 	public boolean visibleEnemy( Mob mob ) {
 		return visibleEnemies.contains(mob);
+	}
+
+	public ArrayList<Mob> getVisibleEnemies(){
+		return new ArrayList<>(visibleEnemies);
 	}
 
 	private boolean walkingToVisibleTrapInFog = false;

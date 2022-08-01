@@ -43,12 +43,13 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 
 public class Ring extends KindofMisc {
 	
 	protected Buff buff;
 
-	private static final HashMap<String, Integer> gems = new HashMap<String, Integer>() {
+	private static final LinkedHashMap<String, Integer> gems = new LinkedHashMap<String, Integer>() {
 		{
 			put("garnet",ItemSpriteSheet.RING_GARNET);
 			put("ruby",ItemSpriteSheet.RING_RUBY);

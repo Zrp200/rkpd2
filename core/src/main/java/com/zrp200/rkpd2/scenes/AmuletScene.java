@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.scenes;
 
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Chrome;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.GamesInProgress;
 import com.zrp200.rkpd2.effects.BadgeBanner;
@@ -29,9 +30,15 @@ import com.zrp200.rkpd2.effects.Flare;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.Amulet;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.sprites.ItemSprite;
+import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
+import com.zrp200.rkpd2.ui.Archs;
+import com.zrp200.rkpd2.ui.Icons;
 import com.zrp200.rkpd2.ui.RedButton;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
+import com.zrp200.rkpd2.ui.StyledButton;
 import com.watabou.noosa.Camera;
+import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.tweeners.Delayer;
@@ -40,7 +47,7 @@ import com.watabou.utils.Random;
 public class AmuletScene extends PixelScene {
 	
 	private static final int WIDTH			= 120;
-	private static final int BTN_HEIGHT		= 18;
+	private static final int BTN_HEIGHT		= 20;
 	private static final float SMALL_GAP	= 2;
 	private static final float LARGE_GAP	= 8;
 	
@@ -52,8 +59,8 @@ public class AmuletScene extends PixelScene {
 		inGameScene = true;
 	}
 
-	RedButton btnExit = null;
-	RedButton btnStay = null;
+	StyledButton btnExit = null;
+	StyledButton btnStay = null;
 	
 	@Override
 	public void create() {
@@ -62,14 +69,14 @@ public class AmuletScene extends PixelScene {
 		RenderedTextBlock text = null;
 		if (!noText) {
 			text = renderTextBlock( Messages.get(this, "text"), 8 );
-			text.maxWidth(WIDTH);
+			text.maxWidth( PixelScene.landscape() ? 2*WIDTH-4 : WIDTH);
 			add( text );
 		}
 		
 		amulet = new Image( Assets.Sprites.AMULET );
 		add( amulet );
 
-		btnExit = new RedButton( Messages.get(this, "exit") ) {
+		btnExit = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "exit") ) {
 			@Override
 			protected void onClick() {
 				Dungeon.win( Amulet.class );
@@ -94,10 +101,11 @@ public class AmuletScene extends PixelScene {
 				});
 			}
 		};
+		btnExit.icon(new ItemSprite(ItemSpriteSheet.AMULET));
 		btnExit.setSize( WIDTH, BTN_HEIGHT );
 		add( btnExit );
 		
-		btnStay = new RedButton( Messages.get(this, "stay") ) {
+		btnStay = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.get(this, "stay") ) {
 			@Override
 			protected void onClick() {
 				onBackPressed();
@@ -105,6 +113,7 @@ public class AmuletScene extends PixelScene {
 				btnStay.enable(false);
 			}
 		};
+		btnStay.icon(Icons.CLOSE.get());
 		btnStay.setSize( WIDTH, BTN_HEIGHT );
 		add( btnStay );
 		

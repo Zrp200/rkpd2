@@ -28,6 +28,7 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
 import com.zrp200.rkpd2.actors.mobs.*;
 import com.zrp200.rkpd2.items.Amulet;
+import com.zrp200.rkpd2.messages.Languages;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.utils.GLog;
@@ -193,21 +194,8 @@ public class AscensionChallenge extends Buff {
 			if (Dungeon.bossLevel()){
 				Dungeon.hero.buff(Hunger.class).satisfy(Hunger.STARVING);
 				Buff.affect(Dungeon.hero, Healing.class).setHeal(Dungeon.hero.HT, 0, 20);
-				toSay = Messages.get(this, "break");
 			} else {
 				stacks += 2.5f;
-
-				if (Dungeon.depth == 1){
-					toSay = Messages.get(this, "almost");
-				} else if (stacks >= 10f){
-					toSay = Messages.get(this, "damage");
-				} else if (stacks >= 7.5f){
-					toSay = Messages.get(this, "slow");
-				} else if (stacks >= 5f){
-					toSay = Messages.get(this, "haste");
-				} else if (stacks >= 2.5f){
-					toSay = Messages.get(this, "beckon");
-				}
 
 				//clears any existing mobs from the level and adds one initial one
 				//this helps balance difficulty between levels with lots of mobs left, and ones with few
@@ -222,16 +210,27 @@ public class AscensionChallenge extends Buff {
 		}
 	}
 
-	private String toSay;
-
 	public void saySwitch(){
-		if (toSay != null){
-			if (Dungeon.bossLevel() || Dungeon.depth == 1){
-				GLog.p(toSay);
-			} else {
-				GLog.n(toSay);
+		if (Dungeon.bossLevel() || Dungeon.depth == 1){
+			GLog.p(Messages.get(this, "break"));
+		} else {
+			if (Dungeon.depth == 1){
+				GLog.n(Messages.get(this, "almost"));
+			} else if (stacks >= 10f){
+				GLog.n(Messages.get(this, "damage"));
+			} else if (stacks >= 7.5f){
+				GLog.n(Messages.get(this, "slow"));
+			} else if (stacks >= 5f){
+				GLog.n(Messages.get(this, "haste"));
+			} else if (stacks >= 2.5f){
+				GLog.n(Messages.get(this, "beckon"));
 			}
-			toSay = null;
+			if (stacks > 10 || stacks > 5 && Dungeon.depth > 20){
+				//english only until the next update
+				if (Messages.lang() == Languages.ENGLISH) {
+					GLog.h(Messages.get(this, "weaken_info"));
+				}
+			}
 		}
 	}
 

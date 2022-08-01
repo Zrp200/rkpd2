@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.scenes;
 
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.Rankings;
 import com.zrp200.rkpd2.ShatteredPixelDungeon;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
@@ -162,9 +163,20 @@ public class RankingsScene extends PixelScene {
 			add(btnDailies);
 		}
 
+		if (Dungeon.daily){
+			addToFront(new WndDailies());
+		}
+
 		fadeIn();
 	}
-	
+
+	@Override
+	public void destroy() {
+		super.destroy();
+		//so that opening daily records does not trigger WndDailies opening on future visits
+		Dungeon.daily = false;
+	}
+
 	@Override
 	protected void onBackPressed() {
 		ShatteredPixelDungeon.switchNoFade(TitleScene.class);

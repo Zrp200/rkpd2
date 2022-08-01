@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Chrome;
+import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.GamesInProgress;
 import com.zrp200.rkpd2.Rankings;
 import com.zrp200.rkpd2.SPDSettings;
@@ -220,6 +221,16 @@ public class WelcomeScene extends PixelScene {
 						ShatteredPixelDungeon.reportException(e);
 					}
 				}
+				if (Rankings.INSTANCE.latestDaily != null){
+					try {
+						Rankings.INSTANCE.loadGameData(Rankings.INSTANCE.latestDaily);
+						Rankings.INSTANCE.saveGameData(Rankings.INSTANCE.latestDaily);
+					} catch (Exception e) {
+						//if we encounter a fatal per-record error, then clear that record
+						Rankings.INSTANCE.latestDaily = null;
+						ShatteredPixelDungeon.reportException(e);
+					}
+				}
 				Collections.sort(Rankings.INSTANCE.records, Rankings.scoreComparator);
 				Rankings.INSTANCE.save();
 			} catch (Exception e) {
@@ -227,6 +238,7 @@ public class WelcomeScene extends PixelScene {
 				FileUtils.deleteFile( Rankings.RANKINGS_FILE );
 				ShatteredPixelDungeon.reportException(e);
 			}
+			Dungeon.daily = false;
 
 		}
 

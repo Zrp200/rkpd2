@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.levels;
 
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Bones;
+import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.mobs.Goo;
@@ -167,6 +168,8 @@ public class SewerBossLevel extends SewerLevel {
 		if (!locked) {
 
 			super.seal();
+
+			Statistics.qualifiedForBossChallengeBadge = true;
 
 			set( entrance(), Terrain.WATER );
 			GameScene.updateMap( entrance() );

@@ -32,6 +32,7 @@ import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.scenes.ChangesScene;
 import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.watabou.noosa.Image;
@@ -90,9 +91,9 @@ public class ChangeButton extends Component {
 	}
 	
 	protected void onClick() {
-		Image image = Reflection.newInstance(icon.getClass());
-		image.copy(icon);
-		ShatteredPixelDungeon.scene().add(new ChangesWindow(image, title, message));
+        Image image = Reflection.newInstance(icon.getClass());
+        image.copy(icon);
+		ChangesScene.showChangeInfo(image, title, message);
 	}
 
 	@Override
