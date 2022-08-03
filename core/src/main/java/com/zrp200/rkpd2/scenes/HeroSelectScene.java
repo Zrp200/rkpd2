@@ -401,7 +401,7 @@ public class HeroSelectScene extends PixelScene {
 
 			buttons = new ArrayList<>();
 			spacers = new ArrayList<>();
-			if (DeviceCompat.isDebug() || Badges.isUnlocked(Badges.Badge.VICTORY)){
+			if (DeviceCompat.isDebug() || Badges.isUnlocked(Badges.Badge.VICTORY) || Badges.isUnlocked(Badges.Badge.UNLOCK_RAT_KING)){
 				StyledButton seedButton = new StyledButton(Chrome.Type.BLANK, Messages.get(HeroSelectScene.class, "custom_seed"), 6){
 					@Override
 					protected void onClick() {
