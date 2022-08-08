@@ -21,6 +21,8 @@
 
 package com.zrp200.rkpd2.ui;
 
+import static com.zrp200.rkpd2.utils.SafeCast.cast;
+
 import com.zrp200.rkpd2.SPDAction;
 import com.zrp200.rkpd2.scenes.PixelScene;
 import com.watabou.input.GameAction;
@@ -48,14 +50,25 @@ public class ScrollPane extends Component {
 	protected Component content;
 	protected ColorBlock thumb;
 
+	// actually only top and left
+	protected float[] contentOffset = new float[2];
+
 	private float keyScroll = 0;
 
 	public ScrollPane( Component content ) {
 		super();
 
+		{
+			RenderedTextBlock textBlock = cast(content, RenderedTextBlock.class);
+			if (textBlock != null) {
+				contentOffset[1] = 1; // move down 1 tile
+				textBlock.padding = new float[]{2,2}; // extends the width and height specifically.
+				textBlock.layout();
+			}
+		}
+
 		this.content = content;
 		addToBack( content );
-
 		width = content.width();
 		height = content.height();
 
@@ -131,7 +144,7 @@ public class ScrollPane extends Component {
 	@Override
 	protected void layout() {
 
-		content.setPos( 0, 0 );
+		content.setPos(contentOffset[0], contentOffset[1]);
 		controller.x = x;
 		controller.y = y;
 		controller.width = width;

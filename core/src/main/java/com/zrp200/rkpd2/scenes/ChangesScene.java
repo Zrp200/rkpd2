@@ -311,7 +311,6 @@ public class ChangesScene extends PixelScene {
 //					&& changeBody.right() + 5 < Camera.main.width){
 //				changeBody.maxWidth(changeBody.maxWidth()+5);
 			if(sp == null) {
-				remove(changeBody);
 				add(sp = new ScrollPane(changeBody));
 			}
 			//sp.setHeight(rightPanel.height()-25);
