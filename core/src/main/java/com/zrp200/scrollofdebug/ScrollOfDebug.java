@@ -468,7 +468,7 @@ public class ScrollOfDebug extends Scroll {
                 .append("\n\nCommands:");
         for(Command cmd : Command.values()) builder.append("\n\n_-_ ").append(cmd.documentation());
         return builder.append("\n"
-                        + "\nPlease note that some possible inputs may crash the game or cause other unexpected behavior, especially if they weren't intended to be created spontaneously.")
+                + "\nPlease note that some possible inputs may crash the game or cause other unexpected behavior, especially if they weren't intended to be created spontaneously.")
                 .toString();
     }
     @Override public boolean isIdentified() {
@@ -696,7 +696,7 @@ public class ScrollOfDebug extends Scroll {
     }
 
     private static final String CHANGELOG
-            = ""
+        = ""
             +"_1.0.0_:"
             +"\n_-_ Changes to Shattered Pixel Dungeon in v1.3.0 mean scroll of debug no longer directly supports versions before it."
             +"\n_-_ Changed formatting style of commands."
@@ -715,10 +715,10 @@ public class ScrollOfDebug extends Scroll {
             +"\n_-_ Scroll of Debug is now considered unique, and thus will not burn."
             +"\n_-_ Fixed more bugs in class finding for jar version caused by 0.3."
             +"\n_-_ Fixed Hero method arguments not being automatically resolved to the hero."
-            +"\n\n\n_0.3.3_:"
+        +"\n\n\n_0.3.3_:"
             +"\n_-_ Scroll Of Debug now automatically adds itself to the first open quickslot, rather than always quickslot #3."
-            +"\n_0.3.1, 0.3.2_:"
+        +"\n_0.3.1, 0.3.2_:"
             +"\n_-_ Fixed faulty package logic caused by 0.3.0"
-            +"\n_0.3.0_:"
+        +"\n_0.3.0_:"
             +"\n_-_ Scroll of Debug now works on Android";
 }
