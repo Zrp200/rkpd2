@@ -34,13 +34,9 @@ import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.enchantments.Explosive;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.ChangesScene;
-import com.zrp200.rkpd2.scenes.WelcomeScene;
-import com.zrp200.rkpd2.sprites.ElementalSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.sprites.KingSprite;
-import com.zrp200.rkpd2.ui.BuffIcon;
-import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.ui.Icons;
 
 import java.util.ArrayList;
@@ -137,14 +133,14 @@ public class RKPD2Changes {
 
     final ChangeInfo[][] changes = {
         { // v0.4
-            new ChangeInfo("v1.0.0-BETA",true,TITLE_COLOR,
-                    info(Messages.get(WelcomeScene.class, "update_msg")),
+            new ChangeInfo("v1.0.0",true,TITLE_COLOR,
+                    info(Messages.get(this, "100")),
                     new ChangeButton(new ItemSprite(ItemSpriteSheet.SHORTSWORD, new ItemSprite.Glowing(0x000000)), "New Curse!", "In addition to the new curses added in Shattered v1.3, I've added an RKPD2-exclusive curse:\n\n_Chaotic_ weapons will usually roll a random weapon curse on hit, but every once in a while it'll roll a wand curse!"),
                     new ChangeButton(new ItemSprite(CLEANSING_DART), "Vetoed Sleep Dart Removal",
                             "In Shattered v1.2, Evan came up with the brilliant idea of nerfing _sleep darts_ into the ground. To avoid suspicion, he also made _dreamfoil_ unable to inflict magical sleep, so as to appear to be fair."
                                     + "\n\nIn Shattered v1.3, it became clear that this was a horrible mistake---dreamfoil not being able to inflict sleep proved incredibly confusing to players, and the 'nerfed' sleep darts---now cleansing darts---were almost completely useless.\n\nHowever, Evan was unwilling to go back, and instead retconned Dreamfoil, renaming it to Mageroyal without changing its description at all. He also buffed what were now cleansing darts to have certain 'sleep dart-like' properties, while keeping them almost completely useless for what we really wanted to use them for.\n\nFEAR NOT, HOWEVER!\n\nNot only does dreamfoil still inflict magical sleep in this game blessed by the King himself, RAT KING in his infinite wisdom has decided to enhance the sleep dart into Dream™ darts!"),
                     new ChangeButton(Icons.get(TALENT), "Talent and Armor Ability Changes",
-                            "Several talents that were previously exempt from being chosen by the scroll of metamorphosis now have alternative effects that let them be used by any hero:"+list("Iron Will", "Light Cloak", "Noble Cause", "Restored Willpower", "Energizing Upgrade","Mystical Upgrade","Restoration","Seer Shot","Light Cloak")
+                            "Several talents that were previously exempt from being chosen by the scroll of metamorphosis now have alternative effects that let them be used by any hero:"+list("Light Cloak", "Noble Cause", "Restored Willpower", "Energizing Upgrade","Mystical Upgrade","Restoration","Seer Shot","Light Cloak")
                                     +"\nBuffs from Shattered v1.2:"+list("_Energizing Upgrade_/_Restoration_ charge boost up to 4/6, from 3/5", "_Power Within_ wand preserve chance at +1 reduced to 50%, but now grants 1 arcane resin if it fails to preserve. Max uses increased to 5.", "_Rat Magic_'s empowering scrolls now gives +3 on the next 1/2/3 wand zaps", "_Timeless Running_ light cloak charge rate boosted to 25/50/75%, from 17/33/50%.")
                                     +"\nNerfs from Shattered v1.2:"+list("_Restoration_ Shield Battery nerfed to 4%/6%", "_Shield Battery_ nerfed to 6/9%", "_Inevitability_ Enraged Catalyst proc boost now 15/30/45%, standard enraged catalyst unchanged.", "_Inevitability_ max rage boost now +10%/+20%/+30%") + list("_Wand Preservation_ chance to preserve at +1 reverted to 67% from 50%, still grants 1 arcane resin if it fails to preserve")),
                     new ChangeButton(new ItemSprite(CROWN), "Armor Abilities",
@@ -159,11 +155,12 @@ public class RKPD2Changes {
                                     +list("Energy cost up to 70 from 60", "Range up to 10 from 6", "_Rat Blast_ boost per point up to 25% from 20%", "_Rat Blast_ shielding per point up to 2.5, from 2, and max targets now increases by 1 per point.")
                                     +list("_Ratforcements_ stat-scaling adjusted to take into account ascension challenge")
                     ),
-                    misc(list(
-                            "Ability to run challenges before winning temporarily disabled.")
+                    misc(list("Ability to run challenges is now tied to unlocking rat king.")
                             + "\n\nFrom Shattered v1.3:"
                             // buff and spell icons
                             +list("All buffs now have a unique image, even if it is just a recolor.", "A few new overhead spell icons have been added as well")
+                            +list("Characters with guarenteed dodges (e.g.) spirit hawk) can now evade Yog's laser")
+                            +list("Minor visual improvements to the amulet scene")
                             // misc
                             +list("Updated various code dependencies", "Made major internal changes in prep for quest improvements in v1.4", "Added a slight delay to chasm jump confirmation window, to prevent mistaps", "Progress is now shown for badges that need to be unlocked with multiple heroes", " Multiple unlocked badges can now be shown at once", "Various minor tweaks to item and level generation to support seeded runs", "Keys now appear on top of other items in pit rooms", "Large floors now spawn two torches with the 'into darkness' challenge enabled", "Blazing champions no longer explode if they are killed by chasms", "Red sentries no longer fire on players with lost inventories")
                             + "\n\nFrom v1.2:"
@@ -176,20 +173,9 @@ public class RKPD2Changes {
                             //v1.2
                             +list("Very rare cases where dried rose is unusable", "Corruption affecting smoke bomb decoy", "Character mind vision persisting after a character dies", "Dwarf King not being targeted by wands or thrown weapons while on his throne", "Floor 5 entrance rooms sometimes being smaller than intended", "Exploits involving Corruption and Ratmogrify", "Rare cases where lullaby scrolls were generated by the Unstable Spellbook", "Red flash effects stacking on each other in some cases", "Game forgetting previous window size when maximized and minimized", "Various rare cases of save corruption on Android", "Various minor textual and visual errors", "Unidentified wands being usable in alchemy", "Various rare cases where the hero could perform two actions at once", "Pharmacophobia challenge incorrectly blocking some alchemy recipes", "Various rare cases where giant enemies could enter enclosed spaces", "Rare cases where the freerunner could gain momentum while freerunning", "On-hit effects still triggering when the great crab blocks", "Various bugs with the potion of dragon's breath", "Assassinate killing enemies right after they were corrupted by a corrupting weapon", "Layout issues with the loot indicator", "Artifact recharging not charging the horn of plenty in some cases when it should", "Some items rarely not being consumed when they should be", "Fog of War not properly updating when warp beacon is used")
                             //v1.3
-                            +list("Various minor textual and visual bugs", "Final boss's summons being slightly weaker than intended when badder bosses is enabled", "Great crab not blocking right after loading a save", "Exploits that could force DM-300 to dig outside of its arena", "Various 'cause of death' badges not being awarded if death occurred with an ankh.", "Wraiths from spectral necromancers not always dying when the necromancer dies", "The mystical charge talent giving more charge than intended", "Ring of might HP bonus not applying in specific cases", "Stones of blink disappearing if they fail to teleport", "Beacon of returning not working at all in boss arenas", "Earthen guardian not being immune to poison, gas, and bleed", "Transmogrified enemies awarding exp when the effect ends")
+                            +list("Various minor textual and visual bugs", "Final boss's summons being slightly weaker than intended when badder bosses is enabled", "Great crab not blocking right after loading a save", "Exploits that could force DM-300 to dig outside of its arena", "Various 'cause of death' badges not being awarded if death occurred with an ankh.", "Wraiths from spectral necromancers not always dying when the necromancer dies", "The mystical charge talent giving more charge than intended", "Ring of might HP bonus not applying in specific cases", "Stones of blink disappearing if they fail to teleport", "Beacon of returning not working at all in boss arenas", "Earthen guardian not being immune to poison, gas, and bleed", "Transmogrified enemies awarding exp when the effect ends", "Gateway traps being able to teleport containers")
                     )
             ),
-            new ChangeInfo("BETA-3",false,TITLE_COLOR,
-                    new ChangeButton(Icons.get(DISPLAY_LAND), "UI Adjustments", "Implemented from Shattered 1.3.2:"+list("Boss health bars have been expanded to show current health and active buffs/debuffs", "Changes scene expanded on large enough displays.")),
-                    misc(list(2,"Ability to run challenges is now tied to unlocking rat king, rather than winning the game")+list(2,"Characters with guarenteed dodges (e.g.) spirit hawk) can now evade Yog's laser","Dates and countdowns for daily runs now only use numbers", "Rankings scene now automatically opens daily run window if you just ended a daily", "minor visual improvements to the amulet scene")),
-                    bugFixes("Fixed:"
-                            + list(2,"Dreamfruit incorrectly being called Magefruit -- we're not eating the mage.","Dream darts having question marks instead of tms -- I've temporarily removed the ™ from its description until the cause can be identified.")
-                            + "\nImplemented bugfixes to v1.3 code:"+list("Bug where colors of potions, glyphs, and gems on rings could vary between runs with the same seed", "Bug where number of enemies could affect item generation on the next floor", "Various rare hang and crash bugs", "Game unintentionally requesting AD ID permissions on Google Play", "Various cases of incorrect or missing controller button prompts", /*"Enraged brutes not being killed by cleansing darts",*/ "Minor visual bugs in one specific floor 5 layout type", "Lit bombs being preserved with other items when defeating Tengu", "Some badges not being properly saved to a run during ascension", "Sheep spawned by woolly bomb not being dismissable in some cases", "Various rare cases where boss challenge badges wouldn't unlock")
-                                +"SHPD fixes prior to v1.3:"+list("Gateway traps being able to teleport containers"))
-            ),
-            new ChangeInfo("BETA-2",false,TITLE_COLOR,
-                    misc("Iron Will can no longer be metamorphed."),
-                    bugFixes(list("Dreamfoil incorrectly missing its namesake description.", "dream™ darts missing the ™.")+list("Erratic behavior with Nature's Bounty", "Royal Privilege not providing berries.", "Restored Willpower not working", "Noble Cause not providing backup barrier or shielding."))),
             new ChangeInfo("From SHPD v1.2,v1.3", false, SHPX_COLOR,
                     new ChangeButton(Icons.get(Icons.SEED), "Seeded Runs!",
                             "_It's now possible to enter a custom seed when starting a new game!_\n\n" +
@@ -208,6 +194,7 @@ public class RKPD2Changes {
                                     + "Enemies will get much stronger as you ascend, and it's impossible to teleport back up or flee and avoid all combat. Expect to have to work a little bit more for an ascension win!"),
                     new ChangeButton(Icons.get(DISPLAY_LAND), "UI/UX improvements", ""
                             +list("new main UI for larger displays", "Full controller support, better keyboard controls, better mouse support", "Two additional quickslots")
+                            +list("Boss health bars have been expanded to show current health and active buffs/debuffs", "Changes scene expanded on large enough displays.")
                             +list("Boss music implemented", "Badge changes implemented from Shattered")
                             +"\n"
                             +list("The settings menu has been adjusted with a few new and rearranged options.","Added radial menus for controller users, and redid default controller bindings.","Keyboard and controller key bindings now have separate windows", "Added a few new key/button bindings actions")),
@@ -247,11 +234,7 @@ public class RKPD2Changes {
             )
         },
         { // v0.3
-            new ChangeInfo("v0.3.0",true,TITLE_COLOR,""),
-            new ChangeInfo("",false,""), // placeholder
-            new ChangeInfo("v0.3.1", false, TITLE_COLOR, "",
-                    misc("By misc, these are really small changes.\n" + list("Omniability's Warp Beacon destroys itself after warping once to let it get rerolled more often.", "Slightly changed the frequency of Wrath and Ratmogrify in Omniability","Added some comments to more metamorphed talents.")),
-                    bugFixes(list( "Lethal Momentum not working.") + list("crash when attempting to target a character with sniper's mark when no possible valid targets are present") + list("Heroic Energy sometimes applying to Wrath under OmniAbility", "OmniAbility now shows actual charge use in descriptions, as opposed to default charge use.", "Omniability icon sometimes covering level icon in quickslot") + list("Fixed a few minor genderizing textual fails created by metamorphing talents. Huntress is she/her/hers, it's 2022, we should realize the value of pronouns by now."))),
+            new ChangeInfo("v0.3",true, TITLE_COLOR),
             NewContent(
                 info(Messages.get(this, "030")), // trying something different with this.
                 new ChangeButton(new ItemSprite(ARMOR_RAT_KING), "New Rat King Armor Ability!", "_Omni-Ability_ is an armor ability generator. Every time you use it, it will generate a new armor ability for you to use out of the existing ones. It's currently a tad unwieldy (especially with abilities that summon things) and more than a little bit confusing, but it should finally give Rat King what many have been waiting for: access to every armor ability without exception in one slot!")
@@ -269,7 +252,7 @@ public class RKPD2Changes {
                         + list("Nature Power not giving its distinctive vfx","Death mark doing +67% damage instead of +33%")
                         + list("Rare cases where looking at class descriptions crashes the game.")
                         + list("Crash when selecting an empty tile with a free-targeted sniper's mark.","Rare cases where free-target would become unusable until the game is reloaded.")
-                        + list("Smart targeting not prompting when no targets are around.")
+                        + list("Smart targeting not prompting when no targets are around.", "crash when attempting to target a character with sniper's mark when no possible valid targets are present")
                         + list("Dwarf King having an incorrect amount of health for phase 3 in Badder Bosses.", "Dwarf King not saying lines in Badder Bosses when partially skipped.", "Dwarf King sometimes saying lines out of order.")
                         // TODO
                         + list(Messages.NO_TEXT_FOUND + " when looking at Elemental Blast description of firebolt", Messages.NO_TEXT_FOUND + " when targeting yourself with shadowstepping Wrath.")
