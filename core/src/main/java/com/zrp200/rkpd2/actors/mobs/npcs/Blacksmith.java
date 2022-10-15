@@ -81,6 +81,9 @@ public class Blacksmith extends NPC {
 			return true;
 		}
 
+		// you complete the quest by talking to him.
+		Statistics.questScores[2] = 3000;
+
 		if (!Quest.given) {
 			Game.runOnRenderThread( () -> {
 				/*GameScene.show( new WndQuest( Blacksmith.this,
