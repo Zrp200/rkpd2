@@ -467,8 +467,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
 		int cell = QuickSlotButton.autoAim(ch, arrow);
 
-		int points = hero.pointsInTalent(Talent.SHARED_UPGRADES, Talent.RK_SNIPER);
-		if(hero.canHaveTalent(Talent.SHARED_UPGRADES)) points++; // free +1.
+		int points = hero.shiftedPoints(Talent.SHARED_UPGRADES, Talent.RK_SNIPER);
 		arrow.sniperSpecialBonusDamage = level*points/10f;
 
 		Buff.detach(hero, Preparation.class); // nope!
