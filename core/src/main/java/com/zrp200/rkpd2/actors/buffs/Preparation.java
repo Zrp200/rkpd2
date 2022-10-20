@@ -249,10 +249,6 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 		bundle.put(TURNS, turnsInvis);
 	}
 
-	@Override
-	public String actionName() {
-		return Messages.get(this, "action_name");
-	}
 
 	@Override
 	public Image actionIcon() {

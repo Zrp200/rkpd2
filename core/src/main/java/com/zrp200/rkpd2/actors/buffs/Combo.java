@@ -184,10 +184,6 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		if (getHighestMove() != null) ActionIndicator.setAction(this);
 	}
 
-	@Override
-	public String actionName() {
-		return Messages.get(this, "action_name");
-	}
 
 	@Override
 	public Image actionIcon() {

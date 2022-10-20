@@ -207,10 +207,6 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 		movedLastTurn = false;
 	}
 
-	@Override
-	public String actionName() {
-		return Messages.get(this, "action_name");
-	}
 
 	@Override
 	public Image actionIcon() {

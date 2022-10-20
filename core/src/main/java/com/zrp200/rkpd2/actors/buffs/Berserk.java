@@ -293,11 +293,6 @@ public class Berserk extends Buff implements ActionIndicator.Action {
 	}
 
 	@Override
-	public String actionName() {
-		return Messages.get(this, "action_name");
-	}
-
-	@Override
 	public Image actionIcon() {
 		//TODO, should look into these in general honestly
 		return new BuffIcon(BuffIndicator.FURY, true);
