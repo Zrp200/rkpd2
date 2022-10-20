@@ -84,11 +84,24 @@ public class WandOfFirebolt extends DamageWand {
             int level = Math.max(0, weapon.buffedLvl());
             float procChance = procChance(attacker, level, 1, 3);
             if (Random.Float() < procChance) {
-                // TODO do I need to implement arcana effects for this?
-                if (Random.Float(2) == 0) {
+                float effectBoost = procChance - 1;
+                float igniteChance = .5f;
+                if(effectBoost > 0) {
+                    // put half of the bonus into ignite chance.
+                    igniteChance += effectBoost /= 2;
+                    if(igniteChance > 1) {
+                        effectBoost += igniteChance - 1;
+                        igniteChance = 1;
+                    }
+                }
+                if (Random.Float() < igniteChance) {
                     Buff.affect(defender, Burning.class).reignite(defender);
                 }
-                if (!defender.isImmune(getClass())) defender.damage(Random.Int(1, level + 2), this);
+                if (!defender.isImmune(WandOfFirebolt.this.getClass())) {
+                    int bonusDamage = Random.Int(1, level + 2);
+                    if(effectBoost > 0) bonusDamage = Random.round(bonusDamage * effectBoost);
+                    defender.damage(bonusDamage, WandOfFirebolt.this);
+                }
 
                 defender.sprite.emitter().burst(FlameParticle.FACTORY, level + 1);
             }
