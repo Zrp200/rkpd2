@@ -27,6 +27,7 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Cripple;
 import com.zrp200.rkpd2.effects.Chains;
+import com.zrp200.rkpd2.effects.Effects;
 import com.zrp200.rkpd2.effects.Pushing;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Item;
@@ -95,7 +96,10 @@ public class Guard extends Mob {
 					yell(Messages.get(this, "scorpion"));
 					new Item().throwSound();
 					Sample.INSTANCE.play(Assets.Sounds.CHAINS);
-					sprite.parent.add(new Chains(sprite.center(), enemy.sprite.destinationCenter(), new Callback() {
+					sprite.parent.add(new Chains(sprite.center(),
+							enemy.sprite.destinationCenter(),
+							Effects.Type.CHAIN,
+							new Callback() {
 						public void call() {
 							Actor.addDelayed(new Pushing(enemy, enemy.pos, newPosFinal, new Callback() {
 								public void call() {

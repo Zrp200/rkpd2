@@ -32,6 +32,7 @@ import com.zrp200.rkpd2.actors.buffs.Amok;
 import com.zrp200.rkpd2.actors.buffs.Charm;
 import com.zrp200.rkpd2.actors.buffs.Dread;
 import com.zrp200.rkpd2.actors.buffs.Frost;
+import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.buffs.Light;
 import com.zrp200.rkpd2.actors.buffs.LockedFloor;
 import com.zrp200.rkpd2.actors.buffs.Paralysis;
@@ -220,6 +221,7 @@ public class YogDzewa extends Mob {
 				if (terrainAffected) {
 					Dungeon.observe();
 				}
+				Invisibility.dispel(this);
 				for (Char ch : affected) {
 
 					if (hit( this, ch, true )) {

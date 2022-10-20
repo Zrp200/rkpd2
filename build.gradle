@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.2'
+        classpath 'com.android.tools.build:gradle:7.3.0'
     }
 }
 
@@ -15,8 +15,9 @@ allprojects {
         appName = 'RKPD2'
         appPackageName = 'com.zrp200.rkpd2'
 
-        appVersionCode = 653
-        appVersionName = '1.0.0'
+        // todo update
+        appVersionCode = 662
+        appVersionName = '1.0.0-SHATTERED-1.4.1-IMPL'
 
         appJavaCompatibility = JavaVersion.VERSION_1_8
 
@@ -25,7 +26,7 @@ allprojects {
         appAndroidTargetSDK = 31
 
         gdxVersion = '1.11.0'
-        gdxControllersVersion = '2.2.2'
+        gdxControllersVersion = '2.2.3-SNAPSHOT'
         robovmVersion = '2.3.16'
     }
     version = appVersionName

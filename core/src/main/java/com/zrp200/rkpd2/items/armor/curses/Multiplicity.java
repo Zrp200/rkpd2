@@ -32,6 +32,7 @@ import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.Statue;
 import com.zrp200.rkpd2.actors.mobs.Thief;
 import com.zrp200.rkpd2.actors.mobs.npcs.MirrorImage;
+import com.zrp200.rkpd2.actors.mobs.npcs.NPC;
 import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
 import com.zrp200.rkpd2.scenes.GameScene;
@@ -50,7 +51,8 @@ public class Multiplicity extends Armor.Glyph {
 	@Override
 	public int proc(Armor armor, Char attacker, Char defender, int damage) {
 
-		if (Random.Int(20) == 0){
+		float procChance = 1/20f * procChanceMultiplier(defender);
+		if ( Random.Float() < procChance ) {
 			ArrayList<Integer> spawnPoints = new ArrayList<>();
 
 			for (int i = 0; i < PathFinder.NEIGHBOURS8.length; i++) {
@@ -71,7 +73,7 @@ public class Multiplicity extends Armor.Glyph {
 					//FIXME should probably have a mob property for this
 					if (!(attacker instanceof Mob)
 							|| attacker.properties().contains(Char.Property.BOSS) || attacker.properties().contains(Char.Property.MINIBOSS)
-							|| attacker instanceof Mimic || attacker instanceof Statue){
+							|| attacker instanceof Mimic || attacker instanceof Statue || attacker instanceof NPC){
 						m = Dungeon.level.createMob();
 					} else {
 						Actor.fixTime();

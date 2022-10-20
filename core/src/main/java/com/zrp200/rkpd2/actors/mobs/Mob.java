@@ -29,6 +29,7 @@ import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.*;
+import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.mobs.npcs.DirectableAlly;
@@ -94,7 +95,7 @@ public abstract class Mob extends Char {
 	public int defenseSkill = 0;
 	
 	public int EXP = 1;
-	public int maxLvl = Hero.MAX_LEVEL;
+	public int maxLvl = Hero.MAX_LEVEL-1;
 
 	protected Char enemy;
 	protected int enemyID = -1; //used for save/restore
@@ -337,12 +338,16 @@ public abstract class Mob extends Char {
 			if (enemies.isEmpty()){
 				return null;
 			} else {
-				//go after the closest potential enemy, preferring the hero if two are equidistant
+				//go after the closest potential enemy, preferring enemies that can be attacked, and the hero if two are equidistant
 				Char closest = null;
 				for (Char curr : enemies){
-					if (closest == null
-							|| Dungeon.level.distance(pos, curr.pos) < Dungeon.level.distance(pos, closest.pos)
-							|| Dungeon.level.distance(pos, curr.pos) == Dungeon.level.distance(pos, closest.pos) && curr == Dungeon.hero){
+					if (closest == null){
+						closest = curr;
+					} else if (canAttack(closest) && !canAttack(curr)){
+						continue;
+					} else if ((canAttack(curr) && !canAttack(closest))
+							|| (Dungeon.level.distance(pos, curr.pos) < Dungeon.level.distance(pos, closest.pos))
+							|| (Dungeon.level.distance(pos, curr.pos) == Dungeon.level.distance(pos, closest.pos) && curr == Dungeon.hero)){
 						closest = curr;
 					}
 				}
@@ -552,6 +557,7 @@ public abstract class Mob extends Char {
 			
 		} else {
 			attack( enemy );
+			Invisibility.dispel(this);
 			spend( attackDelay() );
 			return true;
 		}
@@ -560,6 +566,7 @@ public abstract class Mob extends Char {
 	@Override
 	public void onAttackComplete() {
 		attack( enemy );
+		Invisibility.dispel(this);
 		spend( attackDelay() );
 		super.onAttackComplete();
 	}
@@ -612,7 +619,7 @@ public abstract class Mob extends Char {
 		SoulMark soulMark = buff(SoulMark.class);
 		if(soulMark != null) soulMark.proc(enemy,this,damage);
 
-		return damage;
+		return super.defenseProc(enemy, damage);
 	}
 
 	@Override
@@ -726,9 +733,22 @@ public abstract class Mob extends Char {
 	public float lootChance(){
 		float lootChance = this.lootChance;
 
-		lootChance *= RingOfWealth.dropChanceMultiplier( Dungeon.hero );
+		float dropBonus = RingOfWealth.dropChanceMultiplier( Dungeon.hero );
 
-		return lootChance;
+		Talent.BountyHunterTracker bhTracker = Dungeon.hero.buff(Talent.BountyHunterTracker.class);
+		if (bhTracker != null){
+			Preparation prep = Dungeon.hero.buff(Preparation.class);
+			if (prep != null){
+				// 2/4/8/16% per prep level, multiplied by talent points;
+				float bhBonus = 0.02f * (float)Math.pow(2, prep.attackLevel()-1);
+				bhBonus *= Dungeon.hero.byTalent(
+						Talent.BOUNTY_HUNTER, 2,
+						Talent.RK_ASSASSIN, 1);
+				dropBonus += bhBonus;
+			}
+		}
+
+		return lootChance * dropBonus;
 	}
 
 	public void rollToDropLoot(){
@@ -758,7 +778,7 @@ public abstract class Mob extends Char {
 		
 		//lucky enchant logic
 		if (buff(Lucky.LuckProc.class) != null){
-			Dungeon.level.drop(Lucky.genLoot(), pos).sprite.drop();
+			Dungeon.level.drop(buff(Lucky.LuckProc.class).genLoot(), pos).sprite.drop();
 			Lucky.showFlare(sprite);
 		}
 
@@ -768,16 +788,6 @@ public abstract class Mob extends Char {
 						.15f*Dungeon.hero.pointsInTalent(Talent.SOUL_EATER),
 						.10f*Dungeon.hero.pointsInTalent(Talent.RK_WARLOCK))){
 			Talent.onFoodEaten(Dungeon.hero, 0, null);
-		}
-
-		//bounty hunter talent
-		if (Dungeon.hero.buff(Talent.BountyHunterTracker.class) != null) {
-			Preparation prep = Dungeon.hero.buff(Preparation.class);
-			if (prep != null && Random.Float() < 0.25f * prep.attackLevel()) {
-				int value = 15 * Dungeon.hero.pointsInTalent(Talent.BOUNTY_HUNTER, Talent.RK_ASSASSIN);
-				if(Dungeon.hero.hasTalent(Talent.BOUNTY_HUNTER)) value *= 3; // 45 / 90 / 135
-				Dungeon.level.drop(new Gold(value), pos).sprite.drop();
-			}
 		}
 
 	}
@@ -831,7 +841,7 @@ public abstract class Mob extends Char {
 		String desc = description();
 
 		for (Buff b : buffs(ChampionEnemy.class)){
-			desc += "\n\n_" + Messages.titleCase(b.toString()) + "_\n" + b.desc();
+			desc += "\n\n_" + Messages.titleCase(b.name()) + "_\n" + b.desc();
 		}
 
 		return desc;

@@ -22,15 +22,16 @@
 package com.zrp200.rkpd2.items.weapon.enchantments;
 
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.Barrier;
 import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
+import com.zrp200.rkpd2.actors.buffs.ShieldBuff;
+import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.watabou.noosa.Image;
-import com.watabou.utils.Bundle;
-import com.watabou.utils.Random;
 
 public class Blocking extends Weapon.Enchantment {
 	
@@ -40,8 +41,15 @@ public class Blocking extends Weapon.Enchantment {
 	public int proc(Weapon weapon, Char attacker, Char defender, int damage) {
 		
 		int level = Math.max( 0, weapon.buffedLvl() );
-		
-		Buff.prolong(attacker, BlockBuff.class, 2 + level/2).setBlocking(level + 1);
+
+		// lvl 0 - 10%
+		// lvl 1 ~ 14%
+		// lvl 2 ~ 18%
+		if (proc(attacker, level, 2f, 20f)){
+			BlockBuff b = Buff.affect(attacker, BlockBuff.class);
+			b.setShield(attacker.HT/10);
+			attacker.sprite.emitter().burst(Speck.factory(Speck.LIGHT), 5);
+		}
 		
 		return damage;
 	}
@@ -51,22 +59,33 @@ public class Blocking extends Weapon.Enchantment {
 		return BLUE;
 	}
 	
-	public static class BlockBuff extends FlavourBuff {
+	public static class BlockBuff extends ShieldBuff {
 
 		{
 			type = buffType.POSITIVE;
 		}
-		
-		private int blocking = 0;
-		
-		public void setBlocking( int blocking ){
-			this.blocking = blocking;
+
+		@Override
+		public boolean act() {
+			detach();
+			return true;
 		}
-		
-		public int blockingRoll(){
-			return Random.NormalIntRange(0, blocking);
+
+		@Override
+		public void setShield(int shield, boolean force) {
+			super.setShield(shield, force);
+			postpone(5f);
 		}
-		
+
+		@Override
+		public void fx(boolean on) {
+			if (on) {
+				target.sprite.add(CharSprite.State.SHIELDED);
+			} else if (target.buff(Barrier.class) == null) {
+				target.sprite.remove(CharSprite.State.SHIELDED);
+			}
+		}
+
 		@Override
 		public int icon() {
 			return BuffIndicator.ARMOR;
@@ -81,29 +100,15 @@ public class Blocking extends Weapon.Enchantment {
 		public float iconFadePercent() {
 			return Math.max(0, (5f - visualcooldown()) / 5f);
 		}
-		
+
 		@Override
-		public String toString() {
-			return Messages.get(this, "name");
+		public String iconTextDisplay() {
+			return Integer.toString((int)visualcooldown());
 		}
-		
+
 		@Override
 		public String desc() {
-			return Messages.get(this, "desc", blocking, dispTurns());
-		}
-		
-		private static final String BLOCKING = "blocking";
-		
-		@Override
-		public void storeInBundle(Bundle bundle) {
-			super.storeInBundle(bundle);
-			bundle.put(BLOCKING, blocking);
-		}
-		
-		@Override
-		public void restoreFromBundle(Bundle bundle) {
-			super.restoreFromBundle(bundle);
-			blocking = bundle.getInt(BLOCKING);
+			return Messages.get(this, "desc", shielding(), dispTurns(visualcooldown()));
 		}
 	
 	}

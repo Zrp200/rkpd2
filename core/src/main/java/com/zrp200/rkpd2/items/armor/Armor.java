@@ -35,27 +35,9 @@ import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.BrokenSeal;
 import com.zrp200.rkpd2.items.EquipableItem;
 import com.zrp200.rkpd2.items.Item;
-import com.zrp200.rkpd2.items.armor.curses.AntiEntropy;
-import com.zrp200.rkpd2.items.armor.curses.Bulk;
-import com.zrp200.rkpd2.items.armor.curses.Corrosion;
-import com.zrp200.rkpd2.items.armor.curses.Displacement;
-import com.zrp200.rkpd2.items.armor.curses.Metabolism;
-import com.zrp200.rkpd2.items.armor.curses.Multiplicity;
-import com.zrp200.rkpd2.items.armor.curses.Overgrowth;
-import com.zrp200.rkpd2.items.armor.curses.Stench;
-import com.zrp200.rkpd2.items.armor.glyphs.Affection;
-import com.zrp200.rkpd2.items.armor.glyphs.AntiMagic;
-import com.zrp200.rkpd2.items.armor.glyphs.Brimstone;
-import com.zrp200.rkpd2.items.armor.glyphs.Camouflage;
-import com.zrp200.rkpd2.items.armor.glyphs.Entanglement;
-import com.zrp200.rkpd2.items.armor.glyphs.Flow;
-import com.zrp200.rkpd2.items.armor.glyphs.Obfuscation;
-import com.zrp200.rkpd2.items.armor.glyphs.Potential;
-import com.zrp200.rkpd2.items.armor.glyphs.Repulsion;
-import com.zrp200.rkpd2.items.armor.glyphs.Stone;
-import com.zrp200.rkpd2.items.armor.glyphs.Swiftness;
-import com.zrp200.rkpd2.items.armor.glyphs.Thorns;
-import com.zrp200.rkpd2.items.armor.glyphs.Viscosity;
+import com.zrp200.rkpd2.items.armor.curses.*;
+import com.zrp200.rkpd2.items.armor.glyphs.*;
+import com.zrp200.rkpd2.items.rings.RingOfArcana;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfUpgrade;
 import com.zrp200.rkpd2.levels.Terrain;
@@ -106,7 +88,7 @@ public class Armor extends EquipableItem {
 	public boolean curseInfusionBonus = false;
 	public boolean masteryPotionBonus = false;
 
-	private BrokenSeal seal;
+	protected BrokenSeal seal;
 	
 	public int tier;
 	
@@ -204,6 +186,7 @@ public class Armor extends EquipableItem {
 			if (!detaching.collect()){
 				Dungeon.level.drop(detaching, hero.pos);
 			}
+			updateQuickslot();
 		}
 	}
 
@@ -360,15 +343,15 @@ public class Armor extends EquipableItem {
 					break;
 				}
 			}
-			if (!enemyNear) speed *= (1.2f + 0.04f * buffedLvl());
+			if (!enemyNear) speed *= (1.2f + 0.04f * buffedLvl()) * RingOfArcana.enchantPowerMultiplier(owner);
 		} else if (hasGlyph(Flow.class, owner) && Dungeon.level.water[owner.pos]){
-			speed *= (2f + 0.25f*buffedLvl());
+			speed *= (2f + 0.25f*buffedLvl()) * RingOfArcana.enchantPowerMultiplier(owner);
 		}
 		
 		if (hasGlyph(Bulk.class, owner) &&
 				(Dungeon.level.map[owner.pos] == Terrain.DOOR
 						|| Dungeon.level.map[owner.pos] == Terrain.OPEN_DOOR )) {
-			speed /= 3f;
+			speed /= 3f * RingOfArcana.enchantPowerMultiplier(owner);
 		}
 		
 		return speed;
@@ -378,7 +361,7 @@ public class Armor extends EquipableItem {
 	public float stealthFactor( Char owner, float stealth ){
 		
 		if (hasGlyph(Obfuscation.class, owner)){
-			stealth += 1 + buffedLvl()/3f;
+			stealth += (1 + buffedLvl()/3f) * RingOfArcana.enchantPowerMultiplier(owner);
 		}
 		
 		return stealth;
@@ -492,7 +475,7 @@ public class Armor extends EquipableItem {
 		}
 		
 		if (glyph != null  && (cursedKnown || !glyph.curse())) {
-			info += "\n\n" +  Messages.get(Armor.class, "inscribed", glyph.name());
+			info += "\n\n" +  Messages.capitalize(Messages.get(Armor.class, "inscribed", glyph.name()));
 			info += " " + glyph.desc();
 		}
 		
@@ -503,9 +486,13 @@ public class Armor extends EquipableItem {
 		} else if (seal != null) {
 			info += "\n\n" + Messages.get(Armor.class, "seal_attached", seal.maxShield(tier, level()));
 		} else if (!isIdentified() && cursedKnown){
-			info += "\n\n" + Messages.get(Armor.class, "not_cursed");
+			if (glyph != null && glyph.curse()) {
+				info += "\n\n" + Messages.get(Armor.class, "weak_cursed");
+			} else {
+				info += "\n\n" + Messages.get(Armor.class, "not_cursed");
+			}
 		}
-		
+
 		return info;
 	}
 
@@ -656,7 +643,11 @@ public class Armor extends EquipableItem {
 		};
 		
 		public abstract int proc( Armor armor, Char attacker, Char defender, int damage );
-		
+
+		protected float procChanceMultiplier( Char defender ){
+			return RingOfArcana.enchantPowerMultiplier(defender);
+		}
+
 		public String name() {
 			if (!curse())
 				return name( Messages.get(this, "glyph") );

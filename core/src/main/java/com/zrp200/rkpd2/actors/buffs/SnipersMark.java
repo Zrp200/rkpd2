@@ -220,11 +220,6 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		float duration = duration();
 		return duration() == 0 ? 0 : Math.max(0, (duration - visualcooldown()) / duration);
 	}
-	
-	@Override
-	public String toString() {
-		return Messages.get(this, "name");
-	}
 
 	@Override
 	public String desc() {

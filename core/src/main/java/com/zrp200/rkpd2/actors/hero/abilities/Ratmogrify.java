@@ -28,6 +28,7 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Adrenaline;
 import com.zrp200.rkpd2.actors.buffs.AllyBuff;
 import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.ChampionEnemy;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -50,6 +51,8 @@ import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 public class Ratmogrify extends ArmorAbility {
 
@@ -63,6 +66,11 @@ public class Ratmogrify extends ArmorAbility {
 	@Override
 	public String targetingPrompt() {
 		return Messages.get(this, "prompt");
+	}
+
+	@Override
+	public int targetedPos(Char user, int dst) {
+		return dst;
 	}
 
 	@Override
@@ -130,9 +138,20 @@ public class Ratmogrify extends ArmorAbility {
 			rat.setup((Mob)ch);
 			rat.pos = ch.pos;
 
+			//preserve champion enemy buffs
+			HashSet<ChampionEnemy> champBuffs = ch.buffs(ChampionEnemy.class);
+			for (ChampionEnemy champ : champBuffs){
+				ch.remove(champ);
+				ch.sprite.clearAura();
+			}
+
 			Actor.remove( ch );
 			ch.sprite.killAndErase();
 			Dungeon.level.mobs.remove(ch);
+
+			for (ChampionEnemy champ : champBuffs){
+				ch.add(champ);
+			}
 
 			GameScene.add(rat);
 

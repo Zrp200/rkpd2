@@ -23,10 +23,6 @@ package com.zrp200.rkpd2.actors.mobs.npcs;
 
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.buffs.AscensionChallenge;
-import com.zrp200.rkpd2.effects.CellEmitter;
-import com.zrp200.rkpd2.effects.Speck;
-import com.zrp200.rkpd2.effects.particles.ElmoParticle;
-import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ImpSprite;
 
@@ -49,22 +45,7 @@ public class ImpShopkeeper extends Shopkeeper {
 			}
 			seenBefore = true;
 		}
-		
+
 		return super.act();
-	}
-	
-	@Override
-	public void flee() {
-		for (Heap heap: Dungeon.level.heaps.valueList()) {
-			if (heap.type == Heap.Type.FOR_SALE) {
-				CellEmitter.get( heap.pos ).burst( ElmoParticle.FACTORY, 4 );
-				heap.destroy();
-			}
-		}
-		
-		destroy();
-		
-		sprite.emitter().burst( Speck.factory( Speck.WOOL ), 15 );
-		sprite.killAndErase();
 	}
 }

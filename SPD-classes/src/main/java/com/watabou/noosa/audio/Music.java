@@ -128,11 +128,10 @@ public enum Music {
 
 	private com.badlogic.gdx.audio.Music.OnCompletionListener trackLooper = music -> {
 		//we do this in a separate thread to avoid graphics hitching while the music is prepared
-		//FIXME this fixes graphics stutter but there's still some audio stutter, perhaps keep more than 1 player alive?
 		if (!DeviceCompat.isDesktop()) {
 			new Thread(() -> playNextTrack(music)).start();
 		} else {
-			//don't use a separate thread on desktop, causes errors and makes no performance difference(?)
+				//don't use a separate thread on desktop, causes errors and makes no performance difference
 			playNextTrack(music);
 		}
 	};
@@ -194,7 +193,6 @@ public enum Music {
 		}
 	}
 
-	//TODO do we need to dispose every player? Maybe just stop them and keep an LRU cache of 2 or 3?
 	public synchronized void stop() {
 		if (player != null) {
 			player.dispose();

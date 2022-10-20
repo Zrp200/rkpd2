@@ -32,7 +32,9 @@ import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.KindOfWeapon;
+import com.zrp200.rkpd2.items.rings.RingOfArcana;
 import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
+import com.zrp200.rkpd2.items.rings.RingOfArcana;
 import com.zrp200.rkpd2.items.rings.RingOfFuror;
 import com.zrp200.rkpd2.items.wands.WandOfDisintegration;
 import com.zrp200.rkpd2.items.weapon.curses.Annoying;
@@ -175,7 +177,7 @@ abstract public class Weapon extends KindOfWeapon {
 	}
 	
 	@Override
-	public float accuracyFactor( Char owner ) {
+	public float accuracyFactor(Char owner, Char target) {
 		
 		int encumbrance = 0;
 		
@@ -216,7 +218,7 @@ abstract public class Weapon extends KindOfWeapon {
 	@Override
 	public int reachFactor(Char owner) {
 		int reach = RCH;
-		if(hasEnchant(Projecting.class, owner)) reach++;
+		if(hasEnchant(Projecting.class, owner)) reach +=Math.round(RingOfArcana.enchantPowerMultiplier(owner));
 		if(owner instanceof Hero) {
 			Hero hero = (Hero) owner;
 			MagesStaff staff = hero.belongings.getItem(MagesStaff.class);
@@ -385,21 +387,28 @@ abstract public class Weapon extends KindOfWeapon {
 			
 		public abstract int proc( Weapon weapon, Char attacker, Char defender, int damage );
 
-		public static float procChanceMultiplier( Char attacker ){
-			float multi = 1f;
+		public static float procChanceMultiplier( Char attacker, boolean applyArcana ){
+			float multi = 1;
+			if(applyArcana) multi *= RingOfArcana.enchantPowerMultiplier(attacker);
 			Berserk rage = attacker.buff(Berserk.class);
 			if (rage != null) {
-				multi += rage.rageAmount() * ((Hero) attacker).byTalent(
-						Talent.ENRAGED_CATALYST, 1/5f,
-						Talent.RK_BERSERKER, 0.15f);
+				multi = rage.enchantFactor(multi);
+//				multi += rage.rageAmount() * ((Hero) attacker).byTalent(
+//						Talent.ENRAGED_CATALYST, 1/5f,
+//						Talent.RK_BERSERKER, 0.15f);
 			}
+
 			// note I'm specifically preventing it from lowering the chance. I already handled that in Weapon#attackProc.
 			multi += Math.max(0, Talent.SpiritBladesTracker.getProcModifier()-1);
+
 			if (attacker.buff(Talent.StrikingWaveTracker.class) != null
 					&& ((Hero)attacker).pointsInTalent(Talent.STRIKING_WAVE) == 4){
 				multi += 0.2f;
 			}
 			return multi;
+		}
+		protected float procChanceMultiplier( Char attacker) {
+			return procChanceMultiplier(attacker, true);
 		}
 
 		public String name() {
@@ -421,10 +430,13 @@ abstract public class Weapon extends KindOfWeapon {
 			return false;
 		}
 
+		protected float procChance(Char attacker, int level, float numerator, float denominator) {
+			return procChanceMultiplier(attacker) * (numerator+level)/(denominator+level);
+		}
 		// just a faster way to get proc chances resolved while factoring in enchant modifiers.
 		// results in (N+L)/(D+L) * modifier chance of returning true.
-		public static boolean proc(Char attacker, int level, float numerator, float denominator) {
-			return Random.Float() < procChanceMultiplier(attacker) * (numerator+level)/(denominator+level);
+		public boolean proc(Char attacker, int level, float numerator, float denominator) {
+			return Random.Float() < procChance(attacker, level, numerator, denominator);
 		}
 
 		@Override

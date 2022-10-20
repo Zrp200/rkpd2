@@ -21,11 +21,13 @@
 
 package com.zrp200.rkpd2.actors.hero.abilities;
 
+import com.zrp200.rkpd2.actors.Char;
 import static com.zrp200.rkpd2.Dungeon.hero;
 
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
+import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
@@ -62,6 +64,10 @@ public abstract class ArmorAbility implements Bundlable {
 
 	public boolean useTargeting(){
 		return targetingPrompt() != null;
+	}
+
+	public int targetedPos( Char user, int dst ){
+		return new Ballistica( user.pos, dst, Ballistica.PROJECTILE ).collisionPos;
 	}
 
 	private static final double HEROIC_ENERGY_REDUCTION = 0.839;

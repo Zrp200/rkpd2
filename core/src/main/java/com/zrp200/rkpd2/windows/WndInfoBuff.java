@@ -29,7 +29,7 @@ import com.zrp200.rkpd2.ui.RedButton;
 public class WndInfoBuff extends WndTitledMessage {
 
 	public WndInfoBuff(Buff buff){
-		super(new BuffIcon(buff, true), buff.toString(), buff.desc(), WIDTH_MIN);
+		super(new BuffIcon(buff, true), buff.name(), buff.desc(), WIDTH_MIN);
 
 		if(buff instanceof ActionIndicator.Action && ((ActionIndicator.Action)buff).isSelectable()) {
 			addToBottom(new RedButton("Set Active") {

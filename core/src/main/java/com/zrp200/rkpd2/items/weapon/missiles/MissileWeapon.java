@@ -38,6 +38,7 @@ import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
 import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.bags.MagicalHolster;
+import com.zrp200.rkpd2.items.rings.RingOfArcana;
 import com.zrp200.rkpd2.items.rings.RingOfSharpshooting;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.wands.WandOfDisintegration;
@@ -173,7 +174,9 @@ abstract public class MissileWeapon extends Weapon {
 			projecting = staff != null && staff.wand() instanceof WandOfDisintegration;
 		}
 
-		if (projecting && !Dungeon.level.solid[dst] && Dungeon.level.distance(user.pos, dst) <= 4){
+		if (projecting
+				&& !Dungeon.level.solid[dst]
+				&& Dungeon.level.distance(user.pos, dst) <= Math.round(4 * RingOfArcana.enchantPowerMultiplier(user))){
 			return dst;
 		} else {
 			return super.throwPos(user, dst);
@@ -181,12 +184,38 @@ abstract public class MissileWeapon extends Weapon {
 	}
 
 	@Override
-	public float accuracyFactor(Char owner) {
-		float accFactor = super.accuracyFactor(owner);
+	public float accuracyFactor(Char owner, Char target) {
+		float accFactor = super.accuracyFactor(owner, target);
 		if (owner instanceof Hero && owner.buff(Momentum.class) != null && owner.buff(Momentum.class).freerunning()){
 			accFactor *= 1f + 0.2f*((Hero) owner).pointsInTalent(Talent.PROJECTILE_MOMENTUM,Talent.RK_FREERUNNER);
 		}
+
+		accFactor *= adjacentAccFactor(owner, target);
+
 		return accFactor;
+	}
+
+	protected float rangedAccFactor(Char owner) {
+		float factor = .5f;
+		if(owner instanceof Hero) {
+			// +50% / +70% / +90% / +110%
+			factor += 0.2f*((Hero)owner).pointsInTalent(Talent.POINT_BLANK);
+		};
+		return 1 + factor;
+	}
+
+	protected float adjacentAccFactor(Char owner, Char target){
+		if (Dungeon.level.adjacent( owner.pos, target.pos )) {
+			float factor = 0.5f;
+			if (owner instanceof Hero){
+				// -50% / -30% / -10% / +10%
+				int points = ((Hero)owner).pointsInTalent(Talent.POINT_BLANK,Talent.RK_SNIPER);
+				factor += 0.2f*points;
+			}
+			return factor;
+		} else {
+			return rangedAccFactor(owner);
+		}
 	}
 
 	@Override
@@ -247,6 +276,11 @@ abstract public class MissileWeapon extends Weapon {
 			}
 		}
 		return this;
+	}
+
+	public String status() {
+		//show quantity even when it is 1
+		return Integer.toString( quantity );
 	}
 	
 	@Override

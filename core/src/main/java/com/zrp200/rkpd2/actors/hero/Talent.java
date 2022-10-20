@@ -96,7 +96,7 @@ public enum Talent {
 	//Warrior T3
 	HOLD_FAST(9, 3), STRONGMAN(10, 3),
 	//Berserker T3
-	ENDLESS_RAGE(11, 3), BERSERKING_STAMINA(12, 3), ENRAGED_CATALYST(13, 3), ONE_MAN_ARMY(145,3),
+	ENDLESS_RAGE(11, 3), DEATHLESS_FURY(12, 3), ENRAGED_CATALYST(13, 3), ONE_MAN_ARMY(145,3),
 	//Gladiator T3
 	CLEAVE(14, 3), LETHAL_DEFENSE(15, 3), ENHANCED_COMBO(16, 3), SKILL(146,3),
 	//Heroic Leap T4
@@ -534,10 +534,10 @@ public enum Talent {
 					}
 				}
 				break;
-			case BERSERKING_STAMINA: // takes immediate effect
-				Berserk berserk = hero.buff(Berserk.class);
-				if(berserk != null) berserk.recover(Berserk.STAMINA_REDUCTION);
-				break;
+//			case BERSERKING_STAMINA: // takes immediate effect
+//				Berserk berserk = hero.buff(Berserk.class);
+//				if(berserk != null) berserk.recover(Berserk.STAMINA_REDUCTION);
+//				break;
 			case SEER_SHOT:
 				float mod = points == 1 ? 0 : 1f/(points-1);
 				for(RevealedArea buff : hero.buffs(RevealedArea.class)) buff.postpone(buff.cooldown() * mod);
@@ -1009,7 +1009,7 @@ public enum Talent {
 		//tier 3
 		switch (cls){
 			case BERSERKER: default:
-				Collections.addAll(tierTalents, ENDLESS_RAGE, BERSERKING_STAMINA, ENRAGED_CATALYST, ONE_MAN_ARMY);
+				Collections.addAll(tierTalents, ENDLESS_RAGE, DEATHLESS_FURY, ENRAGED_CATALYST, ONE_MAN_ARMY);
 				break;
 			case GLADIATOR:
 				Collections.addAll(tierTalents, CLEAVE, LETHAL_DEFENSE, ENHANCED_COMBO, SKILL);
@@ -1087,7 +1087,6 @@ public enum Talent {
 	}
 
 	public static void restoreTalentsFromBundle( Bundle bundle, Hero hero ){
-		//TODO restore replacements
 		if (bundle.contains("replacements")){
 			Bundle replacements = bundle.getBundle("replacements");
 			for (String key : replacements.getKeys()){

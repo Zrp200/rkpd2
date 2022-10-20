@@ -45,6 +45,7 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.watabou.utils.ColorMath;
 import com.watabou.utils.PathFinder;
+import com.watabou.utils.Random;
 
 public class WandOfCorrosion extends Wand {
 
@@ -91,12 +92,16 @@ public class WandOfCorrosion extends Wand {
 
 	@Override
 	public void onHit(Weapon staff, Char attacker, Char defender, int damage) {
+		int level = Math.max( 0, buffedLvl() );
 		// lvl 0 - 33%
 		// lvl 1 - 50%
 		// lvl 2 - 60%
-		if (Weapon.Enchantment.proc(attacker, buffedLvl(), 1, 3)) {
-			
-			Buff.affect( defender, Ooze.class ).set( Ooze.DURATION );
+		float procChance = (level+1f)/(level+3f) * procChanceMultiplier(attacker);
+		if (Random.Float() < procChance) {
+
+			float powerMulti = Math.max(1f, procChance);
+
+			Buff.affect( defender, Ooze.class ).set( Ooze.DURATION * powerMulti );
 			CellEmitter.center(defender.pos).burst( CorrosionParticle.SPLASH, 5 );
 			
 		}

@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.items.artifacts;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.buffs.MagicImmune;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.effects.particles.ShadowParticle;
 import com.zrp200.rkpd2.items.Item;
@@ -53,7 +54,11 @@ public class ChaliceOfBlood extends Artifact {
 	@Override
 	public ArrayList<String> actions( Hero hero ) {
 		ArrayList<String> actions = super.actions( hero );
-		if (isEquipped( hero ) && level() < levelCap && !cursed && !hero.isInvulnerable(getClass()))
+		if (isEquipped( hero )
+				&& level() < levelCap
+				&& !cursed
+				&& !hero.isInvulnerable(getClass())
+				&& hero.buff(MagicImmune.class) == null)
 			actions.add(AC_PRICK);
 		return actions;
 	}
@@ -148,7 +153,11 @@ public class ChaliceOfBlood extends Artifact {
 	
 	@Override
 	public void charge(Hero target, float amount) {
-		//grants 5 turns of healing up-front
+		if (cursed || target.buff(MagicImmune.class) != null) return;
+
+		//grants 5 turns of healing up-front, if hero isn't starving
+		if (target.isStarving()) return;
+
 		float healDelay = 10f - level()*0.9f;
 		healDelay /= amount;
 		//effectively 1HP at lvl 0-5, 2HP lvl 6-8, 3HP lvl 9, and 5HP lvl 10.

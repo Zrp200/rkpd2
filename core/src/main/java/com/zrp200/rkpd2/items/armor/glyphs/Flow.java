@@ -31,7 +31,12 @@ public class Flow extends Armor.Glyph {
 
 	@Override
 	public int proc(Armor armor, Char attacker, Char defender, int damage) {
-		//no proc effect, see armor.speedfactor for effect.
+		//no proc effect, see:
+		// Hero.isImmune
+		// GhostHero.isImmune
+		// Shadowclone.isImmune
+		// ArmoredStatue.isImmune
+		// PrismaticImage.isImmune
 		return damage;
 	}
 

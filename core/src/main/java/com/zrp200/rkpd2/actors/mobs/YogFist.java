@@ -34,6 +34,7 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Burning;
 import com.zrp200.rkpd2.actors.buffs.Cripple;
 import com.zrp200.rkpd2.actors.buffs.Frost;
+import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.buffs.Light;
 import com.zrp200.rkpd2.actors.buffs.Ooze;
 import com.zrp200.rkpd2.actors.buffs.Roots;
@@ -312,6 +313,7 @@ public abstract class YogFist extends Mob {
 		protected void zap() {
 			spend( 1f );
 
+			Invisibility.dispel(this);
 			if (hit( this, enemy, true )) {
 
 				Buff.affect( enemy, Roots.class, 3f );
@@ -381,7 +383,7 @@ public abstract class YogFist extends Mob {
 				b.announced = false;
 				b.set(dmg*.6f);
 				b.attachTo(this);
-				sprite.showStatus(CharSprite.WARNING, b.toString() + " " + (int)b.level());
+				sprite.showStatus(CharSprite.WARNING, Messages.titleCase(b.name()) + " " + (int)b.level());
 			} else{
 				super.damage(dmg, src);
 			}
@@ -468,6 +470,7 @@ public abstract class YogFist extends Mob {
 		protected void zap() {
 			spend( 1f );
 
+			Invisibility.dispel(this);
 			if (hit( this, enemy, true )) {
 
 				enemy.damage( Random.NormalIntRange(10, 20), new LightBeam() );
@@ -532,6 +535,7 @@ public abstract class YogFist extends Mob {
 		protected void zap() {
 			spend( 1f );
 
+			Invisibility.dispel(this);
 			if (hit( this, enemy, true )) {
 
 				enemy.damage( Random.NormalIntRange(10, 20), new DarkBolt() );

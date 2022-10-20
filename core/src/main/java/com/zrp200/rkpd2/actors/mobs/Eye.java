@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.AscensionChallenge;
+import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.buffs.Light;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.particles.PurpleParticle;
@@ -164,6 +165,7 @@ public class Eye extends Mob {
 
 		boolean terrainAffected = false;
 
+		Invisibility.dispel(this);
 		for (int pos : beam.subPath(1, beam.dist)) {
 
 			if (Dungeon.level.flamable[pos]) {

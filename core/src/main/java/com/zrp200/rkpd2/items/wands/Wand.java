@@ -128,6 +128,19 @@ public abstract class Wand extends Item {
 
 	public abstract void onHit(Weapon staff, Char attacker, Char defender, int damage);
 
+	//not affected by arcana
+	public static float procChanceMultiplier( Char attacker ){
+		float multi = Weapon.Enchantment.procChanceMultiplier(attacker, false);
+		if (attacker.buff(Talent.EmpoweredStrikeTracker.class) != null) {
+			// todo fix so that empowered strike is correctly handled.
+			multi *= 1f + ((Hero)attacker).byTalent(
+					Talent.EMPOWERED_STRIKE, 1/2f,
+					Talent.RK_BATTLEMAGE, 1/3f
+			);
+		}
+		return multi;
+	}
+
 	public boolean tryToZap( Hero owner, int target ){
 
 		if (owner.buff(MagicImmune.class) != null){
@@ -421,6 +434,13 @@ public abstract class Wand extends Item {
 			}
 		}
 
+		//inside staff
+		if (charger != null && charger.target == Dungeon.hero && !Dungeon.hero.belongings.contains(this)){
+			if (Dungeon.hero.hasTalent(Talent.EXCESS_CHARGE) && curCharges >= maxCharges){
+				Buff.affect(Dungeon.hero, Barrier.class).setShield(Math.round(buffedLvl()*0.67f*Dungeon.hero.pointsInTalent(Talent.EXCESS_CHARGE)));
+			}
+		}
+
 		curCharges -= cursed ? 1 : chargesPerCast();
 
 		//remove magic charge at a higher priority, if we are benefiting from it are and not the
@@ -570,7 +590,8 @@ public abstract class Wand extends Item {
 	}
 
 	public int collisionProperties(int target){
-		return collisionProperties;
+		if (cursed)     return Ballistica.MAGIC_BOLT;
+		else            return collisionProperties;
 	}
 
 	public static class PlaceHolder extends Wand {

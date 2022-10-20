@@ -39,14 +39,15 @@ public class Overgrowth extends Armor.Glyph {
 	
 	@Override
 	public int proc(Armor armor, Char attacker, Char defender, int damage) {
-		
-		if ( Random.Int( 20 ) == 0) {
-			
+
+		float procChance = 1/20f * procChanceMultiplier(defender);
+		if ( Random.Float() < procChance ) {
+
 			Plant.Seed s;
 			do{
 				s = (Plant.Seed) Generator.randomUsingDefaults(Generator.Category.SEED);
 			} while (s instanceof Starflower.Seed);
-			
+
 			Plant p = s.couch(defender.pos, null);
 			
 			//momentarily revoke warden benefits, otherwise this curse would be incredibly powerful

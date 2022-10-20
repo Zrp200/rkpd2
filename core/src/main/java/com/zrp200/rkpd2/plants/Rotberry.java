@@ -23,12 +23,15 @@ package com.zrp200.rkpd2.plants;
 
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.blobs.Blob;
+import com.zrp200.rkpd2.actors.blobs.ToxicGas;
 import com.zrp200.rkpd2.actors.buffs.AdrenalineSurge;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.particles.LeafParticle;
+import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
 public class Rotberry extends Plant {
@@ -42,9 +45,9 @@ public class Rotberry extends Plant {
 	public void activate( Char ch ) {
 		if (ch instanceof Hero && (((Hero)ch).subClass == HeroSubClass.WARDEN || ((Hero)ch).subClass == HeroSubClass.KING)){
 			Buff.affect(ch, AdrenalineSurge.class).reset(1, AdrenalineSurge.DURATION);
+		} else {
+			GameScene.add( Blob.seed( pos, 100, ToxicGas.class ) );
 		}
-		
-		Dungeon.level.drop( new Seed(), pos ).sprite.drop();
 	}
 
 	@Override
@@ -54,8 +57,9 @@ public class Rotberry extends Plant {
 		if (Dungeon.level.heroFOV[pos]) {
 			CellEmitter.get( pos ).burst( LeafParticle.GENERAL, 6 );
 		}
-		
-		//no warden benefit
+
+		//seed always drops, no lotus benefit
+		Dungeon.level.drop( new Seed(), pos ).sprite.drop();
 	}
 
 	@Override

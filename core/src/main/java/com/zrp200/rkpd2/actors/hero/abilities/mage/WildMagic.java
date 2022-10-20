@@ -25,6 +25,7 @@ import static com.zrp200.rkpd2.actors.hero.abilities.rat_king.OmniAbility.markAb
 
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
+import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
@@ -139,6 +140,8 @@ public class WildMagic extends ArmorAbility {
 		}
 	};
 
+	Actor wildMagicActor = null;
+
 	private void zapWand( ArrayList<Wand> wands, Hero hero, int cell){
 		Wand cur = wands.remove(0);
 
@@ -192,8 +195,27 @@ public class WildMagic extends ArmorAbility {
 			cur.partialCharge++;
 			cur.curCharges--;
 		}
+		if (wildMagicActor != null){
+			wildMagicActor.next();
+			wildMagicActor = null;
+		}
+
+		Char ch = Actor.findChar(target);
 		if (!wands.isEmpty() && hero.isAlive()) {
-			zapWand(wands, hero, target);
+			Actor.add(new Actor() {
+				{
+					actPriority = VFX_PRIO-1;
+				}
+
+				@Override
+				protected boolean act() {
+					wildMagicActor = this;
+					zapWand(wands, hero, ch == null ? target : ch.pos);
+					Actor.remove(this);
+					return false;
+				}
+			});
+			hero.next();
 		} else {
 			if (hero.buff(WildMagicTracker.class) != null) {
 				hero.buff(WildMagicTracker.class).detach();

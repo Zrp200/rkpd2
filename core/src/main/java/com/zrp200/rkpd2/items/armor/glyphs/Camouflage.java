@@ -27,6 +27,7 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.items.armor.Armor;
+import com.zrp200.rkpd2.items.rings.RingOfArcana;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.watabou.noosa.audio.Sample;
 
@@ -41,7 +42,7 @@ public class Camouflage extends Armor.Glyph {
 	}
 
 	public static void activate(Char ch, int level){
-		Buff.prolong(ch, Invisibility.class, 3 + level/2);
+		Buff.prolong(ch, Invisibility.class, Math.round((3 + level/2f)* RingOfArcana.enchantPowerMultiplier(ch)));
 		if ( Dungeon.level.heroFOV[ch.pos] ) {
 			Sample.INSTANCE.play( Assets.Sounds.MELD );
 		}

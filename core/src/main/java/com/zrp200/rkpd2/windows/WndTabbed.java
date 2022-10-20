@@ -23,9 +23,12 @@ package com.zrp200.rkpd2.windows;
 
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Chrome;
+import com.zrp200.rkpd2.SPDAction;
 import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
 import com.zrp200.rkpd2.ui.Window;
+import com.watabou.input.KeyBindings;
+import com.watabou.input.KeyEvent;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.NinePatch;
@@ -33,6 +36,7 @@ import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.audio.Sample;
 import com.zrp200.rkpd2.ui.Button;
 import com.watabou.utils.RectF;
+import com.watabou.utils.Signal;
 
 import java.util.ArrayList;
 
@@ -40,12 +44,37 @@ public class WndTabbed extends Window {
 
 	protected ArrayList<Tab> tabs = new ArrayList<>();
 	protected Tab selected;
-	
+
+	private Signal.Listener<KeyEvent> tabListener;
+
 	public WndTabbed() {
 		super( 0, 0, Chrome.get( Chrome.Type.TAB_SET ) );
+
+		KeyEvent.addKeyListener(tabListener = new Signal.Listener<KeyEvent>() {
+			@Override
+			public boolean onSignal(KeyEvent keyEvent) {
+
+				if (!keyEvent.pressed && KeyBindings.getActionForKey(keyEvent) == SPDAction.CYCLE){
+					int idx = tabs.indexOf(selected);
+					idx++;
+					if (idx >= tabs.size()) idx = 0;
+					select(idx);
+
+					return true;
+				}
+
+				return false;
+			}
+		});
 	}
-	
-	protected Tab add( Tab tab ) {
+
+	@Override
+	public void destroy() {
+		super.destroy();
+		KeyEvent.removeKeyListener(tabListener);
+	}
+
+	protected Tab add(Tab tab ) {
 
 		tab.setPos( tabs.size() == 0 ?
 			-chrome.marginLeft() + 1 :

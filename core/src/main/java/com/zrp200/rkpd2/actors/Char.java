@@ -34,12 +34,17 @@ import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.rogue.DeathMark;
 import com.zrp200.rkpd2.actors.hero.abilities.warrior.Endure;
 import com.zrp200.rkpd2.actors.mobs.Elemental;
+import com.zrp200.rkpd2.actors.mobs.Tengu;
 import com.zrp200.rkpd2.actors.mobs.npcs.MirrorImage;
 import com.zrp200.rkpd2.actors.mobs.npcs.PrismaticImage;
 import com.zrp200.rkpd2.items.Heap;
+import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.glyphs.AntiMagic;
 import com.zrp200.rkpd2.items.armor.glyphs.Potential;
+import com.zrp200.rkpd2.items.armor.glyphs.Viscosity;
+import com.zrp200.rkpd2.items.artifacts.TimekeepersHourglass;
 import com.zrp200.rkpd2.items.potions.exotic.PotionOfCleansing;
+import com.zrp200.rkpd2.items.rings.RingOfArcana;
 import com.zrp200.rkpd2.items.rings.RingOfElements;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRetribution;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
@@ -55,6 +60,7 @@ import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.enchantments.Blazing;
 import com.zrp200.rkpd2.items.weapon.enchantments.Blocking;
 import com.zrp200.rkpd2.items.weapon.enchantments.Grim;
+import com.zrp200.rkpd2.items.weapon.enchantments.Kinetic;
 import com.zrp200.rkpd2.items.weapon.enchantments.Shocking;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.items.weapon.missiles.darts.ShockingDart;
@@ -63,6 +69,8 @@ import com.zrp200.rkpd2.levels.features.Chasm;
 import com.zrp200.rkpd2.levels.features.Door;
 import com.zrp200.rkpd2.levels.traps.GrimTrap;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.plants.Earthroot;
+import com.zrp200.rkpd2.plants.Swiftthistle;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.utils.BArray;
@@ -75,6 +83,7 @@ import com.watabou.utils.Random;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 import static com.zrp200.rkpd2.Dungeon.hero;
 
@@ -107,7 +116,7 @@ public abstract class Char extends Actor {
 	
 	public boolean[] fieldOfView = null;
 	
-	private HashSet<Buff> buffs = new HashSet<>();
+	private LinkedHashSet<Buff> buffs = new LinkedHashSet<>();
 	
 	@Override
 	protected boolean act() {
@@ -130,7 +139,10 @@ public abstract class Char extends Actor {
 			do {
 				n = pos + PathFinder.NEIGHBOURS8[Random.Int( 8 )];
 			} while (!Dungeon.level.passable[n] && !Dungeon.level.avoid[n]);
-			Dungeon.level.drop( heap.pickUp(), n ).sprite.drop( pos );
+			Item item = heap.peek();
+			if (!(item instanceof Tengu.BombAbility.BombItem || item instanceof Tengu.ShockerAbility.ShockerItem)){
+				Dungeon.level.drop( heap.pickUp(), n ).sprite.drop( pos );
+			}
 		}
 	}
 
@@ -292,9 +304,6 @@ public abstract class Char extends Actor {
 			Barkskin bark = enemy.buff(Barkskin.class);
 			if (bark != null)   dr += Random.NormalIntRange( 0 , bark.level() );
 
-			Blocking.BlockBuff block = enemy.buff(Blocking.BlockBuff.class);
-			if (block != null)  dr += block.blockingRoll();
-
 			if (this instanceof Hero){
 				Hero hero = (Hero)this;
 				if (hero.belongings.weapon() instanceof MissileWeapon
@@ -357,6 +366,11 @@ public abstract class Char extends Actor {
 			
 			int effectiveDamage = enemy.defenseProc( this, Math.round(dmg) );
 			effectiveDamage = Math.max( effectiveDamage - dr, 0 );
+
+			if (enemy.buff(Viscosity.ViscosityTracker.class) != null){
+				effectiveDamage = enemy.buff(Viscosity.ViscosityTracker.class).deferDamage(effectiveDamage);
+				enemy.buff(Viscosity.ViscosityTracker.class).detach();
+			}
 
 			//vulnerable specifically applies after armor reductions
 			if ( enemy.buff( Vulnerable.class ) != null){
@@ -456,6 +470,11 @@ public abstract class Char extends Actor {
 		float acuStat = attacker.attackSkill( defender );
 		float defStat = defender.defenseSkill( attacker );
 
+		//invisible chars always hit (for the hero this is surprise attacking)
+		if (attacker.invisible > 0 && attacker.canSurpriseAttack()){
+			acuStat = INFINITE_ACCURACY;
+		}
+
 		//if accuracy or evasion are large enough, treat them as infinite.
 		//note that infinite evasion beats infinite accuracy
 		if (defStat >= INFINITE_EVASION){
@@ -530,6 +549,12 @@ public abstract class Char extends Actor {
 	}
 	
 	public int defenseProc( Char enemy, int damage ) {
+
+		Earthroot.Armor armor = buff( Earthroot.Armor.class );
+		if (armor != null) {
+			damage = armor.absorb( damage );
+		}
+
 		return damage;
 	}
 	
@@ -547,6 +572,11 @@ public abstract class Char extends Actor {
 		float delay = TICK;
 		if(buff(Adrenaline.class) != null) delay /= 1.5f;
 		return delay;
+	}
+
+	//currently only used by invisible chars, or by the hero
+	public boolean canSurpriseAttack(){
+		return true;
 	}
 
 	//used so that buffs(Shieldbuff.class) isn't called every time unnecessarily
@@ -659,6 +689,18 @@ public abstract class Char extends Actor {
 		shielded -= dmg;
 		HP -= dmg;
 
+		if (HP < 0 && src instanceof Char){
+			if (((Char) src).buff(Kinetic.KineticTracker.class) != null){
+				int dmgToAdd = -HP;
+				dmgToAdd -= ((Char) src).buff(Kinetic.KineticTracker.class).conservedDamage;
+				dmgToAdd = Math.round(dmgToAdd * RingOfArcana.enchantPowerMultiplier((Char) src));
+				if (dmgToAdd > 0) {
+					Buff.affect((Char) src, Kinetic.ConservedDamage.class).setBonus(dmgToAdd);
+				}
+				((Char) src).buff(Kinetic.KineticTracker.class).detach();
+			}
+		}
+
 		if (sprite != null) {
 			sprite.showStatus(HP > HT / 2 ?
 							CharSprite.WARNING :
@@ -722,10 +764,27 @@ public abstract class Char extends Actor {
 	public boolean isAlive() {
 		return HP > 0 || deathMarked;
 	}
-	
+
+	@Override
+	protected void spendConstant(float time) {
+		TimekeepersHourglass.timeFreeze freeze = buff(TimekeepersHourglass.timeFreeze.class);
+		if (freeze != null) {
+			freeze.processTime(time);
+			return;
+		}
+
+		Swiftthistle.TimeBubble bubble = buff(Swiftthistle.TimeBubble.class);
+		if (bubble != null){
+			bubble.processTime(time);
+			return;
+		}
+
+		super.spendConstant(time);
+	}
+
 	@Override
 	protected void spend( float time ) {
-		
+
 		float timeScale = 1f;
 		if (buff( Slow.class ) != null) {
 			timeScale *= 0.5f;
@@ -740,8 +799,8 @@ public abstract class Char extends Actor {
 		super.spend( time / timeScale );
 	}
 	
-	public synchronized HashSet<Buff> buffs() {
-		return new HashSet<>(buffs);
+	public synchronized LinkedHashSet<Buff> buffs() {
+		return new LinkedHashSet<>(buffs);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -800,13 +859,13 @@ public abstract class Char extends Actor {
 		if (sprite != null && buff.announced)
 			switch(buff.type){
 				case POSITIVE:
-					sprite.showStatus(CharSprite.POSITIVE, buff.toString());
+					sprite.showStatus(CharSprite.POSITIVE, Messages.titleCase(buff.name()));
 					break;
 				case NEGATIVE:
-					sprite.showStatus(CharSprite.NEGATIVE, buff.toString());
+					sprite.showStatus(CharSprite.NEGATIVE, Messages.titleCase(buff.name()));
 					break;
 				case NEUTRAL: default:
-					sprite.showStatus(CharSprite.NEUTRAL, buff.toString());
+					sprite.showStatus(CharSprite.NEUTRAL, Messages.titleCase(buff.name()));
 					break;
 			}
 

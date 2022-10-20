@@ -27,6 +27,7 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.sprites.MissileSprite;
 import com.watabou.noosa.tweeners.AlphaTweener;
@@ -50,10 +51,17 @@ public class HeavyBoomerang extends MissileWeapon {
 				(tier) * lvl;               //scaling unchanged
 	}
 
-	private boolean circling;
+	private boolean circleBackHit;
+
+	@Override
+	protected float adjacentAccFactor(Char owner, Char target) {
+		return circleBackHit ? rangedAccFactor(owner) :
+				super.adjacentAccFactor(owner, target);
+	}
+
 	@Override
 	protected void rangedHit(Char enemy, int cell) {
-		if(circling) {
+		if(circleBackHit) {
 			super.rangedHit(enemy, cell);
 			return;
 		}
@@ -65,7 +73,7 @@ public class HeavyBoomerang extends MissileWeapon {
 
 	@Override
 	protected void rangedMiss(int cell) {
-		if(circling) {
+		if(circleBackHit) {
 			super.rangedMiss(cell);
 			return;
 		}
@@ -114,31 +122,28 @@ public class HeavyBoomerang extends MissileWeapon {
 				if (left <= 0){
 					final Char returnTarget = Actor.findChar(returnPos);
 					final Char target = this.target;
-					MissileSprite visual = ((MissileSprite) Dungeon.hero.sprite.parent.recycle(MissileSprite.class));
+					MissileSprite visual = Dungeon.hero.sprite.parent.recycle(MissileSprite.class);
 					visual.reset( thrownPos,
 									returnPos,
 									boomerang,
-									new Callback() {
-										@Override
-										public void call() {
-											if (returnTarget == target){
-												if (target instanceof Hero && boomerang.doPickUp((Hero) target)) {
-													//grabbing the boomerang takes no time
-													((Hero) target).spend(-TIME_TO_PICK_UP);
-												} else {
-													Dungeon.level.drop(boomerang, returnPos).sprite.drop();
-												}
-												
-											} else if (returnTarget != null){
-												boomerang.circling = true;
-												((Hero)target).shoot( returnTarget, boomerang );
-												boomerang.circling = false;
-											} else {
-												Dungeon.level.drop(boomerang, returnPos).sprite.drop();
-											}
-											CircleBack.this.next();
-										}
-									});
+							() -> {
+								if (returnTarget == target){
+									if (target instanceof Hero && boomerang.doPickUp((Hero) target)) {
+										//grabbing the boomerang takes no time
+										((Hero) target).spend(-TIME_TO_PICK_UP);
+									} else {
+										Dungeon.level.drop(boomerang, returnPos).sprite.drop();
+									}
+
+								} else if (returnTarget != null){
+									boomerang.circleBackHit = true;
+									((Hero)target).shoot( returnTarget, boomerang );
+									boomerang.circleBackHit = false;
+								} else {
+									Dungeon.level.drop(boomerang, returnPos).sprite.drop();
+								}
+								CircleBack.this.next();
+							});
 					visual.alpha(0f);
 					float duration = Dungeon.level.trueDistance(thrownPos, returnPos) / 20f;
 					target.sprite.parent.add(new AlphaTweener(visual, 1f, duration));

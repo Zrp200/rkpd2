@@ -205,11 +205,6 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 	}
 
 	@Override
-	public String toString() {
-		return Messages.get(this, "name");
-	}
-	
-	@Override
 	public String desc() {
 		String cls = ((Hero)target).subClass.title();
 		String desc = Messages.get(this, "desc",cls);

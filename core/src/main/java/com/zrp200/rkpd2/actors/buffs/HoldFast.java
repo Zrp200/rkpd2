@@ -56,11 +56,6 @@ public class HoldFast extends Buff {
 		icon.hardlight(1.9f, 2.4f, 3.25f);
 	}
 
-	@Override
-	public String toString() {
-		return Messages.get(this, "name");
-	}
-
 	public static int armor() {
 		return Math.max(3*Dungeon.hero.pointsInTalent(Talent.HOLD_FAST), 2*Dungeon.hero.pointsInTalent(Talent.RK_BERSERKER));
 	}

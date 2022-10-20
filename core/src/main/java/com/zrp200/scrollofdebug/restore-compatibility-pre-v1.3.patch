@@ -7,13 +7,13 @@ diff --git a/core/src/main/java/com/zrp200/scrollofdebug/ScrollOfDebug.java b/co
 --- a/core/src/main/java/com/zrp200/scrollofdebug/ScrollOfDebug.java	(revision 98d32b0158e31b161ff5aa160f40130f1b4f8adf)
 +++ b/core/src/main/java/com/zrp200/scrollofdebug/ScrollOfDebug.java	(revision ffff854ef141991725fe5d20e9d943fa625c1aa6)
 @@ -36,7 +36,7 @@
- import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
- import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+ import com.zrp200.rkpd2.ui.ScrollPane;
+ import com.zrp200.rkpd2.ui.Window;
  // WndTextInput (added in v0.9.4)
--import com.shatteredpixel.shatteredpixeldungeon.windows.WndTextInput;
-+import com.shatteredpixel.shatteredpixeldungeon.ui.WndTextInput;
+-import com.zrp200.rkpd2.windows.WndTextInput;
++import com.zrp200.rkpd2.ui.WndTextInput;
  // Output
- import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+ import com.zrp200.rkpd2.utils.GLog;
 
 @@ -131,7 +131,7 @@
      @Override

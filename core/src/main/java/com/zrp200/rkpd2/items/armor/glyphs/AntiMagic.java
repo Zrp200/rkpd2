@@ -35,6 +35,10 @@ import com.zrp200.rkpd2.actors.mobs.Shaman;
 import com.zrp200.rkpd2.actors.mobs.Warlock;
 import com.zrp200.rkpd2.actors.mobs.YogFist;
 import com.zrp200.rkpd2.items.armor.Armor;
+import com.zrp200.rkpd2.items.bombs.Bomb;
+import com.zrp200.rkpd2.items.rings.RingOfArcana;
+import com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfPsionicBlast;
+import com.zrp200.rkpd2.items.wands.CursedWand;
 import com.zrp200.rkpd2.items.wands.WandOfBlastWave;
 import com.zrp200.rkpd2.items.wands.WandOfDisintegration;
 import com.zrp200.rkpd2.items.wands.WandOfFireblast;
@@ -45,6 +49,7 @@ import com.zrp200.rkpd2.items.wands.WandOfMagicMissile;
 import com.zrp200.rkpd2.items.wands.WandOfPrismaticLight;
 import com.zrp200.rkpd2.items.wands.WandOfTransfusion;
 import com.zrp200.rkpd2.items.wands.WandOfWarding;
+import com.zrp200.rkpd2.items.weapon.missiles.ForceCube;
 import com.zrp200.rkpd2.levels.traps.DisintegrationTrap;
 import com.zrp200.rkpd2.levels.traps.GrimTrap;
 import com.zrp200.rkpd2.sprites.ItemSprite;
@@ -68,6 +73,10 @@ public class AntiMagic extends Armor.Glyph {
 		RESISTS.add( DisintegrationTrap.class );
 		RESISTS.add( GrimTrap.class );
 
+		RESISTS.add( Bomb.MagicalBomb.class );
+		RESISTS.add( ScrollOfPsionicBlast.class );
+
+		RESISTS.add( CursedWand.class );
 		RESISTS.add( WandOfBlastWave.class );
 		RESISTS.add( WandOfDisintegration.class );
 		RESISTS.add( WandOfFireblast.class );
@@ -91,12 +100,19 @@ public class AntiMagic extends Armor.Glyph {
 	
 	@Override
 	public int proc(Armor armor, Char attacker, Char defender, int damage) {
-		//no proc effect, see Hero.damage and GhostHero.damage and ArmoredStatue.damage
+		//no proc effect, see:
+		// Hero.damage
+		// GhostHero.damage
+		// Shadowclone.damage
+		// ArmoredStatue.damage
+		// PrismaticImage.damage
 		return damage;
 	}
 	
-	public static int drRoll( int level ){
-		return Random.NormalIntRange(level, 3 + Math.round(level*1.5f));
+	public static int drRoll( Char ch, int level ){
+		return Random.NormalIntRange(
+				Math.round(level * RingOfArcana.enchantPowerMultiplier(ch)),
+				Math.round((3 + (level*1.5f)) * RingOfArcana.enchantPowerMultiplier(ch)));
 	}
 
 	@Override

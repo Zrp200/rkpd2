@@ -69,23 +69,37 @@ public class WandOfFirebolt extends DamageWand {
         Sample.INSTANCE.play( Assets.Sounds.ZAP );
     }
 
-    @Override
-    public void onHit(Weapon staff, Char attacker, Char defender, int damage) {
-        // pre-rework blazing ;)
-        // lvl 0 - 33%
-        // lvl 1 - 50%
-        // lvl 2 - 60%
-        int level = Math.max(0,staff.buffedLvl());
-        if (Weapon.Enchantment.proc(attacker, level, 1, 3)) {
-
-            if (Random.Int( 2 ) == 0) {
-                Buff.affect( defender, Burning.class ).reignite( defender );
-            }
-            if(!defender.isImmune(getClass())) defender.damage( Random.Int( 1, level+2 ), this);
-
-            defender.sprite.emitter().burst( FlameParticle.FACTORY, level + 1 );
-
+    public final Weapon.Enchantment onHit = new Weapon.Enchantment() {
+        @Override
+        protected float procChanceMultiplier(Char attacker) {
+            return Wand.procChanceMultiplier(attacker);
         }
+
+        @Override
+        public int proc(Weapon weapon, Char attacker, Char defender, int damage) {
+            // pre-rework blazing ;)
+            // lvl 0 - 33%
+            // lvl 1 - 50%
+            // lvl 2 - 60%
+            int level = Math.max(0, weapon.buffedLvl());
+            float procChance = procChance(attacker, level, 1, 3);
+            if (Random.Float() < procChance) {
+                // TODO do I need to implement arcana effects for this?
+                if (Random.Float(2) == 0) {
+                    Buff.affect(defender, Burning.class).reignite(defender);
+                }
+                if (!defender.isImmune(getClass())) defender.damage(Random.Int(1, level + 2), this);
+
+                defender.sprite.emitter().burst(FlameParticle.FACTORY, level + 1);
+            }
+            return damage;
+        }
+
+        @Override
+        public ItemSprite.Glowing glowing() { return WandOfFirebolt.this.glowing(); }
+    };
+    @Override public void onHit(Weapon staff, Char attacker, Char defender, int damage) {
+        onHit.proc(staff, attacker, defender, damage);
     }
 
     @Override

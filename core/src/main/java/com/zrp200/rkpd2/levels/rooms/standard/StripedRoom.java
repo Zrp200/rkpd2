@@ -24,7 +24,9 @@ package com.zrp200.rkpd2.levels.rooms.standard;
 import com.zrp200.rkpd2.levels.Level;
 import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.levels.painters.Painter;
+import com.zrp200.rkpd2.levels.rooms.Room;
 import com.watabou.utils.Random;
+import com.watabou.utils.Rect;
 
 public class StripedRoom extends StandardRoom {
 	
@@ -33,6 +35,16 @@ public class StripedRoom extends StandardRoom {
 		return new float[]{2, 1, 0};
 	}
 	
+	@Override
+	public void merge(Level l, Room other, Rect merge, int mergeTerrain) {
+		if (other instanceof StripedRoom && mergeTerrain == Terrain.EMPTY){
+			super.merge(l, other, merge, Terrain.EMPTY_SP);
+		} else {
+			super.merge(l, other, merge, mergeTerrain);
+		}
+
+	}
+
 	@Override
 	public void paint(Level level) {
 		Painter.fill( level, this, Terrain.WALL );

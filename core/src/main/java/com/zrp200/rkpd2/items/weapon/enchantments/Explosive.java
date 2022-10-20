@@ -19,7 +19,7 @@ public class Explosive extends Weapon.Enchantment {
     private static final int BASE_PROC = 10*MULTIPLIER;
     // 1/10, 4/31, 5/32, 6/33 (1/5), 7/34 (4/13), 8/35, 9/36 etc.
     public boolean tryProc(Char attacker, int level) {
-        return Random.Float() < procChanceMultiplier(attacker)*(MULTIPLIER+level)/(BASE_PROC+level);
+        return proc(attacker, level, MULTIPLIER, BASE_PROC);
     }
     @Override
     public int proc(Weapon weapon, Char attacker, Char defender, int damage) {

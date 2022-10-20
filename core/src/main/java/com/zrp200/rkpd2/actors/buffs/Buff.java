@@ -21,12 +21,12 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
-import com.watabou.noosa.Image;
-import com.watabou.utils.Reflection;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
+import com.watabou.noosa.Image;
+import com.watabou.utils.Reflection;
 
 import java.text.DecimalFormat;
 import java.util.HashSet;
@@ -63,7 +63,7 @@ public class Buff extends Actor {
 
 	// used during restoring, when true, is not attached afterwards.
 	public boolean attachAfterRestore = true;
-	
+
 	public boolean attachTo( Char target ) {
 
 		if (target.isImmune( getClass() )) {
@@ -122,11 +122,20 @@ public class Buff extends Actor {
 	}
 
 	public String heroMessage(){
-		return null;
+		String msg = Messages.get(this, "heromsg");
+		if (msg.isEmpty()) {
+			return null;
+		} else {
+			return msg;
+		}
+	}
+
+	public String name() {
+		return Messages.get(this, "name");
 	}
 
 	@Override public String toString() {
-		String name = Messages.get(this, "name");
+		String name = name();
 		//noinspection StringEquality
 		return name != Messages.NO_TEXT_FOUND ? name : super.toString();
 	}

@@ -29,6 +29,7 @@ import com.zrp200.rkpd2.actors.mobs.Statue;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.Heap;
+import com.zrp200.rkpd2.items.Honeypot;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.KindOfWeapon;
 import com.zrp200.rkpd2.messages.Messages;
@@ -48,18 +49,19 @@ public class DisarmingTrap extends Trap{
 	public void activate() {
 		Heap heap = Dungeon.level.heaps.get( pos );
 
-		if (heap != null){
+		if (heap != null && heap.type == Heap.Type.HEAP){
 			int cell = Dungeon.level.randomRespawnCell( null );
 
+			Item item = heap.pickUp();
+
 			if (cell != -1) {
-				Item item = heap.pickUp();
 				Heap dropped = Dungeon.level.drop( item, cell );
-				dropped.type = heap.type;
-				dropped.sprite.view( dropped );
 				dropped.seen = true;
+				if (item instanceof Honeypot.ShatteredPot){
+					((Honeypot.ShatteredPot)item).movePot(pos, cell);
+				}
 				for (int i : PathFinder.NEIGHBOURS9) Dungeon.level.visited[cell+i] = true;
 				GameScene.updateFog();
-
 				Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 				CellEmitter.get(pos).burst(Speck.factory(Speck.LIGHT), 4);
 			}

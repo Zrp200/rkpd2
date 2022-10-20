@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.windows;
 
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.GamesInProgress;
+import com.zrp200.rkpd2.SPDSettings;
 import com.zrp200.rkpd2.ShatteredPixelDungeon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
@@ -91,7 +92,6 @@ public class WndGame extends Window {
 			addButton( curBtn = new RedButton( Messages.get(this, "start") ) {
 				@Override
 				protected void onClick() {
-					InterlevelScene.noStory = true;
 					GamesInProgress.selectedClass = Dungeon.hero.heroClass;
 					GamesInProgress.curSlot = GamesInProgress.firstEmpty();
 					ShatteredPixelDungeon.switchScene(HeroSelectScene.class);
@@ -111,7 +111,7 @@ public class WndGame extends Window {
 		}
 
 		// Main menu
-		addButton(curBtn = new RedButton( Messages.get(this, "menu") ) {
+		addButton(curBtn = new RedButton(Messages.get(this, "menu")) {
 			@Override
 			protected void onClick() {
 				try {
@@ -121,8 +121,9 @@ public class WndGame extends Window {
 				}
 				Game.switchScene(TitleScene.class);
 			}
-		} );
+		});
 		curBtn.icon(Icons.get(Icons.DISPLAY));
+		if (SPDSettings.intro()) curBtn.enable(false);
 
 		resize( WIDTH, pos );
 	}

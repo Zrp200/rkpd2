@@ -22,10 +22,13 @@
 package com.zrp200.rkpd2.actors.buffs;
 
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.watabou.noosa.Image;
+
+import java.util.HashSet;
 
 public class MagicalSight extends FlavourBuff {
 	
@@ -51,22 +54,24 @@ public class MagicalSight extends FlavourBuff {
 	public float iconFadePercent() {
 		return Math.max(0, (DURATION - visualcooldown()) / DURATION);
 	}
-	
+
 	@Override
-	public String toString() {
-		return Messages.get(this, "name");
+	public boolean attachTo(Char target) {
+		if (super.attachTo(target)){
+			Buff.detach(target, Blindness.class);
+			return true;
+		}
+		return false;
 	}
-	
+
 	@Override
 	public void detach() {
 		super.detach();
 		Dungeon.observe();
 		GameScene.updateFog();
 	}
-	
-	@Override
-	public String desc() {
-		return Messages.get(this, "desc", dispTurns());
+
+	{
+		immunities.add(Blindness.class);
 	}
-	
 }

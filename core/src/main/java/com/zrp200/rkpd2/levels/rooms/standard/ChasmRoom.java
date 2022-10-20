@@ -25,12 +25,24 @@ import com.zrp200.rkpd2.levels.Level;
 import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.levels.painters.Painter;
 import com.zrp200.rkpd2.levels.rooms.Room;
+import com.watabou.utils.Rect;
 
 public class ChasmRoom extends PatchRoom {
 
 	@Override
 	public float[] sizeCatProbs() {
 		return new float[]{4, 2, 1};
+	}
+
+	@Override
+	public void merge(Level l, Room other, Rect merge, int mergeTerrain) {
+		if (mergeTerrain == Terrain.EMPTY
+				&& (other instanceof ChasmRoom || other instanceof PlatformRoom)){
+			super.merge(l, other, merge, Terrain.CHASM);
+			Painter.set(l, connected.get(other), Terrain.EMPTY);
+		} else {
+			super.merge(l, other, merge, mergeTerrain);
+		}
 	}
 
 	@Override

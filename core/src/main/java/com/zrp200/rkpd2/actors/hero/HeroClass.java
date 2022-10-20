@@ -64,7 +64,6 @@ import com.zrp200.rkpd2.items.scrolls.ScrollOfMagicMapping;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRage;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfUpgrade;
 import com.zrp200.rkpd2.items.wands.Wand;
-import com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfDivination;
 import com.zrp200.rkpd2.items.wands.WandOfMagicMissile;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.melee.Dagger;
@@ -264,6 +263,10 @@ public enum HeroClass {
 		return Messages.get(HeroClass.class, name()+"_desc");
 	}
 
+	public String shortDesc(){
+		return Messages.get(HeroClass.class, name()+"_desc_short");
+	}
+
 	public HeroSubClass[] subClasses() {
 		return subClasses;
 	}
@@ -336,7 +339,8 @@ public enum HeroClass {
 	}
 	
 	public String unlockMsg() {
-		return Messages.get(HeroClass.class, name() + "_unlock");
+		String msg = Messages.get(HeroClass.class, name() + "_unlock");
+		return msg != Messages.NO_TEXT_FOUND ? msg : shortDesc() + "\n\n" + Messages.get(HeroClass.class, name()+"_unlock");
 	}
 
 }

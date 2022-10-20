@@ -32,6 +32,8 @@ import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.SpellSprite;
 import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.artifacts.Artifact;
+import com.zrp200.rkpd2.items.artifacts.HornOfPlenty;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
@@ -105,11 +107,18 @@ public class Food extends Item {
 	}
 	
 	protected void satisfy( Hero hero ){
+		float foodVal = energy;
 		if (Dungeon.isChallenged(Challenges.NO_FOOD)){
-			Buff.affect(hero, Hunger.class).satisfy(energy/3f);
-		} else {
-			Buff.affect(hero, Hunger.class).satisfy(energy);
+			foodVal /= 3f;
 		}
+
+		Artifact.ArtifactBuff buff = hero.buff( HornOfPlenty.hornRecharge.class );
+		if (buff != null && buff.isCursed()){
+			foodVal *= 0.67f;
+			GLog.n( Messages.get(Hunger.class, "cursedhorn") );
+		}
+
+		Buff.affect(hero, Hunger.class).satisfy(foodVal);
 	}
 	
 	@Override

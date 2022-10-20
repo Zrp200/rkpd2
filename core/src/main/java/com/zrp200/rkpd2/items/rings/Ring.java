@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.EnhancedRings;
+import com.zrp200.rkpd2.actors.buffs.MagicImmune;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.Generator;
@@ -299,7 +300,7 @@ public class Ring extends KindofMisc {
 		levelsToID -= levelPercent;
 		if (levelsToID <= 0){
 			identify();
-			GLog.p( Messages.get(Ring.class, "identify", toString()) );
+			GLog.p( Messages.get(Ring.class, "identify", title()) );
 			Badges.validateItemLevelAquired( this );
 		}
 	}
@@ -322,6 +323,7 @@ public class Ring extends KindofMisc {
 	}
 
 	public static int getBonus(Char target, Class<?extends RingBuff> type){
+		if (target.buff(MagicImmune.class) != null) return 0;
 		int bonus = 0;
 		for (RingBuff buff : target.buffs(type)) {
 			bonus += buff.level();
@@ -330,6 +332,7 @@ public class Ring extends KindofMisc {
 	}
 
 	public static int getBuffedBonus(Char target, Class<?extends RingBuff> type){
+		if (target.buff(MagicImmune.class) != null) return 0;
 		int bonus = 0;
 		for (RingBuff buff : target.buffs(type)) {
 			bonus += buff.buffedLvl();

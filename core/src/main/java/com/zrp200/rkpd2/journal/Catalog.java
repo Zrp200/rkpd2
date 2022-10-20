@@ -22,103 +22,8 @@
 package com.zrp200.rkpd2.journal;
 
 import com.zrp200.rkpd2.Badges;
+import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Item;
-import com.zrp200.rkpd2.items.armor.ClothArmor;
-import com.zrp200.rkpd2.items.armor.HuntressArmor;
-import com.zrp200.rkpd2.items.armor.LeatherArmor;
-import com.zrp200.rkpd2.items.armor.MageArmor;
-import com.zrp200.rkpd2.items.armor.MailArmor;
-import com.zrp200.rkpd2.items.armor.PlateArmor;
-import com.zrp200.rkpd2.items.armor.RogueArmor;
-import com.zrp200.rkpd2.items.armor.ScaleArmor;
-import com.zrp200.rkpd2.items.armor.WarriorArmor;
-import com.zrp200.rkpd2.items.artifacts.AlchemistsToolkit;
-import com.zrp200.rkpd2.items.artifacts.ChaliceOfBlood;
-import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
-import com.zrp200.rkpd2.items.artifacts.DriedRose;
-import com.zrp200.rkpd2.items.artifacts.EtherealChains;
-import com.zrp200.rkpd2.items.artifacts.HornOfPlenty;
-import com.zrp200.rkpd2.items.artifacts.MasterThievesArmband;
-import com.zrp200.rkpd2.items.artifacts.SandalsOfNature;
-import com.zrp200.rkpd2.items.artifacts.TalismanOfForesight;
-import com.zrp200.rkpd2.items.artifacts.TimekeepersHourglass;
-import com.zrp200.rkpd2.items.artifacts.UnstableSpellbook;
-import com.zrp200.rkpd2.items.potions.PotionOfExperience;
-import com.zrp200.rkpd2.items.potions.PotionOfFrost;
-import com.zrp200.rkpd2.items.potions.PotionOfHaste;
-import com.zrp200.rkpd2.items.potions.PotionOfHealing;
-import com.zrp200.rkpd2.items.potions.PotionOfInvisibility;
-import com.zrp200.rkpd2.items.potions.PotionOfLevitation;
-import com.zrp200.rkpd2.items.potions.PotionOfLiquidFlame;
-import com.zrp200.rkpd2.items.potions.PotionOfMindVision;
-import com.zrp200.rkpd2.items.potions.PotionOfParalyticGas;
-import com.zrp200.rkpd2.items.potions.PotionOfPurity;
-import com.zrp200.rkpd2.items.potions.PotionOfStrength;
-import com.zrp200.rkpd2.items.potions.PotionOfToxicGas;
-import com.zrp200.rkpd2.items.rings.RingOfAccuracy;
-import com.zrp200.rkpd2.items.rings.RingOfElements;
-import com.zrp200.rkpd2.items.rings.RingOfEnergy;
-import com.zrp200.rkpd2.items.rings.RingOfEvasion;
-import com.zrp200.rkpd2.items.rings.RingOfForce;
-import com.zrp200.rkpd2.items.rings.RingOfFuror;
-import com.zrp200.rkpd2.items.rings.RingOfHaste;
-import com.zrp200.rkpd2.items.rings.RingOfMight;
-import com.zrp200.rkpd2.items.rings.RingOfSharpshooting;
-import com.zrp200.rkpd2.items.rings.RingOfTenacity;
-import com.zrp200.rkpd2.items.rings.RingOfWealth;
-import com.zrp200.rkpd2.items.scrolls.ScrollOfIdentify;
-import com.zrp200.rkpd2.items.scrolls.ScrollOfLullaby;
-import com.zrp200.rkpd2.items.scrolls.ScrollOfMagicMapping;
-import com.zrp200.rkpd2.items.scrolls.ScrollOfMirrorImage;
-import com.zrp200.rkpd2.items.scrolls.ScrollOfRage;
-import com.zrp200.rkpd2.items.scrolls.ScrollOfRecharging;
-import com.zrp200.rkpd2.items.scrolls.ScrollOfRemoveCurse;
-import com.zrp200.rkpd2.items.scrolls.ScrollOfRetribution;
-import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
-import com.zrp200.rkpd2.items.scrolls.ScrollOfTerror;
-import com.zrp200.rkpd2.items.scrolls.ScrollOfTransmutation;
-import com.zrp200.rkpd2.items.scrolls.ScrollOfUpgrade;
-import com.zrp200.rkpd2.items.wands.WandOfBlastWave;
-import com.zrp200.rkpd2.items.wands.WandOfCorrosion;
-import com.zrp200.rkpd2.items.wands.WandOfCorruption;
-import com.zrp200.rkpd2.items.wands.WandOfDisintegration;
-import com.zrp200.rkpd2.items.wands.WandOfFireblast;
-import com.zrp200.rkpd2.items.wands.WandOfFirebolt;
-import com.zrp200.rkpd2.items.wands.WandOfFrost;
-import com.zrp200.rkpd2.items.wands.WandOfLightning;
-import com.zrp200.rkpd2.items.wands.WandOfLivingEarth;
-import com.zrp200.rkpd2.items.wands.WandOfMagicMissile;
-import com.zrp200.rkpd2.items.wands.WandOfPrismaticLight;
-import com.zrp200.rkpd2.items.wands.WandOfRegrowth;
-import com.zrp200.rkpd2.items.wands.WandOfTransfusion;
-import com.zrp200.rkpd2.items.wands.WandOfWarding;
-import com.zrp200.rkpd2.items.weapon.melee.AssassinsBlade;
-import com.zrp200.rkpd2.items.weapon.melee.BattleAxe;
-import com.zrp200.rkpd2.items.weapon.melee.Crossbow;
-import com.zrp200.rkpd2.items.weapon.melee.Dagger;
-import com.zrp200.rkpd2.items.weapon.melee.Dirk;
-import com.zrp200.rkpd2.items.weapon.melee.Flail;
-import com.zrp200.rkpd2.items.weapon.melee.Gauntlet;
-import com.zrp200.rkpd2.items.weapon.melee.Glaive;
-import com.zrp200.rkpd2.items.weapon.melee.Gloves;
-import com.zrp200.rkpd2.items.weapon.melee.Greataxe;
-import com.zrp200.rkpd2.items.weapon.melee.Greatshield;
-import com.zrp200.rkpd2.items.weapon.melee.Greatsword;
-import com.zrp200.rkpd2.items.weapon.melee.HandAxe;
-import com.zrp200.rkpd2.items.weapon.melee.Longsword;
-import com.zrp200.rkpd2.items.weapon.melee.Mace;
-import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
-import com.zrp200.rkpd2.items.weapon.melee.Quarterstaff;
-import com.zrp200.rkpd2.items.weapon.melee.RoundShield;
-import com.zrp200.rkpd2.items.weapon.melee.RunicBlade;
-import com.zrp200.rkpd2.items.weapon.melee.Sai;
-import com.zrp200.rkpd2.items.weapon.melee.Scimitar;
-import com.zrp200.rkpd2.items.weapon.melee.Shortsword;
-import com.zrp200.rkpd2.items.weapon.melee.Spear;
-import com.zrp200.rkpd2.items.weapon.melee.Sword;
-import com.zrp200.rkpd2.items.weapon.melee.WarHammer;
-import com.zrp200.rkpd2.items.weapon.melee.Whip;
-import com.zrp200.rkpd2.items.weapon.melee.WornShortsword;
 import com.watabou.utils.Bundle;
 
 import java.util.ArrayList;
@@ -153,110 +58,46 @@ public enum Catalog {
 	}
 	
 	static {
-		WEAPONS.seen.put( WornShortsword.class,             false);
-		WEAPONS.seen.put( Gloves.class,                     false);
-		WEAPONS.seen.put( Dagger.class,                     false);
-		WEAPONS.seen.put( MagesStaff.class,                 false);
-		WEAPONS.seen.put( Shortsword.class,                 false);
-		WEAPONS.seen.put( HandAxe.class,                    false);
-		WEAPONS.seen.put( Spear.class,                      false);
-		WEAPONS.seen.put( Quarterstaff.class,               false);
-		WEAPONS.seen.put( Dirk.class,                       false);
-		WEAPONS.seen.put( Sword.class,                      false);
-		WEAPONS.seen.put( Mace.class,                       false);
-		WEAPONS.seen.put( Scimitar.class,                   false);
-		WEAPONS.seen.put( RoundShield.class,                false);
-		WEAPONS.seen.put( Sai.class,                        false);
-		WEAPONS.seen.put( Whip.class,                       false);
-		WEAPONS.seen.put( Longsword.class,                  false);
-		WEAPONS.seen.put( BattleAxe.class,                  false);
-		WEAPONS.seen.put( Flail.class,                      false);
-		WEAPONS.seen.put( RunicBlade.class,                 false);
-		WEAPONS.seen.put( AssassinsBlade.class,             false);
-		WEAPONS.seen.put( Crossbow.class,                   false);
-		WEAPONS.seen.put( Greatsword.class,                 false);
-		WEAPONS.seen.put( WarHammer.class,                  false);
-		WEAPONS.seen.put( Glaive.class,                     false);
-		WEAPONS.seen.put( Greataxe.class,                   false);
-		WEAPONS.seen.put( Greatshield.class,                false);
-		WEAPONS.seen.put( Gauntlet.class,                   false);
-	
-		ARMOR.seen.put( ClothArmor.class,                   false);
-		ARMOR.seen.put( LeatherArmor.class,                 false);
-		ARMOR.seen.put( MailArmor.class,                    false);
-		ARMOR.seen.put( ScaleArmor.class,                   false);
-		ARMOR.seen.put( PlateArmor.class,                   false);
-		ARMOR.seen.put( WarriorArmor.class,                 false);
-		ARMOR.seen.put( MageArmor.class,                    false);
-		ARMOR.seen.put( RogueArmor.class,                   false);
-		ARMOR.seen.put( HuntressArmor.class,                false);
-	
-		WANDS.seen.put( WandOfMagicMissile.class,           false);
-		WANDS.seen.put( WandOfLightning.class,              false);
-		WANDS.seen.put( WandOfDisintegration.class,         false);
-		WANDS.seen.put( WandOfFireblast.class,              false);
-		WANDS.seen.put( WandOfCorrosion.class,              false);
-		WANDS.seen.put( WandOfBlastWave.class,              false);
-		WANDS.seen.put( WandOfLivingEarth.class,            false);
-		WANDS.seen.put( WandOfFrost.class,                  false);
-		WANDS.seen.put( WandOfPrismaticLight.class,         false);
-		WANDS.seen.put( WandOfWarding.class,                false);
-		WANDS.seen.put( WandOfTransfusion.class,            false);
-		WANDS.seen.put( WandOfCorruption.class,             false);
-		WANDS.seen.put( WandOfRegrowth.class,               false);
-		WANDS.seen.put( WandOfFirebolt.class,				false);
-	
-		RINGS.seen.put( RingOfAccuracy.class,               false);
-		RINGS.seen.put( RingOfEnergy.class,                 false);
-		RINGS.seen.put( RingOfElements.class,               false);
-		RINGS.seen.put( RingOfEvasion.class,                false);
-		RINGS.seen.put( RingOfForce.class,                  false);
-		RINGS.seen.put( RingOfFuror.class,                  false);
-		RINGS.seen.put( RingOfHaste.class,                  false);
-		RINGS.seen.put( RingOfMight.class,                  false);
-		RINGS.seen.put( RingOfSharpshooting.class,          false);
-		RINGS.seen.put( RingOfTenacity.class,               false);
-		RINGS.seen.put( RingOfWealth.class,                 false);
-	
-		ARTIFACTS.seen.put( AlchemistsToolkit.class,        false);
-		//ARTIFACTS.seen.put( CapeOfThorns.class,             false);
-		ARTIFACTS.seen.put( ChaliceOfBlood.class,           false);
-		ARTIFACTS.seen.put( CloakOfShadows.class,           false);
-		ARTIFACTS.seen.put( DriedRose.class,                false);
-		ARTIFACTS.seen.put( EtherealChains.class,           false);
-		ARTIFACTS.seen.put( HornOfPlenty.class,             false);
-		//ARTIFACTS.seen.put( LloydsBeacon.class,             false);
-		ARTIFACTS.seen.put( MasterThievesArmband.class,     false);
-		ARTIFACTS.seen.put( SandalsOfNature.class,          false);
-		ARTIFACTS.seen.put( TalismanOfForesight.class,      false);
-		ARTIFACTS.seen.put( TimekeepersHourglass.class,     false);
-		ARTIFACTS.seen.put( UnstableSpellbook.class,        false);
-	
-		POTIONS.seen.put( PotionOfHealing.class,            false);
-		POTIONS.seen.put( PotionOfStrength.class,           false);
-		POTIONS.seen.put( PotionOfLiquidFlame.class,        false);
-		POTIONS.seen.put( PotionOfFrost.class,              false);
-		POTIONS.seen.put( PotionOfToxicGas.class,           false);
-		POTIONS.seen.put( PotionOfParalyticGas.class,       false);
-		POTIONS.seen.put( PotionOfPurity.class,             false);
-		POTIONS.seen.put( PotionOfLevitation.class,         false);
-		POTIONS.seen.put( PotionOfMindVision.class,         false);
-		POTIONS.seen.put( PotionOfInvisibility.class,       false);
-		POTIONS.seen.put( PotionOfExperience.class,         false);
-		POTIONS.seen.put( PotionOfHaste.class,              false);
-	
-		SCROLLS.seen.put( ScrollOfIdentify.class,           false);
-		SCROLLS.seen.put( ScrollOfUpgrade.class,            false);
-		SCROLLS.seen.put( ScrollOfRemoveCurse.class,        false);
-		SCROLLS.seen.put( ScrollOfMagicMapping.class,       false);
-		SCROLLS.seen.put( ScrollOfTeleportation.class,      false);
-		SCROLLS.seen.put( ScrollOfRecharging.class,         false);
-		SCROLLS.seen.put( ScrollOfMirrorImage.class,        false);
-		SCROLLS.seen.put( ScrollOfTerror.class,             false);
-		SCROLLS.seen.put( ScrollOfLullaby.class,            false);
-		SCROLLS.seen.put( ScrollOfRage.class,               false);
-		SCROLLS.seen.put( ScrollOfRetribution.class,        false);
-		SCROLLS.seen.put( ScrollOfTransmutation.class,      false);
+		for (Class weapon : Generator.Category.WEP_T1.classes){
+			WEAPONS.seen.put( weapon, false);
+		}
+		for (Class weapon : Generator.Category.WEP_T2.classes){
+			WEAPONS.seen.put( weapon, false);
+		}
+		for (Class weapon : Generator.Category.WEP_T3.classes){
+			WEAPONS.seen.put( weapon, false);
+		}
+		for (Class weapon : Generator.Category.WEP_T4.classes){
+			WEAPONS.seen.put( weapon, false);
+		}
+		for (Class weapon : Generator.Category.WEP_T5.classes){
+			WEAPONS.seen.put( weapon, false);
+		}
+
+		for (Class armor : Generator.Category.ARMOR.classes){
+			ARMOR.seen.put( armor, false);
+		}
+
+		for (Class wand : Generator.Category.WAND.classes){
+			WANDS.seen.put( wand, false);
+		}
+
+		for (Class ring : Generator.Category.RING.classes){
+			RINGS.seen.put( ring, false);
+		}
+
+		for (Class artifact : Generator.Category.ARTIFACT.classes){
+			ARTIFACTS.seen.put( artifact, false);
+		}
+
+		for (Class potion : Generator.Category.POTION.classes){
+			POTIONS.seen.put( potion, false);
+		}
+
+		for (Class scroll : Generator.Category.SCROLL.classes){
+			SCROLLS.seen.put( scroll, false);
+		}
+
 	}
 	
 	public static LinkedHashMap<Catalog, Badges.Badge> catalogBadges = new LinkedHashMap<>();

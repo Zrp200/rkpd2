@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Haste;
+import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.levels.traps.Trap;
@@ -47,9 +48,9 @@ public class Swiftthistle extends Plant {
 	
 	@Override
 	public void activate( Char ch ) {
-		if (ch == Dungeon.hero) {
+		if (ch != null) {
 			Buff.affect(ch, TimeBubble.class).reset();
-			if (Dungeon.hero.subClass == HeroSubClass.WARDEN || Dungeon.hero.subClass == HeroSubClass.KING){
+			if (ch instanceof Hero && ((Hero) ch).subClass == HeroSubClass.WARDEN || Dungeon.hero.subClass == HeroSubClass.KING){
 				Buff.affect(ch, Haste.class, 1f);
 			}
 		}
@@ -98,12 +99,7 @@ public class Swiftthistle extends Plant {
 		public void reset(){
 			left = 7f;
 		}
-		
-		@Override
-		public String toString() {
-			return Messages.get(this, "name");
-		}
-		
+
 		@Override
 		public String desc() {
 			return Messages.get(this, "desc", dispTurns(left));
@@ -151,6 +147,7 @@ public class Swiftthistle extends Plant {
 
 		@Override
 		public void fx(boolean on) {
+			if (!(target instanceof Hero)) return;
 			Emitter.freezeEmitters = on;
 			if (on){
 				for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {

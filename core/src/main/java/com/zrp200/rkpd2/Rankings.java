@@ -37,16 +37,24 @@ import com.zrp200.rkpd2.journal.Notes;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.QuickSlotButton;
 import com.zrp200.rkpd2.ui.Toolbar;
+import com.zrp200.rkpd2.utils.DungeonSeed;
+import com.watabou.noosa.Game;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.FileUtils;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public enum Rankings {
 	
@@ -66,6 +74,7 @@ public enum Rankings {
 	public int localWon;
 
 	public Record latestDaily;
+	public Record latestDailyReplay = null; //not stored, only meant to be temp
 	public LinkedHashMap<Long, Integer> dailyScoreHistory = new LinkedHashMap<>();
 
 	public void submit( boolean win, Class cause ) {
@@ -73,7 +82,19 @@ public enum Rankings {
 		load();
 		
 		Record rec = new Record();
-		
+
+		//we trim version to just the numbers, ignoring alpha/beta, etc.
+		Pattern p = Pattern.compile("\\d+\\.\\d+\\.\\d+");
+		Matcher m = p.matcher(ShatteredPixelDungeon.version);
+		if (m.find()) {
+			rec.version = "v" + m.group();
+		} else {
+			rec.version = "";
+		}
+
+		DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ROOT);
+		rec.date = format.format(new Date(Game.realTime));
+
 		rec.cause = cause;
 		rec.win		= win;
 		rec.heroClass	= Dungeon.hero.heroClass;
@@ -97,8 +118,17 @@ public enum Rankings {
 		rec.gameID = UUID.randomUUID().toString();
 
 		if (rec.daily){
+			if (Dungeon.dailyReplay){
+				latestDailyReplay = rec;
+				return;
+			}
+
 			latestDaily = rec;
-			dailyScoreHistory.put(Dungeon.seed, rec.score);
+			if (Dungeon.seed <= DungeonSeed.TOTAL_SEEDS) {
+				dailyScoreHistory.put(Dungeon.seed, rec.score);
+			} else {
+				dailyScoreHistory.put(Dungeon.seed - DungeonSeed.TOTAL_SEEDS, rec.score);
+			}
 			save();
 			return;
 		}
@@ -209,6 +239,7 @@ public enum Rankings {
 	public static final String SEED         = "seed";
 	public static final String CUSTOM_SEED	= "custom_seed";
 	public static final String DAILY	    = "daily";
+	public static final String DAILY_REPLAY	= "daily_replay";
 
 	public void saveGameData(Record rec){
 		rec.gameData = new Bundle();
@@ -221,7 +252,10 @@ public enum Rankings {
 		for (Item item : belongings.backpack.items.toArray( new Item[0])) {
 			if (item instanceof Bag){
 				for (Item bagItem : ((Bag) item).items.toArray( new Item[0])){
-					if (Dungeon.quickslot.contains(bagItem)) belongings.backpack.items.add(bagItem);
+					if (Dungeon.quickslot.contains(bagItem)
+							&& !Dungeon.quickslot.contains(item)){
+						belongings.backpack.items.add(bagItem);
+					}
 				}
 			}
 			if (!Dungeon.quickslot.contains(item)) {
@@ -267,6 +301,7 @@ public enum Rankings {
 		rec.gameData.put( SEED, Dungeon.seed );
 		rec.gameData.put( CUSTOM_SEED, Dungeon.customSeedText );
 		rec.gameData.put( DAILY, Dungeon.daily );
+		rec.gameData.put( DAILY_REPLAY, Dungeon.dailyReplay );
 	}
 
 	public void loadGameData(Record rec){
@@ -289,6 +324,7 @@ public enum Rankings {
 		Badges.loadLocal(data.getBundle(BADGES));
 
 		Dungeon.hero = (Hero)data.get(HERO);
+		Dungeon.hero.belongings.identify();
 
 		Statistics.restoreFromBundle(data.getBundle(STATS));
 		
@@ -305,10 +341,11 @@ public enum Rankings {
 			Dungeon.seed = rec.gameData.getLong(SEED);
 			Dungeon.customSeedText = rec.gameData.getString(CUSTOM_SEED);
 			Dungeon.daily = rec.gameData.getBoolean(DAILY);
+			Dungeon.dailyReplay = rec.gameData.getBoolean(DAILY_REPLAY);
 		} else {
 			Dungeon.seed = -1;
 			Dungeon.customSeedText = "";
-			Dungeon.daily = false;
+			Dungeon.daily = Dungeon.dailyReplay = false;
 		}
 	}
 	
@@ -415,6 +452,9 @@ public enum Rankings {
 		private static final String SEED    = "custom_seed";
 		private static final String DAILY   = "daily";
 
+		private static final String DATE    = "date";
+		private static final String VERSION = "version";
+
 		public Class cause;
 		public boolean win;
 
@@ -432,6 +472,9 @@ public enum Rankings {
 
 		public String customSeed;
 		public boolean daily;
+
+		public String date;
+		public String version;
 
 		public String desc(){
 			if (win){
@@ -456,7 +499,7 @@ public enum Rankings {
 		public void restoreFromBundle( Bundle bundle ) {
 			
 			if (bundle.contains( CAUSE )) {
-				cause   = bundle.getClass( CAUSE );
+				cause = bundle.getClass( CAUSE );
 			} else {
 				cause = null;
 			}
@@ -471,6 +514,13 @@ public enum Rankings {
 			herolevel   = bundle.getInt( LEVEL );
 			depth       = bundle.getInt( DEPTH );
 			ascending   = bundle.getBoolean( ASCEND );
+
+			if (bundle.contains( DATE )){
+				date = bundle.getString( DATE );
+				version = bundle.getString( VERSION );
+			} else {
+				date = version = null;
+			}
 
 			if (bundle.contains(DATA))  gameData = bundle.getBundle(DATA);
 			if (bundle.contains(ID))   gameID = bundle.getString(ID);
@@ -494,6 +544,9 @@ public enum Rankings {
 			bundle.put( LEVEL, herolevel );
 			bundle.put( DEPTH, depth );
 			bundle.put( ASCEND, ascending );
+
+			bundle.put( DATE, date );
+			bundle.put( VERSION, version );
 
 			if (gameData != null) bundle.put( DATA, gameData );
 			bundle.put( ID, gameID );

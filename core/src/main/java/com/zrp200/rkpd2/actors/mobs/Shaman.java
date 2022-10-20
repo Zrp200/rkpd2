@@ -28,6 +28,7 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.AscensionChallenge;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Hex;
+import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.buffs.Vulnerable;
 import com.zrp200.rkpd2.actors.buffs.Weakness;
 import com.zrp200.rkpd2.items.Generator;
@@ -110,7 +111,8 @@ public abstract class Shaman extends Mob {
 	
 	private void zap() {
 		spend( 1f );
-		
+
+		Invisibility.dispel(this);
 		if (hit( this, enemy, true )) {
 			
 			if (Random.Int( 2 ) == 0) {

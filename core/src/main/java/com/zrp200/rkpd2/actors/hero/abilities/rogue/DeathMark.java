@@ -49,6 +49,10 @@ import static com.zrp200.rkpd2.Dungeon.hero;
 
 public class DeathMark extends ArmorAbility {
 
+	{
+		baseChargeUse = 25f;
+	}
+
 	public static float damageMultiplier() {
 		//return hero.heroClass == HeroClass.ROGUE ? 5/3f : 1.25f;
 		return 4/3f;
@@ -59,8 +63,9 @@ public class DeathMark extends ArmorAbility {
 		return Messages.get(this, "prompt");
 	}
 
-	{
-		baseChargeUse = 25f;
+	@Override
+	public int targetedPos(Char user, int dst) {
+		return dst;
 	}
 
 	@Override
@@ -171,17 +176,6 @@ public class DeathMark extends ArmorAbility {
 		@Override
 		public void tintIcon(Image icon) {
 			icon.hardlight(1f, 0.2f, 0.2f);
-		}
-
-		@Override
-		public String toString() {
-			return Messages.get(this, "name");
-		}
-
-		@Override
-		public String desc() {
-			//TODO show initial HP here?
-			return Messages.get(this, "desc", dispTurns(visualcooldown()));
 		}
 
 		private void setInitialHP( int hp ){

@@ -30,6 +30,7 @@ import com.zrp200.rkpd2.actors.buffs.Blindness;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Burning;
 import com.zrp200.rkpd2.actors.buffs.Chill;
+import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.effects.Lightning;
 import com.zrp200.rkpd2.effects.Splash;
 import com.zrp200.rkpd2.items.potions.PotionOfFrost;
@@ -144,7 +145,8 @@ public abstract class Elemental extends Mob {
 	
 	private void zap() {
 		spend( 1f );
-		
+
+		Invisibility.dispel(this);
 		if (hit( this, enemy, true )) {
 			
 			rangedProc( enemy );

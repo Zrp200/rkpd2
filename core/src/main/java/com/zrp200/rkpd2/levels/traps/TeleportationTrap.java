@@ -30,6 +30,7 @@ import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.Heap;
+import com.zrp200.rkpd2.items.Honeypot;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
 import com.zrp200.rkpd2.messages.Messages;
@@ -64,6 +65,11 @@ public class TeleportationTrap extends Trap {
 
 				if (cell != -1) {
 					Dungeon.level.drop( item, cell );
+					if (item instanceof Honeypot.ShatteredPot){
+						((Honeypot.ShatteredPot)item).movePot(pos, cell);
+					}
+					Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
+					CellEmitter.get(pos).burst(Speck.factory(Speck.LIGHT), 4);
 				}
 			}
 		}

@@ -28,6 +28,7 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Hunger;
+import com.zrp200.rkpd2.actors.buffs.MagicImmune;
 import com.zrp200.rkpd2.actors.hero.Belongings;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -71,6 +72,7 @@ public class HornOfPlenty extends Artifact {
 	@Override
 	public ArrayList<String> actions( Hero hero ) {
 		ArrayList<String> actions = super.actions( hero );
+		if (hero.buff(MagicImmune.class) != null) return actions;
 		if (isEquipped( hero ) && charge > 0) {
 			actions.add(AC_SNACK);
 			actions.add(AC_EAT);
@@ -85,6 +87,8 @@ public class HornOfPlenty extends Artifact {
 	public void execute( Hero hero, String action ) {
 
 		super.execute(hero, action);
+
+		if (hero.buff(MagicImmune.class) != null) return;
 
 		if (action.equals(AC_EAT) || action.equals(AC_SNACK)){
 
@@ -147,7 +151,7 @@ public class HornOfPlenty extends Artifact {
 	
 	@Override
 	public void charge(Hero target, float amount) {
-		if (charge < chargeCap){
+		if (charge < chargeCap && !cursed && target.buff(MagicImmune.class) == null){
 			partialCharge += 0.25f*amount;
 			if (partialCharge >= 1){
 				partialCharge--;
@@ -239,7 +243,7 @@ public class HornOfPlenty extends Artifact {
 	public class hornRecharge extends ArtifactBuff{
 
 		public void gainCharge(float levelPortion) {
-			if (cursed) return;
+			if (cursed || target.buff(MagicImmune.class) != null) return;
 			
 			if (charge < chargeCap) {
 
@@ -268,8 +272,9 @@ public class HornOfPlenty extends Artifact {
 						partialCharge = 0;
 					}
 				}
-			} else
+			} else {
 				partialCharge = 0;
+			}
 		}
 
 	}

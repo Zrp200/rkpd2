@@ -57,11 +57,6 @@ public class BlobImmunity extends FlavourBuff {
 	public float iconFadePercent() {
 		return Math.max(0, (DURATION - visualcooldown()) / DURATION);
 	}
-	
-	@Override
-	public String toString() {
-		return Messages.get(this, "name");
-	}
 
 	{
 		//all harmful blobs
@@ -85,8 +80,4 @@ public class BlobImmunity extends FlavourBuff {
 		immunities.add(Tengu.BombAbility.BombBlob.class);
 	}
 
-	@Override
-	public String desc() {
-		return Messages.get(this, "desc", dispTurns());
-	}
 }

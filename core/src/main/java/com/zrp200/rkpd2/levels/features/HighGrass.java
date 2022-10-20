@@ -152,15 +152,16 @@ public class HighGrass {
 				// TODO NERF
 				// sigh.
 				int points = Dungeon.hero.pointsInTalent(Talent.NATURES_BETTER_AID);
-				// Seed, scales from 1/25 to 1/5
+				// Seed, scales from 1/25 to 1/9
 				// NBA increases by 17%/33%/50%
-				if (Random.Float() < (1+points/6f)/(25 - (naturalismLevel * 5))) {
+				if (Random.Float() < (1+points/6f)/(25 - (naturalismLevel * 4))) {
 					level.drop(Generator.random(Generator.Category.SEED), pos).sprite.drop();
 				}
 				
-				// Dew, scales from 1/6 to 1/3
+				// Dew, scales from 1/6 to 1/4
 				// NBA increases by 1/12 / 1/6 / 1/4
-				if (Random.Float(24 - naturalismLevel*3) <= 3*(1 + .25*(points/3f))) {
+				// todo this probably isn't right.
+				if (Random.Float(24 - naturalismLevel*2) <= 3*(1 + .25*(points/3f))) {
 					level.drop(new Dewdrop(), pos).sprite.drop();
 				}
 			}

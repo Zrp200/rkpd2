@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.items.armor.glyphs;
 
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.items.armor.Armor;
+import com.zrp200.rkpd2.items.rings.RingOfArcana;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.watabou.utils.GameMath;
 
@@ -37,6 +38,8 @@ public class Stone extends Armor.Glyph {
 		float evasion = defender.defenseSkill(attacker);
 		float accuracy = attacker.attackSkill(defender);
 		testing = false;
+
+		evasion *= RingOfArcana.enchantPowerMultiplier(defender);
 		
 		float hitChance;
 		if (evasion >= accuracy){

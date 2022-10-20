@@ -15,7 +15,7 @@ git subtree-sd add ScrollOfDebug master -m "Added Scroll of Debug"
 You'll be able to update the repository by calling `git subtree-sd pull ScrollOfDebug master`.
 
 3. Ensure the code compiles.
-    * If the directory `shatteredpixel.shatteredpixeldungeon` was changed in the fork, a mass find and replace must be done for the scroll to work properly.
+    * If the directory `zrp200.rkpd2` was changed in the fork, a mass find and replace must be done for the scroll to work properly.
 
 4. Make the scroll accessible in-game.
     * You can do this via [`add-automatically.patch`](https://github.com/Zrp200/ScrollOfDebug/blob/master/add-automatically.patch), which will add ScrollOfDebug to the correct location automatically and amend [`GameScene.java`](https://github.com/00-Evan/shattered-pixel-dungeon/blob/master/core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/scenes/GameScene.java) to automatically place the Scroll of Debug into the hero's inventory when loading a game in INDEV mode.

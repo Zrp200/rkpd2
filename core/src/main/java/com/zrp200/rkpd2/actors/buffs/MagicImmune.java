@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.actors.buffs;
 
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.items.armor.glyphs.AntiMagic;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
@@ -39,8 +40,6 @@ public class MagicImmune extends FlavourBuff {
 	{
 		immunities.addAll(AntiMagic.RESISTS);
 	}
-	
-	//FIXME still a lot of cases not handled here, e.g. rings/artifacts and various damage sources
 
 	@Override
 	public boolean attachTo(Char target) {
@@ -53,9 +52,20 @@ public class MagicImmune extends FlavourBuff {
 					}
 				}
 			}
+			if (target instanceof Hero){
+				((Hero) target).updateHT(false);
+			}
 			return true;
 		} else {
 			return false;
+		}
+	}
+
+	@Override
+	public void detach() {
+		super.detach();
+		if (target instanceof Hero){
+			((Hero) target).updateHT(false);
 		}
 	}
 
@@ -73,15 +83,4 @@ public class MagicImmune extends FlavourBuff {
 	public float iconFadePercent() {
 		return Math.max(0, (DURATION - visualcooldown()) / DURATION);
 	}
-	
-	@Override
-	public String toString() {
-		return Messages.get(this, "name");
-	}
-	
-	@Override
-	public String desc() {
-		return Messages.get(this, "desc", dispTurns());
-	}
-	
 }

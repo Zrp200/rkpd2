@@ -29,10 +29,10 @@ import com.zrp200.rkpd2.SPDSettings;
 import com.zrp200.rkpd2.ShatteredPixelDungeon;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
+import com.zrp200.rkpd2.journal.Document;
 import com.zrp200.rkpd2.journal.Journal;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.InterlevelScene;
-import com.zrp200.rkpd2.scenes.IntroScene;
 import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.sprites.HeroSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
@@ -95,16 +95,11 @@ public class WndStartGame extends Window {
 				
 				GamesInProgress.curSlot = slot;
 				Dungeon.hero = null;
-				Dungeon.daily = false;
+				Dungeon.daily = Dungeon.dailyReplay = false;
 				ActionIndicator.action = null;
 				InterlevelScene.mode = InterlevelScene.Mode.DESCEND;
-				
-				if (SPDSettings.intro()) {
-					SPDSettings.intro( false );
-					Game.switchScene( IntroScene.class );
-				} else {
-					Game.switchScene( InterlevelScene.class );
-				}
+
+				Game.switchScene( InterlevelScene.class );
 			}
 			
 			@Override

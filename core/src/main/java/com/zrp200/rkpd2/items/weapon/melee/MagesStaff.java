@@ -31,6 +31,7 @@ import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.effects.particles.ElmoParticle;
 import com.zrp200.rkpd2.items.ArcaneResin;
 import com.zrp200.rkpd2.items.Item;
@@ -152,15 +153,7 @@ public class MagesStaff extends MeleeWeapon {
 	}
 
 	public void procBM() {
-		/*if (attacker.buff(Talent.EmpoweredStrikeTracker.class) != null){
-			attacker.buff(Talent.EmpoweredStrikeTracker.class).detach();
-			damage = Math.round( damage * (1f + Dungeon.hero.pointsInTalent(Talent.EMPOWERED_STRIKE)/4f));
-		}*/
-		int points = Dungeon.hero.shiftedPoints(Talent.EXCESS_CHARGE, Talent.RK_BATTLEMAGE);
-		if ((wand.curCharges >= wand.maxCharges || Dungeon.hero.canHaveTalent(Talent.EXCESS_CHARGE)) && Random.Int(5) < points){
-			Buff.affect(Dungeon.hero, Barrier.class).setShield(buffedLvl()*2*wand.curCharges/wand.maxCharges);
-		}
-		points = Dungeon.hero.shiftedPoints(Talent.MYSTICAL_CHARGE, Talent.RK_BATTLEMAGE);
+		int points = Dungeon.hero.shiftedPoints(Talent.MYSTICAL_CHARGE, Talent.RK_BATTLEMAGE);
 		if (points > 0){
 			for (Buff b : Dungeon.hero.buffs()){
 				if (b instanceof Artifact.ArtifactBuff) {
@@ -168,9 +161,21 @@ public class MagesStaff extends MeleeWeapon {
 				}
 			}
 		}
+/* todo implement
+		Talent.EmpoweredStrikeTracker empoweredStrike = attacker.buff(Talent.EmpoweredStrikeTracker.class);
+		if (empoweredStrike != null){
+			damage = Math.round( damage * (1f + Dungeon.hero.pointsInTalent(Talent.EMPOWERED_STRIKE)/6f));
+		}
+*/
 
 		if (wand.curCharges < wand.maxCharges) gainCharge(0.5f);
-		ScrollOfRecharging.charge(Dungeon.hero);
+
+//		if (empoweredStrike != null){
+//			empoweredStrike.detach();
+//			if (!(defender instanceof Mob) || !((Mob) defender).surprisedBy(attacker)){
+//				Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG, 0.75f, 1.2f);
+//			}
+//		}
 	}
 	public void procWand(Char defender, int damage) {
 		wand.onHit(this,Dungeon.hero,defender,damage);
@@ -182,7 +187,7 @@ public class MagesStaff extends MeleeWeapon {
 		if (owner instanceof Hero
 				&& wand instanceof WandOfDisintegration
 				&& ((Hero)owner).subClass == HeroSubClass.KING) {
-			reach++;
+			reach += Math.round(Wand.procChanceMultiplier(owner));
 		}
 		return reach;
 	}
@@ -360,8 +365,8 @@ public class MagesStaff extends MeleeWeapon {
 			//info += "\n\n" + Messages.get(this, "no_wand");
 		} else {
 			info += "\n\n" + Messages.get(this, "has_wand", Messages.get(wand, "name"));
-			if (!cursed || !cursedKnown)    info += " " + wand.statsDesc();
-			else                            info += " " + Messages.get(this, "cursed_wand");
+			if ((!cursed && !hasCurseEnchant()) || !cursedKnown)    info += " " + wand.statsDesc();
+			else                                                    info += " " + Messages.get(this, "cursed_wand");
 
 			if (Dungeon.hero.subClass == HeroSubClass.BATTLEMAGE || Dungeon.hero.subClass == HeroSubClass.KING){
 				info += "\n\n" + Messages.get(wand, "bmage_desc", Messages.titleCase(Dungeon.hero.subClass.title()));

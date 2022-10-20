@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.items.bombs;
 
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.SPDSettings;
 import com.zrp200.rkpd2.actors.Actor;
@@ -192,6 +193,10 @@ public class Bomb extends Item {
 				}
 				
 				if (ch == Dungeon.hero && !ch.isAlive()) {
+					if (this instanceof MagicalBomb){
+						Badges.validateDeathFromFriendlyMagic();
+					}
+					GLog.n(Messages.get(this, "ondeath"));
 					Dungeon.fail(Bomb.class);
 				}
 			}
@@ -255,6 +260,8 @@ public class Bomb extends Item {
 			Actor.add( fuse = ((Fuse)bundle.get(FUSE)).ignite(this) );
 	}
 
+	//used to track the death from friendly magic badge
+	public static class MagicalBomb extends Bomb{};
 
 	public static class Fuse extends Actor{
 
