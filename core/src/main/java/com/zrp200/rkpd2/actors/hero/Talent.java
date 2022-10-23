@@ -247,9 +247,6 @@ public enum Talent {
 		{ actPriority = VFX_PRIO; }
 		private boolean checkShielding = false, wasTurned; // this is a very specific case, but still needed.
 
-		// should be the same delay.
-		private static float attackDelay = 0;
-
 		@Override public boolean attachTo(Char target) {
 			// does not bundle.
 			if (Char.restoring == target
@@ -259,7 +256,6 @@ public enum Talent {
 				return false;
 			}
 			wasTurned = target.buff(AllyBuff.class) != null;
-			attackDelay = Math.max(attackDelay, hero.attackDelay());
 			return true;
 		}
 		protected abstract boolean tryAttach(Char target);
@@ -272,7 +268,6 @@ public enum Talent {
 			}
 		}
 
-		private static class SkipDelayReduction extends FlavourBuff {{ actPriority = HERO_PRIO-1; }}
 		@Override protected void onRemove() {
 			if (target != null &&
 					// activates if the enemy was brought to 0 HP this turn.
@@ -281,12 +276,8 @@ public enum Talent {
 							(target.buff(AllyBuff.class) == null) == wasTurned
 					)
 			) {
-				if(hero.buff(SkipDelayReduction.class) == null) {
-					new SkipDelayReduction().attachTo(hero);
-					if(hero.buff(LethalMomentumTracker.class) == null) {
-						hero.spend(-attackDelay);
-					}
-				}
+				// force next
+				hero.spend(Float.NEGATIVE_INFINITY);
 				proc();
 			}
 		}
