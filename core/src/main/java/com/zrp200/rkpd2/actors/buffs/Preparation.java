@@ -154,26 +154,13 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 		ActionIndicator.clearAction(this);
 	}
 
-	/** preserves the fact that there was preparation for a single turn **/
-	private class Reference extends FlavourBuff {
-		public final Preparation object = Preparation.this;
-		{
-			actPriority = object.actPriority;
-		}
+	/** if the current state of preparation is not tied to invisibility **/
+	private boolean manuallySetLevel() {
+		return target.invisible == 0;
 	}
 
-	/** finds preparation, even if it just detached. **/
-	public static Preparation findRecent(Char target) {
-		Preparation found = target.buff(Preparation.class);
-		if(found == null) {
-			// check if it just detached.
-			Reference reference = target.buff(Reference.class);
-			if(reference != null) found = reference.object;
-		}
-		return found;
-	}
-
-	public void setLevel(int level) {
+	/** sets the preparation level to the specified level **/
+	public void setAttackLevel(int level) {
 		turnsInvis = AttackLevel.values()[level - 1].turnsReq;
 	}
 
@@ -215,6 +202,7 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 	@Override
 	public float iconFadePercent() {
 		AttackLevel level = AttackLevel.getLvl(turnsInvis);
+		if(manuallySetLevel()) return 1 - level.ordinal()/( AttackLevel.values().length - 1f );
 		if (level == AttackLevel.LVL_4){
 			return 0;
 		} else {
@@ -228,7 +216,7 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 
 	@Override
 	public String iconTextDisplay() {
-		return Integer.toString(turnsInvis);
+		return Integer.toString(manuallySetLevel() ? attackLevel() : turnsInvis);
 	}
 
 	@Override
@@ -250,12 +238,14 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 		if (lvl.blinkDistance() > 0){
 			desc += "\n\n" + Messages.get(this, "desc_blink", lvl.blinkDistance());
 		}
-		
-		desc += "\n\n" + Messages.get(this, "desc_invis_time", turnsInvis);
-		
-		if (lvl.ordinal() != AttackLevel.values().length-1){
-			AttackLevel next = AttackLevel.values()[lvl.ordinal()+1];
-			desc += "\n" + Messages.get(this, "desc_invis_next", next.turnsReq);
+
+		if(!manuallySetLevel()) {
+			desc += "\n\n" + Messages.get(this, "desc_invis_time", turnsInvis);
+
+			if (lvl.ordinal() != AttackLevel.values().length-1){
+				AttackLevel next = AttackLevel.values()[lvl.ordinal()+1];
+				desc += "\n" + Messages.get(this, "desc_invis_next", next.turnsReq);
+			}
 		}
 		
 		return desc;

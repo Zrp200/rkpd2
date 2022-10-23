@@ -278,7 +278,7 @@ public enum Talent {
 					)
 			) {
 				add(() -> {
-					hero.spend(-hero.cooldown());
+					hero.timeToNow();
 					proc();
 				});
 			}
@@ -325,7 +325,7 @@ public enum Talent {
 			// todo reevaluate this mechanic -- is it too complicated?
 			while(level-- > 0) if(Random.Float() < chance) {
 				// reduce level by amount of failed checks
-				if(level > 0) prep.setLevel(level); else prep = null;
+				if(level > 0) prep.setAttackLevel(level); else prep = null;
 				return true;
 			}
 			return false;
@@ -335,7 +335,7 @@ public enum Talent {
 		protected void proc() {
 			if(prep != null) {
 				prep.attachTo(hero);
-				prep.spend(-prep.cooldown()); // reset to be the current cooldown.
+				prep.timeToNow();
 				ActionIndicator.setAction(prep);
 			}
 		}
