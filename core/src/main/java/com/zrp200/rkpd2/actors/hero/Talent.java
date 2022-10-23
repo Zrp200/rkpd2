@@ -277,9 +277,10 @@ public enum Talent {
 							(target.buff(AllyBuff.class) == null) == wasTurned
 					)
 			) {
-				// force next
-				hero.spend(Float.NEGATIVE_INFINITY);
-				proc();
+				add(() -> {
+					hero.spend(-hero.cooldown());
+					proc();
+				});
 			}
 		}
 		protected void proc() {}
