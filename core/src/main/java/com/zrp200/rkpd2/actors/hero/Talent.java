@@ -316,19 +316,14 @@ public enum Talent {
 	public static class AssassinLethalMomentumTracker extends RKPD2LethalMomentumTracker {
 		private Preparation prep = hero.buff(Preparation.class);
 		@Override protected boolean tryAttach(Char target) {
-			if(prep == null) return false;
-			// 33/66%/100% chance to preserve per level of preparation
-			float chance = hero.pointsInTalent(LETHAL_MOMENTUM_2)/3f;
-			if(chance == 0) return false;
-			int level = prep.attackLevel();
-			// as long as there is preparation there is another chance to proc.
-			// todo reevaluate this mechanic -- is it too complicated?
-			while(level-- > 0) if(Random.Float() < chance) {
-				// reduce level by amount of failed checks
-				if(level > 0) prep.setAttackLevel(level); else prep = null;
-				return true;
-			}
-			return false;
+			if(prep == null || !hero.hasTalent(LETHAL_MOMENTUM_2)) return false;
+			// 60 / 80 / 100% chance to proc
+			// todo determine if I should split these mechanics further?
+			if(Random.Float() > .2*(2+hero.pointsInTalent(LETHAL_MOMENTUM_2))) return false;
+			// preserve half of the levels on average.
+			int level = Random.NormalIntRange(0, prep.attackLevel()-1);
+			if(level > 0) prep.setAttackLevel(level); else prep = null;
+			return true;
 		}
 
 		@Override
