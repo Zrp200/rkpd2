@@ -79,6 +79,7 @@ import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+import com.zrp200.rkpd2.ui.ActionIndicator;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.utils.GLog;
 
@@ -312,18 +313,27 @@ public enum Talent {
 	}
 
 	public static class AssassinLethalMomentumTracker extends RKPD2LethalMomentumTracker {
-		// Preparation is only required for the initial kill.
-		public static class Chain extends RKPD2LethalMomentumTracker.Chain
-		{}
 		@Override protected boolean tryAttach(Char target) {
-			return hero.buff(AssassinLethalMomentumTracker.Chain.class) != null // after the first, any following lethal strike ALWAYS procs lethal.
-					// otherwise you need preparation to start the chain.
-					|| hero.buff(Preparation.class) != null
-						// 50% / 75% / 100%
-						&& Random.Float() < .25f*(2+hero.pointsInTalent(LETHAL_MOMENTUM_2));
-		}
-		@Override protected void proc() {
-			Buff.affect(hero, Chain.class);
+			float chance = hero.pointsInTalent(LETHAL_MOMENTUM_2)/3f;
+			if(chance == 0) return false;
+			Preparation prep = Preparation.findRecent(hero);
+			int level = prep == null ? 0 : prep.attackLevel();
+			while(level > 0) {
+				// as long as there is preparation there is another chance to proc.
+				if(--level == 0) prep.detach();
+				if(Random.Float() > chance) continue;
+				if (level > 0) {
+					final int finalLevel = level;
+					prep.canDispel = false; // attempt to preserve it.
+					add( () -> {
+						if(prep.target != hero) prep.attachTo(hero);
+						prep.setLevel(finalLevel);
+						ActionIndicator.setAction(prep);
+					});
+				}
+				return true;
+			}
+			return false;
 		}
 	}
 	public static class StrikingWaveTracker extends FlavourBuff{};

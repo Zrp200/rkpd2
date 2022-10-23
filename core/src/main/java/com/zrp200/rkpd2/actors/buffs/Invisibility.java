@@ -110,7 +110,11 @@ public class Invisibility extends FlavourBuff {
 
 		Preparation prep = ch.buff( Preparation.class );
 		if (prep != null){
-			prep.detach();
+			if(prep.canDispel)
+				prep.detach();
+			else {
+				//prep.canDispel = true;
+			}
 		}
 
 		Swiftthistle.TimeBubble bubble =  ch.buff( Swiftthistle.TimeBubble.class );

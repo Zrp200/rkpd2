@@ -129,25 +129,60 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 	}
 	
 	private int turnsInvis = 0;
+
+	/** flag to let it survive one bout of Invisibility.dispel **/
+	public boolean canDispel = true;
+
+	@Override
+	public boolean usable() {
+		return bundleRestoring ||
+				AttackLevel.getLvl(turnsInvis).blinkDistance() > 0 && target == Dungeon.hero;
+	}
 	
 	@Override
 	public boolean act() {
+		canDispel = true;
 		if (target.invisible > 0){
 			turnsInvis++;
-			if (AttackLevel.getLvl(turnsInvis).blinkDistance() > 0 && target == Dungeon.hero){
-				ActionIndicator.setAction(this);
-			}
+			ActionIndicator.setAction(this);
 			spend(TICK);
 		} else {
 			detach();
 		}
 		return true;
 	}
-	
+
 	@Override
-	public void detach() {
+	public void detach() { detach(true); }
+	protected void detach(boolean preserve) {
+		if(target == null) return;
+		if(preserve) new Reference().attachTo(target); // preserve a reference that the buff was here for this turn.
 		super.detach();
 		ActionIndicator.clearAction(this);
+	}
+
+	/** preserves the fact that there was preparation for a single turn **/
+	private class Reference extends FlavourBuff {
+		public final Preparation object = Preparation.this;
+		{
+			actPriority = object.actPriority;
+		}
+	}
+
+	/** finds preparation, even if it just detached. **/
+	public static Preparation findRecent(Char target) {
+		Preparation found = target.buff(Preparation.class);
+		if(found == null) {
+			// check if it just detached.
+			Reference reference = target.buff(Reference.class);
+			if(reference != null) found = reference.object;
+		}
+		return found;
+	}
+
+	public void setLevel(int level) {
+		if(level < 1) detach(false);
+		turnsInvis = AttackLevel.values()[level - 1].turnsReq;
 	}
 
 	public int attackLevel(){
@@ -235,12 +270,15 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 	}
 	
 	private static final String TURNS = "turnsInvis";
-	
+
+	private boolean bundleRestoring = false; // allows skipping of certain checks that require the game to be fully instantiated.
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		turnsInvis = bundle.getInt(TURNS);
+		bundleRestoring = true;
 		ActionIndicator.setAction(this);
+		bundleRestoring = false;
 	}
 	
 	@Override
@@ -248,7 +286,6 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 		super.storeInBundle(bundle);
 		bundle.put(TURNS, turnsInvis);
 	}
-
 
 	@Override
 	public Image actionIcon() {
