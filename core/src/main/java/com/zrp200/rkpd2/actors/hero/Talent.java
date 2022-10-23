@@ -314,27 +314,30 @@ public enum Talent {
 	}
 
 	public static class AssassinLethalMomentumTracker extends RKPD2LethalMomentumTracker {
+		private Preparation prep = hero.buff(Preparation.class);
 		@Override protected boolean tryAttach(Char target) {
+			if(prep == null) return false;
+			// 33/66%/100% chance to preserve per level of preparation
 			float chance = hero.pointsInTalent(LETHAL_MOMENTUM_2)/3f;
 			if(chance == 0) return false;
-			Preparation prep = Preparation.findRecent(hero);
-			int level = prep == null ? 0 : prep.attackLevel();
-			while(level > 0) {
-				// as long as there is preparation there is another chance to proc.
-				if(--level == 0) prep.detach();
-				if(Random.Float() > chance) continue;
-				if (level > 0) {
-					final int finalLevel = level;
-					prep.canDispel = false; // attempt to preserve it.
-					add( () -> {
-						if(prep.target != hero) prep.attachTo(hero);
-						prep.setLevel(finalLevel);
-						ActionIndicator.setAction(prep);
-					});
-				}
+			int level = prep.attackLevel();
+			// as long as there is preparation there is another chance to proc.
+			// todo reevaluate this mechanic -- is it too complicated?
+			while(level-- > 0) if(Random.Float() < chance) {
+				// reduce level by amount of failed checks
+				if(level > 0) prep.setLevel(level); else prep = null;
 				return true;
 			}
 			return false;
+		}
+
+		@Override
+		protected void proc() {
+			if(prep != null) {
+				prep.attachTo(hero);
+				prep.spend(-prep.cooldown()); // reset to be the current cooldown.
+				ActionIndicator.setAction(prep);
+			}
 		}
 	}
 	public static class StrikingWaveTracker extends FlavourBuff{};

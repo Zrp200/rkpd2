@@ -130,9 +130,6 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 	
 	private int turnsInvis = 0;
 
-	/** flag to let it survive one bout of Invisibility.dispel **/
-	public boolean canDispel = true;
-
 	@Override
 	public boolean usable() {
 		return bundleRestoring ||
@@ -141,7 +138,6 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 	
 	@Override
 	public boolean act() {
-		canDispel = true;
 		if (target.invisible > 0){
 			turnsInvis++;
 			ActionIndicator.setAction(this);
@@ -153,10 +149,7 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 	}
 
 	@Override
-	public void detach() { detach(true); }
-	protected void detach(boolean preserve) {
-		if(target == null) return;
-		if(preserve) new Reference().attachTo(target); // preserve a reference that the buff was here for this turn.
+	public void detach() {
 		super.detach();
 		ActionIndicator.clearAction(this);
 	}
@@ -181,7 +174,6 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 	}
 
 	public void setLevel(int level) {
-		if(level < 1) detach(false);
 		turnsInvis = AttackLevel.values()[level - 1].turnsReq;
 	}
 
@@ -276,6 +268,7 @@ public class Preparation extends Buff implements ActionIndicator.Action {
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		turnsInvis = bundle.getInt(TURNS);
+		// this lets us ignore checks that are impossible to make.
 		bundleRestoring = true;
 		ActionIndicator.setAction(this);
 		bundleRestoring = false;
