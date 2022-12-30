@@ -21,24 +21,21 @@
 
 package com.zrp200.rkpd2.actors.mobs;
 
+import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.AllyBuff;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.ChampionEnemy;
-import com.zrp200.rkpd2.actors.buffs.Corruption;
 import com.zrp200.rkpd2.effects.Pushing;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRemoveCurse;
-import com.zrp200.rkpd2.scenes.GameScene;
-import com.zrp200.rkpd2.sprites.NecromancerSprite;
 import com.zrp200.rkpd2.sprites.SpectralNecromancerSprite;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class SpectralNecromancer extends Necromancer {
 
@@ -106,6 +103,15 @@ public class SpectralNecromancer extends Necromancer {
 	@Override
 	public void summonMinion() {
 		if (Actor.findChar(summoningPos) != null) {
+
+			//cancel if character cannot be moved
+			if (Char.hasProp(Actor.findChar(summoningPos), Property.IMMOVABLE)){
+				summoning = false;
+				((SpectralNecromancerSprite)sprite).finishSummoning();
+				spend(TICK);
+				return;
+			}
+
 			int pushPos = pos;
 			for (int c : PathFinder.NEIGHBOURS8) {
 				if (Actor.findChar(summoningPos + c) == null
@@ -129,6 +135,10 @@ public class SpectralNecromancer extends Necromancer {
 				Char blocker = Actor.findChar(summoningPos);
 				if (blocker.alignment != alignment){
 					blocker.damage( Random.NormalIntRange(2, 10), this );
+					if (blocker == Dungeon.hero && !blocker.isAlive()){
+						Badges.validateDeathFromEnemyMagic();
+						Dungeon.fail(getClass());
+					}
 				}
 
 				spend(TICK);

@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.actors.mobs;
 
+import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
@@ -208,6 +209,16 @@ public class Necromancer extends Mob {
 				Dungeon.level.occupyCell(ch );
 
 			} else {
+
+				Char blocker = Actor.findChar(summoningPos);
+				if (blocker.alignment != alignment){
+					blocker.damage( Random.NormalIntRange(2, 10), this );
+					if (blocker == Dungeon.hero && !blocker.isAlive()){
+						Badges.validateDeathFromEnemyMagic();
+						Dungeon.fail(getClass());
+					}
+				}
+
 				spend(TICK);
 				return;
 			}

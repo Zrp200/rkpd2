@@ -146,7 +146,6 @@ public class WelcomeScene extends PixelScene {
 				super.onClick();
 				if (previousVersion == 0 || SPDSettings.intro()){
 
-					//TODO for testers
 					if (previousVersion > 0){
 						updateVersion(previousVersion);
 					}
@@ -281,11 +280,6 @@ public class WelcomeScene extends PixelScene {
 			}
 			Dungeon.daily = Dungeon.dailyReplay = false;
 
-		}
-
-		//defaults to false for older users
-		if (previousVersion <= ShatteredPixelDungeon.V1_0_0){
-			SPDSettings.quickSwapper(false);
 		}
 
 		SPDSettings.version(ShatteredPixelDungeon.versionCode);

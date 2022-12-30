@@ -134,8 +134,8 @@ public abstract class Wand extends Item {
 		if (attacker.buff(Talent.EmpoweredStrikeTracker.class) != null) {
 			// todo fix so that empowered strike is correctly handled.
 			multi *= 1f + ((Hero)attacker).byTalent(
-					Talent.EMPOWERED_STRIKE, 1/2f,
-					Talent.RK_BATTLEMAGE, 1/3f
+					Talent.EMPOWERED_STRIKE, 1/3f, // 67 133 200
+					Talent.RK_BATTLEMAGE, 1/2f // 50 100 150
 			);
 		}
 		return multi;
@@ -707,14 +707,17 @@ public abstract class Wand extends Item {
 		private static final float CHARGE_BUFF_BONUS = 0.25f;
 
 		float scalingFactor = NORMAL_SCALE_FACTOR;
-		
+
 		@Override
 		public boolean attachTo( Char target ) {
-			super.attachTo( target );
-			
-			return true;
+			if (super.attachTo( target )) {
+				//if we're loading in and the hero has partially spent a turn, delay for 1 turn
+				if (now() == 0 && cooldown() == 0 && target.cooldown() > 0) spend(TICK);
+				return true;
+			}
+			return false;
 		}
-		
+
 		@Override
 		public boolean act() {
 			if (curCharges < maxCharges)

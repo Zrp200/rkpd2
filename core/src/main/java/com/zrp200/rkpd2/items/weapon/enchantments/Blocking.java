@@ -45,7 +45,7 @@ public class Blocking extends Weapon.Enchantment {
 		// lvl 0 - 10%
 		// lvl 1 ~ 14%
 		// lvl 2 ~ 18%
-		if (proc(attacker, level, 2f, 20f)){
+		if (proc(attacker, level, 4f, 40f)){
 			BlockBuff b = Buff.affect(attacker, BlockBuff.class);
 			b.setShield(attacker.HT/10);
 			attacker.sprite.emitter().burst(Speck.factory(Speck.LIGHT), 5);

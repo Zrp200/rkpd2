@@ -52,8 +52,7 @@ public class Berserk extends Buff implements ActionIndicator.Action {
 	}
 	private State state = State.NORMAL;
 
-	// todo fix
-	private static final float LEVEL_RECOVER_START = 5f;
+	private static final float LEVEL_RECOVER_START = 4f;
 	private float getLevelRecoverStart() {
 		return LEVEL_RECOVER_START -
 				// -1 level for berserker proper.

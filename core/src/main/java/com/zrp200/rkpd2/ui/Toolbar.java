@@ -26,8 +26,11 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.QuickSlot;
 import com.zrp200.rkpd2.SPDAction;
 import com.zrp200.rkpd2.SPDSettings;
+import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.HoldFast;
 import com.zrp200.rkpd2.actors.buffs.LostInventory;
 import com.zrp200.rkpd2.actors.hero.Belongings;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.messages.Messages;
@@ -250,8 +253,12 @@ public class Toolbar extends Component {
 			protected void onClick() {
 				if (Dungeon.hero.ready && !GameScene.cancel()) {
 					Dungeon.hero.waitOrPickup = true;
-					if (Dungeon.level.heaps.get(Dungeon.hero.pos) != null
+					if ((Dungeon.level.heaps.get(Dungeon.hero.pos) != null || Dungeon.hero.isStandingOnTrampleableGrass())
 						&& Dungeon.hero.handle(Dungeon.hero.pos)){
+						//trigger hold fast here, even if the hero didn't specifically wait
+						if (Dungeon.hero.hasTalent(Talent.HOLD_FAST)){
+							Buff.affect(Dungeon.hero, HoldFast.class);
+						}
 						Dungeon.hero.next();
 					} else {
 						examining = false;
@@ -441,9 +448,6 @@ public class Toolbar extends Component {
 									Item item = items.get(idx);
 									if (alt && item.defaultAction != null) {
 										item.execute(Dungeon.hero);
-										if (item.usesTargeting) {
-											QuickSlotButton.useTargeting(idx);
-										}
 									} else {
 										Game.scene().addToFront(new WndUseItem(null, item));
 									}

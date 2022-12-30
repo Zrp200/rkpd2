@@ -28,7 +28,9 @@ import com.zrp200.rkpd2.actors.buffs.Degrade;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.Armor;
+import com.zrp200.rkpd2.items.rings.Ring;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfUpgrade;
+import com.zrp200.rkpd2.items.wands.Wand;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
@@ -59,7 +61,11 @@ public class MagicalInfusion extends InventorySpell {
 		} else if (item instanceof Armor && ((Armor) item).glyph != null) {
 			((Armor) item).upgrade(true);
 		} else {
+			boolean wasCursed = item.cursed;
+			boolean wasCurseInfused = item instanceof Wand && ((Wand) item).curseInfusionBonus;
 			item.upgrade();
+			if (wasCursed) item.cursed = true;
+			if (wasCurseInfused) ((Wand) item).curseInfusionBonus = true;
 		}
 		
 		GLog.p( Messages.get(this, "infuse") );

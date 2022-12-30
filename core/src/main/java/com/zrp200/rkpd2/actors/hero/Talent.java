@@ -77,6 +77,7 @@ import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 import com.zrp200.rkpd2.ui.ActionIndicator;
@@ -157,6 +158,7 @@ public enum Talent {
 	GROWING_POWER(116, 4), NATURES_WRATH(117, 4), WILD_MOMENTUM(118, 4),
 	//Spirit Hawk T4
 	EAGLE_EYE(119, 4), GO_FOR_THE_EYES(120, 4), SWIFT_SPIRIT(121, 4),
+
 	//universal T4
 	HEROIC_ENERGY(26, 4) {
 		// this is why wrath doesn't have any talents...
@@ -214,7 +216,7 @@ public enum Talent {
 			buff.spend( buff.duration() );
 		}
 		public abstract float duration();
-		public float iconFadePercent() { return max(0, visualcooldown() / duration()); }
+		public float iconFadePercent() { return GameMath.gate(0, visualcooldown() / duration(),1); }
 		public String toString() { return Messages.get(this, "name"); }
 		public String desc() { return Messages.get(this, "desc", dispTurns(visualcooldown())); }
 	}
@@ -336,7 +338,7 @@ public enum Talent {
 		}
 	}
 	public static class StrikingWaveTracker extends FlavourBuff{};
-	public static class WandPreservationCounter extends CounterBuff{};
+	public static class WandPreservationCounter extends CounterBuff{{revivePersists = true;}};
 	public static class EmpoweredStrikeTracker extends FlavourBuff{};
 	public static class ProtectiveShadowsTracker extends Buff {
 		private float incHeal = 1, incShield = 1;
@@ -366,13 +368,13 @@ public enum Talent {
 						incShield = 0;
 						barrier.incShield(1);
 					} else {
-						barrier.incShield(0);
+						barrier.incShield(0); //resets barrier decay
 					}
 				}
 			} else {
 				detach();
 			}
-			spend(TICK);
+			spend( TICK );
 			return true;
 		}
 
@@ -406,6 +408,7 @@ public enum Talent {
 		public void tintIcon(Image icon) { icon.hardlight(0f, 0.35f, 0.15f); }
 	};
 	public static class RejuvenatingStepsFurrow extends CounterBuff{
+		{revivePersists = true;}
 		/** Track a successful proc of rejuvenating steps.
 		 *	Moved logic from Level.java to here so I don't forget what this does.
 		 **/
@@ -421,9 +424,7 @@ public enum Talent {
 					? 15 * hero.pointsInTalent(SEER_SHOT)
 					: 20;
 		}
-		public int icon() {
-			return target.buff(RevealedArea.class) == null ? BuffIndicator.TIME : BuffIndicator.NONE;
-		}
+		public int icon() { return target.buff(RevealedArea.class) != null ? BuffIndicator.NONE : BuffIndicator.TIME; }
 		public void tintIcon(Image icon) { icon.hardlight(0.7f, 0.4f, 0.7f); }
 	};
 	public static class SpiritBladesTracker extends FlavourBuff{
@@ -452,7 +453,7 @@ public enum Talent {
 		return max;
 	}
 
-	Talent(int icon ){
+	Talent( int icon ){
 		this(icon, 2);
 	}
 
@@ -1094,8 +1095,8 @@ public enum Talent {
 			}
 		}
 
-		if (hero.heroClass != null) initClassTalents(hero);
-		if (hero.subClass != null)  initSubclassTalents(hero);
+		if (hero.heroClass != null)     initClassTalents(hero);
+		if (hero.subClass != null)      initSubclassTalents(hero);
 		if (hero.armorAbility != null)  initArmorTalents(hero);
 
 		for (int i = 0; i < MAX_TALENT_TIERS; i++){
