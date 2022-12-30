@@ -110,7 +110,7 @@ public class GameScene extends PixelScene {
 	private BossHealthBar boss;
 
 	private GameLog log;
-	
+
 	private static CellSelector cellSelector;
 	
 	private Group terrain;
@@ -155,20 +155,19 @@ public class GameScene extends PixelScene {
 			return;
 		}
 
-		// debug logic...
+		// debug logic
 		ScrollOfDebug debug = Dungeon.hero.belongings.getItem(ScrollOfDebug.class);
+		// by default only added in "indev" builds.
 		boolean supported = DeviceCompat.isDebug();
 		if(supported) {
 			if(debug == null) {
 				debug = new ScrollOfDebug();
-				if (!debug.collect()) Dungeon.hero.belongings.backpack.items.add(debug);
-				if (!Dungeon.quickslot.contains(debug)) {
-					int slot = 0;
-					// it'll overwrite the last slot if they are all full.
-					// Perhaps a bit pushy, but the whole point is for it to be available, after all.
-					while (slot < Dungeon.quickslot.SIZE - 1 && Dungeon.quickslot.getItem(slot) != null)
-						slot++;
+				if(!debug.collect()) Dungeon.hero.belongings.backpack.items.add(debug);
+			}
+			if(!Dungeon.quickslot.contains(debug)) {
+				for(int slot = 0; slot < Dungeon.quickslot.SIZE; slot++) if(Dungeon.quickslot.getItem(slot) == null) {
 					Dungeon.quickslot.setSlot(slot, debug);
+					break;
 				}
 			}
 		} else if(debug != null) {
@@ -375,7 +374,7 @@ public class GameScene extends PixelScene {
 		}
 
 		layoutTags();
-		
+
 		switch (InterlevelScene.mode) {
 			case RESURRECT:
 				Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
@@ -671,7 +670,7 @@ public class GameScene extends PixelScene {
 	private float notifyDelay = 1/60f;
 
 	public static boolean updateItemDisplays = false;
-	
+
 	@Override
 	public synchronized void update() {
 		lastOffset = null;
@@ -1086,7 +1085,7 @@ public class GameScene extends PixelScene {
 			}
 		}
 	}
-	
+
 	public static void updateKeyDisplay(){
 		if (scene != null) scene.menu.updateKeys();
 	}
@@ -1341,7 +1340,7 @@ public class GameScene extends PixelScene {
 			scene.prompt(listener.prompt());
 		}
 	}
-	
+
 	private static boolean cancelCellSelector() {
 		cellSelector.resetKeyHold();
 		if (cellSelector.listener != null && cellSelector.listener != defaultCellListener) {
@@ -1366,10 +1365,10 @@ public class GameScene extends PixelScene {
 				return wnd;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	public static boolean cancel() {
 		if (Dungeon.hero != null && (Dungeon.hero.curAction != null || Dungeon.hero.resting)) {
 			
