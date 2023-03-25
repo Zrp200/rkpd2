@@ -642,13 +642,40 @@ public abstract class Wand extends Item {
 					
 					curUser.busy();
 
-					//backup barrier logic
+					//backup barrier logic, specifically managed so that they stack.
 					//This triggers before the wand zap, mostly so the barrier helps vs skeletons
-					if (curUser.hasTalent(Talent.BACKUP_BARRIER)
-							&& curWand.curCharges == curWand.chargesPerCast()
+					if (curWand.curCharges == curWand.chargesPerCast()
 							&& curWand.charger != null && curWand.charger.target == curUser){
+						final int[] shield = {0};
+						curUser.byTalent( (talent, points) -> {
+							int shielding = 1 + 2 * points;
+							if (talent == Talent.BACKUP_BARRIER) {
+								shielding = Math.round(shielding * 1.5f);
+							}
+							if (curUser.heroClass == (
+									talent == Talent.BACKUP_BARRIER ? HeroClass.MAGE :
+									/*talent == Talent.NOBLE_CAUSE ?*/ HeroClass.RAT_KING
+							)) {
+								//regular. If hero owns wand but it isn't in belongings it must be in the staff
+								if (!curUser.belongings.contains(curWand)) {
+									shield[0] += shielding;
+								}
+							}
+							//metamorphed. Triggers if wand is highest level hero has
+							else {
+								boolean highest = true;
+								for (Item i : curUser.belongings.getAllItems(Wand.class)){
+									if (i.level() > curWand.level()){
+										highest = false;
+									}
+								}
+								if (highest){
+									//grants 3/5 shielding
+									shield[0] += shielding;
+								}
+							}
+						}, Talent.BACKUP_BARRIER, Talent.NOBLE_CAUSE);
 
-						//regular. If hero owns wand but it isn't in belongings it must be in the staff
 						if (curUser.heroClass == HeroClass.MAGE && !curUser.belongings.contains(curWand)){
 							//grants 3/5 shielding
 							Buff.affect(Dungeon.hero, Barrier.class).setShield(1 + 2 * Dungeon.hero.pointsInTalent(Talent.BACKUP_BARRIER));
