@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2023 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,9 +34,12 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.blobs.SacrificialFire;
 import com.zrp200.rkpd2.actors.buffs.*;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
+import com.zrp200.rkpd2.actors.hero.abilities.duelist.Challenge;
+import com.zrp200.rkpd2.actors.hero.abilities.duelist.ElementalStrike;
 import com.zrp200.rkpd2.actors.hero.abilities.huntress.NaturesPower;
 import com.zrp200.rkpd2.actors.hero.abilities.rat_king.OmniAbility;
 import com.zrp200.rkpd2.actors.hero.abilities.warrior.Endure;
+import com.zrp200.rkpd2.actors.mobs.Mimic;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.Monk;
 import com.zrp200.rkpd2.actors.mobs.Snake;
@@ -91,6 +94,11 @@ import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.melee.Flail;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
+import com.zrp200.rkpd2.items.weapon.melee.MeleeWeapon;
+import com.zrp200.rkpd2.items.weapon.melee.Quarterstaff;
+import com.zrp200.rkpd2.items.weapon.melee.RoundShield;
+import com.zrp200.rkpd2.items.weapon.melee.Sai;
+import com.zrp200.rkpd2.items.weapon.melee.Scimitar;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.journal.Document;
 import com.zrp200.rkpd2.journal.Notes;
@@ -445,8 +453,8 @@ public class Hero extends Char {
 
 	@Override
 	public void hitSound(float pitch) {
-		if ( belongings.weapon() != null ){
-			belongings.weapon().hitSound(pitch);
+		if (!RingOfForce.fightingUnarmed(this)) {
+			belongings.attackingWeapon().hitSound(pitch);
 		} else if (RingOfForce.getBuffedBonus(this, RingOfForce.Force.class) > 0) {
 			//pitch deepens by 2.5% (additive) per point of strength, down to 75%
 			super.hitSound( pitch * GameMath.gate( 0.75f, 1.25f - 0.025f*STR(), 1f) );
@@ -486,7 +494,8 @@ public class Hero extends Char {
 	public boolean shoot( Char enemy, MissileWeapon wep ) {
 
 		this.enemy = enemy;
-		boolean wasEnemy = enemy.alignment == Alignment.ENEMY;
+		boolean wasEnemy = enemy.alignment == Alignment.ENEMY
+				|| (enemy instanceof Mimic && enemy.alignment == Alignment.NEUTRAL);
 
 		//temporarily set the hero's weapon to the missile weapon being used
 		//TODO improve this!
@@ -501,12 +510,16 @@ public class Hero extends Char {
 			Buff.affect( this, Combo.class ).hit( enemy );
 		}
 
+		if (hit && heroClass == HeroClass.DUELIST && wasEnemy){
+			Buff.append( this, Sai.ComboStrikeTracker.class, Sai.ComboStrikeTracker.DURATION);
+		}
+
 		return hit;
 	}
 	
 	@Override
 	public int attackSkill( Char target ) {
-		KindOfWeapon wep = belongings.weapon();
+		KindOfWeapon wep = belongings.attackingWeapon();
 		
 		float accuracy = 1;
 		accuracy *= RingOfAccuracy.accuracyMultiplier( this );
@@ -514,7 +527,11 @@ public class Hero extends Char {
 
 		if(buff(Talent.WarriorLethalMomentumTracker.Chain.class) != null) accuracy *= 2;
 
-		if (wep != null) {
+		if (buff(Scimitar.SwordDance.class) != null){
+			accuracy *= 0.8f;
+		}
+
+		if (!RingOfForce.fightingUnarmed(this)) {
 			return (int)(attackSkill * accuracy * wep.accuracyFactor( this, target ));
 		} else {
 			return (int)(attackSkill * accuracy);
@@ -525,16 +542,32 @@ public class Hero extends Char {
 	public int defenseSkill( Char enemy ) {
 
 		if (buff(Combo.ParryTracker.class) != null){
-			if (canAttack(enemy)){
+			if (canAttack(enemy) && !isCharmedBy(enemy)){
 				Buff.affect(this, Combo.RiposteTracker.class).enemy = enemy;
 			}
+			return INFINITE_EVASION;
+		}
+
+		if (buff(RoundShield.GuardTracker.class) != null){
 			return INFINITE_EVASION;
 		}
 
 		float evasion = defenseSkill;
 		
 		evasion *= RingOfEvasion.evasionMultiplier( this );
-		
+
+		if (buff(Talent.RestoredAgilityTracker.class) != null){
+			if (pointsInTalent(Talent.RESTORED_AGILITY) == 1){
+				evasion *= 4f;
+			} else if (pointsInTalent(Talent.RESTORED_AGILITY) == 2){
+				return INFINITE_EVASION;
+			}
+		}
+
+		if (buff(Quarterstaff.DefensiveStance.class) != null){
+			evasion *= 2;
+		}
+
 		if (paralysed > 0) {
 			evasion /= 2;
 		}
@@ -549,20 +582,34 @@ public class Hero extends Char {
 	@Override
 	public String defenseVerb() {
 		Combo.ParryTracker parry = buff(Combo.ParryTracker.class);
-		if (parry == null){
-			return super.defenseVerb();
-		} else {
+		if (parry != null){
 			parry.parried = true;
 			if (buff(Combo.class).getComboCount() < 9 && !hasTalent(Talent.ENHANCED_COMBO) || pointsInTalent(Talent.ENHANCED_COMBO,Talent.RK_GLADIATOR) < 2){
 				parry.detach();
 			}
 			return Messages.get(Monk.class, "parried");
 		}
+
+		if (buff(RoundShield.GuardTracker.class) != null){
+			buff(RoundShield.GuardTracker.class).detach();
+			Sample.INSTANCE.play(Assets.Sounds.HIT_PARRY, 1, Random.Float(0.96f, 1.05f));
+			return Messages.get(RoundShield.GuardTracker.class, "guarded");
+		}
+
+		if (buff(MonkEnergy.MonkAbility.Focus.FocusBuff.class) != null){
+			buff(MonkEnergy.MonkAbility.Focus.FocusBuff.class).detach();
+			if (sprite != null && sprite.visible) {
+				Sample.INSTANCE.play(Assets.Sounds.HIT_PARRY, 1, Random.Float(0.96f, 1.05f));
+			}
+			return Messages.get(Monk.class, "parried");
+		}
+
+		return super.defenseVerb();
 	}
 
 	@Override
 	public int drRoll() {
-		int dr = 0;
+		int dr = super.drRoll();
 
 		if (belongings.armor() != null) {
 			int armDr = Random.NormalIntRange( belongings.armor().DRMin(), belongings.armor().DRMax());
@@ -580,7 +627,7 @@ public class Hero extends Char {
 		}
 
 		if (buff(HoldFast.class) != null){
-			dr += Random.NormalIntRange(0, HoldFast.armor());
+			dr += buff(HoldFast.class).armorBonus();
 		}
 
 		return dr;
@@ -588,17 +635,47 @@ public class Hero extends Char {
 	
 	@Override
 	public int damageRoll() {
-		KindOfWeapon wep = belongings.weapon();
+		KindOfWeapon wep = belongings.attackingWeapon();
 		int dmg;
 
-		if (wep != null) {
+		if (!RingOfForce.fightingUnarmed(this)) {
 			dmg = wep.damageRoll( this );
+
+			if (heroClass != HeroClass.DUELIST
+					&& hasTalent(Talent.LIGHTWEIGHT_CHARGE)
+					&& wep instanceof MeleeWeapon) {
+				if (((MeleeWeapon) wep).tier == 2) {
+					dmg = Math.round(dmg * (1f + 0.067f*pointsInTalent(Talent.LIGHTWEIGHT_CHARGE)));
+				} else if (((MeleeWeapon) wep).tier == 3) {
+					dmg = Math.round(dmg * (1f + 0.05f*pointsInTalent(Talent.LIGHTWEIGHT_CHARGE)));
+				}
+			}
+
 			if (!(wep instanceof MissileWeapon)) dmg += RingOfForce.armedDamageBonus(this);
 		} else {
 			dmg = RingOfForce.damageRoll(this);
+			if (RingOfForce.unarmedGetsWeaponAugment(this)){
+				dmg = ((Weapon)belongings.attackingWeapon()).augment.damageFactor(dmg);
+			}
 		}
+
+		PhysicalEmpower emp = buff(PhysicalEmpower.class);
+		if (emp != null){
+			dmg += emp.dmgBoost;
+			emp.left--;
+			if (emp.left <= 0) {
+				emp.detach();
+			}
+			Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG, 0.75f, 1.2f);
+		}
+
+		if (heroClass != HeroClass.DUELIST
+				&& hasTalent(Talent.WEAPON_RECHARGING)
+				&& (buff(Recharging.class) != null || buff(ArtifactRecharge.class) != null)){
+			dmg = Math.round(dmg * 1.025f + (.025f*pointsInTalent(Talent.WEAPON_RECHARGING)));
+		}
+
 		if (dmg < 0) dmg = 0;
-		
 		return dmg;
 	}
 	
@@ -634,10 +711,11 @@ public class Hero extends Char {
 
 	@Override
 	public boolean canSurpriseAttack(){
-		//if(heroClass == HeroClass.ROGUE) return true; // rogue can always surprise attack. such balance.
-		if (belongings.weapon() == null || !(belongings.weapon() instanceof Weapon))    return true;
-		if (STR() < ((Weapon)belongings.weapon()).STRReq())                             return false;
-		if (belongings.weapon() instanceof Flail)                                       return false;
+		KindOfWeapon w = belongings.attackingWeapon();
+		if (!(w instanceof Weapon))             return true;
+		if (RingOfForce.fightingUnarmed(this))  return true;
+		if (STR() < ((Weapon)w).STRReq())       return false;
+		if (w instanceof Flail)                 return false;
 
 		return super.canSurpriseAttack();
 	}
@@ -645,7 +723,7 @@ public class Hero extends Char {
 	public boolean canAttack(Char enemy){
 		if(super.canAttack(enemy)) return true;
 
-		KindOfWeapon wep = Dungeon.hero.belongings.weapon();
+		KindOfWeapon wep = Dungeon.hero.belongings.attackingWeapon();
 
 		if (wep != null){
 			return wep.canReach(this, enemy.pos);
@@ -661,15 +739,28 @@ public class Hero extends Char {
 		}
 
 		float delay = super.attackDelay();
-		if (belongings.weapon() != null) {
-			
-			delay *= belongings.weapon().delayFactor( this );
+
+		if (!RingOfForce.fightingUnarmed(this)) {
+
+			delay *= belongings.attackingWeapon().delayFactor( this );
 			
 		} else {
 			//Normally putting furor speed on unarmed attacks would be unnecessary
 			//But there's going to be that one guy who gets a furor+force ring combo
 			//This is for that one guy, you shall get your fists of fury!
-			delay /= RingOfFuror.attackSpeedMultiplier(this);
+			float speed = RingOfFuror.attackSpeedMultiplier(this);
+
+			//ditto for furor + sword dance!
+			if (buff(Scimitar.SwordDance.class) != null){
+				speed += 0.6f;
+			}
+
+			//and augments + brawler's stance! My goodness, so many options now compared to 2014!
+			if (RingOfForce.unarmedGetsWeaponAugment(this)){
+				delay = ((Weapon)belongings.weapon).augment.delayFactor(delay);
+			}
+
+			delay /= speed;
 		}
 		if(hasTalent(Talent.ONE_MAN_ARMY)) {
 			int enemies = 0;
@@ -682,12 +773,16 @@ public class Hero extends Char {
 
 	@Override
 	public void spend( float time ) {
-		justMoved = false;
-		
 		super.spend(time);
 	}
 
-	public void spendAndNextConstant( float time ) {
+	@Override
+	public void spendConstant(float time) {
+		justMoved = false;
+		super.spendConstant(time);
+	}
+
+	public void spendAndNextConstant(float time ) {
 		busy();
 		spendConstant( time );
 		next();
@@ -800,6 +895,7 @@ public class Hero extends Char {
 		damageInterrupt = true;
 		waitOrPickup = false;
 		ready = true;
+		canSelfTrample = true;
 
 		AttackIndicator.updateState();
 
@@ -823,18 +919,26 @@ public class Hero extends Char {
 		next();
 	}
 
-	public boolean isStandingOnTrampleableGrass(){
-		return !rooted && !flying &&
-				(Dungeon.level.map[pos] == Terrain.HIGH_GRASS || (heroClass != HeroClass.HUNTRESS && Dungeon.level.map[pos] == Terrain.FURROWED_GRASS));
+	private boolean canSelfTrample = false;
+	public boolean canSelfTrample(){
+		return canSelfTrample && !rooted && !flying &&
+				//standing in high grass
+				(Dungeon.level.map[pos] == Terrain.HIGH_GRASS ||
+				//standing in furrowed grass and not huntress
+				(heroClass != HeroClass.HUNTRESS && Dungeon.level.map[pos] == Terrain.FURROWED_GRASS) ||
+				//standing on a plant
+				Dungeon.level.plants.get(pos) != null);
 	}
 	
 	private boolean actMove( HeroAction.Move action ) {
 
 		if (getCloser( action.dst )) {
+			canSelfTrample = false;
 			return true;
 
 		//Hero moves in place if there is grass to trample
-		} else if (isStandingOnTrampleableGrass()){
+		} else if (canSelfTrample()){
+			canSelfTrample = false;
 			Dungeon.level.pressCell(pos);
 			spendAndNext( 1 / speed() );
 			return false;
@@ -852,7 +956,7 @@ public class Hero extends Char {
 		
 		Char ch = action.ch;
 
-		if (ch.canInteract(this)) {
+		if (ch.isAlive() && ch.canInteract(this)) {
 			
 			ready();
 			sprite.turnTo( pos, ch.pos );
@@ -1149,11 +1253,7 @@ public class Hero extends Char {
 
 				curAction = null;
 
-				TimekeepersHourglass.timeFreeze timeFreeze = buff(TimekeepersHourglass.timeFreeze.class);
-				if (timeFreeze != null) timeFreeze.disarmPressedTraps();
-				Swiftthistle.TimeBubble timeBubble = buff(Swiftthistle.TimeBubble.class);
-				if (timeBubble != null) timeBubble.disarmPressedTraps();
-
+				Level.beforeTransition();
 				InterlevelScene.curTransition = transition;
 				//TODO probably want to make this more flexible when more types exist
 				if (transition.type == LevelTransition.Type.REGULAR_EXIT) {
@@ -1182,7 +1282,14 @@ public class Hero extends Char {
 		enemy = action.target;
 
 		if (enemy.isAlive() && canAttack( enemy ) && !isCharmedBy( enemy ) && enemy.invisible == 0) {
-			
+
+			if (heroClass != HeroClass.DUELIST
+					&& hasTalent(Talent.AGGRESSIVE_BARRIER)
+					&& buff(Talent.AggressiveBarrierCooldown.class) == null
+					&& (HP / (float)HT) < 0.20f*(1+pointsInTalent(Talent.AGGRESSIVE_BARRIER))){
+				Buff.affect(this, Barrier.class).setShield(3);
+				Buff.affect(this, Talent.AggressiveBarrierCooldown.class, 50f);
+			}
 			sprite.attack( enemy.pos );
 
 			return false;
@@ -1208,7 +1315,10 @@ public class Hero extends Char {
 	public void rest( boolean fullRest ) {
 		spendAndNextConstant( TIME_TO_REST );
 		if (hasTalent(Talent.HOLD_FAST,Talent.RK_BERSERKER)){
-			Buff.affect(this, HoldFast.class);
+			Buff.affect(this, HoldFast.class).pos = pos;
+		}
+		if (hasTalent(Talent.PATIENT_STRIKE)){
+			Buff.prolong(this, Talent.PatientStrikeTracker.class, cooldown());
 		}
 		if (!fullRest) {
 			if (sprite != null) {
@@ -1223,8 +1333,13 @@ public class Hero extends Char {
 		Talent.AssassinLethalMomentumTracker.process(enemy);
 
 		damage = super.attackProc( enemy, damage );
-		
-		KindOfWeapon wep = belongings.weapon();
+
+		KindOfWeapon wep;
+		if (RingOfForce.fightingUnarmed(this) && !RingOfForce.unarmedGetsWeaponEnchantment(this)){
+			wep = null;
+		} else {
+			wep = belongings.attackingWeapon();
+		}
 
 		float mult = Talent.SpiritBladesTracker.getProcModifier();
 
@@ -1311,6 +1426,8 @@ public class Hero extends Char {
 		if (buff(TimekeepersHourglass.timeStasis.class) != null)
 			return;
 
+		//regular damage interrupt, triggers on any damage except specific mild DOT effects
+		// unless the player recently hit 'continue moving', in which case this is ignored
 		if (!(src instanceof Hunger || src instanceof Viscosity.DeferedDamage) && damageInterrupt) {
 			interrupt();
 			resting = false;
@@ -1330,6 +1447,10 @@ public class Hero extends Char {
 			//the same also applies to challenge scroll damage reduction
 			if (buff(ScrollOfChallenge.ChallengeArena.class) != null){
 				dmg *= 0.67f;
+			}
+			//and to monk meditate damage reduction
+			if (buff(MonkEnergy.MonkAbility.Meditate.MeditateResistance.class) != null){
+				dmg *= 0.2f;
 			}
 		}
 
@@ -1357,11 +1478,17 @@ public class Hero extends Char {
 		}
 
 		int preHP = HP + shielding();
+		if (src instanceof Hunger) preHP -= shielding();
 		super.damage( dmg, src );
 		int postHP = HP + shielding();
+		if (src instanceof Hunger) postHP -= shielding();
 		int effectiveDamage = preHP - postHP;
 
 		if (effectiveDamage <= 0) return;
+
+		if (buff(Challenge.DuelParticipant.class) != null){
+			buff(Challenge.DuelParticipant.class).addDamage(effectiveDamage);
+		}
 
 		//flash red when hit for serious damage.
 		float percentDMG = effectiveDamage / (float)preHP; //percent of current HP that was taken
@@ -1378,6 +1505,10 @@ public class Hero extends Char {
 				} else {
 					Sample.INSTANCE.play(Assets.Sounds.HEALTH_WARN, 1/3f + flashIntensity * 4f);
 				}
+				//hero gets interrupted on taking serious damage, regardless of any other factor
+				interrupt();
+				resting = false;
+				damageInterrupt = true;
 			}
 		}
 	}
@@ -1414,7 +1545,7 @@ public class Hero extends Char {
 
 		Char lastTarget = QuickSlotButton.lastTarget;
 		if (target != null && (lastTarget == null ||
-							!lastTarget.isAlive() ||
+							!lastTarget.isAlive() || !lastTarget.isActive() ||
 							lastTarget.alignment == Alignment.ALLY ||
 							!fieldOfView[lastTarget.pos])){
 			QuickSlotButton.target(target);
@@ -1469,15 +1600,6 @@ public class Hero extends Char {
 			path = null;
 
 			if (Actor.findChar( target ) == null) {
-				if (Dungeon.level.pit[target] && !flying && !Dungeon.level.solid[target]) {
-					if (!Chasm.jumpConfirmed){
-						Chasm.heroJump(this);
-						interrupt();
-					} else {
-						Chasm.heroFall(target);
-					}
-					return false;
-				}
 				if (Dungeon.level.passable[target] || Dungeon.level.avoid[target]) {
 					step = target;
 				}
@@ -1527,16 +1649,28 @@ public class Hero extends Char {
 
 		if (step != -1) {
 
+			float delay = 1 / speed();
+
+			if (Dungeon.level.pit[step] && !Dungeon.level.solid[step]
+					&& (!flying || buff(Levitation.class) != null && buff(Levitation.class).detachesWithinDelay(delay))){
+				if (!Chasm.jumpConfirmed){
+					Chasm.heroJump(this);
+					interrupt();
+				} else {
+					Chasm.heroFall(target);
+				}
+				canSelfTrample = false;
+				return false;
+			}
+
 			if (subClass == HeroSubClass.FREERUNNER || subClass == HeroSubClass.KING){
 				Buff.affect(this, Momentum.class).gainStack();
 			}
 
-			float speed = speed();
-			
 			sprite.move(pos, step);
 			move(step);
 
-			spend( 1 / speed );
+			spend( delay );
 			justMoved = true;
 			
 			search(false);
@@ -1653,6 +1787,12 @@ public class Hero extends Char {
 				buff(Talent.RejuvenatingStepsFurrow.class).countDown(percent*200f);
 				if (buff(Talent.RejuvenatingStepsFurrow.class).count() <= 0){
 					buff(Talent.RejuvenatingStepsFurrow.class).detach();
+				}
+			}
+			if (buff(ElementalStrike.ElementalStrikeFurrowCounter.class) != null){
+				buff(ElementalStrike.ElementalStrikeFurrowCounter.class).countDown(percent*20f);
+				if (buff(ElementalStrike.ElementalStrikeFurrowCounter.class).count() <= 0){
+					buff(ElementalStrike.ElementalStrikeFurrowCounter.class).detach();
 				}
 			}
 		}
@@ -1951,7 +2091,8 @@ public class Hero extends Char {
 	public void onAttackComplete() {
 		
 		AttackIndicator.target(enemy);
-		boolean wasEnemy = enemy.alignment == Alignment.ENEMY;
+		boolean wasEnemy = enemy.alignment == Alignment.ENEMY
+				|| (enemy instanceof Mimic && enemy.alignment == Alignment.NEUTRAL);
 
 		boolean hit = attack( enemy );
 
@@ -1962,6 +2103,22 @@ public class Hero extends Char {
 			Combo combo = Buff.affect( this, Combo.class );
 			if(hit) combo.hit(enemy);
 			else 	combo.miss();
+		}
+
+		if (hit && heroClass == HeroClass.DUELIST && wasEnemy){
+			Buff.append( this, Sai.ComboStrikeTracker.class, Sai.ComboStrikeTracker.DURATION);
+		}
+
+		RingOfForce.BrawlersStance brawlStance = buff(RingOfForce.BrawlersStance.class);
+		if (brawlStance != null && brawlStance.hitsLeft() > 0){
+			MeleeWeapon.Charger charger = Buff.affect(this, MeleeWeapon.Charger.class);
+			charger.partialCharge -= RingOfForce.BrawlersStance.HIT_CHARGE_USE;
+			while (charger.partialCharge < 0) {
+				charger.charges--;
+				charger.partialCharge++;
+			}
+			BuffIndicator.refreshHero();
+			Item.updateQuickslot();
 		}
 
 		curAction = null;
@@ -2045,7 +2202,7 @@ public class Hero extends Char {
 
 	@Override
 	public boolean isInvulnerable(Class effect) {
-		return buff(AnkhInvulnerability.class) != null;
+		return super.isInvulnerable(effect) || buff(AnkhInvulnerability.class) != null;
 	}
 
 	public boolean search( boolean intentional ) {

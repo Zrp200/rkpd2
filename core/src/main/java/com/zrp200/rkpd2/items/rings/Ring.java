@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2023 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -185,13 +185,17 @@ public class Ring extends KindofMisc {
 		
 		return desc;
 	}
-	
+
 	protected String statsInfo(){
 		int level = level();
 		if(!isIdentified()) level(0);
 		double bonus = Math.pow(multiplier(),soloBuffedBonus(false));
 		bonus = multiplier() < 1 ? 1-bonus : bonus-1;
-		String res = Messages.get(this,(isIdentified()?"":"typical_")+"stats", new DecimalFormat("#.##").format(100f * bonus));
+		String res = Messages.get(
+				this,
+				(isIdentified()? "" : "typical_") + "stats",
+				Messages.decimalFormat("#.##", 100f * bonus)
+		);
 		level(level);
 		return res;
 	}
@@ -373,7 +377,9 @@ public class Ring extends KindofMisc {
 		public boolean attachTo( Char target ) {
 			if (super.attachTo( target )) {
 				//if we're loading in and the hero has partially spent a turn, delay for 1 turn
-				if (now() == 0 && cooldown() == 0 && target.cooldown() > 0) spend(TICK);
+				if (target instanceof Hero && Dungeon.hero == null && cooldown() == 0 && target.cooldown() > 0) {
+					spend(TICK);
+				}
 				return true;
 			}
 			return false;

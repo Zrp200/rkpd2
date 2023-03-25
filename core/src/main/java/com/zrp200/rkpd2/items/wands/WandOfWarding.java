@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2023 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -297,10 +297,11 @@ public class WandOfWarding extends Wand {
 
 		@Override
 		public int drRoll() {
+			int dr = super.drRoll();
 			if (tier > 3){
-				return Math.round(Random.NormalIntRange(0, 3 + Dungeon.scalingDepth()/2) / (7f - tier));
+				return dr + Math.round(Random.NormalIntRange(0, 3 + Dungeon.scalingDepth()/2) / (7f - tier));
 			} else {
-				return 0;
+				return dr;
 			}
 		}
 
@@ -326,12 +327,13 @@ public class WandOfWarding extends Wand {
 
 			//always hits
 			int dmg = Random.NormalIntRange( 2 + wandLevel, 8 + 4*wandLevel );
-			MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
-			Wand.wandProc(enemy, wandLevel, 1, true, dmg,
-					staff != null && staff.wandClass() == WandOfWarding.class && Dungeon.hero.belongings.getItem(WandOfWarding.class) == null); // damage was already done.
+			Char enemy = this.enemy;
 			enemy.damage( dmg, this );
-
-			if (!enemy.isAlive() && enemy == Dungeon.hero) {
+			if(enemy.isAlive()) {
+				MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
+				Wand.wandProc(enemy, wandLevel, 1, true, dmg,
+						staff != null && staff.wandClass() == WandOfWarding.class && Dungeon.hero.belongings.getItem(WandOfWarding.class) == null); // damage was already done.
+			} if (enemy == Dungeon.hero) {
 				Badges.validateDeathFromFriendlyMagic();
 				Dungeon.fail( getClass() );
 			}

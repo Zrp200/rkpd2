@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2023 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,14 +22,9 @@
 package com.zrp200.rkpd2.actors.mobs.npcs;
 
 import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.blobs.CorrosiveGas;
-import com.zrp200.rkpd2.actors.blobs.ToxicGas;
-import com.zrp200.rkpd2.actors.buffs.AllyBuff;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Burning;
-import com.zrp200.rkpd2.actors.buffs.Corruption;
 import com.zrp200.rkpd2.actors.buffs.PrismaticGuard;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.mobs.Mob;
@@ -123,14 +118,20 @@ public class PrismaticImage extends AbstractMirrorImage {
 			return Random.NormalIntRange( 2, 4 );
 		}
 	}
-
+	
+	@Override
+	protected int heroEvasion() {
+		// armor boosts contribute to evasion
+		return hero.belongings.armor != null ? 
+				(int)hero.belongings.armor().evasionFactor(this, super.heroEvasion()) 
+				: super.heroEvasion();
+	}
+	
 	@Override
 	public int drRoll() {
-		if (hero != null){
-			return hero.drRoll();
-		} else {
-			return 0;
-		}
+		int dr = super.drRoll();
+		if (hero != null) dr += hero.drRoll();
+		return dr;
 	}
 	
 	@Override
@@ -160,7 +161,7 @@ public class PrismaticImage extends AbstractMirrorImage {
 		}
 		return super.speed();
 	}
-
+	
 	@Override
 	public boolean isImmune(Class effect) {
 		if (effect == Burning.class
@@ -171,7 +172,7 @@ public class PrismaticImage extends AbstractMirrorImage {
 		}
 		return super.isImmune(effect);
 	}
-
+	
 	private class Wandering extends Mob.Wandering{
 		
 		@Override

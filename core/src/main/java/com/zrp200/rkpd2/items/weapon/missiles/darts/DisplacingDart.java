@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2023 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.items.artifacts.TalismanOfForesight;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
 import com.zrp200.rkpd2.mechanics.ShadowCaster;
+import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.BArray;
 import com.watabou.utils.PathFinder;
@@ -91,10 +92,13 @@ public class DisplacingDart extends TippedDart {
 			
 			if (chosenPos != -1){
 				ScrollOfTeleportation.appear( defender, chosenPos );
-				if (!Dungeon.level.heroFOV[chosenPos]){
+				Dungeon.level.occupyCell(defender );
+				if (defender == Dungeon.hero){
+					Dungeon.observe();
+					GameScene.updateFog();
+				} else if (!Dungeon.level.heroFOV[chosenPos]){
 					Buff.affect(attacker, TalismanOfForesight.CharAwareness.class, 5f).charID = defender.id();
 				}
-				Dungeon.level.occupyCell(defender );
 			}
 		
 		}

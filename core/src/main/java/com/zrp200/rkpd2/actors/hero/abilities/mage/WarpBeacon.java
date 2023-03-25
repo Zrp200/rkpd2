@@ -29,7 +29,6 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
-import com.zrp200.rkpd2.actors.buffs.LockedFloor;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
@@ -38,10 +37,9 @@ import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.MagicMissile;
 import com.zrp200.rkpd2.effects.Pushing;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
-import com.zrp200.rkpd2.items.artifacts.TimekeepersHourglass;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
+import com.zrp200.rkpd2.levels.Level;
 import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.plants.Swiftthistle;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.scenes.InterlevelScene;
 import com.zrp200.rkpd2.ui.AttackIndicator;
@@ -182,10 +180,8 @@ public class WarpBeacon extends ArmorAbility {
 								return;
 							}
 
-							TimekeepersHourglass.timeFreeze timeFreeze = hero.buff(TimekeepersHourglass.timeFreeze.class);
-							if (timeFreeze != null) timeFreeze.disarmPressedTraps();
-							Swiftthistle.TimeBubble timeBubble = hero.buff(Swiftthistle.TimeBubble.class);
-							if (timeBubble != null) timeBubble.disarmPressedTraps();
+							//transition before dispel, to cancel out trap effects
+							Level.beforeTransition();
 							Invisibility.dispel();
 
 							InterlevelScene.mode = InterlevelScene.Mode.RETURN;

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2023 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
 import com.zrp200.rkpd2.actors.hero.abilities.rat_king.OmniAbility;
+import com.zrp200.rkpd2.actors.mobs.Mimic;
 import com.zrp200.rkpd2.effects.MagicMissile;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.mechanics.Ballistica;
@@ -119,7 +120,8 @@ public class Shockwave extends ArmorAbility {
 							if (Random.Int(10) < hero.byTalent(
 									STRIKING_WAVE, 3,
 									AFTERSHOCK, 2)){
-								boolean wasEnemy = ch.alignment == Char.Alignment.ENEMY;
+								boolean wasEnemy = ch.alignment == Char.Alignment.ENEMY
+										|| (ch instanceof Mimic && ch.alignment == Char.Alignment.NEUTRAL);
 								damage = hero.attackProc(ch, damage);
 								ch.damage(damage, hero);
 								if(wasEnemy) switch (hero.subClass) {

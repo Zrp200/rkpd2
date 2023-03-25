@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2023 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,22 +26,15 @@ import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.QuickSlot;
+import com.zrp200.rkpd2.SPDSettings;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
 import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
-import com.zrp200.rkpd2.actors.hero.abilities.huntress.NaturesPower;
-import com.zrp200.rkpd2.actors.hero.abilities.huntress.SpectralBlades;
-import com.zrp200.rkpd2.actors.hero.abilities.huntress.SpiritHawk;
-import com.zrp200.rkpd2.actors.hero.abilities.mage.ElementalBlast;
-import com.zrp200.rkpd2.actors.hero.abilities.mage.WarpBeacon;
-import com.zrp200.rkpd2.actors.hero.abilities.mage.WildMagic;
-import com.zrp200.rkpd2.actors.hero.abilities.rat_king.OmniAbility;
-import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath;
-import com.zrp200.rkpd2.actors.hero.abilities.rogue.DeathMark;
-import com.zrp200.rkpd2.actors.hero.abilities.rogue.ShadowClone;
-import com.zrp200.rkpd2.actors.hero.abilities.rogue.SmokeBomb;
-import com.zrp200.rkpd2.actors.hero.abilities.warrior.Endure;
-import com.zrp200.rkpd2.actors.hero.abilities.warrior.HeroicLeap;
-import com.zrp200.rkpd2.actors.hero.abilities.warrior.Shockwave;
+import com.zrp200.rkpd2.actors.hero.abilities.duelist.*;
+import com.zrp200.rkpd2.actors.hero.abilities.huntress.*;
+import com.zrp200.rkpd2.actors.hero.abilities.mage.*;
+import com.zrp200.rkpd2.actors.hero.abilities.rat_king.*;
+import com.zrp200.rkpd2.actors.hero.abilities.rogue.*;
+import com.zrp200.rkpd2.actors.hero.abilities.warrior.*;
 import com.zrp200.rkpd2.items.BrokenSeal;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.KingsCrown;
@@ -53,14 +46,15 @@ import com.zrp200.rkpd2.items.bags.PotionBandolier;
 import com.zrp200.rkpd2.items.bags.ScrollHolder;
 import com.zrp200.rkpd2.items.bags.VelvetPouch;
 import com.zrp200.rkpd2.items.food.Food;
-import com.zrp200.rkpd2.items.potions.PotionOfExperience;
 import com.zrp200.rkpd2.items.potions.PotionOfHealing;
 import com.zrp200.rkpd2.items.potions.PotionOfInvisibility;
 import com.zrp200.rkpd2.items.potions.PotionOfLiquidFlame;
 import com.zrp200.rkpd2.items.potions.PotionOfMindVision;
+import com.zrp200.rkpd2.items.potions.PotionOfStrength;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfIdentify;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfLullaby;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfMagicMapping;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfMirrorImage;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRage;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfUpgrade;
 import com.zrp200.rkpd2.items.wands.Wand;
@@ -69,12 +63,13 @@ import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.melee.Dagger;
 import com.zrp200.rkpd2.items.weapon.melee.Gloves;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
+import com.zrp200.rkpd2.items.weapon.melee.Rapier;
 import com.zrp200.rkpd2.items.weapon.melee.WornShortsword;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.items.weapon.missiles.ThrowingKnife;
+import com.zrp200.rkpd2.items.weapon.missiles.ThrowingSpike;
 import com.zrp200.rkpd2.items.weapon.missiles.ThrowingStone;
 import com.zrp200.rkpd2.messages.Messages;
-
 import com.watabou.utils.DeviceCompat;
 
 import java.util.Locale;
@@ -94,6 +89,7 @@ public enum HeroClass {
 			return item instanceof MissileWeapon ? 1 : 0;
 		}
 	},
+	DUELIST(CHAMPION, MONK),
 	RAT_KING (KING);
 
 	private HeroSubClass[] subClasses;
@@ -111,7 +107,7 @@ public enum HeroClass {
 		Talent.initClassTalents(hero);
 
 		Item i = new ClothArmor().identify();
-		if (!Challenges.isItemBlocked(i)) hero.belongings.armor = (ClothArmor) i;
+		if (!Challenges.isItemBlocked(i)) hero.belongings.armor = (ClothArmor)i;
 
 		i = new Food();
 		if (!Challenges.isItemBlocked(i)) i.collect();
@@ -133,31 +129,39 @@ public enum HeroClass {
 
 		switch (this) {
 			case WARRIOR:
-				initWarrior(hero);
+				initWarrior( hero );
 				break;
 
 			case MAGE:
-				initMage(hero);
+				initMage( hero );
 				break;
 
 			case ROGUE:
-				initRogue(hero);
+				initRogue( hero );
 				break;
 
 			case HUNTRESS:
-				initHuntress(hero);
+				initHuntress( hero );
 				break;
+
+			case DUELIST:
+				initDuelist( hero );
+				break;
+
 			case RAT_KING:
 				initRatKing(hero);
 				break;
 		}
 
-		for (int s = 0; s < QuickSlot.SIZE; s++) {
-			if (Dungeon.quickslot.getItem(s) == null) {
-				Dungeon.quickslot.setSlot(s, waterskin);
-				break;
+		if (SPDSettings.quickslotWaterskin()) {
+			for (int s = 0; s < QuickSlot.SIZE; s++) {
+				if (Dungeon.quickslot.getItem(s) == null) {
+					Dungeon.quickslot.setSlot(s, waterskin);
+					break;
+				}
 			}
 		}
+
 	}
 
 	public Badges.Badge masteryBadge() {
@@ -170,6 +174,8 @@ public enum HeroClass {
 				return Badges.Badge.MASTERY_ROGUE;
 			case HUNTRESS:
 				return Badges.Badge.MASTERY_HUNTRESS;
+			case DUELIST:
+				return Badges.Badge.MASTERY_DUELIST;
 			case RAT_KING:
 				return Badges.Badge.MASTERY_RAT_KING;
 		}
@@ -233,6 +239,20 @@ public enum HeroClass {
 		new ScrollOfLullaby().identify();
 	}
 
+	private static void initDuelist( Hero hero ) {
+
+		(hero.belongings.weapon = new Rapier()).identify();
+		hero.belongings.weapon.activate(hero);
+
+		ThrowingSpike spikes = new ThrowingSpike();
+		spikes.quantity(2).collect();
+
+		Dungeon.quickslot.setSlot(0, hero.belongings.weapon);
+		Dungeon.quickslot.setSlot(1, spikes);
+
+		new PotionOfStrength().identify();
+		new ScrollOfMirrorImage().identify();
+	}
 	private static void initRatKing( Hero hero ) {
 		// warrior
 		if (hero.belongings.armor != null){
@@ -281,6 +301,8 @@ public enum HeroClass {
 				return new ArmorAbility[]{new SmokeBomb(), new DeathMark(), new ShadowClone()};
 			case HUNTRESS:
 				return new ArmorAbility[]{new SpectralBlades(), new NaturesPower(), new SpiritHawk()};
+			case DUELIST:
+				return new ArmorAbility[]{new Challenge(), new ElementalStrike(), new Feint()};
 			case RAT_KING:
 				return new ArmorAbility[]{new Ratmogrify(), new Wrath(), new OmniAbility()};
 		}
@@ -296,6 +318,8 @@ public enum HeroClass {
 				return Assets.Sprites.ROGUE;
 			case HUNTRESS:
 				return Assets.Sprites.HUNTRESS;
+			case DUELIST:
+				return Assets.Sprites.DUELIST;
 			case RAT_KING:
 				return Assets.Sprites.RAT_KING_HERO;
 		}
@@ -303,16 +327,6 @@ public enum HeroClass {
 
 	public String splashArt(){
 		return "splashes/" + name().toLowerCase(Locale.ENGLISH) + ".jpg";
-		/*switch (this) {
-			case WARRIOR: default:
-				return Assets.Splashes.WARRIOR;
-			case MAGE:
-				return Assets.Splashes.MAGE;
-			case ROGUE:
-				return Assets.Splashes.ROGUE;
-			case HUNTRESS:
-				return Assets.Splashes.HUNTRESS;
-		}*/
 	}
 	
 	public String[] perks() {
@@ -334,6 +348,8 @@ public enum HeroClass {
 				return Badges.isUnlocked(Badges.Badge.UNLOCK_ROGUE);
 			case HUNTRESS:
 				return Badges.isUnlocked(Badges.Badge.UNLOCK_HUNTRESS);
+			case DUELIST:
+				return Badges.isUnlocked(Badges.Badge.UNLOCK_DUELIST);
 		}
 		 */
 	}

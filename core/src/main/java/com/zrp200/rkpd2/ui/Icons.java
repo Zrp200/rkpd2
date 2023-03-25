@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2023 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,6 +48,7 @@ public enum Icons {
 	MAGE,
 	ROGUE,
 	HUNTRESS,
+	DUELIST,
 
 	//grey icons, mainly used for buttons, spacing for 16x16
 	EXIT,
@@ -168,6 +169,9 @@ public enum Icons {
 				break;
 			case HUNTRESS:
 				icon.frame( icon.texture.uvRectBySize( 64, 16, 16, 16 ) );
+				break;
+			case DUELIST:
+				icon.frame( icon.texture.uvRectBySize( 80, 16, 13, 14 ) );
 				break;
 
 			case EXIT:
@@ -393,15 +397,18 @@ public enum Icons {
 	
 	public static Image get( HeroClass cl ) {
 		switch (cl) {
-		case WARRIOR: default:
-			return get( WARRIOR );
-		case MAGE:
-			return get( MAGE );
-		case ROGUE:
-			return get( ROGUE );
-		case HUNTRESS:
-			return get( HUNTRESS );
-		case RAT_KING: return new ItemSprite(ItemSpriteSheet.ARMOR_RAT_KING);
+			case WARRIOR:
+				return get( WARRIOR );
+			case MAGE:
+				return get( Icons.MAGE );
+			case ROGUE:
+				return get( Icons.ROGUE );
+			case HUNTRESS:
+				return get( Icons.HUNTRESS );
+			case DUELIST:
+				return get( Icons.DUELIST );
+			case RAT_KING: return new ItemSprite(ItemSpriteSheet.ARMOR_RAT_KING);
+			default: return null;
 		}
 	}
 

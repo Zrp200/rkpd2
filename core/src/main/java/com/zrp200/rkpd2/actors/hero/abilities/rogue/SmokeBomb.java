@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2023 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -83,8 +83,8 @@ public class SmokeBomb extends ArmorAbility {
 	public float chargeUse(Hero hero) {
 		float chargeUse = super.chargeUse(hero);
 		if(isShadowStep(hero)) {
-			//reduced charge use by 24%/42%/56%/67%
-			chargeUse *= Math.pow(0.76, hero.pointsInTalent(Talent.SHADOW_STEP));
+			//reduced charge use by 20%/36%/50%/60%
+			chargeUse *= Math.pow(0.795, hero.pointsInTalent(Talent.SHADOW_STEP));
 		}
 		return chargeUse;
 	}
@@ -142,7 +142,7 @@ public class SmokeBomb extends ArmorAbility {
 	@Override
 	protected void activate(ClassArmor armor, Hero hero, Integer target) {
 		if (target != null) {
-			if(!isValidTarget(hero, target, 12)) return;
+			if(!isValidTarget(hero, target, 10)) return;
 
 			if (!isShadowStep(hero)) {
 				blindAdjacentMobs(hero);
@@ -204,7 +204,7 @@ public class SmokeBomb extends ArmorAbility {
 		@Override
 		public int drRoll() {
 			int points = hero.pointsInTalent(talent);
-			return Random.NormalIntRange(points, points*drScaling);
+			return super.drRoll() + Random.NormalIntRange(points, points*drScaling);
 		}
 
 		{

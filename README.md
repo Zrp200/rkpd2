@@ -12,3 +12,10 @@ Forked from the [source code of Shattered Pixel Dungeon](https://github.com/00-e
 This will remain in sync with updates coming from Shattered Pixel Dungeon for the foreseeable future.
 
 RKPD2 currently compiles for Android and desktop platforms. It is currently only available from [GitHub](https://github.com/Zrp200/rkpd2/releases), but it may expand to other distribution sites such as Google Play in the future.
+
+If you'd like to work with the code, you can find the following guides in `/docs`:
+- [Compiling for Android.](docs/getting-started-android.md)
+    - **[If you plan to distribute on Google Play please read the end of this guide.](docs/getting-started-android.md#distributing-your-apk)**
+- [Compiling for desktop platforms.](docs/getting-started-desktop.md)
+- [Compiling for iOS.](docs/getting-started-ios.md)
+- [Recommended changes for making your own version.](docs/recommended-changes.md)

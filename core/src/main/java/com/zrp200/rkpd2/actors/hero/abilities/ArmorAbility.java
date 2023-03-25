@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2023 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,13 +70,14 @@ public abstract class ArmorAbility implements Bundlable {
 		return new Ballistica( user.pos, dst, Ballistica.PROJECTILE ).collisionPos;
 	}
 
+	// shpd reduced charge use by 12%/23%/32%/40%
+	// rkpd2 reduced charge use by 16/30/40/50%
 	private static final double HEROIC_ENERGY_REDUCTION = 0.839;
 
 	public float chargeUse( Hero hero ){
 		float chargeUse = baseChargeUse;
 		// we only want Heroic Energy to apply if it's supposed to apply; because it's so generally distributed
 		if (hasTalent(Talent.HEROIC_ENERGY) && hero.hasTalent(Talent.HEROIC_ENERGY)){
-			//reduced charge use by 16%/30%/41%/50%
 			chargeUse *= Math.pow( HEROIC_ENERGY_REDUCTION, hero.pointsInTalent(Talent.HEROIC_ENERGY));
 		}
 		return chargeUse;

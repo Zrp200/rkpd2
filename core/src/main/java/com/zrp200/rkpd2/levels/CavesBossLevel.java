@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2023 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -250,8 +250,6 @@ public class CavesBossLevel extends Level {
 
 	@Override
 	public void occupyCell(Char ch) {
-		super.occupyCell(ch);
-
 		//seal the level when the hero moves off the entrance, the level isn't already sealed, and the gate hasn't been destroyed
 		int gatePos = pointToCell(new Point(gate.left, gate.top));
 		if (ch == Dungeon.hero && distance(ch.pos,entrance) > 1 && !locked && solid[gatePos]){
@@ -259,6 +257,8 @@ public class CavesBossLevel extends Level {
 			seal();
 
 		}
+
+		super.occupyCell(ch);
 	}
 
 	@Override

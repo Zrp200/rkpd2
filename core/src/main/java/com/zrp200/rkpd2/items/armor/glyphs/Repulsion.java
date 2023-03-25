@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2023 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.items.armor.glyphs;
 
+import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.wands.WandOfBlastWave;
@@ -41,7 +42,7 @@ public class Repulsion extends Armor.Glyph {
 		// lvl 1 - 33%
 		// lvl 2 - 43%
 		float procChance = (level+1f)/(level+5f) * procChanceMultiplier(defender);
-		if (Random.Float() < procChance){
+		if (Dungeon.level.adjacent(attacker.pos, defender.pos) && Random.Float() < procChance){
 
 			float powerMulti = Math.max(1f, procChance);
 

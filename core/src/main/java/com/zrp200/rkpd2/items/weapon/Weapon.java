@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2023 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,15 +26,19 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Berserk;
 import com.zrp200.rkpd2.actors.buffs.MagicImmune;
+import com.zrp200.rkpd2.actors.buffs.MonkEnergy;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.actors.hero.abilities.duelist.ElementalStrike;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.KindOfWeapon;
 import com.zrp200.rkpd2.items.rings.RingOfArcana;
+import com.zrp200.rkpd2.items.rings.RingOfForce;
 import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
 import com.zrp200.rkpd2.items.rings.RingOfArcana;
+import com.zrp200.rkpd2.items.rings.RingOfForce;
 import com.zrp200.rkpd2.items.rings.RingOfFuror;
 import com.zrp200.rkpd2.items.wands.WandOfDisintegration;
 import com.zrp200.rkpd2.items.weapon.curses.Annoying;
@@ -59,7 +63,10 @@ import com.zrp200.rkpd2.items.weapon.enchantments.Projecting;
 import com.zrp200.rkpd2.items.weapon.enchantments.Shocking;
 import com.zrp200.rkpd2.items.weapon.enchantments.Unstable;
 import com.zrp200.rkpd2.items.weapon.enchantments.Vampiric;
+import com.zrp200.rkpd2.items.weapon.melee.RunicBlade;
+import com.zrp200.rkpd2.items.weapon.melee.Scimitar;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
+import com.zrp200.rkpd2.items.weapon.melee.RunicBlade;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.utils.GLog;
@@ -212,12 +219,24 @@ abstract public class Weapon extends KindOfWeapon {
 	}
 
 	protected float speedMultiplier(Char owner ){
-		return RingOfFuror.attackSpeedMultiplier(owner);
+		float multi = RingOfFuror.attackSpeedMultiplier(owner);
+
+		if (owner.buff(Scimitar.SwordDance.class) != null){
+			multi += 0.6f;
+		}
+
+		return multi;
 	}
 
 	@Override
 	public int reachFactor(Char owner) {
 		int reach = RCH;
+		if (owner instanceof Hero && RingOfForce.fightingUnarmed((Hero) owner)){
+			reach = 1; //brawlers stance benefits from enchantments, but not innate reach
+			if (!RingOfForce.unarmedGetsWeaponEnchantment((Hero) owner)){
+				return reach;
+			}
+		}
 		if(hasEnchant(Projecting.class, owner)) reach +=Math.round(RingOfArcana.enchantPowerMultiplier(owner));
 		if(owner instanceof Hero) {
 			Hero hero = (Hero) owner;
@@ -288,8 +307,10 @@ abstract public class Weapon extends KindOfWeapon {
 		}
 		
 		cursed = false;
-		
-		return super.upgrade();
+
+		Item result = super.upgrade();
+		Badges.validateDuelistUnlock();
+		return result;
 	}
 	
 	@Override
@@ -387,7 +408,7 @@ abstract public class Weapon extends KindOfWeapon {
 			
 		public abstract int proc( Weapon weapon, Char attacker, Char defender, int damage );
 
-		public static float procChanceMultiplier( Char attacker, boolean applyArcana ){
+		public static float genericProcChanceMultiplier( Char attacker, boolean applyArcana ){
 			float multi = 1;
 			if(applyArcana) multi *= RingOfArcana.enchantPowerMultiplier(attacker);
 			Berserk rage = attacker.buff(Berserk.class);
@@ -401,14 +422,37 @@ abstract public class Weapon extends KindOfWeapon {
 			// note I'm specifically preventing it from lowering the chance. I already handled that in Weapon#attackProc.
 			multi += Math.max(0, Talent.SpiritBladesTracker.getProcModifier()-1);
 
+			if (attacker.buff(RunicBlade.RunicSlashTracker.class) != null){
+				multi += 2.5f;
+				attacker.buff(RunicBlade.RunicSlashTracker.class).detach();
+			}
+
+			if (attacker.buff(ElementalStrike.DirectedPowerTracker.class) != null){
+				multi += attacker.buff(ElementalStrike.DirectedPowerTracker.class).enchBoost;
+				attacker.buff(ElementalStrike.DirectedPowerTracker.class).detach();
+			}
+
+			if (attacker.buff(Talent.SpiritBladesTracker.class) != null
+					&& ((Hero)attacker).pointsInTalent(Talent.SPIRIT_BLADES) == 4){
+				multi += 0.1f;
+			}
 			if (attacker.buff(Talent.StrikingWaveTracker.class) != null
 					&& ((Hero)attacker).pointsInTalent(Talent.STRIKING_WAVE) == 4){
 				multi += 0.2f;
 			}
+
+			if (attacker.buff(MonkEnergy.MonkAbility.FlurryEmpowerTracker.class) != null){
+				multi *= 0.75f;
+			}
+
 			return multi;
 		}
+		public static float genericProcChanceMultiplier(Char attacker) {
+			return genericProcChanceMultiplier(attacker, true);
+		}
+
 		protected float procChanceMultiplier( Char attacker) {
-			return procChanceMultiplier(attacker, true);
+			return genericProcChanceMultiplier(attacker);
 		}
 
 		public String name() {

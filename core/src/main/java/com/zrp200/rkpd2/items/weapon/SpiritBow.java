@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2023 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -421,7 +421,13 @@ public class SpiritBow extends Weapon {
 				final Char enemy = Actor.findChar( cell );
 				
 				if (enemy == null){
-					if(--shotCount <= 0) user.spendAndNext(castDelay(user, dst));
+					if(--shotCount <= 0) {
+						if(Talent.LethalMomentumTracker.apply(user)) {
+							user.next();
+						} else {
+							user.spendAndNext(castDelay(user, dst));
+						}
+					}
 					flurryCount = -1;
 
 					if (flurryActor != null){
@@ -447,7 +453,13 @@ public class SpiritBow extends Weapon {
 									}
 
 									if (last) {
-										if(--shotCount <= 0) user.spendAndNext(castDelay(user, dst));
+										if(--shotCount <= 0) {
+											if (Talent.LethalMomentumTracker.apply(user)) {
+												user.next();
+											} else {
+												user.spendAndNext(castDelay(user, dst));
+											}
+										}
 										flurryCount = -1;
 									}
 

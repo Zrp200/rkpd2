@@ -53,7 +53,17 @@ public class MirrorImage extends AbstractMirrorImage {
 		}
 		return (damage+1)/2; //half hero damage, rounded up
 	}
-	
+
+	@Override
+	public int attackSkill(Char target) {
+		int attackSkill = super.attackSkill(target);
+		// benefits from weapon
+		if(hero != null && hero.belongings.attackingWeapon() != null) {
+			attackSkill *= hero.belongings.attackingWeapon().accuracyFactor(this, target);
+		}
+		return attackSkill;
+	}
+
 	@Override
     public float attackDelay() {
 		return hero.attackDelay(); //handles ring of furor
@@ -66,11 +76,11 @@ public class MirrorImage extends AbstractMirrorImage {
 	
 	@Override
 	public int drRoll() {
+		int dr = super.drRoll();
 		if (hero != null && hero.belongings.weapon() != null){
-			return Random.NormalIntRange(0, hero.belongings.weapon().defenseFactor(this)/2);
-		} else {
-			return 0;
+			dr += Random.NormalIntRange(0, hero.belongings.weapon().defenseFactor(this)/2);
 		}
+		return dr;
 	}
 	
 	@Override

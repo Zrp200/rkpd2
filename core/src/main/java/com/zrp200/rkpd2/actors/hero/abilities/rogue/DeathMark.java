@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2023 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -87,7 +87,7 @@ public class DeathMark extends ArmorAbility {
 
 		Char ch = Actor.findChar(target);
 
-		if (ch == null){
+		if (ch == null || !Dungeon.level.heroFOV[target]){
 			GLog.w(Messages.get(this, "no_target"));
 			return;
 		} else if (ch.alignment != Char.Alignment.ENEMY){
@@ -95,9 +95,7 @@ public class DeathMark extends ArmorAbility {
 			return;
 		}
 
-		if (ch != null){
-			Buff.affect(ch, DeathMarkTracker.class, 5f).setInitialHP(ch.HP);
-		}
+		Buff.affect(ch, DeathMarkTracker.class, DeathMarkTracker.DURATION).setInitialHP(ch.HP);
 
 		armor.useCharge(hero, this);
 		hero.sprite.zap(target);
@@ -161,6 +159,8 @@ public class DeathMark extends ArmorAbility {
 
 	public static class DeathMarkTracker extends FlavourBuff {
 
+		public static float DURATION = 5f;
+
 		int initialHP = 0;
 
 		{
@@ -176,6 +176,11 @@ public class DeathMark extends ArmorAbility {
 		@Override
 		public void tintIcon(Image icon) {
 			icon.hardlight(1f, 0.2f, 0.2f);
+		}
+
+		@Override
+		public float iconFadePercent() {
+			return Math.max(0, (DURATION - visualcooldown()) / DURATION);
 		}
 
 		private void setInitialHP( int hp ){

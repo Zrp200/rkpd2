@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2023 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,12 +21,16 @@
 
 package com.zrp200.rkpd2.items.armor;
 
+import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Badges;
+import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.LockedFloor;
 import com.zrp200.rkpd2.actors.hero.abilities.rat_king.OmniAbility;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.rings.RingOfEnergy;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
@@ -46,7 +50,6 @@ import com.zrp200.rkpd2.utils.GLog;
 import com.zrp200.rkpd2.windows.WndInfoArmorAbility;
 import com.zrp200.rkpd2.windows.WndOptions;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import static com.zrp200.rkpd2.Dungeon.hero;
@@ -105,20 +108,23 @@ abstract public class ClassArmor extends Armor {
 		ClassArmor classArmor = null;
 		
 		switch (owner.heroClass) {
-		case WARRIOR:
-			classArmor = new WarriorArmor();
-			break;
-		case ROGUE:
-			classArmor = new RogueArmor();
-			break;
-		case MAGE:
-			classArmor = new MageArmor();
-			break;
-		case HUNTRESS:
-			classArmor = new HuntressArmor();
-			break;
-		case RAT_KING:
-			classArmor = new RatKingArmor();
+			case WARRIOR:
+				classArmor = new WarriorArmor();
+				break;
+			case ROGUE:
+				classArmor = new RogueArmor();
+				break;
+			case MAGE:
+				classArmor = new MageArmor();
+				break;
+			case HUNTRESS:
+				classArmor = new HuntressArmor();
+				break;
+			case DUELIST:
+				classArmor = new DuelistArmor();
+				break;
+			case RAT_KING:
+				classArmor = new RatKingArmor();
 		}
 
 		BrokenSeal seal = armor.checkSeal();
@@ -259,7 +265,14 @@ abstract public class ClassArmor extends Armor {
 								cursed = armor.cursed;
 								curseInfusionBonus = armor.curseInfusionBonus;
 								masteryPotionBonus = armor.masteryPotionBonus;
-								if (armor.checkSeal() != null) seal = armor.checkSeal();
+								if (armor.checkSeal() != null) {
+									seal = armor.checkSeal();
+									if (seal.level() > 0) {
+										int newLevel = trueLevel() + 1;
+										level(newLevel);
+										Badges.validateItemLevelAquired(ClassArmor.this);
+									}
+								}
 
 								identify();
 
@@ -316,7 +329,7 @@ abstract public class ClassArmor extends Armor {
 			if (ability != null) {
 				desc += "\n\n" + ability.shortDesc();
 			float chargeUse = ability.chargeUse(hero);
-				desc += " " + Messages.get(this, "charge_use", new DecimalFormat("#.##").format(chargeUse));
+				desc += " " + Messages.get(this, "charge_use", Messages.decimalFormat("#.##", chargeUse));
 			} else {
 				desc += "\n\n" + "_" + Messages.get(this, "no_ability") + "_";
 			}
@@ -341,7 +354,9 @@ abstract public class ClassArmor extends Armor {
 		public boolean attachTo( Char target ) {
 			if (super.attachTo( target )) {
 				//if we're loading in and the hero has partially spent a turn, delay for 1 turn
-				if (now() == 0 && cooldown() == 0 && target.cooldown() > 0) spend(TICK);
+				if (target instanceof Hero && Dungeon.hero == null && cooldown() == 0 && target.cooldown() > 0) {
+					spend(TICK);
+				}
 				return true;
 			}
 			return false;
@@ -351,7 +366,9 @@ abstract public class ClassArmor extends Armor {
 		public boolean act() {
 			LockedFloor lock = target.buff(LockedFloor.class);
 			if (charge < 100 && (lock == null || lock.regenOn())) {
-				charge += 100 / 500f; //500 turns to full charge
+				float chargeGain = 100 / 500f; //500 turns to full charge
+				chargeGain *= RingOfEnergy.armorChargeMultiplier(target);
+				charge += chargeGain;
 				updateQuickslot();
 				if (charge > 100) {
 					charge = 100;

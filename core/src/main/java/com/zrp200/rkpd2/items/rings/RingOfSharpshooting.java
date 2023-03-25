@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2023 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +26,6 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
-import java.text.DecimalFormat;
-
 public class RingOfSharpshooting extends Ring {
 
 	{
@@ -37,7 +35,7 @@ public class RingOfSharpshooting extends Ring {
 	public String statsInfo() {
 		int level = level();
 		if(!isIdentified()) level(0);
-		String res = Messages.get(this, isIdentified()?"stats":"typical_stats", soloBuffedBonus(), new DecimalFormat("#.##").format(100f * (Math.pow(1.2, soloBonus()) - 1f)));
+		String res = Messages.get(this, isIdentified()?"stats":"typical_stats", soloBuffedBonus(), Messages.decimalFormat("#.##", 100f * (Math.pow(1.2, soloBonus()) - 1f)));
 		level(level);
 		return res;
 	}

@@ -51,8 +51,8 @@ public class Wrath extends ArmorAbility {
     @Override public float chargeUse(Hero hero) {
         float chargeUse = super.chargeUse(hero);
         if (SmokeBomb.isShadowStep(hero)){
-            // shadow step: reduced charge use by 20%/36%/50%/60%
-            chargeUse *= Math.pow(0.795, hero.pointsInTalent(SMOKE_AND_MIRRORS));
+            // shadow step: reduced charge use by 16%/30%/41%/50%
+            chargeUse *= Math.pow(0.84, hero.pointsInTalent(SMOKE_AND_MIRRORS));
         }
         return chargeUse;
     }
@@ -94,7 +94,7 @@ public class Wrath extends ArmorAbility {
     }
 
     private boolean doSmokeBomb() {
-        if( !SmokeBomb.isValidTarget(hero, target, 10) ) return false;
+        if( !SmokeBomb.isValidTarget(hero, target, 6) ) return false;
 
         boolean isShadowStep = SmokeBomb.isShadowStep(hero);
         if(!isShadowStep) {

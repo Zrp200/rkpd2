@@ -3,7 +3,7 @@
      * Copyright (C) 2012-2015 Oleg Dolya
      *
      * Shattered Pixel Dungeon
-     * Copyright (C) 2014-2022 Evan Debenham
+     * Copyright (C) 2014-2023 Evan Debenham
      *
      * This program is free software: you can redistribute it and/or modify
      * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,8 @@ import com.zrp200.rkpd2.actors.buffs.Burning;
 import com.zrp200.rkpd2.actors.buffs.Corruption;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.mobs.Mob;
+import com.zrp200.rkpd2.items.rings.RingOfAccuracy;
+import com.zrp200.rkpd2.items.rings.RingOfEvasion;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.MirrorSprite;
 
@@ -86,7 +88,6 @@ public abstract class AbstractMirrorImage extends NPC {
 
     @Override
     public abstract int damageRoll();
-    public abstract int drRoll();
 
     public void duplicate(Hero hero ) {
         this.hero = hero;
@@ -95,17 +96,23 @@ public abstract class AbstractMirrorImage extends NPC {
 
     @Override
     public int attackSkill( Char target ) {
-        return hero != null ? hero.attackSkill(target) : super.attackSkill(target);
+        // same base attack skill as hero, benefits from accuracy ring
+        return hero != null ? (int)((9 + hero.lvl) * RingOfAccuracy.accuracyMultiplier(hero))
+        : super.attackSkill(target);
+    }
+
+    protected int heroEvasion() {
+        return (int)((4 + hero.lvl) * RingOfEvasion.evasionMultiplier( hero ));
     }
 
     @Override
     public int defenseSkill(Char enemy) {
         if (hero != null) {
             int baseEvasion = 4 + hero.lvl;
-            int heroEvasion = hero.defenseSkill(enemy);
 
             //if the hero has more/less evasion, 50% of it is applied
-            return super.defenseSkill(enemy) * (baseEvasion + heroEvasion) / 2;
+            //includes ring of evasion boost
+            return super.defenseSkill(enemy) * (baseEvasion + heroEvasion()) / 2;
         } else {
             return 0;
         }

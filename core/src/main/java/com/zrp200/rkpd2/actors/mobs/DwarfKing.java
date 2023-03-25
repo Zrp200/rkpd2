@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2023 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -123,7 +123,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 
 	@Override
 	public int drRoll() {
-		return Random.NormalIntRange(0, 10);
+		return super.drRoll() + Random.NormalIntRange(0, 10);
 	}
 
 	private int phase = 0; // phase 0 is when he hasn't actually reacted yet.
@@ -496,7 +496,11 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 
 	@Override
 	public boolean isInvulnerable(Class effect) {
-		return phase == 2 && effect != KingDamager.class;
+		if (effect == KingDamager.class){
+			return false;
+		} else {
+			return phase == 2 || super.isInvulnerable(effect);
+		}
 	}
 
 	protected void onDamage(int dmg, Object src) { // handle locked floor
@@ -709,6 +713,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 
 	public static class DKGhoul extends Ghoul implements Subject {
 		{
+			properties.add(Property.BOSS_MINION);
 			state = HUNTING;
 		}
 
@@ -721,12 +726,14 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 
 	public static class DKMonk extends Monk implements Subject {
 		{
+			properties.add(Property.BOSS_MINION);
 			state = HUNTING;
 		}
 	}
 
 	public static class DKWarlock extends Warlock implements Subject {
 		{
+			properties.add(Property.BOSS_MINION);
 			state = HUNTING;
 		}
 
@@ -741,6 +748,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 
 	public static class DKGolem extends Golem implements Subject {
 		{
+			properties.add(Property.BOSS_MINION);
 			state = HUNTING;
 		}
 	}

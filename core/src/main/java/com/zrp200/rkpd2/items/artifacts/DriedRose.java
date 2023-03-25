@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2023 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@ import com.zrp200.rkpd2.actors.blobs.ToxicGas;
 import com.zrp200.rkpd2.actors.buffs.AllyBuff;
 import com.zrp200.rkpd2.actors.buffs.AscensionChallenge;
 import com.zrp200.rkpd2.actors.buffs.Burning;
+import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.buffs.LockedFloor;
 import com.zrp200.rkpd2.actors.buffs.MagicImmune;
 import com.zrp200.rkpd2.actors.hero.Belongings;
@@ -53,6 +54,7 @@ import com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfPsionicBlast;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.melee.MeleeWeapon;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.scenes.AlchemyScene;
 import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.scenes.PixelScene;
@@ -149,7 +151,6 @@ public class DriedRose extends Artifact {
 	public ArrayList<String> actions( Hero hero ) {
 		ArrayList<String> actions = super.actions( hero );
 		if (!Ghost.Quest.completed()){
-			actions.remove(AC_EQUIP);
 			return actions;
 		}
 		if (isEquipped( hero )
@@ -167,6 +168,15 @@ public class DriedRose extends Artifact {
 		}
 		
 		return actions;
+	}
+
+	@Override
+	public String defaultAction() {
+		if (ghost != null){
+			return AC_DIRECT;
+		} else {
+			return AC_SUMMON;
+		}
 	}
 
 	@Override
@@ -208,7 +218,7 @@ public class DriedRose extends Artifact {
 					hero.sprite.operate(hero.pos);
 
 					if (!firstSummon) {
-						ghost.yell( Messages.get(GhostHero.class, "hello", Dungeon.hero.name()) );
+						ghost.yell( Messages.get(GhostHero.class, "hello", Messages.titleCase(Dungeon.hero.name())) );
 						Sample.INSTANCE.play( Assets.Sounds.GHOST );
 						firstSummon = true;
 						
@@ -220,6 +230,7 @@ public class DriedRose extends Artifact {
 						}
 					}
 
+					Invisibility.dispel(hero);
 					Talent.onArtifactUsed(hero);
 					charge = 0;
 					partialCharge = 0;
@@ -251,7 +262,8 @@ public class DriedRose extends Artifact {
 
 	@Override
 	public String desc() {
-		if (!Ghost.Quest.completed() && !isIdentified()){
+		if (!Ghost.Quest.completed()
+				&& (ShatteredPixelDungeon.scene() instanceof GameScene || ShatteredPixelDungeon.scene() instanceof AlchemyScene)){
 			return Messages.get(this, "desc_no_quest");
 		}
 		
@@ -397,8 +409,6 @@ public class DriedRose extends Artifact {
 		ghostID = bundle.getInt( GHOSTID );
 		droppedPetals = bundle.getInt( PETALS );
 		
-		if (ghostID != 0) defaultAction = AC_DIRECT;
-		
 		if (bundle.contains(WEAPON)) weapon = (MeleeWeapon)bundle.get( WEAPON );
 		if (bundle.contains(ARMOR))  armor = (Armor)bundle.get( ARMOR );
 	}
@@ -425,7 +435,6 @@ public class DriedRose extends Artifact {
 			
 			//rose does not charge while ghost hero is alive
 			if (ghost != null && !cursed && target.buff(MagicImmune.class) == null){
-				defaultAction = AC_DIRECT;
 				
 				//heals to full over 500 turns
 				LockedFloor lock = target.buff(LockedFloor.class);
@@ -442,8 +451,6 @@ public class DriedRose extends Artifact {
 				}
 				
 				return true;
-			} else {
-				defaultAction = AC_SUMMON;
 			}
 			
 			LockedFloor lock = target.buff(LockedFloor.class);
@@ -736,14 +743,14 @@ public class DriedRose extends Artifact {
 		
 		@Override
 		public int drRoll() {
-			int block = 0;
+			int dr = super.drRoll();
 			if (rose != null && rose.armor != null){
-				block += Random.NormalIntRange( rose.armor.DRMin(), rose.armor.DRMax());
+				dr += Random.NormalIntRange( rose.armor.DRMin(), rose.armor.DRMax());
 			}
 			if (rose != null && rose.weapon != null){
-				block += Random.NormalIntRange( 0, rose.weapon.defenseFactor( this ));
+				dr += Random.NormalIntRange( 0, rose.weapon.defenseFactor( this ));
 			}
-			return block;
+			return dr;
 		}
 
 		//used in some glyph calculations
@@ -797,7 +804,6 @@ public class DriedRose extends Artifact {
 				rose.charge = 0;
 				rose.partialCharge = 0;
 				rose.ghostID = -1;
-				rose.defaultAction = AC_SUMMON;
 			}
 			super.destroy();
 		}

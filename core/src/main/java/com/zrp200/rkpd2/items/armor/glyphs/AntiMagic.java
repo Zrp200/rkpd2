@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2023 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,8 @@ import com.zrp200.rkpd2.actors.buffs.Hex;
 import com.zrp200.rkpd2.actors.buffs.MagicalSleep;
 import com.zrp200.rkpd2.actors.buffs.Vulnerable;
 import com.zrp200.rkpd2.actors.buffs.Weakness;
+import com.zrp200.rkpd2.actors.hero.abilities.duelist.ElementalStrike;
+import com.zrp200.rkpd2.actors.hero.abilities.mage.ElementalBlast;
 import com.zrp200.rkpd2.actors.hero.abilities.mage.WarpBeacon;
 import com.zrp200.rkpd2.actors.mobs.DM100;
 import com.zrp200.rkpd2.actors.mobs.Eye;
@@ -37,6 +39,7 @@ import com.zrp200.rkpd2.actors.mobs.YogFist;
 import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.bombs.Bomb;
 import com.zrp200.rkpd2.items.rings.RingOfArcana;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
 import com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfPsionicBlast;
 import com.zrp200.rkpd2.items.wands.CursedWand;
 import com.zrp200.rkpd2.items.wands.WandOfBlastWave;
@@ -49,6 +52,9 @@ import com.zrp200.rkpd2.items.wands.WandOfMagicMissile;
 import com.zrp200.rkpd2.items.wands.WandOfPrismaticLight;
 import com.zrp200.rkpd2.items.wands.WandOfTransfusion;
 import com.zrp200.rkpd2.items.wands.WandOfWarding;
+import com.zrp200.rkpd2.items.weapon.enchantments.Blazing;
+import com.zrp200.rkpd2.items.weapon.enchantments.Grim;
+import com.zrp200.rkpd2.items.weapon.enchantments.Shocking;
 import com.zrp200.rkpd2.items.weapon.missiles.ForceCube;
 import com.zrp200.rkpd2.levels.traps.DisintegrationTrap;
 import com.zrp200.rkpd2.levels.traps.GrimTrap;
@@ -75,7 +81,9 @@ public class AntiMagic extends Armor.Glyph {
 
 		RESISTS.add( Bomb.MagicalBomb.class );
 		RESISTS.add( ScrollOfPsionicBlast.class );
+		RESISTS.add( ScrollOfTeleportation.class );
 
+		RESISTS.add( ElementalBlast.class );
 		RESISTS.add( CursedWand.class );
 		RESISTS.add( WandOfBlastWave.class );
 		RESISTS.add( WandOfDisintegration.class );
@@ -87,6 +95,11 @@ public class AntiMagic extends Armor.Glyph {
 		RESISTS.add( WandOfPrismaticLight.class );
 		RESISTS.add( WandOfTransfusion.class );
 		RESISTS.add( WandOfWarding.Ward.class );
+
+		RESISTS.add( ElementalStrike.class );
+		RESISTS.add( Blazing.class );
+		RESISTS.add( Shocking.class );
+		RESISTS.add( Grim.class );
 
 		RESISTS.add( WarpBeacon.class );
 
@@ -111,8 +124,8 @@ public class AntiMagic extends Armor.Glyph {
 	
 	public static int drRoll( Char ch, int level ){
 		return Random.NormalIntRange(
-				Math.round(level * RingOfArcana.enchantPowerMultiplier(ch)),
-				Math.round((3 + (level*1.5f)) * RingOfArcana.enchantPowerMultiplier(ch)));
+				Math.round(level * genericProcChanceMultiplier(ch)),
+				Math.round((3 + (level*1.5f)) * genericProcChanceMultiplier(ch)));
 	}
 
 	@Override

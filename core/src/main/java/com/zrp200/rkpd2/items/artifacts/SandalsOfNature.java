@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2023 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.items.artifacts;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
+import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.buffs.MagicImmune;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -195,14 +196,9 @@ public class SandalsOfNature extends Artifact {
 		}
 
 		if (curSeedEffect != null){
-			//TODO fix in v2.0.0 when this line is translated
-			if (Messages.lang() == Languages.ENGLISH){
 				desc += "\n\n" + Messages.get(this, "desc_ability",
-						Messages.titleCase(Messages.get(curSeedEffect, "name")),
-						seedChargeReqs.get(curSeedEffect));
-			} else {
-				desc += "\n\n" + Messages.get(this, "desc_ability", seedChargeReqs.get(curSeedEffect));
-			}
+					Messages.titleCase(Messages.get(curSeedEffect, "name")),
+					seedChargeReqs.get(curSeedEffect));
 		}
 
 		if (!seeds.isEmpty()){
@@ -324,6 +320,7 @@ public class SandalsOfNature extends Artifact {
 					GLog.w(Messages.get(SandalsOfNature.class, "out_of_range"));
 				} else {
 					CellEmitter.get( cell ).burst( LeafParticle.GENERAL, 6 );
+					Invisibility.dispel(curUser);
 
 					Plant plant = ((Plant.Seed) Reflection.newInstance(curSeedEffect)).couch(cell, null);
 					plant.activate(Actor.findChar(cell));

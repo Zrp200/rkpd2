@@ -72,6 +72,7 @@ import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
+import com.zrp200.rkpd2.utils.GLog;
 
 import java.util.HashMap;
 
@@ -397,6 +398,7 @@ public class ElementalBlast extends ArmorAbility {
 	@Override
 	protected void activate(ClassArmor armor, Hero hero, Integer target) {
 		if(MagesStaff.getWandClass() == null) {
+			GLog.w(Messages.get(this, "no_staff"));
 			markAbilityUsed(this);
 			return; // prevents the callback by catching it now.
 		}

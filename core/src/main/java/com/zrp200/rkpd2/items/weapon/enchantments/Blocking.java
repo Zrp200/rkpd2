@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2023 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.items.weapon.enchantments;
 
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Barrier;
 import com.zrp200.rkpd2.actors.buffs.Buff;
@@ -43,11 +44,13 @@ public class Blocking extends Weapon.Enchantment {
 		int level = Math.max( 0, weapon.buffedLvl() );
 
 		// lvl 0 - 10%
-		// lvl 1 ~ 14%
-		// lvl 2 ~ 18%
-		if (proc(attacker, level, 4f, 40f)){
+		// lvl 1 ~ 12%
+		// lvl 2 ~ 14%
+		float procChance = (level+4f)/(level+40f) * procChanceMultiplier(attacker);
+		if (Random.Float() < procChance){
+			float powerMulti = Math.max(1f, procChance);
 			BlockBuff b = Buff.affect(attacker, BlockBuff.class);
-			b.setShield(attacker.HT/10);
+			b.setShield(Math.round(powerMulti * (2 + weapon.buffedLvl())));
 			attacker.sprite.emitter().burst(Speck.factory(Speck.LIGHT), 5);
 		}
 		

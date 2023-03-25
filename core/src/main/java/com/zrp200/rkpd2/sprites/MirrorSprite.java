@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2023 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,11 +25,9 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.mobs.npcs.AbstractMirrorImage;
+import com.watabou.utils.PointF;
 
 public class MirrorSprite extends MobSprite {
-	
-	private static final int FRAME_WIDTH	= 12;
-	private static final int FRAME_HEIGHT	= 15;
 	
 	public MirrorSprite() {
 		super();
@@ -42,6 +40,15 @@ public class MirrorSprite extends MobSprite {
 	@Override
 	public void link( Char ch ) {
 		super.link( ch );
+		updateArmor();
+	}
+
+	@Override
+	public void bloodBurstA(PointF from, int damage) {
+		//do nothing
+	}
+
+	public void updateArmor(){
 		updateArmor( ((AbstractMirrorImage)ch).armTier );
 	}
 	

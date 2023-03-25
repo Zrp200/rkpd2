@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2023 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@ import com.zrp200.rkpd2.actors.buffs.*;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.actors.hero.abilities.duelist.Challenge;
 import com.zrp200.rkpd2.actors.hero.abilities.rogue.DeathMark;
 import com.zrp200.rkpd2.actors.hero.abilities.warrior.Endure;
 import com.zrp200.rkpd2.actors.mobs.Elemental;
@@ -44,21 +45,19 @@ import com.zrp200.rkpd2.items.armor.glyphs.Potential;
 import com.zrp200.rkpd2.items.armor.glyphs.Viscosity;
 import com.zrp200.rkpd2.items.artifacts.TimekeepersHourglass;
 import com.zrp200.rkpd2.items.potions.exotic.PotionOfCleansing;
-import com.zrp200.rkpd2.items.rings.RingOfArcana;
 import com.zrp200.rkpd2.items.rings.RingOfElements;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRetribution;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
 import com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfChallenge;
 import com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfPsionicBlast;
-import com.zrp200.rkpd2.items.stones.StoneOfAggression;
 import com.zrp200.rkpd2.items.wands.WandOfFireblast;
 import com.zrp200.rkpd2.items.wands.WandOfFirebolt;
 import com.zrp200.rkpd2.items.wands.WandOfFrost;
 import com.zrp200.rkpd2.items.wands.WandOfLightning;
 import com.zrp200.rkpd2.items.wands.WandOfLivingEarth;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
+import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.enchantments.Blazing;
-import com.zrp200.rkpd2.items.weapon.enchantments.Blocking;
 import com.zrp200.rkpd2.items.weapon.enchantments.Grim;
 import com.zrp200.rkpd2.items.weapon.enchantments.Kinetic;
 import com.zrp200.rkpd2.items.weapon.enchantments.Shocking;
@@ -297,19 +296,23 @@ public abstract class Char extends Actor {
 
 			return false;
 
-		} else if (hit( this, enemy, accMulti )) {
+		} else if (hit( this, enemy, accMulti, false )) {
 			
 			int dr = Math.round(enemy.drRoll() * AscensionChallenge.statModifier(enemy));
 
-			Barkskin bark = enemy.buff(Barkskin.class);
-			if (bark != null)   dr += Random.NormalIntRange( 0 , bark.level() );
-
 			if (this instanceof Hero){
-				Hero hero = (Hero)this;
-				if (hero.belongings.weapon() instanceof MissileWeapon
-						&& (hero.subClass == HeroSubClass.SNIPER || hero.subClass == HeroSubClass.KING)
-						&& !Dungeon.level.adjacent(hero.pos, enemy.pos)){
+				Hero h = (Hero)this;
+				if (h.belongings.attackingWeapon() instanceof MissileWeapon
+						&& (h.subClass == HeroSubClass.SNIPER || h.subClass == HeroSubClass.KING)
+						&& !Dungeon.level.adjacent(h.pos, enemy.pos)){
 					dr = 0;
+				}
+
+				if (h.buff(MonkEnergy.MonkAbility.UnarmedAbilityTracker.class) != null){
+					dr = 0;
+				} else if (h.subClass == HeroSubClass.MONK) {
+					//3 turns with standard attack delay
+					Buff.prolong(h, MonkEnergy.MonkAbility.JustHitTracker.class, 4f);
 				}
 			}
 
@@ -360,6 +363,10 @@ public abstract class Char extends Actor {
 				dmg *= 0.67f;
 			}
 
+			if (enemy.buff(MonkEnergy.MonkAbility.Meditate.MeditateResistance.class) != null){
+				dmg *= 0.2f;
+			}
+
 			if ( buff(Weakness.class) != null ){
 				dmg *= 0.67f;
 			}
@@ -408,6 +415,24 @@ public abstract class Char extends Actor {
 					DeathMark.processFearTheReaper(enemy, true);
 				}
 				enemy.sprite.showStatus(CharSprite.NEGATIVE, Messages.get(Preparation.class, "assassinated"));
+			}
+
+			Talent.CombinedLethalityTriggerTracker combinedLethality = buff(Talent.CombinedLethalityTriggerTracker.class);
+			if (combinedLethality != null){
+				if ( enemy.isAlive() && enemy.alignment != alignment && !Char.hasProp(enemy, Property.BOSS)
+						&& !Char.hasProp(enemy, Property.MINIBOSS) && this instanceof Hero &&
+						(enemy.HP/(float)enemy.HT) <= 0.10f*((Hero)this).pointsInTalent(Talent.COMBINED_LETHALITY)) {
+					enemy.HP = 0;
+					if (!enemy.isAlive()) {
+						enemy.die(this);
+					} else {
+						//helps with triggering any on-damage effects that need to activate
+						enemy.damage(-1, this);
+						DeathMark.processFearTheReaper(enemy, false);
+					}
+					enemy.sprite.showStatus(CharSprite.NEGATIVE, Messages.get(Talent.CombinedLethalityTriggerTracker.class, "executed"));
+				}
+				combinedLethality.detach();
 			}
 
 			enemy.sprite.bloodBurstA( sprite.center(), effectiveDamage );
@@ -463,16 +488,20 @@ public abstract class Char extends Actor {
 	public static int INFINITE_EVASION = 1_000_000;
 
 	final public static boolean hit( Char attacker, Char defender, boolean magic ) {
-		return hit(attacker, defender, magic ? 2f : 1f);
+		return hit(attacker, defender, magic ? 2f : 1f, magic);
 	}
 
-	public static boolean hit( Char attacker, Char defender, float accMulti ) {
+	public static boolean hit( Char attacker, Char defender, float accMulti, boolean magic ) {
 		float acuStat = attacker.attackSkill( defender );
 		float defStat = defender.defenseSkill( attacker );
 
 		//invisible chars always hit (for the hero this is surprise attacking)
 		if (attacker.invisible > 0 && attacker.canSurpriseAttack()){
 			acuStat = INFINITE_ACCURACY;
+		}
+
+		if (defender.buff(MonkEnergy.MonkAbility.Focus.FocusBuff.class) != null && !magic){
+			defStat = INFINITE_EVASION;
 		}
 
 		//if accuracy or evasion are large enough, treat them as infinite.
@@ -515,7 +544,12 @@ public abstract class Char extends Actor {
 	}
 	
 	public int drRoll() {
-		return 0;
+		int dr = 0;
+
+		Barkskin bark = buff(Barkskin.class);
+		if (bark != null)   dr += Random.NormalIntRange( 0 , bark.level() );
+
+		return dr;
 	}
 	
 	public int damageRoll() {
@@ -603,28 +637,29 @@ public abstract class Char extends Actor {
 		}
 		dmg = (int)Math.ceil(dmg / AscensionChallenge.statModifier(this));
 
-		if (!(src instanceof LifeLink) && buff(LifeLink.class) != null){
+		if (!(src instanceof LifeLink) && buff(LifeLink.class) != null) {
 			HashSet<LifeLink> links = buffs(LifeLink.class);
-			for (LifeLink link : links.toArray(new LifeLink[0])){
-				if (Actor.findById(link.object) == null){
+			for (LifeLink link : links.toArray(new LifeLink[0])) {
+				if (Actor.findById(link.object) == null) {
 					links.remove(link);
 					link.detach();
 				}
 			}
-			int linkedDmg = (int)Math.ceil(dmg / (float)(links.size()+1));
-			for (LifeLink link : links){
-				Char ch = (Char)Actor.findById(link.object);
+			int linkedDmg = (int) Math.ceil(dmg / (float) (links.size() + 1));
+			for (LifeLink link : links) {
+				Char ch = (Char) Actor.findById(link.object);
+				if (ch == null) continue;
 				// this reduces the effectiveness of life link for redirecting huge hits.
-				int recieved = Math.min(ch.HP,linkedDmg);
+				int recieved = Math.min(ch.HP, linkedDmg);
 				dmg -= recieved;
 				ch.damage(recieved, link);
-				if (!ch.isAlive()){
+				if (!ch.isAlive()) {
 					link.detach();
 				}
 			}
 		}
 		if (this.buff(Doom.class) != null && !isImmune(Doom.class)){
-			dmg *= 2;
+			dmg *= 1.67f;
 		}
 		if (alignment != Alignment.ALLY && this.buff(DeathMark.DeathMarkTracker.class) != null){
 			dmg *= DeathMark.damageMultiplier();
@@ -673,11 +708,6 @@ public abstract class Char extends Actor {
 			buff( Paralysis.class ).processDamage(dmg);
 		}
 
-		Endure.EndureTracker endure = buff(Endure.EndureTracker.class);
-		if (endure != null){
-			dmg = endure.enforceDamagetakenLimit(dmg);
-		}
-
 		int shielded = dmg;
 		//FIXME: when I add proper damage properties, should add an IGNORES_SHIELDS property to use here.
 		if (!(src instanceof Hunger)){
@@ -693,7 +723,7 @@ public abstract class Char extends Actor {
 			if (((Char) src).buff(Kinetic.KineticTracker.class) != null){
 				int dmgToAdd = -HP;
 				dmgToAdd -= ((Char) src).buff(Kinetic.KineticTracker.class).conservedDamage;
-				dmgToAdd = Math.round(dmgToAdd * RingOfArcana.enchantPowerMultiplier((Char) src));
+				dmgToAdd = Math.round(dmgToAdd * Weapon.Enchantment.genericProcChanceMultiplier((Char) src));
 				if (dmgToAdd > 0) {
 					Buff.affect((Char) src, Kinetic.ConservedDamage.class).setBonus(dmgToAdd);
 				}
@@ -763,6 +793,10 @@ public abstract class Char extends Actor {
 	
 	public boolean isAlive() {
 		return HP > 0 || deathMarked;
+	}
+
+	public boolean isActive() {
+		return isAlive();
 	}
 
 	@Override
@@ -851,6 +885,10 @@ public abstract class Char extends Actor {
 					&& !(buff instanceof LostInventory)){
 				return;
 			}
+		}
+
+		if (sprite != null && buff(Challenge.SpectatorFreeze.class) != null){
+			return; //can't add buffs while frozen and game is loaded
 		}
 
 		buffs.add( buff );
@@ -996,7 +1034,7 @@ public abstract class Char extends Actor {
 	//similar to isImmune, but only factors in damage.
 	//Is used in AI decision-making
 	public boolean isInvulnerable( Class effect ){
-		return false;
+		return buff(Challenge.SpectatorFreeze.class) != null;
 	}
 
 	protected HashSet<Property> properties = new HashSet<>();
@@ -1015,6 +1053,7 @@ public abstract class Char extends Actor {
 				new HashSet<Class>( Arrays.asList(AllyBuff.class, Dread.class) )),
 		MINIBOSS ( new HashSet<Class>(),
 				new HashSet<Class>( Arrays.asList(AllyBuff.class, Dread.class) )),
+		BOSS_MINION,
 		UNDEAD,
 		DEMONIC,
 		INORGANIC ( new HashSet<Class>(),
