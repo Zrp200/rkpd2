@@ -48,6 +48,7 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
+import com.zrp200.rkpd2.utils.SafeCast;
 
 import java.util.ArrayList;
 
@@ -77,6 +78,12 @@ public abstract class Plant implements Bundlable {
 	}
 	
 	public abstract void activate( Char ch );
+	public static boolean isWarden( Char ch ) {
+		return ch instanceof Hero && (
+				((Hero)ch).subClass == HeroSubClass.WARDEN
+						|| ((Hero)ch).subClass == HeroSubClass.KING);
+	}
+
 	
 	public void wither() {
 		Dungeon.level.uproot( pos );
