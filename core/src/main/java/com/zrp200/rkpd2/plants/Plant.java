@@ -30,7 +30,6 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Barkskin;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.CellEmitter;
@@ -48,7 +47,6 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
-import com.zrp200.rkpd2.utils.SafeCast;
 
 import java.util.ArrayList;
 
@@ -79,9 +77,7 @@ public abstract class Plant implements Bundlable {
 	
 	public abstract void activate( Char ch );
 	public static boolean isWarden( Char ch ) {
-		return ch instanceof Hero && (
-				((Hero)ch).subClass == HeroSubClass.WARDEN
-						|| ((Hero)ch).subClass == HeroSubClass.KING);
+		return ch instanceof Hero && ((Hero) ch).subClass.is(HeroSubClass.WARDEN);
 	}
 
 	
@@ -173,7 +169,7 @@ public abstract class Plant implements Bundlable {
 				super.onThrow( cell );
 			} else {
 				Dungeon.level.plant( this, cell );
-				if (Dungeon.hero.subClass == HeroSubClass.WARDEN || Dungeon.hero.subClass == HeroSubClass.KING) {
+				if (Dungeon.hero.subClass.is(HeroSubClass.WARDEN)) {
 					for (int i : PathFinder.NEIGHBOURS8) {
 						int c = Dungeon.level.map[cell + i];
 						if ( c == Terrain.EMPTY || c == Terrain.EMPTY_DECO

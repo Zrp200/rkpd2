@@ -96,6 +96,11 @@ public enum HeroSubClass {
 		Talent.initSubclassTalents(hero);
 	}
 
+	/** useful for sharing attributes with KING subclass **/
+	public boolean is(HeroSubClass sub) {
+		return this == sub || this == KING;
+	}
+
 	public final int icon;
 
 	HeroSubClass(int icon){

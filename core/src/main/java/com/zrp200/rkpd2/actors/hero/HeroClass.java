@@ -37,7 +37,6 @@ import com.zrp200.rkpd2.actors.hero.abilities.rogue.*;
 import com.zrp200.rkpd2.actors.hero.abilities.warrior.*;
 import com.zrp200.rkpd2.items.BrokenSeal;
 import com.zrp200.rkpd2.items.Item;
-import com.zrp200.rkpd2.items.KingsCrown;
 import com.zrp200.rkpd2.items.Waterskin;
 import com.zrp200.rkpd2.items.armor.ClothArmor;
 import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
@@ -93,6 +92,11 @@ public enum HeroClass {
 	RAT_KING (KING);
 
 	private HeroSubClass[] subClasses;
+
+	/** useful for sharing attributes with Rat King **/
+	public boolean is(HeroClass cls) {
+		return this == cls || this == RAT_KING;
+	}
 
 	public static final int MAGE_WAND_BOOST = 2;
 	public int getBonus(Item item) { return 0; }

@@ -70,7 +70,7 @@ public class SoulMark extends FlavourBuff {
 
 	public static void process(Char defender, int bonusDuration, float chance, boolean afterDamage, boolean extend) {
 		if (defender != hero
-				&& (hero.subClass == HeroSubClass.WARLOCK || hero.subClass == HeroSubClass.KING)
+				&& hero.subClass.is(HeroSubClass.WARLOCK)
 				&& Random.Float() < chance) {
 			float duration = DURATION + bonusDuration;
 			(extend ? affect(defender, SoulMark.class, duration)

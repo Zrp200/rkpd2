@@ -303,7 +303,7 @@ public abstract class Char extends Actor {
 			if (this instanceof Hero){
 				Hero h = (Hero)this;
 				if (h.belongings.attackingWeapon() instanceof MissileWeapon
-						&& (h.subClass == HeroSubClass.SNIPER || h.subClass == HeroSubClass.KING)
+						&& h.subClass.is(HeroSubClass.SNIPER)
 						&& !Dungeon.level.adjacent(h.pos, enemy.pos)){
 					dr = 0;
 				}

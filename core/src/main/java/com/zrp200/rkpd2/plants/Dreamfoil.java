@@ -48,7 +48,7 @@ public class Dreamfoil extends Plant {
 			} else if (ch instanceof Hero) {
 				GLog.i( Messages.get(this, "refreshed") );
 
-				if (((Hero)ch).subClass == HeroSubClass.WARDEN || ((Hero)ch).subClass == HeroSubClass.KING){
+				if (((Hero)ch).subClass.is(HeroSubClass.WARDEN)){
 					Buff.affect(ch, BlobImmunity.class, BlobImmunity.DURATION/2f);
 				}
 			}

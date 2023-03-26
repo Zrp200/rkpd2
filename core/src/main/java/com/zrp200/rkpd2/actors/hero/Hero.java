@@ -109,8 +109,6 @@ import com.zrp200.rkpd2.levels.features.LevelTransition;
 import com.zrp200.rkpd2.levels.traps.Trap;
 import com.zrp200.rkpd2.mechanics.ShadowCaster;
 import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.plants.Earthroot;
-import com.zrp200.rkpd2.plants.Swiftthistle;
 import com.zrp200.rkpd2.scenes.AlchemyScene;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.scenes.InterlevelScene;
@@ -161,6 +159,7 @@ public class Hero extends Char {
 	
 	public HeroClass heroClass = HeroClass.ROGUE;
 	public HeroSubClass subClass = HeroSubClass.NONE;
+
 	public ArmorAbility armorAbility = null;
 	public ArrayList<LinkedHashMap<Talent, Integer>> talents = new ArrayList<>();
 	public LinkedHashMap<Talent, Talent> metamorphedTalents = new LinkedHashMap<>();
@@ -2213,7 +2212,7 @@ public class Hero extends Char {
 
 		int points = pointsInTalent(Talent.KINGS_VISION);
 		boolean circular = points == 1;
-		int distance = (heroClass == HeroClass.ROGUE || heroClass == HeroClass.RAT_KING) ? 2 : 1;
+		int distance = heroClass.is(HeroClass.ROGUE) ? 2 : 1;
 		if (points > 0) distance++;
 		distance += pointsInTalent(Talent.WIDE_SEARCH);
 		

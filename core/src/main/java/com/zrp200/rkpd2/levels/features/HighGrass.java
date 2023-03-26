@@ -23,13 +23,11 @@ package com.zrp200.rkpd2.levels.features;
 
 import static com.zrp200.rkpd2.utils.SafeCast.cast;
 
-import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.ShatteredPixelDungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -45,7 +43,6 @@ import com.zrp200.rkpd2.items.food.Berry;
 import com.zrp200.rkpd2.levels.Level;
 import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.scenes.GameScene;
-import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Random;
 
 public class HighGrass {
@@ -75,9 +72,7 @@ public class HighGrass {
 		if (freezeTrample) return;
 		
 		Char ch = Actor.findChar(pos);
-		boolean furrow = ch instanceof Hero
-				&& (((Hero)ch).heroClass == HeroClass.HUNTRESS
-				|| ((Hero)ch).heroClass == HeroClass.RAT_KING);
+		boolean furrow = ch instanceof Hero && ((Hero)ch).heroClass.is(HeroClass.HUNTRESS);
 		if (level.map[pos] == Terrain.FURROWED_GRASS){
 			if (ch instanceof Hero && furrow){
 				//Do nothing
