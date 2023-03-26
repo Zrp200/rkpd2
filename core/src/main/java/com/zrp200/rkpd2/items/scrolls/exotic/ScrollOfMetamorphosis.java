@@ -21,7 +21,7 @@
 
 package com.zrp200.rkpd2.items.scrolls.exotic;
 
-import static com.zrp200.rkpd2.actors.hero.HeroClass.*;
+import static com.zrp200.rkpd2.actors.hero.HeroClass.WARRIOR;
 import static com.zrp200.rkpd2.actors.hero.Talent.*;
 
 import com.zrp200.rkpd2.Assets;
@@ -211,30 +211,7 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 
 			LinkedHashMap<Talent, Integer> options = new LinkedHashMap<>();
 			Set<Talent> curTalentsAtTier = Dungeon.hero.talents.get(tier-1).keySet();
-
-			HeroClass[] classes = new HeroClass[ HeroClass.values().length-1 ];
-			if(tier == 3) {
-				// copy all the base classes, as rat king doesn't have any t3s to transfer.
-				System.arraycopy(HeroClass.values(), 0, classes, 0, classes.length);
-			} else {
-				// lower chance = more likely to be included.
-				HashMap<HeroClass, Float> chances = new HashMap<HeroClass, Float>(){{
-					for(HeroClass cls : HeroClass.values()) put(cls,
-							cls == RAT_KING
-									? 1f
-									: cls == Dungeon.hero.heroClass
-									? 2f
-									: 3f);
-				}};
-				// omit one class to closer simulate shattered. RKPD2 adds one class.
-				for(int i=0; i < classes.length; i++) {
-					chances.remove( classes[i] = Random.chances(chances) );
-				}
-			}
-			java.util.Arrays.sort(classes); // this retains some sort of order.
-
-			// limited to three choices.
-			for (HeroClass cls : classes){
+			for (HeroClass cls : HeroClass.values()){
 				ArrayList<LinkedHashMap<Talent, Integer>> clsTalents = new ArrayList<>();
 				initClassTalents(cls, clsTalents);
 
@@ -247,11 +224,12 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 					} else {
 						if (curTalentsAtTier.contains(talent)){
 							clsTalentsAtTier.remove(talent);
-							if (restrictedTalents.containsKey(talent)
-									&& restrictedTalents.get(talent) != curUser.heroClass){
-								clsTalentsAtTier.remove(talent);
-							}
 						}
+						if (restrictedTalents.containsKey(talent)
+								&& restrictedTalents.get(talent) != curUser.heroClass){
+							clsTalentsAtTier.remove(talent);
+						}
+
 					}
 				}
 				if (!replacingIsInSet && !clsTalentsAtTier.isEmpty()) {

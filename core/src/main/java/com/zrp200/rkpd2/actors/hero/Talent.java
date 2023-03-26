@@ -552,6 +552,14 @@ public enum Talent {
 		return desc(false);
 	}
 
+	// this is an absurd way to check but it..works.
+	public boolean isClassTalent(HeroClass cls) {
+		ArrayList<LinkedHashMap<Talent, Integer>> talents = new ArrayList<>();
+		initClassTalents(cls, talents);
+		for (LinkedHashMap<Talent, Integer> tier : talents) if (tier.containsKey(this)) return true;
+		return false;
+	}
+
     // fixme there's gotta be a way to truncate the sheer amount of extra text that's about to show up.
     // todo also should decide if I want the comment to show up before or after the meta desc. currently it is set after
 	public String desc(boolean metamorphed){
