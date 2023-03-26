@@ -132,7 +132,7 @@ public enum Talent {
 	TELEFRAG(55, 4), REMOTE_BEACON(56, 4), LONGRANGE_WARP(57, 4),
 
 	//Rogue T1
-	CACHED_RATIONS(64), THIEFS_INTUITION(65), SUCKER_PUNCH(66), MENDING_SHADOWS(128),
+	CACHED_RATIONS(64), THIEFS_INTUITION(65), SUCKER_PUNCH(66), MENDING_SHADOWS(67),
 	//Rogue T2
 	MYSTICAL_MEAL(68), MYSTICAL_UPGRADE(69), WIDE_SEARCH(70), SILENT_STEPS(71), ROGUES_FORESIGHT(72),
 	//Rogue T3
@@ -600,6 +600,7 @@ public enum Talent {
 				break;
 			case LIGHT_CLOAK:
 				// shpd does a check to make sure it's the rogue before doing this, but I don't see why I should bother checking.
+				break;
 			case RK_FREERUNNER:
 				if (hero.pointsInTalent(LIGHT_CLOAK, RK_FREERUNNER) == 1) {
 					for (Item item : hero.belongings.backpack) {
@@ -913,13 +914,10 @@ public enum Talent {
 			}
 			if (shiftedTalent != null) {
 				id = hero.shiftedPoints(shiftedTalent, otherTalent) == 2;
-			} else if ((hero.heroClass == HeroClass.ROGUE || hero.hasTalent(ROYAL_INTUITION))
-					&& item instanceof Ring) {
-				int points = hero.pointsInTalent(THIEFS_INTUITION, ROYAL_INTUITION);
-				if (hero.heroClass == HeroClass.ROGUE) points++; // essentially this is a 50% boost.
-				id = points >= 2;
-				if (!id) {
-					((Ring) item).setKnown();
+			} else if (item instanceof Ring) {
+				switch(hero.shiftedPoints(THIEFS_INTUITION, ROYAL_INTUITION)) {
+					case 2: case 3: id = true; break;
+					case 1: ((Ring) item).setKnown(); break;
 				}
 			}
 		}
