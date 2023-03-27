@@ -583,6 +583,7 @@ public enum Talent {
 				Buff.affect(hero, BrokenSeal.WarriorShield.class);
 				break;
 			case VETERANS_INTUITION:
+			case ADVENTURERS_INTUITION:
 			case THIEFS_INTUITION:
 			case ROYAL_INTUITION:
 				for (Item item : hero.belongings) {
@@ -599,11 +600,6 @@ public enum Talent {
 								item.identify(); // adjusts for the difference in chance.
 						}
 					}
-				}
-				break;
-			case ADVENTURERS_INTUITION:
-				if (points >= 2) {
-					if (hero.belongings.weapon() != null) hero.belongings.weapon().identify();
 				}
 				break;
 			case LIGHT_CLOAK:
@@ -955,11 +951,17 @@ public enum Talent {
 				curseID = item.cursedKnown = true;
 			}
 		}
-		// todo fix
-		if (hero.pointsInTalent(VETERANS_INTUITION) == 2 && Random.Int(2) == 0 && !item.collected &&
-				(item instanceof Weapon || item instanceof Armor)) {
-			item.identify();
-			id = true;
+		if(!item.collected && item instanceof Weapon || item instanceof Armor) {
+			for (Talent talent : new Talent[]{VETERANS_INTUITION, ADVENTURERS_INTUITION}) {
+				int points = hero.pointsInTalent(talent)-1; // we care about +1 +2 boosted +2
+				// match talent to equipment type gets boost
+				if (talent == VETERANS_INTUITION ^ item instanceof Weapon) points++;
+				// 0%/0%/30%/60% to identify on pick-up with armsmaster talents
+				if (0.3f * points > Random.Float()) {
+					id = true;
+					break;
+				}
+			}
 		}
 		if(!item.collected && !item.cursedKnown && (item instanceof EquipableItem && !(item instanceof MissileWeapon) || item instanceof Wand) && Random.Int(5) < hero.pointsInTalent(SURVIVALISTS_INTUITION)){
 			curseID = item.cursedKnown = true;
