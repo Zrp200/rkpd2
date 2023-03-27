@@ -87,7 +87,7 @@ public class Item implements Bundlable {
 	public boolean cursed;
 	public boolean cursedKnown;
 
-	public boolean collected;
+	public boolean collected; // if on-collect talents have already been checked; prevents exploits
 
 	// Unique items persist through revival
 	public boolean unique = false;

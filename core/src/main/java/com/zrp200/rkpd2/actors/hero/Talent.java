@@ -588,6 +588,7 @@ public enum Talent {
 			case ROYAL_INTUITION:
 				for (Item item : hero.belongings) {
 					// rerun these.
+					item.collected = false;
 					onItemCollected(hero, item);
 					if (item.isEquipped(hero)) onItemEquipped(hero, item);
 				}
@@ -901,31 +902,34 @@ public enum Talent {
 		}
 	}
 	public static void onItemEquipped( Hero hero, Item item ) {
+		if (item.isIdentified()) return; // all talent interactions here regard identification
 		boolean id = false;
 		if (hero.pointsInTalent(ROYAL_INTUITION) == 2) {
-			item.identify();
 			id = true;
 		} else {
-			// todo fix
-			Talent shiftedTalent = null;
-			Talent otherTalent = null;
+			// Armsmaster
+			Talent shiftedTalent, otherTalent;
 			if (item instanceof Armor) {
 				shiftedTalent = VETERANS_INTUITION;
 				otherTalent = ADVENTURERS_INTUITION;
 			} else if (item instanceof Weapon) {
 				shiftedTalent = ADVENTURERS_INTUITION;
 				otherTalent = VETERANS_INTUITION;
+			} else {
+				shiftedTalent = otherTalent = null;
 			}
 			if (shiftedTalent != null) {
+				// +1 for dedicated talent, +1 otherwise.
 				id = hero.shiftedPoints(shiftedTalent, otherTalent) == 2;
 			} else if (item instanceof Ring) {
+				// Thief's Intuition
 				switch(hero.shiftedPoints(THIEFS_INTUITION, ROYAL_INTUITION)) {
 					case 2: case 3: id = true; break;
 					case 1: ((Ring) item).setKnown(); break;
 				}
 			}
 		}
-		if (id && !item.isIdentified()) {
+		if (id) {
 			item.identify();
 			if (hero.sprite.emitter() != null) hero.sprite.emitter().burst(
 					Speck.factory(Speck.QUESTION),
@@ -935,23 +939,21 @@ public enum Talent {
 	}
 
 	public static void onItemCollected( Hero hero, Item item ){
-		if(item.isIdentified()) return;
-		boolean id = false, curseID = false;
-		if(hero.shiftedPoints(THIEFS_INTUITION, ROYAL_INTUITION) > 0 && (item instanceof Ring || item instanceof Artifact)) {
-			if (hero.pointsInTalent(THIEFS_INTUITION) == 2) {
-				item.identify();
-				id = true;
-			}
-			else if( hero.shiftedPoints(THIEFS_INTUITION, ROYAL_INTUITION) == 2 && item instanceof Ring) {
-				((Ring) item).setKnown();
-			}
-			else if(hero.hasTalent(THIEFS_INTUITION)
-					&& !item.collected && item.cursed && !item.cursedKnown
-					&& Random.Int(3) == 0) {
-				curseID = item.cursedKnown = true;
+		if(item.isIdentified() || item.collected) return;
+		item.collected = true;
+		boolean id = false, curseID = item.cursedKnown;
+		if (item instanceof Ring || item instanceof Artifact) {
+			switch (hero.shiftedPoints(THIEFS_INTUITION, ROYAL_INTUITION)) {
+				case 3: id = true; break;
+				case 2:
+					if (item instanceof Ring) ((Ring) item).setKnown();
+					// +1 effect has a chance to id curses if it's actually cursed.
+					curseID = curseID || hero.hasTalent(THIEFS_INTUITION) && item.cursed
+							&& Random.Int(3) == 0;
+					break;
 			}
 		}
-		if(!item.collected && item instanceof Weapon || item instanceof Armor) {
+		if (item instanceof Weapon || item instanceof Armor) {
 			for (Talent talent : new Talent[]{VETERANS_INTUITION, ADVENTURERS_INTUITION}) {
 				int points = hero.pointsInTalent(talent)-1; // we care about +1 +2 boosted +2
 				// match talent to equipment type gets boost
@@ -963,25 +965,25 @@ public enum Talent {
 				}
 			}
 		}
-		if(!item.collected && !item.cursedKnown && (item instanceof EquipableItem && !(item instanceof MissileWeapon) || item instanceof Wand) && Random.Int(5) < hero.pointsInTalent(SURVIVALISTS_INTUITION)){
-			curseID = item.cursedKnown = true;
-		}
-		if( (item instanceof Scroll || item instanceof Potion) && !item.isIdentified() && hero.hasTalent(SCHOLARS_INTUITION) ) {
-			if(!item.collected && Random.Int(4-hero.pointsInTalent(SCHOLARS_INTUITION)) == 0) {
-				item.identify();
-				id = true;
+		// survivalist's intuition curse checking (.2/.4 chance)
+		curseID = curseID || (item instanceof Wand || item instanceof EquipableItem && !(item instanceof MissileWeapon))
+				&& Random.Int(5) < hero.pointsInTalent(SURVIVALISTS_INTUITION);
+		// scholar's intuition consumable identification
+		id = id || (item instanceof Scroll || item instanceof Potion)
+				&& hero.hasTalent(SCHOLARS_INTUITION)
+				&& Random.Int(4-hero.pointsInTalent(SCHOLARS_INTUITION)) == 0;
+
+		if(id || curseID && !item.cursedKnown) {
+			if (id) item.identify();
+			else {
+				// fixme this doesn't use .properties file.
+				GLog.w("The %s is %s",
+						item.name(),
+						item.visiblyCursed() ? "cursed!" : "free of malevolent magic.");
 			}
+			if (hero.sprite.emitter() != null) hero.sprite.emitter().burst(
+					Speck.factory(Speck.QUESTION),1);
 		}
-
-		if(curseID) {
-			id = true;
-			// fixme this doesn't use .properties file.
-			GLog.w("The %s is %s",
-					item.name(),
-					item.visiblyCursed() ? "cursed!" : "free of malevolent magic.");
-		}
-		if(id && hero.sprite.emitter() != null) hero.sprite.emitter().burst(Speck.factory(Speck.QUESTION),1);
-
 	}
 
 	//note that IDing can happen in alchemy scene, so be careful with VFX here
