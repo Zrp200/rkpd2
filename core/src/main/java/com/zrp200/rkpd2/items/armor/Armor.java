@@ -405,8 +405,11 @@ public class Armor extends EquipableItem {
 			} else {
 
 				int lossChanceStart = 4;
-				if (Dungeon.hero != null && Dungeon.hero.heroClass != HeroClass.WARRIOR && Dungeon.hero.hasTalent(Talent.RUNIC_TRANSFERENCE)){
-					lossChanceStart += 1+Dungeon.hero.pointsInTalent(Talent.RUNIC_TRANSFERENCE);
+				if (Dungeon.hero != null && !Dungeon.hero.heroClass.is(HeroClass.WARRIOR)){
+					int pointsRunic = Dungeon.hero.pointsInTalent(Talent.RUNIC_TRANSFERENCE);
+					int pointsPower = Dungeon.hero.pointsInTalent(Talent.POWER_WITHIN);
+					if(pointsRunic > 0) lossChanceStart += 2*(1+pointsRunic); // +4/+6
+					if(pointsPower > 0) lossChanceStart += 1+pointsPower; // +2/+4
 				}
 
 				if (level() >= lossChanceStart && Random.Float(10) < Math.pow(2, level()-4)) {

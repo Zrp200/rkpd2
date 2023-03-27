@@ -176,8 +176,15 @@ public class ArcaneResin extends Item {
 
 			Item output = new ArcaneResin().quantity(2*(level+1));
 
-			if (Dungeon.hero.heroClass != HeroClass.MAGE && Dungeon.hero.hasTalent(Talent.WAND_PRESERVATION)){
-				output.quantity(output.quantity() + Dungeon.hero.pointsInTalent(Talent.WAND_PRESERVATION));
+			// metamorph effect
+			if (!Dungeon.hero.heroClass.is(HeroClass.MAGE))
+			{
+				int boost = (int)Dungeon.hero.byTalent(
+						// +1/+2/+4 enjoy your +3 wands!
+						Talent.WAND_PRESERVATION, 2f,
+						Talent.POWER_WITHIN, 1f); // +1/+2
+				if (Dungeon.hero.shiftedPoints(Talent.WAND_PRESERVATION) == 1) boost++;
+				if (boost > 0) output.quantity(output.quantity() + boost);
 			}
 
 			return output;

@@ -788,8 +788,8 @@ public enum Talent {
 			hero.byTalent( (talent, points) -> {
 				points++;
 				multiplier[0] += points/(talent == RESTORED_WILLPOWER ? 2f : 3f);
-				float noSeal = 0.025f * points;
-				multiplier[1] += talent == RESTORED_WILLPOWER ? noSeal * 1.5f : noSeal;
+				float metamorphShield = talent == RESTORED_WILLPOWER ? 0.04f : 0.025f;
+				multiplier[1] += metamorphShield * points;
 			}, RESTORED_WILLPOWER, RESTORATION);
 			BrokenSeal.WarriorShield shield = hero.buff(BrokenSeal.WarriorShield.class);
 			int shieldToGive;

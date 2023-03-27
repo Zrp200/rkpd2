@@ -75,12 +75,10 @@ public class BrokenSeal extends Item {
 	public static int maxShieldFromTalents(boolean armorAttached) {
 		// iron will is 1 (0+1) / 3 (1+2) / 5 (2+3)
 		// noble cause is 0/1/2
-		int points = 0;
-		if(armorAttached || hero.heroClass != HeroClass.RAT_KING)
-			points += hero.pointsInTalent(Talent.NOBLE_CAUSE);
-		if(armorAttached || hero.heroClass != HeroClass.WARRIOR)
-			points += hero.pointsInTalent(Talent.IRON_WILL) + hero.shiftedPoints(Talent.IRON_WILL);
-		return points;
+		return armorAttached || !hero.heroClass.is(HeroClass.WARRIOR) ?
+				hero.pointsInTalent(Talent.NOBLE_CAUSE, Talent.IRON_WILL)
+						+ hero.shiftedPoints(Talent.IRON_WILL)
+				: 0;
 	}
 
 	public int maxShield( int armTier, int armLvl ){
