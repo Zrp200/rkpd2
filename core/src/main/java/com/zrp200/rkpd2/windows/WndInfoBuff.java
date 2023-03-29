@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.windows;
 
 import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.ActionIndicator;
 import com.zrp200.rkpd2.ui.BuffIcon;
 import com.zrp200.rkpd2.ui.RedButton;
@@ -29,7 +30,7 @@ import com.zrp200.rkpd2.ui.RedButton;
 public class WndInfoBuff extends WndTitledMessage {
 
 	public WndInfoBuff(Buff buff){
-		super(new BuffIcon(buff, true), buff.name(), buff.desc(), WIDTH_MIN);
+		super(new BuffIcon(buff, true), Messages.titleCase(buff.name()), buff.desc(), WIDTH_MIN);
 
 		if(buff instanceof ActionIndicator.Action && ((ActionIndicator.Action)buff).isSelectable()) {
 			addToBottom(new RedButton("Set Active") {
