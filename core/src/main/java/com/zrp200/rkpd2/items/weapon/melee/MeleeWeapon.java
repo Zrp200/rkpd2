@@ -493,7 +493,8 @@ public class MeleeWeapon extends Weapon {
 		}
 
 		public int chargeCap(){
-			return Math.min(10, 3 + (Dungeon.hero.lvl-1)/3);
+			return Math.min(10, 3 + (Dungeon.hero.lvl-1)/3)
+					* (Dungeon.hero.heroClass == HeroClass.DUELIST ? 2 : 1);
 		}
 
 		public int secondChargeCap(){
