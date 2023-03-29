@@ -745,13 +745,7 @@ public abstract class Mob extends Char {
 
 			if (cause == Dungeon.hero || cause instanceof Weapon || cause instanceof Weapon.Enchantment) {
 				Talent.LethalMomentumTracker.process();
-				if (Dungeon.hero.heroClass != HeroClass.DUELIST
-						&& Dungeon.hero.hasTalent(Talent.LETHAL_HASTE)
-						&& Dungeon.hero.buff(Talent.LethalHasteCooldown.class) == null) {
-					Buff.affect(Dungeon.hero, Talent.LethalHasteCooldown.class, 100f);
-					Buff.affect(Dungeon.hero, Haste.class, 1.67f + Dungeon.hero.pointsInTalent(Talent.LETHAL_HASTE));
-				}
-
+				Talent.LethalHasteCooldown.applyLethalHaste(Dungeon.hero, false);
 			}
 		}
 

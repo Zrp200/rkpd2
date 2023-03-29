@@ -472,10 +472,29 @@ public enum Talent {
 		public float iconFadePercent() { return Math.max(0, visualcooldown() / 50); }
 	};;
 	public static class RestoredAgilityTracker extends FlavourBuff{};
-	public static class LethalHasteCooldown extends FlavourBuff{
+	public static class LethalHasteCooldown extends Cooldown {
+		private static boolean enabled = true; // so it doesn't double proc
+		public static void applyLethalHaste(Hero hero, boolean viaAbility) {
+			if (!viaAbility && !enabled) {
+				enabled = true;
+				return;
+			}
+			float duration = 1.67f + hero.pointsInTalent(Talent.LETHAL_HASTE);
+			Buff.prolong(hero, Haste.class, duration);
+			Buff.prolong(hero, Adrenaline.class, duration); // :D
+			if (viaAbility) {
+				enabled = false; // prevent double proccing
+				// using it as intended removes the cooldown.
+				// You'll always be able to use it at least once in a chain. Very balanced I know.
+				detach(hero, LethalHasteCooldown.class);
+			} else affectHero(LethalHasteCooldown.class);
+		}
 		public int icon() { return BuffIndicator.TIME; }
 		public void tintIcon(Image icon) { icon.hardlight(0.35f, 0f, 0.7f); }
-		public float iconFadePercent() { return Math.max(0, visualcooldown() / 100); }
+		@Override
+		public float duration() {
+			return hero.heroClass == HeroClass.DUELIST ? 100 : 50;
+		}
 	};
 	public static class SwiftEquipCooldown extends FlavourBuff{
 		public boolean secondUse;

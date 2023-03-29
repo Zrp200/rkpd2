@@ -253,10 +253,7 @@ public class MeleeWeapon extends Weapon {
 	}
 
 	public void onAbilityKill( Hero hero ){
-		if (hero.hasTalent(Talent.LETHAL_HASTE)){
-			//effectively 2/3 turns of haste
-			Buff.prolong(hero, Haste.class, 1.67f+hero.pointsInTalent(Talent.LETHAL_HASTE));
-		}
+		Talent.LethalHasteCooldown.applyLethalHaste(hero, true);
 	}
 
 	public float abilityChargeUse( Hero hero ){
@@ -442,8 +439,9 @@ public class MeleeWeapon extends Weapon {
 
 				int points = ((Hero)target).pointsInTalent(Talent.WEAPON_RECHARGING);
 				if (points > 0 && target.buff(Recharging.class) != null || target.buff(ArtifactRecharge.class) != null){
-					//1 every 10 turns at +1, 6 turns at +2
-					partialCharge += 1/(14f - 4f*points);
+					//shpd: 1 every 10 turns at +1, 6 turns at +2
+					//rkpd2: 1 every 5 turns at +1, 3 turns at +2
+					partialCharge += 1/(7f - 2f*points);
 				}
 
 				if (partialCharge >= 1){
