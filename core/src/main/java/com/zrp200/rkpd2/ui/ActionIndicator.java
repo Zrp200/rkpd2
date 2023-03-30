@@ -27,8 +27,10 @@ import com.zrp200.rkpd2.actors.buffs.Berserk;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Combo;
 import com.zrp200.rkpd2.actors.buffs.Momentum;
+import com.zrp200.rkpd2.actors.buffs.MonkEnergy;
 import com.zrp200.rkpd2.actors.buffs.Preparation;
 import com.zrp200.rkpd2.actors.buffs.SnipersMark;
+import com.zrp200.rkpd2.items.weapon.melee.MeleeWeapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.windows.WndKeyBindings;
@@ -139,7 +141,14 @@ public class ActionIndicator extends Tag {
 	}
 
 	// list of action buffs that we should replace it with.
-	private static final Class<?extends Buff>[] actionBuffClasses = new Class[]{Preparation.class, SnipersMark.class, Combo.class, Momentum.class, Berserk.class};
+	private static final Class<?extends Buff>[] actionBuffClasses = new Class[]{
+			Preparation.class,
+			SnipersMark.class,
+			Combo.class,
+			Momentum.class,
+			MonkEnergy.class,
+			Berserk.class,
+			MeleeWeapon.Charger.class};
 	private static boolean findAction(boolean cycle) {
 		if(action == null) cycle = false;
 		int start = -1;
