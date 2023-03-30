@@ -95,7 +95,7 @@ public enum HeroClass {
 
 	/** useful for sharing attributes with Rat King **/
 	public boolean is(HeroClass cls) {
-		return this == cls || this == RAT_KING;
+		return this == cls || this == RAT_KING && cls != DUELIST;
 	}
 
 	public static final int MAGE_WAND_BOOST = 2;

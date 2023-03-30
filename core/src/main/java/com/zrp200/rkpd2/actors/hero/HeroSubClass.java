@@ -98,7 +98,7 @@ public enum HeroSubClass {
 
 	/** useful for sharing attributes with KING subclass **/
 	public boolean is(HeroSubClass sub) {
-		return this == sub || this == KING;
+		return this == sub || this == KING && sub != CHAMPION && sub != MONK;
 	}
 
 	public final int icon;
