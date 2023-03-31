@@ -50,7 +50,6 @@ import com.zrp200.rkpd2.items.spells.BeaconOfReturning;
 import com.zrp200.rkpd2.items.spells.CurseInfusion;
 import com.zrp200.rkpd2.items.spells.FeatherFall;
 import com.zrp200.rkpd2.items.spells.MagicalInfusion;
-import com.zrp200.rkpd2.items.spells.MagicalPorter;
 import com.zrp200.rkpd2.items.spells.PhaseShift;
 import com.zrp200.rkpd2.items.spells.ReclaimTrap;
 import com.zrp200.rkpd2.items.spells.Recycle;
@@ -201,7 +200,6 @@ public abstract class Recipe {
 		new CurseInfusion.Recipe(),
 		new FeatherFall.Recipe(),
 		new MagicalInfusion.Recipe(),
-		new MagicalPorter.Recipe(),
 		new PhaseShift.Recipe(),
 		new ReclaimTrap.Recipe(),
 		new Recycle.Recipe(),

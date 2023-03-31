@@ -36,7 +36,6 @@ import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
-import com.zrp200.rkpd2.effects.Transmuting;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.KindOfWeapon;
 import com.zrp200.rkpd2.items.weapon.Weapon;
@@ -46,7 +45,7 @@ import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.ActionIndicator;
-import com.zrp200.rkpd2.ui.HeroIcon;
+import com.zrp200.rkpd2.ui.AttackIndicator;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
@@ -434,7 +433,7 @@ public class MeleeWeapon extends Weapon {
 			LockedFloor lock = target.buff(LockedFloor.class);
 			if (charges < chargeCap()){
 				if (lock == null || lock.regenOn()){
-					partialCharge += 1/(45f-1.5f*(chargeCap()-charges)); // 45 to 30 turns per charge
+					partialCharge += 1/(40f-(chargeCap()-charges)); // 40 to 30 turns per charge
 				}
 
 				int points = ((Hero)target).pointsInTalent(Talent.WEAPON_RECHARGING);
@@ -456,9 +455,9 @@ public class MeleeWeapon extends Weapon {
 			if (Dungeon.hero.subClass == HeroSubClass.CHAMPION
 					&& secondCharges < secondChargeCap()) {
 				if (lock == null || lock.regenOn()) {
-					// 90 to 60 turns per charge without talent
-					// up to 60 to 40 turns per charge at max talent level
-					secondPartialCharge += secondChargeMultiplier() / (45f-2.5f*(secondChargeCap()-secondCharges));
+					// 80 to 60 turns per charge without talent
+					// up to 53.333 to 40 turns per charge at max talent level
+					secondPartialCharge += secondChargeMultiplier() / (40f-(secondChargeCap()-secondCharges));
 				}
 
 				if (secondPartialCharge >= 1) {
@@ -576,6 +575,7 @@ public class MeleeWeapon extends Weapon {
 
 			ActionIndicator.setAction(this);
 			Item.updateQuickslot();
+			AttackIndicator.updateState();
 		}
 	}
 

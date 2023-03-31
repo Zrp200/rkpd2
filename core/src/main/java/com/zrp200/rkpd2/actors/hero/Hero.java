@@ -617,7 +617,7 @@ public class Hero extends Char {
 			}
 			if (armDr > 0) dr += armDr;
 		}
-		if (belongings.weapon() != null)  {
+		if (belongings.weapon() != null && !RingOfForce.fightingUnarmed(this))  {
 			int wepDr = Random.NormalIntRange( 0 , belongings.weapon().defenseFactor( this ) );
 			if (STR() < ((Weapon)belongings.weapon()).STRReq()){
 				wepDr -= 2*(((Weapon)belongings.weapon()).STRReq() - STR());
@@ -1864,14 +1864,15 @@ public class Hero extends Char {
 	}
 	
 	@Override
-	public void add( Buff buff ) {
+	public boolean add( Buff buff ) {
 
-		if (buff(TimekeepersHourglass.timeStasis.class) != null)
-			return;
+		if (buff(TimekeepersHourglass.timeStasis.class) != null) {
+			return false;
+		}
 
-		super.add( buff );
+		boolean added = super.add( buff );
 
-		if (sprite != null && buffs().contains(buff)) {
+		if (sprite != null && added) {
 			String msg = buff.heroMessage();
 			if (msg != null){
 				GLog.w(msg);
@@ -1884,13 +1885,17 @@ public class Hero extends Char {
 		}
 		
 		BuffIndicator.refreshHero();
+
+		return added;
 	}
 	
 	@Override
-	public void remove( Buff buff ) {
-		super.remove( buff );
-
-		BuffIndicator.refreshHero();
+	public boolean remove( Buff buff ) {
+		if (super.remove( buff )) {
+			BuffIndicator.refreshHero();
+			return true;
+		}
+		return false;
 	}
 	
 	@Override
@@ -2089,6 +2094,12 @@ public class Hero extends Char {
 	
 	@Override
 	public void onAttackComplete() {
+
+		if (enemy == null){
+			curAction = null;
+			super.onAttackComplete();
+			return;
+		}
 		
 		AttackIndicator.target(enemy);
 		boolean wasEnemy = enemy.alignment == Alignment.ENEMY
@@ -2187,7 +2198,9 @@ public class Hero extends Char {
 		}
 		curAction = null;
 
-		super.onOperateComplete();
+		if (!ready) {
+			super.onOperateComplete();
+		}
 	}
 
 	@Override

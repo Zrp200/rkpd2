@@ -499,10 +499,15 @@ public enum Talent {
 	public static class SwiftEquipCooldown extends FlavourBuff{
 		public boolean secondUse;
 		public boolean hasSecondUse(){
-			return secondUse && cooldown() > 24f;
+			return secondUse && cooldown() > 14f;
 		}
-		public void setModifier(float modifier) {/* ignored by default */}
 
+		public int icon() { return BuffIndicator.TIME; }
+		public void tintIcon(Image icon) {
+			if (hasSecondUse()) icon.hardlight(0.85f, 0f, 1.0f);
+			else                icon.hardlight(0.35f, 0f, 0.7f);
+		}
+		public float iconFadePercent() { return GameMath.gate(0, visualcooldown() / 20f, 1); }
 		private static final String SECOND_USE = "second_use";
 		@Override
 		public void storeInBundle(Bundle bundle) {
@@ -743,8 +748,8 @@ public enum Talent {
 			hero.sprite.emitter().burst(Speck.factory(Speck.JET), 4*points);
 		}, ROYAL_MEAL);
 			if (hero.hasTalent(STRENGTHENING_MEAL)){
-				//2 bonus physical damage for next 2/3 attacks
-				Buff.affect( hero, PhysicalEmpower.class).set(2, 1 + hero.pointsInTalent(STRENGTHENING_MEAL));
+				//3 bonus physical damage for next 2/3 attacks
+				Buff.affect( hero, PhysicalEmpower.class).set(3, 1 + hero.pointsInTalent(STRENGTHENING_MEAL));
 			}
 			if (hero.hasTalent(FOCUSED_MEAL)){
 				if (hero.heroClass == HeroClass.DUELIST){

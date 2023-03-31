@@ -39,6 +39,7 @@ import com.zrp200.rkpd2.actors.mobs.YogFist;
 import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.bombs.Bomb;
 import com.zrp200.rkpd2.items.rings.RingOfArcana;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfRetribution;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
 import com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfPsionicBlast;
 import com.zrp200.rkpd2.items.wands.CursedWand;
@@ -80,6 +81,7 @@ public class AntiMagic extends Armor.Glyph {
 		RESISTS.add( GrimTrap.class );
 
 		RESISTS.add( Bomb.MagicalBomb.class );
+		RESISTS.add( ScrollOfRetribution.class );
 		RESISTS.add( ScrollOfPsionicBlast.class );
 		RESISTS.add( ScrollOfTeleportation.class );
 

@@ -32,6 +32,7 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.PlatformSupport;
 
+@SuppressWarnings("unused")
 public class ShatteredPixelDungeon extends Game {
 
 	//variable constants for specific older versions of shattered, used for data conversion
@@ -44,9 +45,7 @@ public class ShatteredPixelDungeon extends Game {
 			v0_0_0=550;
 
 	// shattered versions
-	//versions older than v1.0.3 are no longer supported, and data from them is ignored
-	public static final int v1_0_3  = 574;
-	public static final int v1_1_2  = 588;
+	//versions older than v1.2.3 are no longer supported, and data from them is ignored
 	public static final int v1_2_3  = v0_3_0/*628*/;
 	public static final int v1_3_2  = V1_0_0/*648*/;
 	public static final int v1_4_3  = 668;
@@ -69,6 +68,9 @@ public class ShatteredPixelDungeon extends Game {
 //				com.zrp200.rkpd2.plants.Mageroyal.Seed.class,
 //				"com.zrp200.rkpd2.plants.Dreamfoil$Seed" );
 
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.items.weapon.curses.Dazzling.class,
+				"com.zrp200.rkpd2.items.weapon.curses.Exhausting" );
 		com.watabou.utils.Bundle.addAlias(
 				com.zrp200.rkpd2.items.weapon.curses.Dazzling.class,
 				"com.zrp200.rkpd2.items.weapon.curses.Exhausting" );

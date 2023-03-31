@@ -58,7 +58,6 @@ import com.zrp200.rkpd2.items.spells.BeaconOfReturning;
 import com.zrp200.rkpd2.items.spells.CurseInfusion;
 import com.zrp200.rkpd2.items.spells.FeatherFall;
 import com.zrp200.rkpd2.items.spells.MagicalInfusion;
-import com.zrp200.rkpd2.items.spells.MagicalPorter;
 import com.zrp200.rkpd2.items.spells.PhaseShift;
 import com.zrp200.rkpd2.items.spells.ReclaimTrap;
 import com.zrp200.rkpd2.items.spells.Recycle;
