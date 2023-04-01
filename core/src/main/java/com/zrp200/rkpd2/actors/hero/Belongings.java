@@ -37,6 +37,7 @@ import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.rings.Ring;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRemoveCurse;
 import com.zrp200.rkpd2.items.wands.Wand;
+import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -216,7 +217,13 @@ public class Belongings implements Iterable<Item> {
 
 		String[] weapons = {WEAPON, SECOND_WEP, THIRD_WEP};
 		for (int i = 0; i < weapons.length; i++) {
-			setWeapon(i, (KindOfWeapon) bundle.get(weapons[i]));
+			KindOfWeapon weapon = (KindOfWeapon) bundle.get(weapons[i]);
+			if (weapon instanceof MissileWeapon) {
+				// prevent item duplication
+				MissileWeapon w = (MissileWeapon) getSimilar(weapon);
+				if (w != null) weapon = w;
+			}
+			setWeapon(i, weapon);
 			if (weapon(i) != null) weapon(i).activate(owner);
 		}
 		
