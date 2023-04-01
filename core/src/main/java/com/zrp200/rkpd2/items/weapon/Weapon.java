@@ -443,7 +443,8 @@ abstract public class Weapon extends KindOfWeapon {
 
 			if (attacker.buff(RunicBlade.RunicSlashTracker.class) != null){
 				multi += 2.5f;
-				attacker.buff(RunicBlade.RunicSlashTracker.class).detach();
+				//handled already
+				//attacker.buff(RunicBlade.RunicSlashTracker.class).detach();
 			}
 
 			if (attacker.buff(ElementalStrike.DirectedPowerTracker.class) != null){

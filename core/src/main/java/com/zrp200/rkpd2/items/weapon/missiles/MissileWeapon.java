@@ -43,6 +43,7 @@ import com.zrp200.rkpd2.items.wands.WandOfDisintegration;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.enchantments.Projecting;
 import com.zrp200.rkpd2.items.weapon.melee.MeleeWeapon;
+import com.zrp200.rkpd2.items.weapon.melee.RunicBlade;
 import com.zrp200.rkpd2.items.weapon.missiles.darts.Dart;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.messages.Messages;
@@ -171,13 +172,23 @@ abstract public class MissileWeapon extends Weapon {
 			projecting = staff != null && staff.wand() instanceof WandOfDisintegration;
 		}
 
+		RunicBlade.RunicSlashTracker tracker = Dungeon.hero.buff(RunicBlade.RunicSlashTracker.class);
+		boolean ignoreTracker = tracker != null;
+		if (MeleeWeapon.abilityOverride != null && MeleeWeapon.abilityOverride.weapon().hasEnchant(Projecting.class, Dungeon.hero)) {
+			projecting = true;
+			ignoreTracker = false;
+		}
+		if (ignoreTracker) tracker.detach();
+		int throwPos;
 		if (projecting
 				&& (Dungeon.level.passable[dst] || Dungeon.level.avoid[dst])
 				&& Dungeon.level.distance(user.pos, dst) <= Math.round(4 * Enchantment.genericProcChanceMultiplier(user))){
-			return dst;
+			throwPos = dst;
 		} else {
-			return super.throwPos(user, dst);
+			throwPos = super.throwPos(user, dst);
 		}
+		if (ignoreTracker) tracker.attachTo(Dungeon.hero);
+		return throwPos;
 	}
 
 	@Override
@@ -243,6 +254,9 @@ abstract public class MissileWeapon extends Weapon {
 
 	@Override
 	public int proc(Char attacker, Char defender, int damage) {
+
+		RunicBlade.RunicSlashTracker tracker = Dungeon.hero.buff(RunicBlade.RunicSlashTracker.class);
+		if (tracker != null) tracker.detach(); // don't use it for built in effects
 		if (attacker == Dungeon.hero && Random.Int(3) < Dungeon.hero.pointsInTalent(Talent.RK_SNIPER)
 				|| Dungeon.hero.hasTalent(Talent.SHARED_ENCHANTMENT) && Random.Int(4) <= Dungeon.hero.pointsInTalent(Talent.SHARED_ENCHANTMENT)){
 			if (this instanceof Dart && ((Dart) this).crossbowHasEnchant(Dungeon.hero) && !Dungeon.hero.hasTalent(Talent.SHARED_ENCHANTMENT)){ // HUNTRESS MUST BE BUFFED
@@ -254,6 +268,7 @@ abstract public class MissileWeapon extends Weapon {
 				}
 			}
 		}
+		if (tracker != null) tracker.attachTo(Dungeon.hero); // reapply it
 
 		if (MeleeWeapon.abilityOverride != null) {
 			MeleeWeapon wep = MeleeWeapon.abilityOverride.weapon();
@@ -285,7 +300,14 @@ abstract public class MissileWeapon extends Weapon {
 
 	public String status() {
 		//show quantity even when it is 1
-		return Integer.toString( quantity );
+		String status = Integer.toString( quantity );
+
+		if(Dungeon.hero.belongings.thirdWep() == this) {
+			// show charges since it matters for the talent interactions
+			MeleeWeapon.Charger charger = Buff.affect(Dungeon.hero, MeleeWeapon.Charger.class);
+			status += " (" + (int)charger.charges[2] + "/" + charger.chargeCap(2) + ")";
+		}
+		return status;
 	}
 	
 	@Override
