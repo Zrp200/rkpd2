@@ -28,6 +28,7 @@ import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.AscensionChallenge;
 import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.items.BrokenSeal;
 import com.zrp200.rkpd2.items.EquipableItem;
 import com.zrp200.rkpd2.items.Item;
@@ -42,6 +43,7 @@ import com.zrp200.rkpd2.levels.rooms.standard.BlacksmithRoom;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.BlacksmithSprite;
+import com.zrp200.rkpd2.utils.GLog;
 import com.zrp200.rkpd2.windows.WndBlacksmith;
 import com.zrp200.rkpd2.windows.WndQuest;
 import com.watabou.noosa.Game;
@@ -113,6 +115,18 @@ public class Blacksmith extends NPC {
 							Quest.given = Quest.completed = true;
 							Quest.reforged = false;
 							Notes.add(Notes.Landmark.TROLL);
+
+							if (Dungeon.hero.heroClass.is(HeroClass.DUELIST)) {
+								// free pickaxe
+								Pickaxe pick = new Pickaxe();
+								pick.identify();
+								if (pick.doPickUp( Dungeon.hero )) {
+									GLog.i( Messages.capitalize(Messages.get(Dungeon.hero, "you_now_have", pick.name()) ));
+								} else {
+									Dungeon.level.drop( pick, Dungeon.hero.pos ).sprite.drop();
+								}
+							}
+
 							interact(c); // go directly into the reward.
 						}
 					});
