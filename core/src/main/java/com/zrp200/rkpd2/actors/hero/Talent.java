@@ -477,6 +477,7 @@ public enum Talent {
 	public static class LethalHasteCooldown extends Cooldown {
 		private static boolean enabled = true; // so it doesn't double proc
 		public static void applyLethalHaste(Hero hero, boolean viaAbility) {
+			if (!hero.hasTalent(LETHAL_HASTE)) return;
 			if (!viaAbility && !enabled) {
 				enabled = true;
 				return;
