@@ -308,14 +308,15 @@ public class Belongings implements Iterable<Item> {
 		return false;
 	}
 	
-	public Item getSimilar( Item similar ){
+	public <T extends Item> T getSimilar( T similar ){
 
 		boolean lostInvent = owner != null && owner.buff(LostInventory.class) != null;
 		
 		for (Item item : this) {
 			if (similar != item && similar.isSimilar(item)) {
 				if (!lostInvent || item.keptThoughLostInvent) {
-					return item;
+					//noinspection unchecked
+					return (T)item;
 				}
 			}
 		}
@@ -323,7 +324,7 @@ public class Belongings implements Iterable<Item> {
 		return null;
 	}
 	
-	public ArrayList<Item> getAllSimilar( Item similar ){
+	public <T extends Item> ArrayList<T> getAllSimilar( T similar ){
 		ArrayList<Item> result = new ArrayList<>();
 
 		boolean lostInvent = owner != null && owner.buff(LostInventory.class) != null;
@@ -335,8 +336,8 @@ public class Belongings implements Iterable<Item> {
 				}
 			}
 		}
-		
-		return result;
+		//noinspection unchecked
+		return (ArrayList<T>) result;
 	}
 
 	//triggers when a run ends, so ignores lost inventory effects
