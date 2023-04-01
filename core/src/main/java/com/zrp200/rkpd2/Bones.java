@@ -74,12 +74,11 @@ public class Bones {
 		if (Random.Int(3) != 0) {
 			switch (Random.Int(7)) {
 				case 0:
-					item = hero.belongings.weapon;
-					//if the hero has two weapons (champion), pick the stronger one
-					if (hero.belongings.secondWep != null &&
-							(item == null || hero.belongings.secondWep.trueLevel() > item.trueLevel())){
-						item = hero.belongings.secondWep;
-						break;
+					//if the hero has multiple weapons (champion), pick the stronger one
+					for (Item wep : hero.belongings.weapons()) {
+						if (item == null || wep != null && wep.trueLevel() > item.trueLevel()) {
+							item = wep;
+						}
 					}
 					break;
 				case 1:

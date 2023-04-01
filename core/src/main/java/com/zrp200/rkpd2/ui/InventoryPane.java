@@ -312,8 +312,10 @@ public class InventoryPane extends Component {
 
 		ArrayList<Item> items = (ArrayList<Item>) lastBag.items.clone();
 
-		if (lastBag == stuff.backpack && stuff.secondWep != null){
-			items.add(0, stuff.secondWep);
+		if (lastBag == stuff.backpack){
+			// fixme put into correct bag
+			if(stuff.thirdWep != null) items.add(0, stuff.thirdWep);
+			if(stuff.secondWep != null) items.add(0, stuff.secondWep);
 		}
 
 		int j = 0;

@@ -83,6 +83,11 @@ public class MagesStaff extends MeleeWeapon {
 		bones = false;
 	}
 
+	@Override
+	protected boolean hasAbility() {
+		return false;
+	}
+
 	public MagesStaff() {
 		wand = null;
 	}

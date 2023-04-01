@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.items.KindOfWeapon;
 import com.zrp200.rkpd2.items.rings.RingOfForce;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
@@ -44,14 +45,20 @@ public class Crossbow extends MeleeWeapon {
 		tier = 4;
 	}
 
+	public static Crossbow find(Hero hero) {
+		for (KindOfWeapon weapon : hero.belongings.weapons()) {
+			if (weapon instanceof Crossbow) return (Crossbow) weapon;
+		}
+		return null;
+	}
+
 	@Override
 	public boolean doUnequip(Hero hero, boolean collect, boolean single) {
 		if (super.doUnequip(hero, collect, single)){
-			if (hero.buff(ChargedShot.class) != null &&
-					!(hero.belongings.weapon() instanceof Crossbow)
-					&& !(hero.belongings.secondWep() instanceof Crossbow)){
+			ChargedShot buff = hero.buff(ChargedShot.class);
+			if (buff != null && find(hero) == null) {
 				//clear charged shot if no crossbow is equipped
-				hero.buff(ChargedShot.class).detach();
+				buff.detach();
 			}
 			return true;
 		} else {

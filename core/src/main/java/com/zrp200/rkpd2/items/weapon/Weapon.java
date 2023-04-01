@@ -84,6 +84,8 @@ abstract public class Weapon extends KindOfWeapon {
 	public float	DLY	= 1f;	// Speed modifier
 	public int      RCH = 1;    // Reach modifier (only applies to melee hits)
 
+	public int tier;
+
 	public enum Augment {
 		SPEED   (0.7f, 0.6667f),
 		DAMAGE  (1.5f, 1.6667f),
@@ -279,11 +281,25 @@ abstract public class Weapon extends KindOfWeapon {
 		return level;
 	}
 
+	private static boolean evaluatingTwinUpgrades = false;
 	@Override
 	public int buffedLvl() {
 		int lvl = super.buffedLvl();
 		if((isEquipped(Dungeon.hero) || Dungeon.hero.belongings.contains(this))
 				&& (Dungeon.hero.buff(CloakOfShadows.cloakStealth.class) != null && Dungeon.hero.heroClass == HeroClass.ROGUE)) lvl++;
+
+		if (!evaluatingTwinUpgrades && isEquipped(Dungeon.hero) && Dungeon.hero.hasTalent(Talent.TWIN_UPGRADES)){
+			evaluatingTwinUpgrades = true;
+			for (KindOfWeapon weapon : Dungeon.hero.belongings.weapons()) {
+				if (weapon == this || !(weapon instanceof Weapon)) continue;
+				//weaker weapon needs to be 2/1/0 tiers lower, based on talent level
+				if ((tier + (3 - Dungeon.hero.pointsInTalent(Talent.TWIN_UPGRADES))) <= ((Weapon) weapon).tier
+						&& weapon.buffedLvl() > lvl) {
+					lvl = weapon.buffedLvl();
+				}
+			}
+			evaluatingTwinUpgrades = false;
+		}
 		return lvl;
 	}
 	

@@ -286,10 +286,17 @@ public class WndBag extends WndTabbed {
 		if (container != Dungeon.hero.belongings.backpack){
 			placeItem(container);
 			count--; //don't count this one, as it's not actually inside of itself
-		} else if (stuff.secondWep != null) {
-			//second weapon always goes to the front of view on main bag
-			placeItem(stuff.secondWep);
-			equipped++;
+		} else {
+			if (stuff.secondWep != null) {
+				//second weapon always goes to the front of view on main bag
+				placeItem(stuff.secondWep);
+				equipped++;
+			}
+			if (stuff.thirdWep != null) {
+				// fixme place in the correct bag
+				placeItem(stuff.thirdWep);
+				equipped++;
+			}
 		}
 
 		// Items in the bag, except other containers (they have tags at the bottom)

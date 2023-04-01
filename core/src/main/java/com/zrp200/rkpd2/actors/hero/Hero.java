@@ -2123,13 +2123,8 @@ public class Hero extends Char {
 		RingOfForce.BrawlersStance brawlStance = buff(RingOfForce.BrawlersStance.class);
 		if (brawlStance != null && brawlStance.hitsLeft() > 0){
 			MeleeWeapon.Charger charger = Buff.affect(this, MeleeWeapon.Charger.class);
-			charger.partialCharge -= RingOfForce.BrawlersStance.HIT_CHARGE_USE;
-			while (charger.partialCharge < 0) {
-				charger.charges--;
-				charger.partialCharge++;
-			}
+			charger.gainCharge(-RingOfForce.BrawlersStance.HIT_CHARGE_USE);
 			BuffIndicator.refreshHero();
-			Item.updateQuickslot();
 		}
 
 		curAction = null;

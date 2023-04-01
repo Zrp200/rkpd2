@@ -78,8 +78,6 @@ abstract public class MissileWeapon extends Weapon {
 	//used to reduce durability from the source weapon stack, rather than the one being thrown.
 	protected MissileWeapon parent;
 	
-	public int tier;
-	
 	@Override
 	public int min() {
 		return Math.max(0, min( buffedLvl() + RingOfSharpshooting.levelDamageBonus(Dungeon.hero) ));
@@ -145,7 +143,7 @@ abstract public class MissileWeapon extends Weapon {
 	@Override
 	public ArrayList<String> actions( Hero hero ) {
 		ArrayList<String> actions = super.actions( hero );
-		actions.remove( AC_EQUIP );
+		if (!hero.hasTalent(Talent.ELITE_DEXTERITY)) actions.remove( AC_EQUIP );
 		return actions;
 	}
 	

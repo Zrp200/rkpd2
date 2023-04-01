@@ -170,7 +170,7 @@ public class RingOfForce extends Ring {
 			} else if (!isEquipped(hero)) {
 				GLog.w(Messages.get(MeleeWeapon.class, "ability_need_equip"));
 
-			} else if ((Buff.affect(hero, MeleeWeapon.Charger.class).charges + Buff.affect(hero, MeleeWeapon.Charger.class).partialCharge)
+			} else if ((Buff.affect(hero, MeleeWeapon.Charger.class).charges[0])
 					< BrawlersStance.HIT_CHARGE_USE){
 				GLog.w(Messages.get(MeleeWeapon.class, "ability_no_charge"));
 
@@ -254,10 +254,7 @@ public class RingOfForce extends Ring {
 
 		public int hitsLeft(){
 			MeleeWeapon.Charger charger = Buff.affect(target, MeleeWeapon.Charger.class);
-			float charges = charger.charges;
-			charges += charger.partialCharge;
-
-			return (int)(charges/HIT_CHARGE_USE);
+			return (int)(charger.charges[0]/HIT_CHARGE_USE);
 		}
 
 		@Override

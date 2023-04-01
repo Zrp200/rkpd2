@@ -90,11 +90,13 @@ public class ScrollOfTransmutation extends InventoryScroll {
 				int slot = Dungeon.quickslot.getSlot(item);
 				if (item.isEquipped(Dungeon.hero)) {
 					item.cursed = false; //to allow it to be unequipped
-					if (item instanceof KindOfWeapon && Dungeon.hero.belongings.secondWep() == item){
-						((EquipableItem) item).doUnequip(Dungeon.hero, false);
-						((KindOfWeapon) result).equipSecondary(Dungeon.hero);
-					} else {
-						((EquipableItem) item).doUnequip(Dungeon.hero, false);
+					int index = item instanceof KindOfWeapon
+							? Dungeon.hero.belongings.findWeapon((KindOfWeapon) item)
+							: -1;
+					((EquipableItem) item).doUnequip(Dungeon.hero, false);
+					if (index >= 0) {
+						((KindOfWeapon) result).doEquip(Dungeon.hero, index);
+					} else{
 						((EquipableItem) result).doEquip(Dungeon.hero);
 					}
 					Dungeon.hero.spend(-Dungeon.hero.cooldown()); //cancel equip/unequip time

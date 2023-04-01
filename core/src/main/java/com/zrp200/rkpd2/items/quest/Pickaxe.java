@@ -164,11 +164,7 @@ public class Pickaxe extends MeleeWeapon {
 
 	@Override
 	public String defaultAction() {
-		if (Dungeon.hero.heroClass == HeroClass.DUELIST && isEquipped(Dungeon.hero)){
-			return AC_ABILITY;
-		} else {
-			return AC_MINE;
-		}
+		return super.defaultAction().equals(AC_ABILITY) ? AC_ABILITY : AC_MINE;
 	}
 
 	@Override

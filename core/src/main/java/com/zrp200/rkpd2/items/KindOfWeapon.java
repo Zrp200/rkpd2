@@ -30,6 +30,7 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSprite;
@@ -52,39 +53,77 @@ abstract public class KindOfWeapon extends EquipableItem {
 	public void execute(Hero hero, String action) {
 		if (hero.subClass == HeroSubClass.CHAMPION && action.equals(AC_EQUIP)){
 			usesTargeting = false;
-			String primaryName = Messages.titleCase(hero.belongings.weapon != null ? hero.belongings.weapon.trueName() : Messages.get(KindOfWeapon.class, "empty"));
-			String secondaryName = Messages.titleCase(hero.belongings.secondWep != null ? hero.belongings.secondWep.trueName() : Messages.get(KindOfWeapon.class, "empty"));
-			if (primaryName.length() > 18) primaryName = primaryName.substring(0, 15) + "...";
-			if (secondaryName.length() > 18) secondaryName = secondaryName.substring(0, 15) + "...";
+			// standard equip = replace one of the two
+			// missile with 1 = replace one of the two, equip to slot three.
+			// missile with 3, non-thrown in slot three, replace one of the three
+			int points = hero.pointsInTalent(Talent.ELITE_DEXTERITY);
+
+			// missile weapon with one slot open should just auto-add.
+			if (this instanceof MissileWeapon &&
+					(points > 1 || hero.belongings.weapon == null || hero.belongings.secondWep == null)) {
+				KindOfWeapon third = hero.belongings.thirdWep;
+				if (third == null || third instanceof MissileWeapon) {
+					int slot = Dungeon.quickslot.getSlot( KindOfWeapon.this );
+					doEquip(hero, 2);
+					if (slot != -1) {
+						Dungeon.quickslot.setSlot( slot, KindOfWeapon.this );
+						updateQuickslot();
+					}
+					return;
+				}
+			}
+
+			String[] names = new String[Math.max(points, 2)];
+			final String[] name_key = {"primary", "secondary", "tertiary"};
+			KindOfWeapon[] weapons = hero.belongings.weapons();
+			if(names.length == 2 && weapons[2] != null) {
+				// pretend it's in a different slot
+				weapons[weapons[0] == null ? 0 : 1] = weapons[2];
+			}
+			for (int i = 0; i < names.length; i++) {
+				KindOfWeapon weapon = hero.belongings.weapon(i);
+				names[i] = Messages.titleCase(weapon != null ? weapon.trueName() : Messages.get(KindOfWeapon.class, "empty"));
+				if (names[i].length() > 18) names[i] = names[i].substring(0, 15) + "...";
+				names[i] = Messages.get(KindOfWeapon.class, "which_equip_" + name_key[i], names[i]);
+			}
 			GameScene.show(new WndOptions(
 					new ItemSprite(this),
 					Messages.titleCase(name()),
 					Messages.get(KindOfWeapon.class, "which_equip_msg"),
-					Messages.get(KindOfWeapon.class, "which_equip_primary", primaryName),
-					Messages.get(KindOfWeapon.class, "which_equip_secondary", secondaryName)
+					names
 			){
 				@Override
 				protected void onSelect(int index) {
 					super.onSelect(index);
-					if (index == 0 || index == 1){
-						//In addition to equipping itself, item reassigns itself to the quickslot
-						//This is a special case as the item is being removed from inventory, but is staying with the hero.
-						int slot = Dungeon.quickslot.getSlot( KindOfWeapon.this );
-						slotOfUnequipped = -1;
-						if (index == 0) {
-							doEquip(hero);
-						} else {
-							equipSecondary(hero);
+					if (index < 0 || index >= names.length) return;
+					int slot = Dungeon.quickslot.getSlot(KindOfWeapon.this);
+					slotOfUnequipped = -1;
+					if (index != 2 && KindOfWeapon.this instanceof MissileWeapon) {
+						// we want to avoid equipping a missile weapon to the wrong slot, so move it to the correct slot before equipping
+						KindOfWeapon replaced = hero.belongings.weapon(index, true);
+						hero.belongings.setWeapon(2, replaced);
+						hero.belongings.setWeapon(index, null);
+						if (!doEquip(hero, 2)) {
+							// put the weapon back into its expected slot
+							hero.belongings.setWeapon(index, replaced);
 						}
-						if (slot != -1) {
-							Dungeon.quickslot.setSlot( slot, KindOfWeapon.this );
-							updateQuickslot();
-						//if this item wasn't quickslotted, but the item it is replacing as equipped was
-						//then also have the item occupy the unequipped item's quickslot
-						} else if (slotOfUnequipped != -1 && defaultAction() != null) {
-							Dungeon.quickslot.setSlot( slotOfUnequipped, KindOfWeapon.this );
-							updateQuickslot();
+					} else if (index == 2 && points < 3 && !(KindOfWeapon.this instanceof MissileWeapon)) {
+						// I don't think unequipping missile weapons can ever fail, but this makes sure it's handled at least.
+						KindOfWeapon replaced = hero.belongings.thirdWep;
+						if (replaced.doUnequip(hero, true)) {
+							doEquip(hero, weapons[0] == replaced ? 0 : 1);
 						}
+					} else {
+						doEquip(hero, index);
+					}
+					if (slot != -1) {
+						Dungeon.quickslot.setSlot(slot, KindOfWeapon.this);
+						updateQuickslot();
+					//if this item wasn't quickslotted, but the item it is replacing as equipped was
+					//then also have the item occupy the unequipped item's quickslot
+					} else if (slotOfUnequipped != -1 && defaultAction() != null) {
+						Dungeon.quickslot.setSlot( slotOfUnequipped, KindOfWeapon.this );
+						updateQuickslot();
 					}
 				}
 			});
@@ -95,17 +134,23 @@ abstract public class KindOfWeapon extends EquipableItem {
 
 	@Override
 	public boolean isEquipped( Hero hero ) {
-		return hero.belongings.weapon() == this || hero.belongings.secondWep() == this;
+		for (KindOfWeapon weapon : hero.belongings.weapons()) if (weapon == this) return true;
+		return false;
 	}
-	
+
 	@Override
-	public boolean doEquip( Hero hero ) {
+	final public boolean doEquip( Hero hero ) { return doEquip(hero, 0); }
+	public boolean doEquip( Hero hero, int index ) {
 
-		detachAll( hero.belongings.backpack );
-		
-		if (hero.belongings.weapon == null || hero.belongings.weapon.doUnequip( hero, true )) {
+		if (!(this instanceof MissileWeapon)) {
+			// hopefully this doesn't cause weirdness
+			detachAll( hero.belongings.backpack );
+		}
+		KindOfWeapon equipped = hero.belongings.weapon(index);
+
+		if (equipped == null || equipped.doUnequip( hero, true )) {
 			
-			hero.belongings.weapon = this;
+			hero.belongings.setWeapon(index, this);
 			activate( hero );
 			Talent.onItemEquipped(hero, this);
 			Badges.validateDuelistUnlock();
@@ -142,71 +187,25 @@ abstract public class KindOfWeapon extends EquipableItem {
 			return false;
 		}
 	}
-
-	public boolean equipSecondary( Hero hero ){
-		detachAll( hero.belongings.backpack );
-
-		if (hero.belongings.secondWep == null || hero.belongings.secondWep.doUnequip( hero, true )) {
-
-			hero.belongings.secondWep = this;
-			activate( hero );
-			Talent.onItemEquipped(hero, this);
-			Badges.validateDuelistUnlock();
-			ActionIndicator.updateIcon();
-			updateQuickslot();
-
-			cursedKnown = true;
-			if (cursed) {
-				equipCursed( hero );
-				GLog.n( Messages.get(KindOfWeapon.class, "equip_cursed") );
-			}
-
-			if (hero.hasTalent(Talent.SWIFT_EQUIP)) {
-				if (hero.buff(Talent.SwiftEquipCooldown.class) == null){
-					hero.spendAndNext(-hero.cooldown());
-					Buff.affect(hero, Talent.SwiftEquipCooldown.class, 19f)
-							.secondUse = hero.pointsInTalent(Talent.SWIFT_EQUIP) == 2;
-					GLog.i(Messages.get(this, "swift_equip"));
-				} else if (hero.buff(Talent.SwiftEquipCooldown.class).hasSecondUse()) {
-					hero.spendAndNext(-hero.cooldown());
-					hero.buff(Talent.SwiftEquipCooldown.class).secondUse = false;
-					GLog.i(Messages.get(this, "swift_equip"));
-				} else {
-					hero.spendAndNext(TIME_TO_EQUIP);
-				}
-			} else {
-				hero.spendAndNext(TIME_TO_EQUIP);
-			}
-			return true;
-
-		} else {
-
-			collect( hero.belongings.backpack );
-			return false;
-		}
-	}
-
 	@Override
 	public boolean doUnequip( Hero hero, boolean collect, boolean single ) {
-		boolean second = hero.belongings.secondWep == this;
+		int index = hero.belongings.findWeapon(this);
 
-		if (second){
+		if (index > 0) {
 			//do this first so that the item can go to a full inventory
-			hero.belongings.secondWep = null;
+			hero.belongings.setWeapon(index, null);
 		}
 
 		if (super.doUnequip( hero, collect, single )) {
 
-			if (!second){
+			if (index == 0){
 				hero.belongings.weapon = null;
 			}
 			return true;
 
 		} else {
 
-			if (second){
-				hero.belongings.secondWep = this;
-			}
+			hero.belongings.setWeapon(index, this);
 			return false;
 
 		}

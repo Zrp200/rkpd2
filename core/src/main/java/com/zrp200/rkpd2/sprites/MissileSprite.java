@@ -152,8 +152,7 @@ public class MissileSprite extends ItemSprite implements Tweener.Listener {
 		
 		float speed = SPEED;
 		if (item instanceof Dart
-				&& (Dungeon.hero.belongings.weapon() instanceof Crossbow
-				|| Dungeon.hero.belongings.secondWep() instanceof Crossbow)){
+				&& Crossbow.find(Dungeon.hero) != null){
 			speed *= 3f;
 			
 		} else if (item instanceof SpiritBow.SpiritArrow
