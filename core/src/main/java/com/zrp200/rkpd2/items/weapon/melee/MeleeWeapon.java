@@ -238,8 +238,9 @@ public class MeleeWeapon extends Weapon {
 			hero.belongings.abilityWeapon = null;
 			MissileWeapon thrown = SafeCast.cast(hero.belongings.thirdWep(), MissileWeapon.class);
 			if (thrown != null) {
-				// yup we're using the thrown weapon.
-				if (enemy.pos == QuickSlotButton.autoAim(enemy, hero.belongings.thirdWep)) {
+				// check charges of third slot, it should use the same amount of charges as the main slot
+				if (Buff.affect(hero, Charger.class).charges[2] >= wep.abilityChargeUse(hero)
+						&& enemy.pos == QuickSlotButton.autoAim(enemy, hero.belongings.thirdWep)) {
 					// fake throw = cool
 					abilityOverride = new DexterityAbilityOverride() {
 						@Override public float accMulti() { return accMulti; }
@@ -264,6 +265,7 @@ public class MeleeWeapon extends Weapon {
 							wep.afterAbilityUsed(hero);
 						}
 					};
+					wep.beforeAbilityUsed(hero);
 					// see Item.cast, Hero.shoot
 					thrown.cast(hero, enemy.pos);
 					return true;
@@ -296,10 +298,15 @@ public class MeleeWeapon extends Weapon {
 
 	protected void beforeAbilityUsed(Hero hero ){
 		hero.belongings.abilityWeapon = this;
-		Buff.affect(hero, Charger.class).gainCharge(
+		Charger charger = Buff.affect(hero, Charger.class);
+		charger.gainCharge(
 				-abilityChargeUse(hero),
 				hero.belongings.findWeapon(this)
 		);
+		if (abilityOverride != null) {
+			// use charge from thrown weapon as well
+			charger.gainCharge(-abilityChargeUse(hero), 2);
+		}
 
 		if (hero.heroClass == HeroClass.DUELIST
 				&& hero.hasTalent(Talent.AGGRESSIVE_BARRIER)
