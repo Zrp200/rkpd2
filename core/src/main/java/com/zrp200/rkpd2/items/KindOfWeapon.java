@@ -58,6 +58,7 @@ abstract public class KindOfWeapon extends EquipableItem {
 			// missile with 1 = replace one of the two, equip to slot three.
 			// missile with 3, non-thrown in slot three, replace one of the three
 			int points = hero.pointsInTalent(Talent.ELITE_DEXTERITY);
+			slotOfUnequipped = -1;
 
 			// missile weapon with one slot open should just auto-add.
 			if (this instanceof MissileWeapon &&
@@ -66,10 +67,6 @@ abstract public class KindOfWeapon extends EquipableItem {
 				if (third == null || third instanceof MissileWeapon) {
 					int slot = Dungeon.quickslot.getSlot( KindOfWeapon.this );
 					doEquip(hero, 2);
-					if (slot != -1) {
-						Dungeon.quickslot.setSlot( slot, KindOfWeapon.this );
-						updateQuickslot();
-					}
 					return;
 				}
 			}
@@ -97,8 +94,6 @@ abstract public class KindOfWeapon extends EquipableItem {
 				protected void onSelect(int index) {
 					super.onSelect(index);
 					if (index < 0 || index >= names.length) return;
-					int slot = Dungeon.quickslot.getSlot(KindOfWeapon.this);
-					slotOfUnequipped = -1;
 					if (index != 2 && KindOfWeapon.this instanceof MissileWeapon) {
 						// we want to avoid equipping a missile weapon to the wrong slot, so move it to the correct slot before equipping
 						KindOfWeapon replaced = hero.belongings.weapon(index, true);
@@ -108,23 +103,8 @@ abstract public class KindOfWeapon extends EquipableItem {
 							// put the weapon back into its expected slot
 							hero.belongings.setWeapon(index, replaced);
 						}
-					} else if (index == 2 && points < 3 && !(KindOfWeapon.this instanceof MissileWeapon)) {
-						// I don't think unequipping missile weapons can ever fail, but this makes sure it's handled at least.
-						KindOfWeapon replaced = hero.belongings.thirdWep;
-						if (replaced.doUnequip(hero, true)) {
-							doEquip(hero, weapons[0] == replaced ? 0 : 1);
-						}
 					} else {
 						doEquip(hero, index);
-					}
-					if (slot != -1) {
-						Dungeon.quickslot.setSlot(slot, KindOfWeapon.this);
-						updateQuickslot();
-					//if this item wasn't quickslotted, but the item it is replacing as equipped was
-					//then also have the item occupy the unequipped item's quickslot
-					} else if (slotOfUnequipped != -1 && defaultAction() != null) {
-						Dungeon.quickslot.setSlot( slotOfUnequipped, KindOfWeapon.this );
-						updateQuickslot();
 					}
 				}
 			});
@@ -156,6 +136,17 @@ abstract public class KindOfWeapon extends EquipableItem {
 			Talent.onItemEquipped(hero, this);
 			Badges.validateDuelistUnlock();
 			ActionIndicator.updateIcon();
+
+			int slot = Dungeon.quickslot.getSlot(this);
+			if (slot != -1) {
+				Dungeon.quickslot.setSlot(slot, this);
+			} else if (slotOfUnequipped != -1 && defaultAction() != null) {
+				//if this item wasn't quickslotted, but the item it is replacing as equipped was
+				//then also have the item occupy the unequipped item's quickslot
+				Dungeon.quickslot.setSlot( slotOfUnequipped, this );
+				slotOfUnequipped = -1;
+			}
+
 			updateQuickslot();
 
 			cursedKnown = true;

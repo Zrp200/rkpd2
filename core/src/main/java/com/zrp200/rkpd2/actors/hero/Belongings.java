@@ -221,7 +221,14 @@ public class Belongings implements Iterable<Item> {
 			if (weapon instanceof MissileWeapon) {
 				// prevent item duplication
 				MissileWeapon w = (MissileWeapon) getSimilar(weapon);
-				if (w != null) weapon = w;
+				if (w != null) {
+					// prevent quickslot inconsistencies
+					int slot = Dungeon.quickslot.getSlot(weapon);
+					weapon = w;
+					if (slot >= 0) {
+						Dungeon.quickslot.setSlot(slot, weapon);
+					}
+				};
 			}
 			setWeapon(i, weapon);
 			if (weapon(i) != null) weapon(i).activate(owner);

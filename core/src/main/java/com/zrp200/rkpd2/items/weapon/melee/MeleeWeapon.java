@@ -241,7 +241,6 @@ public class MeleeWeapon extends Weapon {
 				// yup we're using the thrown weapon.
 				if (enemy.pos == QuickSlotButton.autoAim(enemy, hero.belongings.thirdWep)) {
 					// fake throw = cool
-					wep.beforeAbilityUsed(hero);
 					abilityOverride = new DexterityAbilityOverride() {
 						@Override public float accMulti() { return accMulti; }
 						@Override public float dmgMulti(Char enemy) {
@@ -600,6 +599,7 @@ public class MeleeWeapon extends Weapon {
 			Sample.INSTANCE.play(Assets.Sounds.UNLOCK);
 
 			ActionIndicator.setAction(this);
+			ActionIndicator.updateIcon();
 			Item.updateQuickslot();
 			AttackIndicator.updateState();
 		}
