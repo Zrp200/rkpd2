@@ -489,7 +489,7 @@ public class Hero extends Char {
 			return 0;
 		}
 	}
-	
+
 	public boolean shoot( Char enemy, MissileWeapon wep ) {
 
 		this.enemy = enemy;
@@ -500,8 +500,12 @@ public class Hero extends Char {
 		//TODO improve this!
 		belongings.thrownWeapon = wep;
 		int cell = enemy.pos;
-		boolean hit = attack( enemy );
+		MeleeWeapon.DexterityAbilityOverride ability = MeleeWeapon.abilityOverride;
+		boolean hit = ability != null ? attack( enemy, ability.dmgMulti(), 0, ability.accMulti() )
+				: attack( enemy );
+		if (hit && ability != null) ability.onHit(enemy);
 		wep.onRangedAttack(enemy, cell, hit);
+		if (ability != null) ability.afterHit(enemy);
 		Invisibility.dispel();
 		belongings.thrownWeapon = null;
 

@@ -22,19 +22,11 @@
 package com.zrp200.rkpd2.items.weapon.melee;
 
 import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.actors.Actor;
-import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
-import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
-import com.zrp200.rkpd2.ui.AttackIndicator;
-import com.zrp200.rkpd2.utils.GLog;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Callback;
 
 import java.util.HashSet;
 
@@ -66,50 +58,15 @@ public class Sai extends MeleeWeapon {
 	}
 
 	public static void comboStrikeAbility(Hero hero, Integer target, float boostPerHit, MeleeWeapon wep){
-		if (target == null) {
-			return;
+		HashSet<ComboStrikeTracker> buffs = hero.buffs(ComboStrikeTracker.class);
+		int recentHits = buffs.size();
+		for (Buff b : buffs){
+			b.detach();
 		}
-
-		Char enemy = Actor.findChar(target);
-		if (enemy == null || enemy == hero || hero.isCharmedBy(enemy) || !Dungeon.level.heroFOV[target]) {
-			GLog.w(Messages.get(wep, "ability_no_target"));
-			return;
-		}
-
-		hero.belongings.abilityWeapon = wep;
-		if (!hero.canAttack(enemy)){
-			GLog.w(Messages.get(wep, "ability_bad_position"));
-			hero.belongings.abilityWeapon = null;
-			return;
-		}
-		hero.belongings.abilityWeapon = null;
-
-		hero.sprite.attack(enemy.pos, new Callback() {
-			@Override
-			public void call() {
-				wep.beforeAbilityUsed(hero);
-				AttackIndicator.target(enemy);
-
-				HashSet<ComboStrikeTracker> buffs = hero.buffs(ComboStrikeTracker.class);
-				int recentHits = buffs.size();
-				for (Buff b : buffs){
-					b.detach();
-				}
-
-				boolean hit = hero.attack(enemy, 1f + boostPerHit*recentHits, 0, Char.INFINITE_ACCURACY);
-				if (hit && !enemy.isAlive()){
-					wep.onAbilityKill(hero);
-				}
-
-				Invisibility.dispel();
-				hero.spendAndNext(hero.attackDelay());
-				if (recentHits >= 2 && hit){
-					Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);
-				}
-
-				wep.afterAbilityUsed(hero);
-			}
-		});
+		meleeAbility(hero, target, wep,
+				1f + boostPerHit*recentHits,
+				false, recentHits >= 2,
+				null, null);
 	}
 
 	public static class ComboStrikeTracker extends FlavourBuff{

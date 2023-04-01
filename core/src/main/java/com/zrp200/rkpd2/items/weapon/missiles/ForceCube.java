@@ -29,6 +29,7 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
 import com.zrp200.rkpd2.items.wands.WandOfBlastWave;
+import com.zrp200.rkpd2.items.weapon.melee.MeleeWeapon;
 import com.zrp200.rkpd2.levels.traps.TenguDartTrap;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
@@ -88,6 +89,7 @@ public class ForceCube extends MissileWeapon {
 				GLog.n(Messages.get(this, "ondeath"));
 			}
 		}
+		MeleeWeapon.markAbilityUsed();
 
 		cloakBoost = false;
 		WandOfBlastWave.BlastWave.blast(cell);

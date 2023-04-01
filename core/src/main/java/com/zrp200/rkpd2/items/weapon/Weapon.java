@@ -86,6 +86,11 @@ abstract public class Weapon extends KindOfWeapon {
 
 	public int tier;
 
+	@Override
+	public void hitSound(float pitch) {
+		super.hitSound(pitch);
+	}
+
 	public enum Augment {
 		SPEED   (0.7f, 0.6667f),
 		DAMAGE  (1.5f, 1.6667f),

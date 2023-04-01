@@ -23,13 +23,15 @@ package com.zrp200.rkpd2.items.weapon.melee;
 
 import static com.zrp200.rkpd2.Dungeon.hero;
 
+import com.watabou.utils.function.Consumer;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.ArtifactRecharge;
 import com.zrp200.rkpd2.actors.buffs.Barrier;
 import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.Haste;
+import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.buffs.LockedFloor;
 import com.zrp200.rkpd2.actors.buffs.MonkEnergy;
 import com.zrp200.rkpd2.actors.buffs.Recharging;
@@ -40,6 +42,7 @@ import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.KindOfWeapon;
 import com.zrp200.rkpd2.items.weapon.Weapon;
+import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
@@ -47,11 +50,13 @@ import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.ActionIndicator;
 import com.zrp200.rkpd2.ui.AttackIndicator;
+import com.zrp200.rkpd2.ui.QuickSlotButton;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
+import com.zrp200.rkpd2.utils.SafeCast;
 
 import java.util.ArrayList;
 
@@ -184,6 +189,99 @@ public class MeleeWeapon extends Weapon {
 
 	protected void duelistAbility( Hero hero, Integer target ){
 		//do nothing by default
+	}
+
+	// I really hope this works!
+	public static DexterityAbilityOverride abilityOverride;
+	public interface DexterityAbilityOverride {
+		void onRemove();
+		float accMulti();
+		float dmgMulti();
+		void onHit(Char enemy);
+		void afterHit(Char enemy);
+	}
+	public static void markAbilityUsed() {
+		if (abilityOverride == null) return;
+		abilityOverride.onRemove();
+		abilityOverride = null;
+	}
+
+	protected static void meleeAbility(
+			Hero hero, Integer target, MeleeWeapon wep,
+			float dmgMulti,
+			boolean excludeAdjacent, boolean playSFX,
+			Consumer<Char> onHit, Consumer<Char> afterHit) {
+		meleeAbility(hero, target, wep, dmgMulti, Char.INFINITE_ACCURACY, excludeAdjacent, playSFX, onHit, afterHit);
+	}
+	protected static void meleeAbility(
+			Hero hero, Integer target, MeleeWeapon wep,
+			float dmgMulti, float accMulti,
+			boolean excludeAdjacent, boolean playSFX,
+			Consumer<Char> onHit, Consumer<Char> afterHit) {
+		if (target == null) {
+			return;
+		}
+
+		Char enemy = Actor.findChar(target);
+
+		if (enemy == null || enemy == hero || hero.isCharmedBy(enemy) || !Dungeon.level.heroFOV[target]) {
+			GLog.w(Messages.get(wep, "ability_no_target"));
+			return;
+		}
+
+		hero.belongings.abilityWeapon = wep;
+		if (!hero.canAttack(enemy) || hero.isCharmedBy(enemy) || excludeAdjacent && Dungeon.level.adjacent(hero.pos, enemy.pos)){
+			hero.belongings.abilityWeapon = null;
+			MissileWeapon thrown = SafeCast.cast(hero.belongings.thirdWep(), MissileWeapon.class);
+			if (thrown != null) {
+				// yup we're using the thrown weapon.
+				if (enemy.pos == QuickSlotButton.autoAim(enemy, hero.belongings.thirdWep)) {
+					// fake throw = cool
+					wep.beforeAbilityUsed(hero);
+					abilityOverride = new DexterityAbilityOverride() {
+						@Override public float accMulti() { return accMulti; }
+						@Override public float dmgMulti() { return dmgMulti; }
+						@Override public void onHit(Char enemy) {
+							if (playSFX) Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);
+							if (onHit != null) onHit.accept(enemy);
+							if (!enemy.isAlive()) wep.onAbilityKill(hero);
+						}
+						@Override public void afterHit(Char enemy) {
+							if(afterHit != null) afterHit.accept(enemy);
+						}
+
+						@Override
+						public void onRemove() {
+							wep.afterAbilityUsed(hero);
+						}
+					};
+					// see Item.cast, Hero.shoot
+					thrown.cast(hero, enemy.pos);
+					return;
+				}
+			}
+			GLog.w(Messages.get(wep, "ability_bad_position"));
+
+			return;
+		}
+		hero.belongings.abilityWeapon = null;
+
+
+		hero.sprite.attack(enemy.pos, () -> {
+			wep.beforeAbilityUsed(hero);
+			AttackIndicator.target(enemy);
+			if (hero.attack(enemy, dmgMulti, 0, accMulti)) {
+				if (playSFX) Sample.INSTANCE.play(Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG));
+				if (onHit != null) onHit.accept(enemy);
+				if (!enemy.isAlive()) {
+					wep.onAbilityKill(hero);
+				}
+			}
+			if (afterHit != null) afterHit.accept(enemy);
+			wep.afterAbilityUsed(hero);
+			Invisibility.dispel();
+			hero.spendAndNext(hero.attackDelay());
+		});
 	}
 
 	protected void beforeAbilityUsed(Hero hero ){

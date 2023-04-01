@@ -65,43 +65,13 @@ public class Mace extends MeleeWeapon {
 	}
 
 	public static void heavyBlowAbility(Hero hero, Integer target, float dmgMulti, MeleeWeapon wep){
-		if (target == null) {
-			return;
-		}
-
-		Char enemy = Actor.findChar(target);
-		if (enemy == null || enemy == hero || hero.isCharmedBy(enemy) || !Dungeon.level.heroFOV[target]) {
-			GLog.w(Messages.get(wep, "ability_no_target"));
-			return;
-		}
-
-		hero.belongings.abilityWeapon = wep;
-		if (!hero.canAttack(enemy)){
-			GLog.w(Messages.get(wep, "ability_bad_position"));
-			hero.belongings.abilityWeapon = null;
-			return;
-		}
-		hero.belongings.abilityWeapon = null;
-
-		hero.sprite.attack(enemy.pos, new Callback() {
-			@Override
-			public void call() {
-				wep.beforeAbilityUsed(hero);
-				AttackIndicator.target(enemy);
-				if (hero.attack(enemy, dmgMulti, 0, 0.25f)) {
-					Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);
+		meleeAbility(hero, target, wep, dmgMulti, 0.25f, false, false,
+				enemy -> {
 					if (enemy.isAlive()){
 						Buff.affect(enemy, Vulnerable.class, 5f);
 						Buff.affect(enemy, Weakness.class, 5f);
-					} else {
-						wep.onAbilityKill(hero);
 					}
-				}
-				Invisibility.dispel();
-				hero.spendAndNext(hero.attackDelay());
-				wep.afterAbilityUsed(hero);
-			}
-		});
+				}, null);
 	}
 
 }
