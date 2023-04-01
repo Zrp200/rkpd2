@@ -255,6 +255,14 @@ abstract public class MissileWeapon extends Weapon {
 			}
 		}
 
+		if (MeleeWeapon.abilityOverride != null) {
+			MeleeWeapon wep = MeleeWeapon.abilityOverride.weapon();
+			if (wep.enchantment != null && Dungeon.hero.buff(MagicImmune.class) == null) {
+				// so balanced
+				damage = wep.enchantment.proc(this, attacker, defender, damage);
+			}
+		}
+
 		return super.proc(attacker, defender, damage);
 	}
 

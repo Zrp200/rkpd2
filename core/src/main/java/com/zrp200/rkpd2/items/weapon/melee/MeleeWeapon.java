@@ -201,6 +201,7 @@ public class MeleeWeapon extends Weapon {
 		float dmgMulti(Char enemy);
 		void onHit(Char enemy);
 		void afterHit(Char enemy);
+		MeleeWeapon weapon();
 	}
 	public static void markAbilityUsed() {
 		if (abilityOverride == null) return;
@@ -255,6 +256,9 @@ public class MeleeWeapon extends Weapon {
 						@Override public void afterHit(Char enemy) {
 							if(afterHit != null) afterHit.accept(enemy);
 						}
+
+						@Override
+						public MeleeWeapon weapon() { return wep; }
 
 						@Override
 						public void onRemove() {
