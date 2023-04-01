@@ -501,7 +501,7 @@ public class Hero extends Char {
 		belongings.thrownWeapon = wep;
 		int cell = enemy.pos;
 		MeleeWeapon.DexterityAbilityOverride ability = MeleeWeapon.abilityOverride;
-		boolean hit = ability != null ? attack( enemy, ability.dmgMulti(), 0, ability.accMulti() )
+		boolean hit = ability != null ? attack( enemy, ability.dmgMulti(enemy), 0, ability.accMulti() )
 				: attack( enemy );
 		if (hit && ability != null) ability.onHit(enemy);
 		wep.onRangedAttack(enemy, cell, hit);

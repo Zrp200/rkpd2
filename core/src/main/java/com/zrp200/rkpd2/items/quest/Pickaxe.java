@@ -173,52 +173,24 @@ public class Pickaxe extends MeleeWeapon {
 	}
 
 	@Override
+	public float abilityDamageMulti(Char enemy) {
+		float multi = super.abilityDamageMulti(enemy);
+		if (Char.hasProp(enemy, Char.Property.INORGANIC)
+				|| enemy instanceof Swarm
+				|| enemy instanceof Bee
+				|| enemy instanceof Crab
+				|| enemy instanceof Spinner
+				|| enemy instanceof Scorpio) multi *= 2;
+		return multi;
+	}
+
+	@Override
 	protected void duelistAbility(Hero hero, Integer target) {
-		if (target == null) {
-			return;
-		}
-
-		Char enemy = Actor.findChar(target);
-		if (enemy == null || enemy == hero || hero.isCharmedBy(enemy) || !Dungeon.level.heroFOV[target]) {
-			GLog.w(Messages.get(this, "ability_no_target"));
-			return;
-		}
-
-		hero.belongings.abilityWeapon = this;
-		if (!hero.canAttack(enemy)){
-			GLog.w(Messages.get(this, "ability_bad_position"));
-			hero.belongings.abilityWeapon = null;
-			return;
-		}
-		hero.belongings.abilityWeapon = null;
-
-		hero.sprite.attack(enemy.pos, new Callback() {
-			@Override
-			public void call() {
-				float damageMulti = 1f;
-				if (Char.hasProp(enemy, Char.Property.INORGANIC)
-						|| enemy instanceof Swarm
-						|| enemy instanceof Bee
-						|| enemy instanceof Crab
-						|| enemy instanceof Spinner
-						|| enemy instanceof Scorpio) {
-					damageMulti = 2f;
-				}
-				beforeAbilityUsed(hero);
-				AttackIndicator.target(enemy);
-				if (hero.attack(enemy, damageMulti, 0, Char.INFINITE_ACCURACY)) {
-					if (enemy.isAlive()) {
-						Buff.affect(enemy, Vulnerable.class, 3f);
-					} else {
-						onAbilityKill(hero);
-					}
-					Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);
-				}
-				Invisibility.dispel();
-				hero.spendAndNext(hero.attackDelay());
-				afterAbilityUsed(hero);
-			}
-		});
+		meleeAbility(
+				hero, target, this, -1 /* fixme hack */, false, true,
+				enemy -> { if (enemy.isAlive()) Buff.affect(enemy, Vulnerable.class, 3f); },
+				null
+		);
 	}
 
 	private static final String BLOODSTAINED = "bloodStained";

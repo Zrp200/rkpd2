@@ -191,12 +191,14 @@ public class MeleeWeapon extends Weapon {
 		//do nothing by default
 	}
 
+	public float abilityDamageMulti(Char enemy) { return 1f; }
+
 	// I really hope this works!
 	public static DexterityAbilityOverride abilityOverride;
 	public interface DexterityAbilityOverride {
 		void onRemove();
 		float accMulti();
-		float dmgMulti();
+		float dmgMulti(Char enemy);
 		void onHit(Char enemy);
 		void afterHit(Char enemy);
 	}
@@ -240,7 +242,10 @@ public class MeleeWeapon extends Weapon {
 					wep.beforeAbilityUsed(hero);
 					abilityOverride = new DexterityAbilityOverride() {
 						@Override public float accMulti() { return accMulti; }
-						@Override public float dmgMulti() { return dmgMulti; }
+						@Override public float dmgMulti(Char enemy) {
+							// hack to allow pickaxe to work
+							return dmgMulti >= 0 ? dmgMulti : wep.abilityDamageMulti(enemy);
+						}
 						@Override public void onHit(Char enemy) {
 							if (playSFX) Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);
 							if (onHit != null) onHit.accept(enemy);
@@ -270,7 +275,7 @@ public class MeleeWeapon extends Weapon {
 		hero.sprite.attack(enemy.pos, () -> {
 			wep.beforeAbilityUsed(hero);
 			AttackIndicator.target(enemy);
-			if (hero.attack(enemy, dmgMulti, 0, accMulti)) {
+			if (hero.attack(enemy, dmgMulti >= 0 ? dmgMulti : wep.abilityDamageMulti(enemy), 0, accMulti)) {
 				if (playSFX) Sample.INSTANCE.play(Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG));
 				if (onHit != null) onHit.accept(enemy);
 				if (!enemy.isAlive()) {
