@@ -208,27 +208,28 @@ public class MeleeWeapon extends Weapon {
 		abilityOverride = null;
 	}
 
-	protected static void meleeAbility(
+	// returns true if an ability was used.
+	protected static boolean meleeAbility(
 			Hero hero, Integer target, MeleeWeapon wep,
 			float dmgMulti,
 			boolean excludeAdjacent, boolean playSFX,
 			Consumer<Char> onHit, Consumer<Char> afterHit) {
-		meleeAbility(hero, target, wep, dmgMulti, Char.INFINITE_ACCURACY, excludeAdjacent, playSFX, onHit, afterHit);
+		return meleeAbility(hero, target, wep, dmgMulti, Char.INFINITE_ACCURACY, excludeAdjacent, playSFX, onHit, afterHit);
 	}
-	protected static void meleeAbility(
+	protected static boolean meleeAbility(
 			Hero hero, Integer target, MeleeWeapon wep,
 			float dmgMulti, float accMulti,
 			boolean excludeAdjacent, boolean playSFX,
 			Consumer<Char> onHit, Consumer<Char> afterHit) {
 		if (target == null) {
-			return;
+			return false;
 		}
 
 		Char enemy = Actor.findChar(target);
 
 		if (enemy == null || enemy == hero || hero.isCharmedBy(enemy) || !Dungeon.level.heroFOV[target]) {
 			GLog.w(Messages.get(wep, "ability_no_target"));
-			return;
+			return false;
 		}
 
 		hero.belongings.abilityWeapon = wep;
@@ -262,12 +263,12 @@ public class MeleeWeapon extends Weapon {
 					};
 					// see Item.cast, Hero.shoot
 					thrown.cast(hero, enemy.pos);
-					return;
+					return true;
 				}
 			}
 			GLog.w(Messages.get(wep, "ability_bad_position"));
 
-			return;
+			return false;
 		}
 		hero.belongings.abilityWeapon = null;
 
@@ -287,6 +288,7 @@ public class MeleeWeapon extends Weapon {
 			Invisibility.dispel();
 			hero.spendAndNext(hero.attackDelay());
 		});
+		return true;
 	}
 
 	protected void beforeAbilityUsed(Hero hero ){
