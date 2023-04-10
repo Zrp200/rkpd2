@@ -55,6 +55,8 @@ public class ChangeButton extends Component {
 		add(this.icon);
 		
 		this.title = Messages.titleCase(title);
+
+		for (int i=0; i < messages.length; i++) messages[i] = messages[i].trim();
 		this.messages = messages;
 		
 		layout();
