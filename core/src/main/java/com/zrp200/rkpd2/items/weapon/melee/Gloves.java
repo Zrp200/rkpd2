@@ -22,19 +22,15 @@
 package com.zrp200.rkpd2.items.weapon.melee;
 
 import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
-public class Gloves extends MeleeWeapon {
+public class Gloves extends Sai {
 
 	{
 		image = ItemSpriteSheet.GLOVES;
 		hitSound = Assets.Sounds.HIT;
-		hitSoundPitch = 1.3f;
 
 		tier = 1;
-		DLY = 0.5f; //2x speed
 		
 		bones = false;
 	}
@@ -43,16 +39,6 @@ public class Gloves extends MeleeWeapon {
 	public int max(int lvl) {
 		return  Math.round(3f*(tier+1)) +     //6 base, down from 10
 				lvl*Math.round(0.5f*(tier+1));  //+1 per level, down from +2
-	}
-
-	@Override
-	public String targetingPrompt() {
-		return Messages.get(this, "prompt");
-	}
-
-	@Override
-	protected void duelistAbility(Hero hero, Integer target) {
-		Sai.comboStrikeAbility(hero, target, 0.40f, this);
 	}
 
 }

@@ -51,6 +51,7 @@ import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
+import com.zrp200.rkpd2.utils.SafeCast;
 
 import java.util.ArrayList;
 
@@ -102,7 +103,14 @@ abstract public class MissileWeapon extends Weapon {
 	public int STRReq(int lvl){
 		return STRReq(tier, lvl) - 1; //1 less str than normal for their tier
 	}
-	
+
+	@Override
+	public int buffedLvl() {
+		int level = super.buffedLvl();
+		if (parent != null) level = Math.max(level, parent.buffedLvl());
+		return level;
+	}
+
 	@Override
 	//FIXME some logic here assumes the items are in the player's inventory. Might need to adjust
 	public Item upgrade() {
@@ -174,7 +182,7 @@ abstract public class MissileWeapon extends Weapon {
 
 		RunicBlade.RunicSlashTracker tracker = Dungeon.hero.buff(RunicBlade.RunicSlashTracker.class);
 		boolean ignoreTracker = tracker != null;
-		if (MeleeWeapon.abilityOverride != null && MeleeWeapon.abilityOverride.weapon().hasEnchant(Projecting.class, Dungeon.hero)) {
+		if (MeleeWeapon.activeAbility instanceof MeleeWeapon.MeleeAbility && ((MeleeWeapon.MeleeAbility)MeleeWeapon.activeAbility).weapon().hasEnchant(Projecting.class, Dungeon.hero)) {
 			projecting = true;
 			ignoreTracker = false;
 		}
@@ -270,12 +278,11 @@ abstract public class MissileWeapon extends Weapon {
 		}
 		if (tracker != null) tracker.attachTo(Dungeon.hero); // reapply it
 
-		if (MeleeWeapon.abilityOverride != null) {
-			MeleeWeapon wep = MeleeWeapon.abilityOverride.weapon();
-			if (wep.enchantment != null && Dungeon.hero.buff(MagicImmune.class) == null) {
-				// so balanced
-				damage = wep.enchantment.proc(this, attacker, defender, damage);
-			}
+		MeleeWeapon.MeleeAbility abilityOverride = SafeCast.cast(MeleeWeapon.activeAbility, MeleeWeapon.MeleeAbility.class);
+		if (abilityOverride != null) {
+			MeleeWeapon wep = abilityOverride.weapon();
+			// so balanced
+			damage = wep.proc(attacker, defender, damage);
 		}
 
 		return super.proc(attacker, defender, damage);

@@ -22,35 +22,19 @@
 package com.zrp200.rkpd2.items.weapon.melee;
 
 import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
-public class WarHammer extends MeleeWeapon {
+public class WarHammer extends Mace {
 
 	{
 		image = ItemSpriteSheet.WAR_HAMMER;
 		hitSound = Assets.Sounds.HIT_CRUSH;
-		hitSoundPitch = 1f;
 
 		tier = 5;
 		ACC = 1.20f; //20% boost to accuracy
 	}
 
-	@Override
-	public int max(int lvl) {
-		return  4*(tier+1) +    //24 base, down from 30
-				lvl*(tier+1);   //scaling unchanged
-	}
-
-	@Override
-	public String targetingPrompt() {
-		return Messages.get(this, "prompt");
-	}
-
-	@Override
-	protected void duelistAbility(Hero hero, Integer target) {
-		Mace.heavyBlowAbility(hero, target, 1.50f, this);
-	}
+	//24 base, down from 30
+	//scaling unchanged
 
 }

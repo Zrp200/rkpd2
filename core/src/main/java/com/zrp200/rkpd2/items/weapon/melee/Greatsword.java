@@ -21,39 +21,14 @@
 
 package com.zrp200.rkpd2.items.weapon.melee;
 
-import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
-public class Greatsword extends MeleeWeapon {
+public class Greatsword extends Sword {
 
 	{
 		image = ItemSpriteSheet.GREATSWORD;
-		hitSound = Assets.Sounds.HIT_SLASH;
-		hitSoundPitch = 1f;
 
 		tier = 5;
-	}
-
-	@Override
-	public float abilityChargeUse( Hero hero ) {
-		if (hero.buff(Sword.CleaveTracker.class) != null){
-			return 0;
-		} else {
-			return super.abilityChargeUse( hero );
-		}
-	}
-
-	@Override
-	public String targetingPrompt() {
-		return Messages.get(this, "prompt");
-	}
-
-	@Override
-	protected void duelistAbility(Hero hero, Integer target) {
-		Sword.cleaveAbility(hero, target, 1.20f, this);
 	}
 
 }

@@ -22,11 +22,9 @@
 package com.zrp200.rkpd2.items.weapon.melee;
 
 import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
-public class Gauntlet extends MeleeWeapon {
+public class Gauntlet extends Sai {
 	
 	{
 		image = ItemSpriteSheet.GAUNTLETS;
@@ -34,23 +32,6 @@ public class Gauntlet extends MeleeWeapon {
 		hitSoundPitch = 1.2f;
 		
 		tier = 5;
-		DLY = 0.5f; //2x speed
-	}
-	
-	@Override
-	public int max(int lvl) {
-		return  Math.round(2.5f*(tier+1)) +     //15 base, down from 30
-				lvl*Math.round(0.5f*(tier+1));  //+3 per level, down from +6
-	}
-
-	@Override
-	public String targetingPrompt() {
-		return Messages.get(this, "prompt");
-	}
-
-	@Override
-	protected void duelistAbility(Hero hero, Integer target) {
-		Sai.comboStrikeAbility(hero, target, 0.30f, this);
 	}
 
 }

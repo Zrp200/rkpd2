@@ -30,11 +30,8 @@ import com.zrp200.rkpd2.actors.buffs.Vulnerable;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
-import com.zrp200.rkpd2.utils.GLog;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Callback;
 
-public class HandAxe extends MeleeWeapon {
+public class HandAxe extends Mace {
 
 	{
 		image = ItemSpriteSheet.HAND_AXE;
@@ -45,20 +42,7 @@ public class HandAxe extends MeleeWeapon {
 		ACC = 1.32f; //32% boost to accuracy
 	}
 
-	@Override
-	public int max(int lvl) {
-		return  4*(tier+1) +    //12 base, down from 15
-				lvl*(tier+1);   //scaling unchanged
-	}
-
-	@Override
-	public String targetingPrompt() {
-		return Messages.get(this, "prompt");
-	}
-
-	@Override
-	protected void duelistAbility(Hero hero, Integer target) {
-		Mace.heavyBlowAbility(hero, target, 1.65f, this);
-	}
+	//12 base, down from 15
+	//scaling unchanged
 
 }

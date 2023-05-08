@@ -56,12 +56,13 @@ public class RunicBlade extends MeleeWeapon {
 	protected void duelistAbility(Hero hero, Integer target) {
 		//we apply here because of projecting
 		RunicSlashTracker tracker = Buff.affect(hero, RunicSlashTracker.class);
-		boolean abilityUsed = meleeAbility(
-				hero, target, this,
-				1f, false, true,
-				null, null
-		);
+		boolean abilityUsed = duelistAbility().execute(hero, target, this);
 		if (!abilityUsed) tracker.detach();
+	}
+
+	@Override
+	protected DuelistAbility duelistAbility() {
+		return new MeleeAbility(1f);
 	}
 
 	@Override

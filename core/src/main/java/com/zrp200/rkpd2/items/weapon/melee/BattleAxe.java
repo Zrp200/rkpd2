@@ -22,11 +22,9 @@
 package com.zrp200.rkpd2.items.weapon.melee;
 
 import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
-public class BattleAxe extends MeleeWeapon {
+public class BattleAxe extends Mace {
 
 	{
 		image = ItemSpriteSheet.BATTLE_AXE;
@@ -37,20 +35,6 @@ public class BattleAxe extends MeleeWeapon {
 		ACC = 1.24f; //24% boost to accuracy
 	}
 
-	@Override
-	public int max(int lvl) {
-		return  4*(tier+1) +    //20 base, down from 25
-				lvl*(tier+1);   //scaling unchanged
-	}
-
-	@Override
-	public String targetingPrompt() {
-		return Messages.get(this, "prompt");
-	}
-
-	@Override
-	protected void duelistAbility(Hero hero, Integer target) {
-		Mace.heavyBlowAbility(hero, target, 1.55f, this);
-	}
-
+	//20 base, down from 25
+	//scaling unchanged
 }

@@ -22,17 +22,10 @@
 package com.zrp200.rkpd2.items.weapon.melee;
 
 import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.actors.Actor;
-import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
-import com.zrp200.rkpd2.ui.AttackIndicator;
 import com.zrp200.rkpd2.utils.GLog;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Callback;
 
 public class Greataxe extends MeleeWeapon {
 
@@ -64,12 +57,10 @@ public class Greataxe extends MeleeWeapon {
 	protected void duelistAbility(Hero hero, Integer target) {
 		if (hero.HP / (float)hero.HT >= 0.5f){
 			GLog.w(Messages.get(this, "ability_cant_use"));
-			return;
+		} else {
+			super.duelistAbility(hero, target);
 		}
-
-		meleeAbility(
-				hero, target, this, 1.35f,
-				false, true,
-				null, null);
+	} @Override protected DuelistAbility duelistAbility() {
+		return new MeleeAbility(1.35f);
 	}
 }

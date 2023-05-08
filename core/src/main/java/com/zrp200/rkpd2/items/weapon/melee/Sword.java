@@ -25,12 +25,10 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
-import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.BuffIndicator;
-import com.watabou.noosa.audio.Sample;
 
 public class Sword extends MeleeWeapon {
 	
@@ -57,20 +55,23 @@ public class Sword extends MeleeWeapon {
 	}
 
 	@Override
-	protected void duelistAbility(Hero hero, Integer target) {
-		Sword.cleaveAbility(hero, target, 1.27f, this);
-	}
+	protected DuelistAbility duelistAbility() {
+		// cleave ability
+		// 1.33 at t1, 1.3 at t2, 1.27 at t3, 1.23 at t4, 1.2 at t5
+		float dmgMulti = 1 + .03f*(11 - tier);
+		if (tier > 3) dmgMulti -= .1f;
+		return new MeleeAbility(dmgMulti) {
 
-	public static void cleaveAbility(Hero hero, Integer target, float dmgMulti, MeleeWeapon wep){
-		meleeAbility(hero, target, wep, dmgMulti, false, true, null, enemy -> {
-			if (!enemy.isAlive()){
+			@Override
+			public void onKill(Hero hero) {
 				Buff.prolong(hero, CleaveTracker.class, 5f);
-			} else {
+			} @Override
+			protected void proc(Hero hero, Char enemy) {
 				if (hero.buff(CleaveTracker.class) != null) {
 					hero.buff(CleaveTracker.class).detach();
 				}
 			}
-		});
+		};
 	}
 
 	public static class CleaveTracker extends FlavourBuff {

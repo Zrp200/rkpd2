@@ -27,35 +27,15 @@ import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
-public class WornShortsword extends MeleeWeapon {
+public class WornShortsword extends Sword {
 
 	{
 		image = ItemSpriteSheet.WORN_SHORTSWORD;
-		hitSound = Assets.Sounds.HIT_SLASH;
 		hitSoundPitch = 1.1f;
 
 		tier = 1;
 		
 		bones = false;
-	}
-
-	@Override
-	public float abilityChargeUse( Hero hero ) {
-		if (hero.buff(Sword.CleaveTracker.class) != null){
-			return 0;
-		} else {
-			return super.abilityChargeUse( hero );
-		}
-	}
-
-	@Override
-	public String targetingPrompt() {
-		return Messages.get(this, "prompt");
-	}
-
-	@Override
-	protected void duelistAbility(Hero hero, Integer target) {
-		Sword.cleaveAbility(hero, target, 1.33f, this);
 	}
 
 }

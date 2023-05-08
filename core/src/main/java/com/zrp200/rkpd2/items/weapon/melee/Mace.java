@@ -22,20 +22,12 @@
 package com.zrp200.rkpd2.items.weapon.melee;
 
 import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.buffs.Vulnerable;
 import com.zrp200.rkpd2.actors.buffs.Weakness;
-import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
-import com.zrp200.rkpd2.ui.AttackIndicator;
-import com.zrp200.rkpd2.utils.GLog;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Callback;
 
 public class Mace extends MeleeWeapon {
 
@@ -60,18 +52,23 @@ public class Mace extends MeleeWeapon {
 	}
 
 	@Override
-	protected void duelistAbility(Hero hero, Integer target) {
-		Mace.heavyBlowAbility(hero, target, 1.60f, this);
+	protected DuelistAbility duelistAbility() {
+		// 1.65 at t2, 1.6 at t3, 1.55 at t4, 1.5 at t5
+		return new HeavyBlow(1.75f - 0.05f * tier);
 	}
 
-	public static void heavyBlowAbility(Hero hero, Integer target, float dmgMulti, MeleeWeapon wep){
-		meleeAbility(hero, target, wep, dmgMulti, 0.25f, false, false,
-				enemy -> {
-					if (enemy.isAlive()){
-						Buff.affect(enemy, Vulnerable.class, 5f);
-						Buff.affect(enemy, Weakness.class, 5f);
-					}
-				}, null);
+	public static class HeavyBlow extends MeleeAbility {
+
+		HeavyBlow(float dmgMulti) { super(dmgMulti); }
+		@Override public float accMulti() { return 0.25f; }
+
+		@Override
+		public void afterHit(Char enemy, boolean hit) {
+			if (enemy.isAlive()) {
+				Buff.affect(enemy, Vulnerable.class, 5f);
+				Buff.affect(enemy, Weakness.class, 5f);
+			}
+		}
 	}
 
 }

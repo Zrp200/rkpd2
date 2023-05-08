@@ -23,7 +23,6 @@ package com.zrp200.rkpd2.items.weapon.melee;
 
 import static com.zrp200.rkpd2.Dungeon.hero;
 
-import com.watabou.utils.function.Consumer;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
@@ -188,112 +187,125 @@ public class MeleeWeapon extends Weapon {
 	}
 
 	protected void duelistAbility( Hero hero, Integer target ){
-		//do nothing by default
+		DuelistAbility ability = duelistAbility();
+		if (ability != null) ability.execute(hero, target, this);
 	}
 
-	public float abilityDamageMulti(Char enemy) { return 1f; }
+	protected DuelistAbility duelistAbility() { return null; };
 
 	// I really hope this works!
-	public static DexterityAbilityOverride abilityOverride;
-	public interface DexterityAbilityOverride {
-		void onRemove();
-		float accMulti();
-		float dmgMulti(Char enemy);
-		void onHit(Char enemy);
-		void afterHit(Char enemy);
-		MeleeWeapon weapon();
-	}
+	public static DuelistAbility activeAbility;
 	public static void markAbilityUsed() {
-		if (abilityOverride == null) return;
-		abilityOverride.onRemove();
-		abilityOverride = null;
+		if (activeAbility instanceof MeleeAbility) ((MeleeAbility)activeAbility).afterAbilityUsed();
 	}
 
-	// returns true if an ability was used.
-	protected static boolean meleeAbility(
-			Hero hero, Integer target, MeleeWeapon wep,
-			float dmgMulti,
-			boolean excludeAdjacent, boolean playSFX,
-			Consumer<Char> onHit, Consumer<Char> afterHit) {
-		return meleeAbility(hero, target, wep, dmgMulti, Char.INFINITE_ACCURACY, excludeAdjacent, playSFX, onHit, afterHit);
+
+	protected interface DuelistAbility {
+		/** @return whether the ability was used **/
+		boolean execute(Hero hero, Integer target, MeleeWeapon weapon);
 	}
-	protected static boolean meleeAbility(
-			Hero hero, Integer target, MeleeWeapon wep,
-			float dmgMulti, float accMulti,
-			boolean excludeAdjacent, boolean playSFX,
-			Consumer<Char> onHit, Consumer<Char> afterHit) {
-		if (target == null) {
-			return false;
-		}
 
-		Char enemy = Actor.findChar(target);
+	/** This removes basically all the duplication. anything implementing this will work with Elite Dexterity **/
+	public static class MeleeAbility implements DuelistAbility {
 
-		if (enemy == null || enemy == hero || hero.isCharmedBy(enemy) || !Dungeon.level.heroFOV[target]) {
-			GLog.w(Messages.get(wep, "ability_no_target"));
-			return false;
-		}
+		@Override
+		public boolean execute(Hero hero, Integer target, MeleeWeapon wep) {
+			if (target == null) return false;
 
-		hero.belongings.abilityWeapon = wep;
-		if (!hero.canAttack(enemy) || hero.isCharmedBy(enemy) || excludeAdjacent && Dungeon.level.adjacent(hero.pos, enemy.pos)){
+			Char enemy = Actor.findChar(target);
+
+			if (enemy == null || enemy == hero || hero.isCharmedBy(enemy) || !Dungeon.level.heroFOV[target]) {
+				GLog.w(Messages.get(wep, "ability_no_target"));
+				return false;
+			}
+
+			hero.belongings.abilityWeapon = this.abilityWeapon = wep;
+			if (!canAttack(hero, enemy)){
+				hero.belongings.abilityWeapon = null;
+				MissileWeapon thrown = SafeCast.cast(hero.belongings.thirdWep(), MissileWeapon.class);
+				if (thrown != null) {
+					// check charges of third slot, it should use the same amount of charges as the main slot
+					if (Buff.affect(hero, Charger.class).charges[2] >= wep.abilityChargeUse(hero)
+							&& enemy.pos == QuickSlotButton.autoAim(enemy, hero.belongings.thirdWep)) {
+						// fake throw = cool
+						beforeAbilityUsed(hero);
+						// see Item.cast, Hero.shoot
+						thrown.cast(hero, enemy.pos);
+						return true;
+					}
+				}
+				GLog.w(Messages.get(wep, "ability_bad_position"));
+
+				return false;
+			}
 			hero.belongings.abilityWeapon = null;
-			MissileWeapon thrown = SafeCast.cast(hero.belongings.thirdWep(), MissileWeapon.class);
-			if (thrown != null) {
-				// check charges of third slot, it should use the same amount of charges as the main slot
-				if (Buff.affect(hero, Charger.class).charges[2] >= wep.abilityChargeUse(hero)
-						&& enemy.pos == QuickSlotButton.autoAim(enemy, hero.belongings.thirdWep)) {
-					// fake throw = cool
-					abilityOverride = new DexterityAbilityOverride() {
-						@Override public float accMulti() { return accMulti; }
-						@Override public float dmgMulti(Char enemy) {
-							// hack to allow pickaxe to work
-							return dmgMulti >= 0 ? dmgMulti : wep.abilityDamageMulti(enemy);
-						}
-						@Override public void onHit(Char enemy) {
-							if (playSFX) Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);
-							if (onHit != null) onHit.accept(enemy);
-							if (!enemy.isAlive()) wep.onAbilityKill(hero);
-						}
-						@Override public void afterHit(Char enemy) {
-							if(afterHit != null) afterHit.accept(enemy);
-						}
 
-						@Override
-						public MeleeWeapon weapon() { return wep; }
 
-						@Override
-						public void onRemove() {
-							wep.afterAbilityUsed(hero);
-						}
-					};
-					wep.beforeAbilityUsed(hero);
-					// see Item.cast, Hero.shoot
-					thrown.cast(hero, enemy.pos);
-					return true;
+			hero.sprite.attack(enemy.pos, () -> {
+				beforeAbilityUsed(hero);
+				AttackIndicator.target(enemy);
+				boolean hit = hero.attack(enemy, dmgMulti(enemy), 0, accMulti());
+				if (hit) {
+					onHit(hero, enemy);
 				}
-			}
-			GLog.w(Messages.get(wep, "ability_bad_position"));
-
-			return false;
+				afterHit(enemy, hit);
+				afterAbilityUsed();
+				Invisibility.dispel();
+				hero.spendAndNext(hero.attackDelay());
+			});
+			return true;
 		}
-		hero.belongings.abilityWeapon = null;
 
+		private final float dmgMulti;
+		public MeleeAbility(float dmgMulti) {
+			this.dmgMulti = dmgMulti;
+		}
+		public MeleeAbility() {
+			this(1f);
+		}
 
-		hero.sprite.attack(enemy.pos, () -> {
-			wep.beforeAbilityUsed(hero);
-			AttackIndicator.target(enemy);
-			if (hero.attack(enemy, dmgMulti >= 0 ? dmgMulti : wep.abilityDamageMulti(enemy), 0, accMulti)) {
-				if (playSFX) Sample.INSTANCE.play(Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG));
-				if (onHit != null) onHit.accept(enemy);
-				if (!enemy.isAlive()) {
-					wep.onAbilityKill(hero);
-				}
-			}
-			if (afterHit != null) afterHit.accept(enemy);
-			wep.afterAbilityUsed(hero);
-			Invisibility.dispel();
-			hero.spendAndNext(hero.attackDelay());
-		});
-		return true;
+		/** damage multiplier passed to Hero.attack **/
+		public float dmgMulti(Char enemy) { return dmgMulti; }
+
+		/** acc modifier passed to Hero.attack **/
+		public float accMulti() { return Char.INFINITE_ACCURACY; }
+
+		public final void onHit(Hero hero, Char enemy) {
+			playSFX();
+			if (!enemy.isAlive()) {
+				onKill(hero);
+				abilityWeapon.onAbilityKill(hero);
+			} else proc(hero, enemy);
+		}
+
+		private MeleeWeapon abilityWeapon;
+		public MeleeWeapon weapon() {
+			return abilityWeapon;
+		}
+
+		public void afterAbilityUsed() {
+			abilityWeapon.afterAbilityUsed(hero);
+			activeAbility = null;
+		}
+
+		protected boolean canAttack(Hero hero, Char enemy) {
+			return hero.canAttack(enemy) && !hero.isCharmedBy(enemy);
+		}
+
+		protected void beforeAbilityUsed(Hero hero) {
+			activeAbility = this;
+			abilityWeapon.beforeAbilityUsed(hero);
+		}
+
+		protected void playSFX() {
+			Sample.INSTANCE.play(Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG));
+		}
+
+		/** effect applied when the enemy survives a hit **/
+		protected void proc(Hero hero, Char enemy) {/* nothing by default */}
+
+		protected void onKill(Hero hero) {/* nothing by default */}
+		public void afterHit(Char enemy, boolean hit) {/* nothing by default */}
 	}
 
 	protected void beforeAbilityUsed(Hero hero ){
@@ -303,7 +315,7 @@ public class MeleeWeapon extends Weapon {
 				-abilityChargeUse(hero),
 				hero.belongings.findWeapon(this)
 		);
-		if (abilityOverride != null) {
+		if (activeAbility != null) {
 			// use charge from thrown weapon as well
 			charger.gainCharge(-abilityChargeUse(hero), 2);
 		}
@@ -459,12 +471,13 @@ public class MeleeWeapon extends Weapon {
 	@Override
 	public String status() {
 		Charger buff = hero.buff(Charger.class);
-		int slot = hero.belongings.findWeapon(this);
-		if (slot >= 0) {
-			return (int)buff.charges[slot] + "/" + buff.chargeCap(slot);
-		} else {
-			return super.status();
+		if (buff != null) {
+			int slot = hero.belongings.findWeapon(this);
+			if (slot >= 0) {
+				return (int) buff.charges[slot] + "/" + buff.chargeCap(slot);
+			}
 		}
+		return super.status();
 	}
 
 	@Override

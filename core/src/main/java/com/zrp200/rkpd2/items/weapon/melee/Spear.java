@@ -60,13 +60,16 @@ public class Spear extends MeleeWeapon {
 	}
 
 	@Override
-	protected void duelistAbility(Hero hero, Integer target) {
-		Spear.spikeAbility(hero, target, 1.40f, this);
-	}
+	protected DuelistAbility duelistAbility() {
+		// 1.4 at t2, 1.3 at t5
+		return new MeleeAbility(1.4f - (tier-2)/30f) {
+			@Override
+			protected boolean canAttack(Hero hero, Char enemy) {
+				return super.canAttack(hero, enemy) && !Dungeon.level.adjacent(hero.pos, enemy.pos);
+			}
 
-	public static void spikeAbility(Hero hero, Integer target, float dmgMulti, MeleeWeapon wep){
-		meleeAbility(hero, target, wep, dmgMulti, true, true, enemy -> {
-			if (enemy.isAlive()){
+			@Override
+			protected void proc(Hero hero, Char enemy) {
 				//trace a ballistica to our target (which will also extend past them
 				Ballistica trajectory = new Ballistica(hero.pos, enemy.pos, Ballistica.STOP_TARGET);
 				//trim it to just be the part that goes past them
@@ -74,7 +77,7 @@ public class Spear extends MeleeWeapon {
 				//knock them back along that ballistica
 				WandOfBlastWave.throwChar(enemy, trajectory, 1, true, false, hero.getClass());
 			}
-		}, null);
+		};
 	}
 
 }

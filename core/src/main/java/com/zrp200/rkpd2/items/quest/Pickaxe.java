@@ -172,25 +172,26 @@ public class Pickaxe extends MeleeWeapon {
 		return Messages.get(this, "prompt");
 	}
 
-	@Override
-	public float abilityDamageMulti(Char enemy) {
-		float multi = super.abilityDamageMulti(enemy);
-		if (Char.hasProp(enemy, Char.Property.INORGANIC)
-				|| enemy instanceof Swarm
-				|| enemy instanceof Bee
-				|| enemy instanceof Crab
-				|| enemy instanceof Spinner
-				|| enemy instanceof Scorpio) multi *= 2;
-		return multi;
-	}
+	private static class Pierce extends MeleeAbility {
+		@Override
+		public float dmgMulti(Char enemy) {
+			float multi = super.dmgMulti(enemy);
+			if (Char.hasProp(enemy, Char.Property.INORGANIC)
+					|| enemy instanceof Swarm
+					|| enemy instanceof Bee
+					|| enemy instanceof Crab
+					|| enemy instanceof Spinner
+					|| enemy instanceof Scorpio) multi *= 2;
+			return multi;
+		}
 
-	@Override
-	protected void duelistAbility(Hero hero, Integer target) {
-		meleeAbility(
-				hero, target, this, -1 /* fixme hack */, false, true,
-				enemy -> { if (enemy.isAlive()) Buff.affect(enemy, Vulnerable.class, 3f); },
-				null
-		);
+		@Override
+		protected void proc(Hero hero, Char enemy) {
+			Buff.affect(enemy, Vulnerable.class, 3f);
+		}
+	} @Override
+	protected MeleeAbility duelistAbility() {
+		return new Pierce();
 	}
 
 	private static final String BLOODSTAINED = "bloodStained";

@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.items.weapon.melee;
 
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.hero.Hero;
@@ -52,21 +53,36 @@ public class Sai extends MeleeWeapon {
 		return Messages.get(this, "prompt");
 	}
 
-	@Override
-	protected void duelistAbility(Hero hero, Integer target) {
-		Sai.comboStrikeAbility(hero, target, 0.35f, this);
+	protected DuelistAbility duelistAbility() {
+		return new ComboStrike();
 	}
 
-	public static void comboStrikeAbility(Hero hero, Integer target, float boostPerHit, MeleeWeapon wep){
-		HashSet<ComboStrikeTracker> buffs = hero.buffs(ComboStrikeTracker.class);
-		int recentHits = buffs.size();
-		for (Buff b : buffs){
-			b.detach();
+	protected class ComboStrike extends MeleeAbility {
+
+		// 1 - 0.4
+		// 3 - 0.35
+		// 5 - 0.3
+		public final float boostPerHit = 0.4f - (tier-1)*.025f;
+
+		private int recentHits;
+		@Override
+		protected void beforeAbilityUsed(Hero hero) {
+			HashSet<ComboStrikeTracker> buffs = hero.buffs(ComboStrikeTracker.class);
+			recentHits = buffs.size();
+			for (Buff b : buffs){
+				b.detach();
+			}
 		}
-		meleeAbility(hero, target, wep,
-				1f + boostPerHit*recentHits,
-				false, recentHits >= 2,
-				null, null);
+
+		@Override
+		public float dmgMulti(Char enemy) {
+			return boostPerHit*recentHits;
+		}
+
+		@Override
+		protected void playSFX() {
+			if (recentHits >= 2) super.playSFX();
+		}
 	}
 
 	public static class ComboStrikeTracker extends FlavourBuff{

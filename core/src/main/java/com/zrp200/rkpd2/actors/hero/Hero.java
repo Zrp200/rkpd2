@@ -500,12 +500,15 @@ public class Hero extends Char {
 		//TODO improve this!
 		belongings.thrownWeapon = wep;
 		int cell = enemy.pos;
-		MeleeWeapon.DexterityAbilityOverride ability = MeleeWeapon.abilityOverride;
+		// this is kinda awkward but I don't know any other way to simulate this properly.
+		MeleeWeapon.MeleeAbility ability =
+				MeleeWeapon.activeAbility instanceof MeleeWeapon.MeleeAbility ? (MeleeWeapon.MeleeAbility) MeleeWeapon.activeAbility
+						: null;
 		boolean hit = ability != null ? attack( enemy, ability.dmgMulti(enemy), 0, ability.accMulti() )
 				: attack( enemy );
-		if (hit && ability != null) ability.onHit(enemy);
+		if (hit && ability != null) ability.onHit(this, enemy);
 		wep.onRangedAttack(enemy, cell, hit);
-		if (ability != null) ability.afterHit(enemy);
+		if (ability != null) ability.afterHit(enemy, hit);
 		Invisibility.dispel();
 		belongings.thrownWeapon = null;
 
