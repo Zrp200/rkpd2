@@ -21,59 +21,22 @@
 
 package com.zrp200.rkpd2.items.weapon.melee;
 
-import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.actors.mobs.Mob;
-import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
-import com.watabou.utils.Random;
 
-public class Dirk extends MeleeWeapon {
+public class Dirk extends Dagger {
 
 	{
 		image = ItemSpriteSheet.DIRK;
-		hitSound = Assets.Sounds.HIT_STAB;
 		hitSoundPitch = 1f;
 
 		tier = 2;
-	}
+		bones = true;
 
-	@Override
-	public int max(int lvl) {
-		return  4*(tier+1) +    //12 base, down from 15
-				lvl*(tier+1);   //scaling unchanged
-	}
-	
-	@Override
-	public int damageRoll(Char owner) {
-		if (owner instanceof Hero) {
-			Hero hero = (Hero)owner;
-			Char enemy = hero.enemy();
-			if (enemy instanceof Mob && ((Mob) enemy).surprisedBy(hero)) {
-				//deals 67% toward max to max on surprise, instead of min to max.
-				int diff = max() - min();
-				int damage = augment.damageFactor(Random.NormalIntRange(
-						min() + Math.round(diff*0.67f),
-						max()));
-				int exStr = hero.STR() - STRReq();
-				if (exStr > 0) {
-					damage += Random.IntRange(0, exStr);
-				}
-				return damage;
-			}
-		}
-		return super.damageRoll(owner);
-	}
+		//12 base, down from 15
+		//scaling unchanged
 
-	@Override
-	public float abilityChargeUse( Hero hero ) {
-		return 2*super.abilityChargeUse(hero);
-	}
-
-	@Override
-	protected void duelistAbility(Hero hero, Integer target) {
-		Dagger.sneakAbility(hero, 6, this);
+		//deals 67% toward max to max on surprise, instead of min to max.
+		surpriseTowardMax = 0.67f;
 	}
 
 }
