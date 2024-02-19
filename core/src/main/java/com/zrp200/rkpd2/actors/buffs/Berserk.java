@@ -177,12 +177,13 @@ public class Berserk extends Buff implements ActionIndicator.Action {
 		ActionIndicator.clearAction(this);
 	}
 
-	public float enchantFactor(float chance){
+	public float enchantFactor(float chance, boolean glyph){
 		return chance + Math.min(1f,power)*((Hero)target).byTalent(
 				Talent.ENRAGED_CATALYST, 1/5f,
-				Talent.RK_BERSERKER, .15f
+				Talent.RK_BERSERKER, glyph ? .15f : 0f
 		);
 	}
+	public float enchantFactor(float chance) { return enchantFactor(chance, false); }
 
 	public int damageFactor(int dmg){
 		return Math.round(dmg * damageMult());

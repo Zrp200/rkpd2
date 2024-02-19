@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.Berserk;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.MagicImmune;
 import com.zrp200.rkpd2.actors.buffs.Momentum;
@@ -663,7 +664,10 @@ public class Armor extends EquipableItem {
 		}
 
 		public static float genericProcChanceMultiplier( Char defender ){
-			return RingOfArcana.enchantPowerMultiplier(defender);
+			float mult = RingOfArcana.enchantPowerMultiplier(defender);
+			Berserk berserk = defender.buff(Berserk.class);
+			if(berserk != null) mult *= berserk.enchantFactor(mult, true);
+			return mult;
 		}
 
 		public String name() {
