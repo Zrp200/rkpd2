@@ -243,9 +243,12 @@ public class TalentsPane extends ScrollPane {
 					left = title.right() + 2;
 				}
 			}
-			int rows = ((buttons.size()-1)/6);
-			// this assumes that there's an even number of talents all around. THIS IS VERY BRITTLE
-			int buttonsPerRow = buttons.size() / (rows+1);
+			// Use as few rows as possible, but at least use them well. every 6 adds another row.
+			final int MAX_TALENTS_PER_ROW = 6;
+			int rows = 1+(buttons.size()-1)/MAX_TALENTS_PER_ROW;
+			int buttonsPerRow = buttons.size() / rows;
+			int extra = buttons.size() % rows;  // amount of rows that need an extra button to fit properly
+			if (extra > 0) buttonsPerRow++;
 			float gap = (width - buttonsPerRow*TalentButton.WIDTH)/(buttonsPerRow+1);
 			float bottom = title.bottom();
 			int placed = 0;
@@ -254,7 +257,12 @@ public class TalentsPane extends ScrollPane {
 				btn.setPos(left, bottom + 4);
 				PixelScene.align(btn);
 				left += btn.width() + gap;
-				if(++placed == buttonsPerRow && rows-- >= 0) {
+				if(++placed == buttonsPerRow && --rows >= 0) {
+					if (--extra == 0) {
+						buttonsPerRow--;
+						// copy-pasted from above
+						gap = (width - buttonsPerRow*TalentButton.WIDTH)/(buttonsPerRow+1);
+					}
 					left = x + gap;
 					bottom = btn.bottom();
 					placed = 0;
