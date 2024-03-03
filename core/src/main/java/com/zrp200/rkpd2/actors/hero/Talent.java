@@ -728,16 +728,18 @@ public enum Talent {
 			//3/5 turns of recharging
 			int duration = 1 + 2*points;
 			ArtifactRecharge buff = Buff.affect( hero, ArtifactRecharge.class);
-			boolean newBuff = false;
+			boolean newBuff = true;
 			if(talent == MYSTICAL_MEAL) {
-				if(buff.left() == 0) newBuff = true;
+				// current behavior 'corrupts' the existing buff if you use a horn of plenty
+				// but this is preferable to the alternative...
 				buff.prolong((float)Math.ceil(duration*1.5)); // 5-8 turns of recharge!!!
 			}
 			else if(buff.left() < duration){
-				newBuff = true;
 				buff.set(duration);
+			} else {
+				newBuff = false;
 			}
-			if(newBuff) buff.ignoreHornOfPlenty = foodSource instanceof HornOfPlenty;
+			buff.ignoreHornOfPlenty = buff.ignoreHornOfPlenty || newBuff && foodSource instanceof HornOfPlenty;
 			ScrollOfRecharging.charge( hero );
 			SpellSprite.show(hero, SpellSprite.CHARGE, 0, 1, 1);
 		}, ROYAL_MEAL, MYSTICAL_MEAL );
