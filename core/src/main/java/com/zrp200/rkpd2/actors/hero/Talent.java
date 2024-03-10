@@ -104,7 +104,8 @@ public enum Talent {
 	//Warrior T3
 	HOLD_FAST(9, 3), STRONGMAN(10, 3),
 	//Berserker T3
-	ENDLESS_RAGE(11, 3), DEATHLESS_FURY(12, 3), ENRAGED_CATALYST(13, 3), ONE_MAN_ARMY(30,3),
+	// yes, yes, I kept both talents and then swapped their icons... deal with it. Why does the one that protects you from death have a + next to it?
+	ENDLESS_RAGE(11, 3), DEATHLESS_FURY(29, 3), BERSERKING_STAMINA(12, 3), ENRAGED_CATALYST(13, 3), ONE_MAN_ARMY(30,3),
 	//Gladiator T3
 	CLEAVE(14, 3), LETHAL_DEFENSE(15, 3), ENHANCED_COMBO(16, 3), SKILL(31,3),
 	//Heroic Leap T4
@@ -1226,7 +1227,7 @@ public enum Talent {
 		//tier 3
 		switch (cls){
 			case BERSERKER: default:
-				Collections.addAll(tierTalents, ENDLESS_RAGE, DEATHLESS_FURY, ENRAGED_CATALYST, ONE_MAN_ARMY);
+				Collections.addAll(tierTalents, ENDLESS_RAGE, DEATHLESS_FURY, ENRAGED_CATALYST, BERSERKING_STAMINA, ONE_MAN_ARMY);
 				break;
 			case GLADIATOR:
 				Collections.addAll(tierTalents, CLEAVE, LETHAL_DEFENSE, ENHANCED_COMBO, SKILL);
@@ -1334,11 +1335,15 @@ public enum Talent {
 			Bundle tierBundle = bundle.contains(TALENT_TIER+(i+1)) ? bundle.getBundle(TALENT_TIER+(i+1)) : null;
 
 			if (tierBundle != null){
+				// handle my swapping of the two talents
 				for (String tName : tierBundle.getKeys()){
 					int points = tierBundle.getInt(tName);
 					if (renamedTalents.containsKey(tName)) tName = renamedTalents.get(tName);
 					try {
 						Talent talent = Talent.valueOf(tName);
+						if (talent == BERSERKING_STAMINA && !tierBundle.contains(DEATHLESS_FURY.name())) {
+							talent = DEATHLESS_FURY;
+						}
 						if (tier.containsKey(talent)) {
 							tier.put(talent, Math.min(points, talent.maxPoints()));
 						}

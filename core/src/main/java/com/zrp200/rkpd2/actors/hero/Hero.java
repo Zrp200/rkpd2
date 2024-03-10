@@ -773,7 +773,7 @@ public class Hero extends Char {
 			int enemies = 0;
 			for(Char ch : Dungeon.level.mobs) if(ch.alignment == Alignment.ENEMY && (canAttack(ch) || ch.canAttack(this))) enemies++;
 			// every additional enemy, not the first guy.
-			delay /= 1+0.1*Math.max(0,enemies-1)*pointsInTalent(Talent.ONE_MAN_ARMY);
+			delay /= 1+0.11*Math.max(0,enemies-1)*pointsInTalent(Talent.ONE_MAN_ARMY);
 		}
 		return delay;
 	}

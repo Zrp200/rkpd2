@@ -239,9 +239,12 @@ public class Berserk extends Buff implements ActionIndicator.Action {
 
 	private float rageFactor(int damage) {
 		Hero hero = (Hero)target;
-		float weight = 0.1f*hero.pointsInTalent(Talent.ENRAGED_CATALYST,Talent.ONE_MAN_ARMY,Talent.ENDLESS_RAGE);
-		float factor = damage/(weight*target.HP+(1-weight)*target.HT)/3f;
-		return factor * recovered();
+		float factor = 1 + hero.pointsInTalent(Talent.BERSERKING_STAMINA)
+				// scales with hp like tenacity does
+				* (float)Math.pow(hero.HP/(float)hero.HT, 2)
+				// 4x / 7x / 10x. Even at +0 this should be absurd.
+				* 3;
+		return factor * damage / hero.HT / 3f * recovered();
 	}
 
 	float maxPower() {
