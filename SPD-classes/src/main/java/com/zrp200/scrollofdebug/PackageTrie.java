@@ -2,6 +2,10 @@ package com.zrp200.scrollofdebug;
 
 import static java.util.Collections.*;
 
+import com.badlogic.gdx.utils.reflect.ReflectionException;
+import com.watabou.noosa.Game;
+import com.watabou.utils.Reflection;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -10,9 +14,14 @@ import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import sun.net.www.protocol.file.FileURLConnection;
-
 public class PackageTrie {
+
+    /** package of core game files (for example com.shatteredpixel.shatteredpixeldungeon) **/
+    private final String ROOT;
+    public PackageTrie(String ROOT) {this.ROOT = ROOT;}
+
+    public PackageTrie() { this("com.shatteredpixel.shatteredpixeldungeon"); }  // backwards compatibility
+
     private final HashMap<String, PackageTrie> subTries = new HashMap<>();
     private final ArrayList<Class<?>> classes = new ArrayList<>();
 
@@ -47,8 +56,32 @@ public class PackageTrie {
         return null;
     }
 
-    public Class<?> findClass(String name, Class parent) {
-        return findClass(name.split("\\."), parent, 0);
+    public Class<?> findClass(String name, Class<?> parent) {
+        // first attempt to blindly match the class
+        Class<?> match = null;
+        try {
+            match = Reflection.forNameUnhandled(name);
+        } catch (ReflectionException e) {
+            if(ROOT != null && !name.startsWith(ROOT)) {
+                try {
+                    match = Reflection.forNameUnhandled(ROOT + "." + name);
+                }
+                catch (ReflectionException ignored) {/* do nothing */}
+                catch (Exception e1) {
+                    e1.addSuppressed(e);
+                    Game.reportException(e1);
+                }
+            }
+        } catch(Exception e) {Game.reportException(e);}
+        if (match != null && parent.isAssignableFrom(match)) {
+            // add it to the trie if possible
+            String pkg = match.getPackage().getName();
+            addClass(match, pkg.substring(pkg.indexOf(ROOT + ".") + 1));
+            return match;
+        }
+        // now match it from stored classes
+        match = findClass(name.split("\\."), parent, 0);
+        return match;
     }
     // known issues: duplicated classes may mask each other.
     public Class<?> findClass(String[] path, Class parent, int i) {
@@ -141,7 +174,7 @@ public class PackageTrie {
 
                     if (connection instanceof JarURLConnection) {
                         checkJarFile((JarURLConnection) connection, pckgname, root);
-                    } else if (connection instanceof FileURLConnection) {
+                    } else if (url.getProtocol().equals("file")) {
                         try {
                             checkDirectory(
                                     new File(URLDecoder.decode(url.getPath(),
