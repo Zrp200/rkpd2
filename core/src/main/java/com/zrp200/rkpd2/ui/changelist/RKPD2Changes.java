@@ -25,7 +25,9 @@ import com.watabou.noosa.Image;
 import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges.Badge;
+import com.zrp200.rkpd2.actors.buffs.Degrade;
 import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath;
+import com.zrp200.rkpd2.actors.hero.abilities.rogue.SmokeBomb;
 import com.zrp200.rkpd2.effects.BadgeBanner;
 import com.zrp200.rkpd2.items.armor.WarriorArmor;
 import com.zrp200.rkpd2.items.bags.VelvetPouch;
@@ -34,6 +36,7 @@ import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.enchantments.Explosive;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.ChangesScene;
+import com.zrp200.rkpd2.sprites.HeroSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.sprites.KingSprite;
@@ -134,12 +137,109 @@ public class RKPD2Changes {
 
     final ChangeInfo[][] changes = {
         {
-            new ChangeInfo("v1.1.0", true, TITLE_COLOR,
-                    new ChangeButton(Icons.get(TALENT), "Talents", "Assassin's Lethal Momentum has been reworked to be even more distinct from the standard Lethal Momentum. Instead of its previous mechanics, Lethal Momentum will now preserve a proportion of Preparation on kill in addition to nullifying the attack delay of the killing blow.")),
+            new ChangeInfo("v2.0.0", true, TITLE_COLOR,
+                    new ChangeButton(DUELIST, "Added duelist!"
+                            +"\n\nNotable changes from SHPD:" + list(2,
+                            "Maximum ability charges increased by 50%",
+                            "Most T1-3 talents buffed heavily. T4 talents are unchanged.",
+                            "Added an additional talent to Champion that allows equipping of thrown weapons, which can be used to extend most abilities' effective range, or a third weapon. _Monk ability is WIP._"
+                    ) + "\n\n_Rat King currently does not have access to Duelist's mechanics_"),
+                    new ChangeButton(BERSERKER,
+                            // TODO fix this
+                            "Reworked Berserker in response to 1.4.0:" +
+                                    list(2,
+                                            "Berserk is now manually activated, but it has a much lower cooldown.",
+                                            "Endless Rage and Inevitability now grant a bonus to berserk duration and cooldown when above 100% rage.") + list(
+                                            "Berserking Stamina replaced with Deathless Fury, which lets berserking automatically trigger just like before, but require exp like before" + list("(TODO) The cooldown now matches Shattered's growth instead of being greatly increased", "Rage weighting is now moved to this talent instead of being spread across several different ones.", "Berserking Stamina's perk of allowing rage gain while recovering is transfered to Deathless Fury.")
+                                    )
+                    ),
+                    new ChangeButton(Icons.get(TALENT), "Talents",
+                            "_Armsmaster's Intuition_:" + list(
+                                    "Renamed to Veteran's Intuition to match Shattered v2.0.0",
+                                    "+0 effect identifies weapons 1.75x faster, down from 2x, but identifies armors 2.5x faster, up from 2x.",
+                                    "Weapons are no longer identified on equip at +1, instead identified 2.5x faster. They are still identified on equip at +2.",
+                                    "+1 can now identify armors on pickup with a 30% chance, and the +2 chance to do so is increased to 60% from 50%.",
+                                    "Chance to identify weapons on pickup reduced to 0/30% from 0/50% at +1/+2"
+                            ) + "Note that Duelist's _Adventurer's Intuition_ is the exact reverse of this talent.",
+                            "_Assassin's Lethal Momentum_ has been reworked to be even more distinct from the standard Lethal Momentum:" + list(
+                                    "Now preserves a slightly random proportion of Preparation on kill in addition to nullifying the attack delay of the killing blow.",
+                                    "I'd also say that it no longer works on successive kills without preparation, but the mechanic was bugged to not work anyway.")
+                                    + "That said:\n_Warrior's Lethal Momentum_ now correctly works on follow-up attacks as well!"
+                    ),
+                    new ChangeButton(new ItemSprite(CROWN),
+                            "Talent and Armor Ability Changes",
+                            list("_Smoke Bomb_ range down to 10 from 12", "Smoke Bomb Shadow Step reduction now 20%/36%/50%/60% down from 24%/42%/56%/67")
+                                    + list("_Wrath_ range reduced to 6 from 10", "_Smoke and Mirrors_ charge cost reduction down to 16/30/41/50%, from 20/36/50/60%")
+                                    + list("_Heroic Energy_ unchanged at 16/30/40/50 instead of being nerfed")
+                                    + list("_Shrug it Off_ now just directly boosts the damage resistance from endure to 60/68/74/80%, instead of reducing max damage taken")
+                                    + list("_Wild Magic_ now spends 0.5 wand charges at base. Conserved magic can reduce this to 0.1")
+                                    + list("_Double Jump_ charge reduction nerfed to 16%/30%/41%/50% from 20%/36%/50%/60%/68%")
+                    )
+            ),
+            new ChangeInfo("From SHPD v2.0", false, SHPX_COLOR,
+                new ChangeButton(Icons.get(Icons.STAIRS), "Ascension",
+                        "_-_ Enemies to kill per floor reduced to 2 from 2.5. Thresholds for all amulet debuff effects adjusted to compensate\n"
+                        + "\n"
+                        + "_- Ripper demon_ spawn rate increased if player is ascending\n"
+                        + "\n"
+                        + "_- Monk & Warlock_ stat boost up to 1.5x from 1.33x\n"
+                        + "_- Elemental & Ghoul_ stat boost up to 1.67x from 1.5x\n"
+                        + "\n" +
+                        "_- Crab & Slime_ stat boost up to 8x from 6x\n"
+                        + "_- Swarm_ stat boost up to 8.5x from 6.5x\n"
+                        + "_- Gnoll & Snake_ stat boost up to 9x from 7x\n"
+                        + "_- Rat_ stat boost up to 10x from 8x"),
+                    new ChangeButton(new ItemSprite(ItemSpriteSheet.RING_TOPAZ),"Item Changes",
+                        "_Buffs_:\n"
+                                + list("_Pickaxe_ can now benefit from upgrades enchantments and augmentation, if you feel like using it for fun.")
+                                + list("Ring of Energy_ now also applies a recharging boost to hero armor abilities. All the boosts it gives are now standardized to +15%.", "_Ring of Arcana_ enchantment boost up to +17.5% per level, from +15%")
+                                + list("_Glyph of Repulsion_ now only knocks back enemies who are adjacent to the hero. This should make it slightly better versus ranged enemies.", "_Glyph of Flow_ now grants +50% movespeed in water per level, up from +25%")
+                                + list("_Horn of Plenty_ now gains 2 levels from being fed a pasty, up from 1.5", "_Horn of Plenty_ now gains 4 levels from being fed a meat pie, up from 3"),
+                            "_Major Nerfs_:"
+                                    + "\n"
+                                    + list("_Round Shield_ blocking per level reduced to 0-1 from 0-2, base damage increased to 3-12 from 3-10", "_Greatshield_ blocking per level reduced to 0-2 from 0-3, base damage increased to 5-18 from 5-15")
+                                    + "\n"
+                                    + "_Wand of Corruption:_" + list("Corrupted enemies now die over 100 turns, down from 200", "Doomed bosses now take +67% damage, down from +100%",  "Battlemage corruption on-hit base proc rate reduced to 1/6 from 1/4")
+                                    + "\n"
+                                    + "_Wand of Regrowth:_" + list("Base charge limit increased to 20 from 8","Charge limit scaling substantially reduced at wand levels 4 to 9.")
+                                    + "\n"
+                                    + "_Chalice of Blood:_" + list("Prick damage increased by 5 at all levels","Now grants 1.15x-5x healing, down from 0x-10x")
+                                    + list("_Ethereal chains_ charge from gaining exp reduced by 40%"),
+                            "_Minor Nerfs_:"
+                                    + "\n"
+                                    + list(
+                                    "_Ring of Furor_ attack speed boost per level down to 9.05% from 10.5%", "_Ring of Evasion_ dodge boost per level down to 12.5% from 15%", "_Blocking_ enchantment now grants 2+item level shielding, down from max HP/10", "_Timekeeper's Hourglass_ sand bag cost up to 30 from 20", "_Alchemist's Toolkit_ now requires 6 energy per level, up from 5", "_Wand of Fireblast_ base damage reduced to 1-2 from 1-6 when spending 1 charge, and 2-8 from 2-12 when spending 2 charges. This is to offset the relatively high amount of DOT the wand deals at low levels.")),
+                    misc(
+                            "_Highlights:_" + list("The game now remembers if the player removes the waterskin from their quickslot right after starting a run", "The damage warning vfx now always interrupts the hero, regardless of any other factors", "The deadly misstep badge can now also be unlocked with disintegration traps", "Added metamorphosis effects to the two remaining talents that previously couldn't be gained by metamorphosis", "Desktop users can now toggle fullscreen with right-alt + enter", "Added a setting to enable/disable playing music in background on desktop", "Added a 5th games in progress slot for the Duelist","The changes screen now supports more text for a single entry. On mobile UI the changes window can now have multiple tabs, on full UI the changes pane on the right is now scrollable."),
+                            "_Effects:_" + list("Backup barrier now triggers before wand zaps fully resolve", "The chasm warning screen now also appears when levitation is about to end.", "Levitation now prevents damage from floor electricity during the DM-300 fight"),
+                            "_Hero, Allies, & Enemies:_" + list("The hero can now also self-trample plants, in addition to grass", "Ripper demons will now try to leap even if their destination is blocked by terrain", "Red Sentry attacks can now be dodged or blocked, but are very accurate.", "Knockback effects now round up after being halved vs. bosses"),
+                            "_Levelgen:" + list("Adjusted the layout of sacrifice rooms to provide some cover from ranged enemies", "Secret rooms now never affect the generation of items in other rooms", "Items and Enemies can no longer spawn on the Wandmaker quest ritual marker."),
+                            "_Items:_" + list("Several artifacts now cancel invisibility when used", "Items no longer spawn on pitfall traps", "Ritual candles now light if they are placed correctly", "Item selectors now always open the main backpack if their preferred bag isn't present", "Quickslot contents are now automatically swapped if a newly equipped item that is not quickslotted replaces an item that was quickslotted. This should make weapon swapping gameplay smoother."),
+                            "_Misc:_" + list("Updated the icons for several talents", "Healing no longer interrupts resting when HP is already full", "Updated various code libraries", "Attacking an enemy now properly sets them as the auto-targeting target in all cases")),
+                    bugFixes(
+                            "_Highlights:_" + list("Various rare crash and freeze errors", "Softlocks caused by the warden using fadeleaf just as they start a boss fight", "Particle effects failing to appear in a bunch of rare cases", "AOE from gladiator's crush move invalidating Dwarf King's 'no weapons' badge", "Magic resistance being extremely effective against Grim traps at low HP", "Allies spawned by some armor abilities getting boosted stats during ascension", "One upgrade being lost when transferring class armor with a warrior's seal attached", "Transmuting a dried rose deleting any items held by the ghost", "Rare cases of hero stacking onto enemies when trying to swap positions with an ally", "Directable allies being easily distracted after being told to move", "Several on-kill effects incorrectly triggering when ghouls get downed"),
+                            "_Effects:_" + list("Lethal momentum not triggering on kills made via enchantment",
+                                    "Teleportation effects not being blocked by magic immunity",
+                                    "Barkskin not reducing damage from things like bombs or the chalice of blood",
+                                    "Some armor abilities not checking if targets are out of vision",
+                                    "Magical fire not clearing regular fire if they are on the same tile",
+                                    "Gladiator being able to riposte enemies who charmed him",
+                                    "Iron Stomach talent cancelling fall damage in rare cases",
+                                    "Time freeze causing various odd behaviour when triggering plants and traps",
+                                    "Rare cases of earthroot armor and hold fast working after movement",
+                                    "Volley ability not triggering lethal momentum"),
+                            "_Items:_" + list("Darts being lost in rare cases when tipped darts have bonus durability",  "Alchemist's Toolkit not triggering the enhanced rings talent", "Wand of fireblast rarely shooting great distances", "Wand of lightning rarely taking credit for hero deaths not caused by it", "Horn of plenty benefiting from artifact recharging much more than intended", "Shurikens still getting an instant attack after waiting", "Transmutation not turning artifacts into rings if all artifacts have been spawned", "Magic immunity not blocking use of shield battery, cursed artifact effects, or wand recharging", "Cursed items still blocking equipment slots when lost via ankh revive", "Antimagic not reducing damage from enchantments", "Rare cases where cloak of shadows wouldn't spend a charge on activation", "Disarming traps rarely teleporting weapons into chests or graves", "Blacksmith failing to take his pickaxe back in rare cases", "Various rare errors with blacksmith reforging and resin boosted wands"),
+                            "_Allies & Enemies:_" + list("DM-300 not using abilities in its first phase in specific situations", "DM-201s rarely lobbing grenades when they shouldn't", "DM-300's rockfall attack very rarely having no delay", "Tengu rarely throwing bombs into walls", "Soiled fist being able to see through shrouding fog", "Rare cases where the Imp's shop could appear without completing his quest", "Gladiator not gaining combo from attacking hiding mimics", "Demon spawners rapidly spawning ripper demons in very specific cases", "Fly swarms often not splitting during ascension challenge", "Rare cases where enemies couldn't be surprise attacked when in combat with allies", "Various rare errors with shock elemental electricity damage", "Evil eyes only resisting some disintegration effects", "Several rare issues with spinner web shooting", "Very rare cases where surprise attacks on mimics would fail", "Very rare pathfinding bugs with flying enemies"),
+                            "_UI/VFX:_" + list("Various minor audiovisual errors", "Various minor textual errors", "Items rarely disappearing when hotkeys are used to close the inventory", "Number display errors when device language is set to Arabic", "'i' being incorrectly uppercased to 'I' in Turkish", "Auras from champion enemies being visible in the fog of war for one frame", "Very rare cases where Goo attack particles behaved incorrectly", "VFX rarely not appearing on characters as they are spawned by multiplicity", "Damage warn vfx not accounting for hunger ignoring shielding", "Cases where very fast heroes would cause landmarks to not be recorded", "No error message being given when the mage uses elemental blast without a staff"),
+                            "_v2.0.1:_" + list("Various UI bugs caused by pressing multiple buttons simultaneously", "Noisemakers being visually defusable after trigger but not exploding", "Noisemakers being collectable in some cases after triggering","Damage/Stun from blastwave knockback applying to downed ghouls","Even more cases of particle effects sometimes failing to appear", "Projecting champions with ranged attacks refusing to melee from a distance in some cases","Life Link sometimes persisting for longer than intended during Dwarf King fight", "Various rare UI bugs")
+                    )
+            ),
             new ChangeInfo("From SHPD v1.4", false, SHPX_COLOR,
                     new ChangeButton(new ItemSprite(ARTIFACT_SANDALS), "Equipment",
                         "_Footwear of Nature_:"+list("Footwear of Nature has been redesigned to to use the effect of the most recently fed seed", "Amount of extra seeds and dew reduced", "One additional seed is required per level")
-                        +"\n_Enchantments and Curses_:" + list("Blocking has been redesigned to grant a large amount of shield with a small proc chance, as opposed to always giving a small amount of shield", "Annoying curse buffed, now has additional lines")
+                        +"\n_Enchantments and Curses_:" + list(
+                                "Blocking has been redesigned to grant a large amount of shield with a small proc chance, as opposed to always giving a small amount of shield",
+                                "Annoying curse buffed, now has additional lines")
                         +"\n_Ring of Wealth_:" + list("Now gives a rare drop every 0-20 kills, up from 0-25", "Now gives an equipment drop every 5-10 rare drops, down from every 4-8", "Equipment drops are now guaranteed to be at least level 1/2/3/4/5/6 at ring level 1/3/5/7/9/11, up from 1/3/6/10/15/21", "Level for equipment drops is now based on the most upgraded equipped wealth ring, and a second one can only boost the level by another +1 at most.")
                         + "\n_Misc_:"+list("Wand of Transfusion damage vs undead scaling doubled (1-2, up from 0.5-1)","Telekinetic grab now grabs all items stuck at a location or stuck to an enemy, rather than just the first one","Scroll of Antimagic now suppresses the positive effects of rings and artifacts while it is applied to the hero")
                     ),
@@ -153,12 +253,18 @@ public class RKPD2Changes {
                             "_Levelgen_:" + list("Items and enemies can no longer spawn in aquarium room water", "Improved room merging logic in a few specific situations"),
                             "_Controls_:" + list("Added a copy and paste button to text input windows", "Adjusted default controller bindings slightly", "The 'switch enemy' keybind also switches tabs on tabbed windows","On desktop, the game now attempts to keep mouse and controller pointer actions in sync", "Added a setting to adjust camera follow intensity", "The controller pointer can now pan the game camera"/*, "Heroes can now be renamed individually"*/)
                     ),
+                    // fixme for whatever reason this doesn't work with the tabbed form. The breaking part is the items section. I've instead used the old scrolling style here but it could pop up elsewhere.
                     bugFixes(
-                            "_Highlights:_" + list("Victory and Champion badges not being awarded in some cases", "Various rare crash and hang bugs", "Various minor visual/textual errors"),
-                            "_Allies & Enemies:_" + list("Characters rarely managing to enter eternal fire", "Summons from guardian traps counting as regular statues in some cases", "Rare cases where ranged allies would refuse to target nearby enemies", "Various rare cases where characters might stack on each other", "Albino Rats causing bleed when hitting for 0 damage", "Necromancers being able to summon through crystal doors", "Giant necromancers summoning skeletons into doorways", "Goo immediately using pump up attack if previous pump up attack was interrupted by sleep"),
-                            "_Items:_" + list("Honeypots not reacting correctly to being teleported", "Rare cases where lost inventory and items on stairs could softlock the game", "Hero armor transferring rarely deleting the warrior's broken seal", "Scrolls of Mirror Image not identifying in rare cases", "Various incorrect interactions between kinetic/viscosity and damage mitigating effects", "Wand of Fireblast sometimes not igniting adjacent items or barricades", "Ring of Furor not affecting Sniper specials", "Cursed rings of force still heavily buffing melee attacks", "Armband not breaking invisibility", "Various quirks with charge spending on timekeeper's hourglass", "Stones of Aggression working more effectively than intended", "Chalice of Blood benefiting from recharging when the hero is starving", "Cases where explosive curse would create explosions at the wrong location", "Cases where spellbook could generate scrolls of lullaby", "Heavy boomerangs getting an accuracy penalty when returning", "Rare consistency errors in potion of might buff description", "Death to aqua blast counting as death to geyser trap", "Reading spellbook not spending a turn if the scroll was cancelled", "Screen orientation changes cancelling scroll of enchantment", "Magical infusion incorrectly clearing curses on wands and rings", "Multiplicity glyph rarely duplicating NPCs", "Rare cases where potion of healing-related talents wouldn't trigger", "Cursed horn of plenty affecting non-food items", "Being able to self-target with cursed wands in rare cases", "Some thrown weapons triggering traps as Tengu jumps", "Magic resistance not applying to some cursed wand effects"),
-                            "_Effects:_" + list("Invisibility effects not working when applied to enemies", "Rare cases where giant enemies couldn't attack", "Ratmogrify incorrectly clearing enemy champion buffs", "Exploits where gladiator could build combo on ally characters", "Cases where piranhas could live for a turn on land", "Errors with wild magic and flurry with regard to knockback effects", "Magical sight not making the hero immune to blindness", "Knockback effects paralyzing dead characters", "Caves boss area not displacing all items on the tile that caves in", "Recharging effects sometimes getting an extra action on game load", "Exploits during ascension challenge that let players still use shops", "Elastic and battlemage blast wave on-hit conflicting with each other"),
-                            "_Misc:_" + list("Dailies using seeds that are also user-enterable", "Confusing text when a weapon or armor is partly uncursed", "'No Weapons in His Presence' badge not stating that the ring of force counts as a weapon", "Various cases where the friendly fire badge was not being awarded", "Controller axis mapping issues on Android", "Various rare fog of war errors when the hero is knocked a high distance", "Rare cases where items would not correctly appear in the rankings scene", "Prizes from sacrifice rooms not always being the same with the same dungeon seed", "Rare crashes with the radial inventory selector", "Boss health bar not appearing in rare cases", "Buff icons sometimes going outside of character info windows", "Death by necromancer summoning damage not producing a record in rankings", "Some users seeing rankings dates in local formats, instead of international")))
+                            "_Highlights:_" + list("Victory and Champion badges not being awarded in some cases", "Various rare crash and hang bugs", "Various minor visual/textual errors")
+                                    +"\n"+
+                            "_Allies & Enemies:_" + list("Characters rarely managing to enter eternal fire", "Summons from guardian traps counting as regular statues in some cases", "Rare cases where ranged allies would refuse to target nearby enemies", "Various rare cases where characters might stack on each other", "Albino Rats causing bleed when hitting for 0 damage", "Necromancers being able to summon through crystal doors", "Giant necromancers summoning skeletons into doorways", "Goo immediately using pump up attack if previous pump up attack was interrupted by sleep")
+                                    + "\n" +
+                            "_Items:_" + list("Honeypots not reacting correctly to being teleported", "Rare cases where lost inventory and items on stairs could softlock the game", "Hero armor transferring rarely deleting the warrior's broken seal", "Scrolls of Mirror Image not identifying in rare cases", "Various incorrect interactions between kinetic/viscosity and damage mitigating effects", "Wand of Fireblast sometimes not igniting adjacent items or barricades", "Ring of Furor not affecting Sniper specials", "Cursed rings of force still heavily buffing melee attacks", "Armband not breaking invisibility", "Various quirks with charge spending on timekeeper's hourglass", "Stones of Aggression working more effectively than intended", "Chalice of Blood benefiting from recharging when the hero is starving", "Cases where explosive curse would create explosions at the wrong location", "Cases where spellbook could generate scrolls of lullaby", "Heavy boomerangs getting an accuracy penalty when returning", "Rare consistency errors in potion of might buff description", "Death to aqua blast counting as death to geyser trap", "Reading spellbook not spending a turn if the scroll was cancelled", "Screen orientation changes cancelling scroll of enchantment", "Magical infusion incorrectly clearing curses on wands and rings", "Multiplicity glyph rarely duplicating NPCs", "Rare cases where potion of healing-related talents wouldn't trigger", "Cursed horn of plenty affecting non-food items", "Being able to self-target with cursed wands in rare cases", "Some thrown weapons triggering traps as Tengu jumps", "Magic resistance not applying to some cursed wand effects")
+                                    +"\n"+
+                            "_Effects:_" + list("Invisibility effects not working when applied to enemies", "Rare cases where giant enemies couldn't attack", "Ratmogrify incorrectly clearing enemy champion buffs", "Exploits where gladiator could build combo on ally characters", "Cases where piranhas could live for a turn on land", "Errors with wild magic and flurry with regard to knockback effects", "Magical sight not making the hero immune to blindness", "Knockback effects paralyzing dead characters", "Caves boss area not displacing all items on the tile that caves in", "Recharging effects sometimes getting an extra action on game load", "Exploits during ascension challenge that let players still use shops", "Elastic and battlemage blast wave on-hit conflicting with each other")
+                                    +"\n"+
+                            "_Misc:_" + list("Dailies using seeds that are also user-enterable", "Confusing text when a weapon or armor is partly uncursed", "'No Weapons in His Presence' badge not stating that the ring of force counts as a weapon", "Various cases where the friendly fire badge was not being awarded", "Controller axis mapping issues on Android", "Various rare fog of war errors when the hero is knocked a high distance", "Rare cases where items would not correctly appear in the rankings scene", "Prizes from sacrifice rooms not always being the same with the same dungeon seed", "Rare crashes with the radial inventory selector", "Boss health bar not appearing in rare cases", "Buff icons sometimes going outside of character info windows", "Death by necromancer summoning damage not producing a record in rankings", "Some users seeing rankings dates in local formats, instead of international")
+                    ))
         },
         { // v1.0.0
             new ChangeInfo("v1.0.0",true,TITLE_COLOR,
