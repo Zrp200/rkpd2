@@ -19,7 +19,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.shatteredpixel.shatteredpixeldungeon.services.news;
+package com.zrp200.rkpd2.services.news;
 
 import com.watabou.noosa.Game;
 

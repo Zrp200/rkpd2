@@ -14,7 +14,7 @@ allprojects {
 
     ext {
         appName = 'Shattered Pixel Dungeon'
-        appPackageName = 'com.shatteredpixel.shatteredpixeldungeon'
+        appPackageName = 'com.zrp200.rkpd2'
 
         appVersionCode = 768
         appVersionName = '2.3.2'

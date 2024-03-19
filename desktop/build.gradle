@@ -5,7 +5,7 @@ plugins {
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 sourceCompatibility = targetCompatibility = appJavaCompatibility
 
-ext.appMainClass = "com.shatteredpixel.shatteredpixeldungeon.desktop.DesktopLauncher"
+ext.appMainClass = "com.zrp200.rkpd2.desktop.DesktopLauncher"
 processResources {
     from new File(project(':core').projectDir, "/src/main/assets")
     from new File(project(':desktop').projectDir,"/src/main/assets")
@@ -95,7 +95,7 @@ runtime {
                 imageOptions = ["--icon", file("./src/main/assets/icons/mac.icns"),
                                 "--java-options", "-XstartOnFirstThread",
                                 "--java-options", "-XX:+IgnoreUnrecognizedVMOptions",
-                                //append .apple because com.shatteredpixel.shatteredpixeldungeon was taken =(
+                                //append .apple because com.zrp200.rkpd2 was taken =(
                                 "--mac-package-identifier", appPackageName + ".apple",
                                 "--mac-package-name", "ShattererdPD"]
             }

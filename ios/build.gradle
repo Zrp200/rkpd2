@@ -17,7 +17,7 @@ task updateRoboVMProps(){
     def props = new Properties()
     
     props.setProperty ('appName', appName)
-    //append .apple because com.shatteredpixel.shatteredpixeldungeon was taken =(
+    //append .apple because com.zrp200.rkpd2 was taken =(
     props.setProperty ('appPackageName', appPackageName + ".apple")
 
     props.setProperty ('appVersionCode', appVersionCode.toString())
