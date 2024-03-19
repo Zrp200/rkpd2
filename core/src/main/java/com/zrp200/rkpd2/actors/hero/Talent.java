@@ -235,7 +235,7 @@ public enum Talent {
 	// placeholders for if/when duelist is implemented into rk
 	RK_CHAMPION(241,3), RK_MONK(242,3),
 	// Wrath2
-	AFTERSHOCK(220,4), RAT_BLAST(221,4), SMOKE_AND_MIRRORS(222,4), SEA_OF_BLADES(223,4);
+	AFTERSHOCK(RK_MONK.icon+10,4), RAT_BLAST(AFTERSHOCK.icon+1,4), SMOKE_AND_MIRRORS(AFTERSHOCK.icon+2,4), SEA_OF_BLADES(AFTERSHOCK.icon+3,4);
 
 	protected String[] aliases = new String[0];
 
