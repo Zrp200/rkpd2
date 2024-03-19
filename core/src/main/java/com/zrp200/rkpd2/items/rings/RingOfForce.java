@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -112,11 +112,16 @@ public class RingOfForce extends Ring {
 	@Override
 	public String statsInfo() {
 		float tier = tier(Dungeon.hero.STR());
-		int level = level();
-		if(!isIdentified()) level(0);
-		String res = Messages.get(this, isIdentified()?"stats":"typical_stats", min(soloBuffedBonus(), tier), max(soloBuffedBonus(), tier), soloBuffedBonus());
-		level(level);
-		return res;
+		int level = isIdentified() ? soloBuffedBonus() : 1;
+		String info = Messages.get(this, isIdentified()?"stats":"typical_stats", min(level, tier), max(level, tier), level);
+		if (isIdentified()) {
+			if (isEquipped(Dungeon.hero) && soloBuffedBonus() != combinedBuffedBonus(Dungeon.hero)){
+				level = combinedBuffedBonus(Dungeon.hero);
+				info += "\n\n" + Messages.get(this, "combined_stats", min(level, tier), max(level, tier), level);
+			}
+		}
+
+		return info;
 	}
 
 	public class Force extends RingBuff {
@@ -245,7 +250,7 @@ public class RingOfForce extends Ring {
 
 	public static class BrawlersStance extends Buff {
 
-		public static float HIT_CHARGE_USE = 0.25f;
+		public static float HIT_CHARGE_USE = 1/6f;
 
 		{
 			announced = true;

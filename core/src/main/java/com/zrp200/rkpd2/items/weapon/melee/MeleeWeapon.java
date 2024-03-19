@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,14 +30,16 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.ArtifactRecharge;
 import com.zrp200.rkpd2.actors.buffs.Barrier;
 import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.Haste;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
-import com.zrp200.rkpd2.actors.buffs.LockedFloor;
 import com.zrp200.rkpd2.actors.buffs.MonkEnergy;
 import com.zrp200.rkpd2.actors.buffs.Recharging;
+import com.zrp200.rkpd2.actors.buffs.Regeneration;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.effects.FloatingText;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.KindOfWeapon;
 import com.zrp200.rkpd2.items.weapon.Weapon;
@@ -45,13 +47,16 @@ import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.scenes.PixelScene;
+import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
-import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.ActionIndicator;
 import com.zrp200.rkpd2.ui.AttackIndicator;
+import com.zrp200.rkpd2.ui.HeroIcon;
 import com.zrp200.rkpd2.ui.QuickSlotButton;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.Visual;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -74,7 +79,7 @@ public class MeleeWeapon extends Weapon {
 	protected boolean hasAbility() {
 		return hero != null && hero.heroClass.is(HeroClass.DUELIST);
 	} @Override public String defaultAction() {
-		if (hasAbility()){
+		if (hasAbility() || hero.hasTalent(Talent.SWIFT_EQUIP)){
 			return AC_ABILITY;
 		} else {
 			return super.defaultAction();
@@ -104,19 +109,20 @@ public class MeleeWeapon extends Weapon {
 		super.execute(hero, action);
 
 		if (action.equals(AC_ABILITY)){
+			usesTargeting = false;
 			if (!isEquipped(hero)) {
 				if (hero.hasTalent(Talent.SWIFT_EQUIP)){
 					if (hero.buff(Talent.SwiftEquipCooldown.class) == null
 						|| hero.buff(Talent.SwiftEquipCooldown.class).hasSecondUse()){
 						execute(hero, AC_EQUIP);
-					} else {
+					} else if (hero.heroClass == HeroClass.DUELIST) {
 						GLog.w(Messages.get(this, "ability_need_equip"));
-						usesTargeting = false;
 					}
-				} else {
+				} else if (hero.heroClass == HeroClass.DUELIST) {
 					GLog.w(Messages.get(this, "ability_need_equip"));
-					usesTargeting = false;
 				}
+			} else if (hero.heroClass != HeroClass.DUELIST){
+				//do nothing
 			} else if (STRReq() > hero.STR()){
 				GLog.w(Messages.get(this, "ability_low_str"));
 				usesTargeting = false;
@@ -124,7 +130,7 @@ public class MeleeWeapon extends Weapon {
 			} else {
 				int slot = hero.belongings.findWeapon(this);
 				Charger charger = Buff.affect(hero, Charger.class);
-				if (slot != -1 && charger.charges[slot] < abilityChargeUse(hero)) {
+				if (slot != -1 && charger.charges[slot] < abilityChargeUse(hero, null)) {
 					GLog.w(Messages.get(this, "ability_no_charge"));
 					usesTargeting = false;
 				} else {
@@ -157,7 +163,7 @@ public class MeleeWeapon extends Weapon {
 	@Override
 	public boolean doEquip(Hero hero, int slot) {
 		if (super.doEquip(hero, slot)){
-			ActionIndicator.updateIcon();
+			ActionIndicator.refresh();
 			return true;
 		}
 		return false;
@@ -166,7 +172,7 @@ public class MeleeWeapon extends Weapon {
 	@Override
 	public boolean doUnequip(Hero hero, boolean collect, boolean single) {
 		if (super.doUnequip(hero, collect, single)){
-			ActionIndicator.updateIcon();
+			ActionIndicator.refresh();
 			return true;
 		}
 		return false;
@@ -225,10 +231,10 @@ public class MeleeWeapon extends Weapon {
 				MissileWeapon thrown = SafeCast.cast(hero.belongings.thirdWep(), MissileWeapon.class);
 				if (thrown != null) {
 					// check charges of third slot, it should use the same amount of charges as the main slot
-					if (Buff.affect(hero, Charger.class).charges[2] >= wep.abilityChargeUse(hero)
+					if (Buff.affect(hero, Charger.class).charges[2] >= wep.abilityChargeUse(hero, enemy)
 							&& enemy.pos == QuickSlotButton.autoAim(enemy, hero.belongings.thirdWep)) {
 						// fake throw = cool
-						beforeAbilityUsed(hero);
+						beforeAbilityUsed(hero, enemy);
 						// see Item.cast, Hero.shoot
 						thrown.cast(hero, enemy.pos);
 						return true;
@@ -242,7 +248,7 @@ public class MeleeWeapon extends Weapon {
 
 
 			hero.sprite.attack(enemy.pos, () -> {
-				beforeAbilityUsed(hero);
+				beforeAbilityUsed(hero, enemy);
 				AttackIndicator.target(enemy);
 				boolean hit = hero.attack(enemy, dmgMulti(enemy), 0, accMulti());
 				if (hit) {
@@ -274,7 +280,7 @@ public class MeleeWeapon extends Weapon {
 			playSFX();
 			if (!enemy.isAlive()) {
 				onKill(hero);
-				abilityWeapon.onAbilityKill(hero);
+				abilityWeapon.onAbilityKill(hero, enemy);
 			} else proc(hero, enemy);
 		}
 
@@ -292,9 +298,9 @@ public class MeleeWeapon extends Weapon {
 			return hero.canAttack(enemy) && !hero.isCharmedBy(enemy);
 		}
 
-		protected void beforeAbilityUsed(Hero hero) {
+		protected void beforeAbilityUsed(Hero hero, Char target) {
 			activeAbility = this;
-			abilityWeapon.beforeAbilityUsed(hero);
+			abilityWeapon.beforeAbilityUsed(hero, target);
 		}
 
 		protected void playSFX() {
@@ -308,22 +314,23 @@ public class MeleeWeapon extends Weapon {
 		public void afterHit(Char enemy, boolean hit) {/* nothing by default */}
 	}
 
-	protected void beforeAbilityUsed(Hero hero ){
+	protected void beforeAbilityUsed(Hero hero, Char target){
 		hero.belongings.abilityWeapon = this;
 		Charger charger = Buff.affect(hero, Charger.class);
 		charger.gainCharge(
-				-abilityChargeUse(hero),
+				-abilityChargeUse(hero,target),
 				hero.belongings.findWeapon(this)
 		);
 		if (activeAbility != null) {
 			// use charge from thrown weapon as well
-			charger.gainCharge(-abilityChargeUse(hero), 2);
+			charger.gainCharge(-abilityChargeUse(hero,target), 2);
 		}
 
 		if (hero.heroClass == HeroClass.DUELIST
 				&& hero.hasTalent(Talent.AGGRESSIVE_BARRIER)
 				&& (hero.HP / (float)hero.HT) < 0.20f*(1+hero.pointsInTalent(Talent.AGGRESSIVE_BARRIER))){
 			Buff.affect(hero, Barrier.class).setShield(3);
+			hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, "3", FloatingText.SHIELDING);
 		}
 
 		if (hero.buff(Talent.CombinedLethalityAbilityTracker.class) != null
@@ -337,6 +344,9 @@ public class MeleeWeapon extends Weapon {
 
 	protected void afterAbilityUsed( Hero hero ){
 		hero.belongings.abilityWeapon = null;
+		if (hero.hasTalent(Talent.PRECISE_ASSAULT)){
+			Buff.prolong(hero, Talent.PreciseAssaultTracker.class, hero.cooldown()+4f);
+		}
 		if (hero.hasTalent(Talent.COMBINED_LETHALITY)) {
 			Talent.CombinedLethalityAbilityTracker tracker = hero.buff(Talent.CombinedLethalityAbilityTracker.class);
 			if (tracker == null || tracker.weapon == this || tracker.weapon == null){
@@ -360,19 +370,18 @@ public class MeleeWeapon extends Weapon {
 		}
 	}
 
-	public void onAbilityKill( Hero hero ){
-		Talent.LethalHasteCooldown.applyLethalHaste(hero, true);
+	public static void onAbilityKill( Hero hero, Char killed ){
+		if(killed.alignment == Char.Alignment.ENEMY) Talent.LethalHasteCooldown.applyLethalHaste(hero, true);
 	}
 
-	public float abilityChargeUse( Hero hero ){
-		float chargeUse = 1f;
+	protected int baseChargeUse(Hero hero, Char target){
+		return 1; //abilities use 1 charge by default
+	}
+
+	public final float abilityChargeUse(Hero hero, Char target){
+		float chargeUse = baseChargeUse(hero, target);
 		if (hero.buff(Talent.CounterAbilityTacker.class) != null){
 			chargeUse = Math.max(0, chargeUse-0.5f*hero.pointsInTalent(Talent.COUNTER_ABILITY));
-		}
-		if (hero.hasTalent(Talent.LIGHTWEIGHT_CHARGE) && tier <= 3){
-			// T1/2/3 get 25/20/15% charge use reduction at +3
-			float chargeUseReduction = (0.30f-.05f*tier) * (hero.pointsInTalent(Talent.LIGHTWEIGHT_CHARGE)/3f);
-			chargeUse *= 1f - chargeUseReduction;
 		}
 		return chargeUse;
 	}
@@ -391,6 +400,29 @@ public class MeleeWeapon extends Weapon {
 
 	public int STRReq(int lvl){
 		return STRReq(tier, lvl);
+	}
+
+	@Override
+	public float accuracyFactor(Char owner, Char target) {
+		float ACC = super.accuracyFactor(owner, target);
+
+		if (owner instanceof Hero
+				&& ((Hero) owner).hasTalent(Talent.PRECISE_ASSAULT)
+				//does not trigger on ability attacks
+				&& ((Hero) owner).belongings.abilityWeapon != this) {
+			if (((Hero) owner).heroClass != HeroClass.DUELIST) {
+				//persistent +10%/20%/30% ACC for other heroes
+				ACC *= 1f + 0.1f * ((Hero) owner).pointsInTalent(Talent.PRECISE_ASSAULT);
+			} else if (this instanceof Flail && owner.buff(Flail.SpinAbilityTracker.class) != null){
+				//do nothing, this is not a regular attack so don't consume preciase assault
+			} else if (owner.buff(Talent.PreciseAssaultTracker.class) != null) {
+				// 2x/4x/8x ACC for duelist if she just used a weapon ability
+				ACC *= Math.pow(2, ((Hero) owner).pointsInTalent(Talent.PRECISE_ASSAULT));
+				owner.buff(Talent.PreciseAssaultTracker.class).detach();
+			}
+		}
+
+		return ACC;
 	}
 
 	@Override
@@ -441,7 +473,10 @@ public class MeleeWeapon extends Weapon {
 
 		if (enchantment != null && (cursedKnown || !enchantment.curse())){
 			info += "\n\n" + Messages.capitalize(Messages.get(Weapon.class, "enchanted", enchantment.name()));
+			if (enchantHardened) info += " " + Messages.get(Weapon.class, "enchant_hardened");
 			info += " " + enchantment.desc();
+		} else if (enchantHardened){
+			info += "\n\n" + Messages.get(Weapon.class, "hardened_no_enchant");
 		}
 
 		if (cursed && isEquipped( hero )) {
@@ -504,9 +539,8 @@ public class MeleeWeapon extends Weapon {
 
 		@Override
 		public boolean act() {
-			LockedFloor lock = target.buff(LockedFloor.class);
-			if (lock == null || lock.regenOn()) for (int i = 0; i < nSlots(); i++) {
-				gainCharge( chargeMultiplier(i)/(40f-(chargeCap(i)-charges[i])), i ); // 40 to 30 turns per charge
+			if (Regeneration.regenOn()) for (int i = 0; i < nSlots(); i++) {
+				gainCharge(chargeMultiplier(i) / (40f - (chargeCap(i) - charges[i])), i); // 40 to 30 turns per charge
 				// secondary: 80 to 60 turns per charge without talent
 				// up to 53.333 to 40 turns per charge at max talent level
 			}
@@ -584,12 +618,38 @@ public class MeleeWeapon extends Weapon {
 		}
 
 		@Override
-		public Image actionIcon() {
+		public int actionIcon() {
+			return HeroIcon.WEAPON_SWAP;
+		}
+
+		@Override
+		public Visual primaryVisual() {
+			Image ico;
 			if (hero.belongings.weapon == null){
-				return new ItemSprite(ItemSpriteSheet.WEAPON_HOLDER);
+				ico = new HeroIcon(this);
  			} else {
-				return new ItemSprite(hero.belongings.weapon);
+				ico = new ItemSprite(Dungeon.hero.belongings.weapon);
 			}
+			ico.width += 4; //shift slightly to the left to separate from smaller icon
+			return ico;
+		}
+
+		@Override
+		public Visual secondaryVisual() {
+			Image ico;
+			if (Dungeon.hero.belongings.secondWep == null){
+				ico = new HeroIcon(this);
+			} else {
+				ico = new ItemSprite(hero.belongings.secondWep);
+			}
+			ico.scale.set(PixelScene.align(0.51f));
+			ico.brightness(0.6f);
+			return ico;
+		}
+
+		@Override
+		public int indicatorColor() {
+			return 0x5500BB;
 		}
 
 		@Override
@@ -619,7 +679,6 @@ public class MeleeWeapon extends Weapon {
 			Sample.INSTANCE.play(Assets.Sounds.UNLOCK);
 
 			ActionIndicator.setAction(this);
-			ActionIndicator.updateIcon();
 			Item.updateQuickslot();
 			AttackIndicator.updateState();
 		}

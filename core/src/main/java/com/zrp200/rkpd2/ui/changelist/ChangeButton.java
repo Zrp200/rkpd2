@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@ package com.zrp200.rkpd2.ui.changelist;
 import static com.zrp200.rkpd2.sprites.HeroSprite.avatar;
 
 import com.watabou.utils.Reflection;
-import com.zrp200.rkpd2.ShatteredPixelDungeon;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
@@ -35,33 +34,33 @@ import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.ChangesScene;
 import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.sprites.ItemSprite;
-import com.watabou.noosa.Image;
-import com.watabou.noosa.ui.Component;
 import com.zrp200.rkpd2.ui.BuffIcon;
 import com.zrp200.rkpd2.ui.HeroIcon;
 import com.zrp200.rkpd2.ui.TalentIcon;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.ui.Component;
 
 //not actually a button, but functions as one.
 public class ChangeButton extends Component {
-	
+
 	protected Image icon;
 	protected String title;
 	protected String[] messages;
-	
+
 	public ChangeButton( Image icon, String title, String... messages){
 		super();
-		
+
 		this.icon = icon;
 		add(this.icon);
-		
+
 		this.title = Messages.titleCase(title);
 
 		for (int i=0; i < messages.length; i++) messages[i] = messages[i].trim();
 		this.messages = messages;
-		
+
 		layout();
 	}
-	
+
 	public ChangeButton(Item item, String message ){
 		this( new ItemSprite(item), item.name(), message);
 	}
@@ -91,17 +90,17 @@ public class ChangeButton extends Component {
 	public ChangeButton(Buff buff, String message) {
 		this( new Image( new BuffIcon(buff,true) ), buff.toString(), message);
 	}
-	
+
 	protected void onClick() {
-        Image image = Reflection.newInstance(icon.getClass());
-        image.copy(icon);
+		Image image = Reflection.newInstance(icon.getClass());
+		image.copy(icon);
 		ChangesScene.showChangeInfo(image, title, messages);
 	}
 
 	@Override
 	protected void layout() {
 		super.layout();
-		
+
 		icon.x = x + (width - icon.width()) / 2f;
 		icon.y = y + (height - icon.height()) / 2f;
 		PixelScene.align(icon);

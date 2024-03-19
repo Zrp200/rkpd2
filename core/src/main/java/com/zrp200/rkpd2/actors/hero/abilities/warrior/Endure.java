@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,10 @@ public class Endure extends ArmorAbility {
 	@Override
 	protected void activate(ClassArmor armor, Hero hero, Integer target) {
 
-		Buff.prolong(hero, EndureTracker.class, 13f);
+		if (hero.buff(EndureTracker.class) != null){
+			hero.buff(EndureTracker.class).detach();
+		}
+		Buff.prolong(hero, EndureTracker.class, 12f);
 
 		Combo combo = hero.buff(Combo.class);
 		if (combo != null){
@@ -87,7 +90,7 @@ public class Endure extends ArmorAbility {
 
 		@Override
 		public void tintIcon(Image icon) {
-			super.tintIcon(icon);
+			icon.hardlight(1, 0, 0);
 		}
 
 		@Override

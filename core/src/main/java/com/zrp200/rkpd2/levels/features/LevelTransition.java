@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,9 @@ public class LevelTransition extends Rect implements Bundlable {
 	public enum Type {
 		SURFACE,
 		REGULAR_ENTRANCE,
-		REGULAR_EXIT;
+		REGULAR_EXIT,
+		BRANCH_ENTRANCE,
+		BRANCH_EXIT;
 	}
 
 	public Type type;

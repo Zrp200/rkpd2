@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -139,7 +139,7 @@ public abstract class TippedDart extends Dart {
 
 	@Override
 	public float durabilityPerUse() {
-		float use = super.durabilityPerUse();
+		float use = super.durabilityPerUse(false);
 
 		int points = Dungeon.hero.pointsInTalent(Talent.DURABLE_TIPS, Talent.RK_WARDEN);
 		if(Dungeon.hero.canHaveTalent(Talent.DURABLE_TIPS)) points++;
@@ -169,12 +169,14 @@ public abstract class TippedDart extends Dart {
 		}
 		use *= (1f - lotusPreserve);
 
-		//grants 2 extra uses with charged shot
-		if (Dungeon.hero.buff(Crossbow.ChargedShot.class) != null){
-			use = 100f/((100f/use) + 2f) + 0.001f;
-		}
+		float usages = Math.round(MAX_DURABILITY/use);
 
-		return use;
+		//grants 4 extra uses with charged shot
+		if (Dungeon.hero.buff(Crossbow.ChargedShot.class) != null){
+			usages += 4;
+		}
+//add a tiny amount to account for rounding error for calculations like 1/3
+		return (MAX_DURABILITY/usages) + 0.001f;
 	}
 	
 	@Override
@@ -187,6 +189,7 @@ public abstract class TippedDart extends Dart {
 	static {
 		types.put(Blindweed.Seed.class,     BlindingDart.class);
 		types.put(Dreamfoil.Seed.class,     DreamDart.class);
+		types.put(Mageroyal.Seed.class,		CleansingDart.class);
 		types.put(Earthroot.Seed.class,     ParalyticDart.class);
 		types.put(Fadeleaf.Seed.class,      DisplacingDart.class);
 		types.put(Firebloom.Seed.class,     IncendiaryDart.class);

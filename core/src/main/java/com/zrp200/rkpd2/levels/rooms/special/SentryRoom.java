@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -281,7 +281,7 @@ public class SentryRoom extends SpecialRoom {
 				Dungeon.hero.damage(Random.NormalIntRange(2 + Dungeon.depth / 2, 4 + Dungeon.depth), new Eye.DeathGaze());
 				if (!Dungeon.hero.isAlive()) {
 					Badges.validateDeathFromEnemyMagic();
-					Dungeon.fail(getClass());
+					Dungeon.fail(this);
 					GLog.n(Messages.capitalize(Messages.get(Char.class, "kill", name())));
 				}
 			} else {
@@ -420,6 +420,11 @@ public class SentryRoom extends SpecialRoom {
 		public void place(int cell) {
 			super.place(cell);
 			baseY = y;
+		}
+
+		@Override
+		public void turnTo(int from, int to) {
+			//do nothing
 		}
 
 		@Override

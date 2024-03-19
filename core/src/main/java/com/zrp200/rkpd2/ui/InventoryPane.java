@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@ import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.windows.WndBag;
+import com.zrp200.rkpd2.windows.WndInfoItem;
 import com.zrp200.rkpd2.windows.WndUseItem;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.input.GameAction;
@@ -48,12 +49,10 @@ import com.watabou.input.KeyEvent;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.ColorBlock;
-import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.NinePatch;
 import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ui.Component;
-import com.watabou.utils.Point;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Signal;
 
@@ -369,13 +368,13 @@ public class InventoryPane extends Component {
 			b.enable(lastEnabled
 					&& !(b.item() instanceof WndBag.Placeholder)
 					&& (selector == null || selector.itemSelectable(b.item()))
-					&& (!lostInvent || b.item().keptThoughLostInvent));
+					&& (!lostInvent || b.item().keptThroughLostInventory()));
 		}
 		for (InventorySlot b : bagItems){
 			b.enable(lastEnabled
 					&& b.item() != null
 					&& (selector == null || selector.itemSelectable(b.item()))
-					&& (!lostInvent || b.item().keptThoughLostInvent));
+					&& (!lostInvent || b.item().keptThroughLostInventory()));
 		}
 		for (BagButton b : bags){
 			b.enable(lastEnabled);
@@ -406,10 +405,15 @@ public class InventoryPane extends Component {
 		return selector != null;
 	}
 
+	public static void clearTargetingSlot(){
+		targetingSlot = null;
+	}
+
 	public static void useTargeting(){
 		if (instance != null &&
 				instance.visible &&
 				lastTarget != null &&
+				targetingSlot != null &&
 				Actor.chars().contains( lastTarget ) &&
 				lastTarget.isAlive() &&
 				lastTarget.alignment != Char.Alignment.ALLY &&
@@ -454,13 +458,13 @@ public class InventoryPane extends Component {
 				b.enable(lastEnabled
 						&& !(b.item() instanceof WndBag.Placeholder)
 						&& (selector == null || selector.itemSelectable(b.item()))
-						&& (!lostInvent || b.item().keptThoughLostInvent));
+						&& (!lostInvent || b.item().keptThroughLostInventory()));
 			}
 			for (InventorySlot b : bagItems){
 				b.enable(lastEnabled
 						&& b.item() != null
 						&& (selector == null || selector.itemSelectable(b.item()))
-						&& (!lostInvent || b.item().keptThoughLostInvent));
+						&& (!lostInvent || b.item().keptThroughLostInventory()));
 			}
 			for (BagButton b : bags){
 				b.enable(lastEnabled);
@@ -531,6 +535,20 @@ public class InventoryPane extends Component {
 		}
 
 		@Override
+		protected boolean onLongClick() {
+			if (selector == null && item.defaultAction() != null) {
+				QuickSlotButton.set( item );
+				return true;
+			} else if (selector != null) {
+				GameScene.centerNextWndOnInvPane();
+				GameScene.show(new WndInfoItem(item));
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		@Override
 		protected void onMiddleClick() {
 			if (lastBag != item && !lastBag.contains(item) && !item.isEquipped(Dungeon.hero)){
 				updateInventory();
@@ -550,7 +568,7 @@ public class InventoryPane extends Component {
 
 			if (selector == null && item.defaultAction() != null){
 				item.execute(Dungeon.hero);
-				if (item.usesTargeting) {
+				if (item != null && item.usesTargeting) {
 					targetingSlot = this;
 					InventoryPane.useTargeting();
 				}
@@ -654,6 +672,7 @@ public class InventoryPane extends Component {
 		@Override
 		protected void onClick() {
 			super.onClick();
+			GameScene.cancel();
 			lastBag = bag;
 			refresh();
 		}

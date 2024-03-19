@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.Chrome;
 import com.zrp200.rkpd2.ShatteredPixelDungeon;
 import com.zrp200.rkpd2.messages.Languages;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.Archs;
 import com.zrp200.rkpd2.ui.ExitButton;
 import com.zrp200.rkpd2.ui.Icons;
@@ -125,9 +126,7 @@ public class ChangesScene extends PixelScene {
 			add(changeTitle);
 
 			String body = Messages.get(this, "right_body");
-			if (Messages.lang() != Languages.ENGLISH){
-				body += "\n\n_" + Messages.get(this, "lang_warn") + "_";
-			}
+
 			changeBody = PixelScene.renderTextBlock(body, 6);
 			changeBody.maxWidth(pw - panel.marginHor());
 			changeBody.setPos(/*0*/rightPanel.x + rightPanel.marginLeft(), changeTitle.bottom()+2);
@@ -142,7 +141,13 @@ public class ChangesScene extends PixelScene {
 		add( panel );
 		
 		final ArrayList<ChangeInfo> changeInfos = new ArrayList<>();
-		
+
+		if (Messages.lang() != Languages.ENGLISH){
+			ChangeInfo langWarn = new ChangeInfo("", true, Messages.get(this, "lang_warn"));
+			langWarn.hardlight(CharSprite.WARNING);
+			changeInfos.add(langWarn);
+		}
+
 		switch (changesSelected){
 			case 0: default:
 				RKPD2Changes.addAllChanges(changeInfos);

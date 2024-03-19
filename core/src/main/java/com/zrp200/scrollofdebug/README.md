@@ -9,7 +9,7 @@ This repository can be added without impacting the functionality of the implemen
 
 2. Implement Scroll of Debug via one of the following methods described below.
 3. Ensure the code compiles.
-   * If the directory `shatteredpixel.shatteredpixeldungeon` was changed in the fork, a mass find and replace must be done for the scroll to work properly.
+   * If the directory `zrp200.rkpd2` was changed in the fork, a mass find and replace must be done for the scroll to work properly.
 
 ### Via `git pull`
 

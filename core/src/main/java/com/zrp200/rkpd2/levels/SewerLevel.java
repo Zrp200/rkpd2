@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,9 +22,15 @@
 package com.zrp200.rkpd2.levels;
 
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.GamesInProgress;
+import com.zrp200.rkpd2.Statistics;
+import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.mobs.npcs.Ghost;
 import com.zrp200.rkpd2.effects.Ripple;
+import com.zrp200.rkpd2.items.Amulet;
+import com.zrp200.rkpd2.levels.features.LevelTransition;
 import com.zrp200.rkpd2.levels.painters.Painter;
 import com.zrp200.rkpd2.levels.painters.SewerPainter;
 import com.zrp200.rkpd2.levels.traps.AlarmTrap;
@@ -32,7 +38,6 @@ import com.zrp200.rkpd2.levels.traps.ChillingTrap;
 import com.zrp200.rkpd2.levels.traps.ConfusionTrap;
 import com.zrp200.rkpd2.levels.traps.FlockTrap;
 import com.zrp200.rkpd2.levels.traps.GatewayTrap;
-import com.zrp200.rkpd2.levels.traps.GeyserTrap;
 import com.zrp200.rkpd2.levels.traps.OozeTrap;
 import com.zrp200.rkpd2.levels.traps.ShockingTrap;
 import com.zrp200.rkpd2.levels.traps.SummoningTrap;
@@ -41,12 +46,15 @@ import com.zrp200.rkpd2.levels.traps.ToxicTrap;
 import com.zrp200.rkpd2.levels.traps.WornDartTrap;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.scenes.SurfaceScene;
 import com.zrp200.rkpd2.tiles.DungeonTilemap;
+import com.zrp200.rkpd2.windows.WndMessage;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.audio.Music;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.particles.PixelParticle;
+import com.watabou.utils.Callback;
 import com.watabou.utils.ColorMath;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
@@ -76,11 +84,21 @@ public class SewerLevel extends RegularLevel {
 		color2 = 0x59994a;
 	}
 
+	public static final String[] SEWER_TRACK_LIST
+			= new String[]{Assets.Music.SEWERS_1, Assets.Music.SEWERS_2, Assets.Music.SEWERS_2,
+			Assets.Music.SEWERS_1, Assets.Music.SEWERS_3, Assets.Music.SEWERS_3};
+	public static final float[] SEWER_TRACK_CHANCES = new float[]{1f, 1f, 0.5f, 0.25f, 1f, 0.5f};
+
 	public void playLevelMusic(){
-		Music.INSTANCE.playTracks(
-				new String[]{Assets.Music.SEWERS_1, Assets.Music.SEWERS_2, Assets.Music.SEWERS_2},
-				new float[]{1, 1, 0.5f},
-				false);
+		if (Ghost.Quest.active() || Statistics.amuletObtained){
+			if (Statistics.amuletObtained && Dungeon.depth == 1){
+				Music.INSTANCE.play(Assets.Music.THEME_FINALE, true);
+			} else {
+				Music.INSTANCE.play(Assets.Music.SEWERS_TENSE, true);
+			}
+		} else {
+			Music.INSTANCE.playTracks(SEWER_TRACK_LIST, SEWER_TRACK_CHANCES, false);
+		}
 	}
 	
 	@Override
@@ -134,14 +152,37 @@ public class SewerLevel extends RegularLevel {
 						2, 2,
 						1, 1, 1, 1, 1};
 	}
-	
+
 	@Override
-	protected void createItems() {
-		Ghost.Quest.spawn( this );
-		
-		super.createItems();
+	protected void createMobs() {
+		Ghost.Quest.spawn( this, roomExit );
+		super.createMobs();
 	}
 	
+	@Override
+	public boolean activateTransition(Hero hero, LevelTransition transition) {
+		if (transition.type == LevelTransition.Type.SURFACE){
+			if (hero.belongings.getItem( Amulet.class ) == null) {
+				Game.runOnRenderThread(new Callback() {
+					@Override
+					public void call() {
+						GameScene.show( new WndMessage( Messages.get(hero, "leave") ) );
+					}
+				});
+				return false;
+			} else {
+				Statistics.ascended = true;
+				Badges.silentValidateHappyEnd();
+				Dungeon.win( Amulet.class );
+				Dungeon.deleteGame( GamesInProgress.curSlot, true );
+				Game.switchScene( SurfaceScene.class );
+				return true;
+			}
+		} else {
+			return super.activateTransition(hero, transition);
+		}
+	}
+
 	@Override
 	public Group addVisuals() {
 		super.addVisuals();

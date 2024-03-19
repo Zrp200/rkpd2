@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
@@ -29,28 +30,29 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.mobs.DwarfKing;
+import com.zrp200.rkpd2.effects.FloatingText;
 import com.zrp200.rkpd2.items.BrokenSeal;
-import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.wands.WandOfBlastWave;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.sprites.CharSprite;
-import com.zrp200.rkpd2.sprites.ItemSprite;
-import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.ActionIndicator;
 import com.zrp200.rkpd2.ui.AttackIndicator;
 import com.zrp200.rkpd2.ui.BuffIndicator;
-import com.zrp200.rkpd2.utils.BArray;
+import com.zrp200.rkpd2.ui.HeroIcon;
+import com.watabou.utils.BArray;
 import com.zrp200.rkpd2.utils.GLog;
 import com.zrp200.rkpd2.windows.WndCombo;
+import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Image;
+import com.watabou.noosa.Visual;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
-import com.watabou.utils.Random;
 
 import java.util.HashMap;
 
@@ -77,7 +79,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 	public void tintIcon(Image icon) {
 		ComboMove move = getHighestMove();
 		if (move != null){
-			icon.hardlight(move.tintColor & 0x00FFFFFF);
+			icon.hardlight(move.tintColor);
 		} else {
 			icon.resetColor();
 		}
@@ -188,16 +190,31 @@ public class Combo extends Buff implements ActionIndicator.Action {
 
 
 	@Override
-	public Image actionIcon() {
-		Image icon;
-		if (((Hero)target).belongings.weapon() != null){
-			icon = new ItemSprite(((Hero)target).belongings.weapon().image, null);
-		} else {
-			icon = new ItemSprite(new Item(){ {image = ItemSpriteSheet.WEAPON_HOLDER; }});
-		}
+	public int actionIcon() {
+		return HeroIcon.COMBO;
+	}
 
-		icon.tint(getHighestMove().tintColor);
-		return icon;
+	@Override
+	public Visual secondaryVisual() {
+		BitmapText txt = new BitmapText(PixelScene.pixelFont);
+		txt.text( Integer.toString(count) );
+		txt.hardlight(CharSprite.POSITIVE);
+		txt.measure();
+		return txt;
+	}
+
+	@Override
+	public int indicatorColor() {
+		ComboMove best = getHighestMove();
+		if (best == null) {
+			return 0xDFDFDF;
+		} else {
+			//take the tint color and darken slightly to match buff icon
+			int r = (int) ((best.tintColor >> 16) * 0.875f);
+			int g = (int) (((best.tintColor >> 8) & 0xFF) * 0.875f);
+			int b = (int) ((best.tintColor & 0xFF) * 0.875f);
+			return (r << 16) + (g << 8) + b;
+		}
 	}
 
 	@Override
@@ -211,11 +228,11 @@ public class Combo extends Buff implements ActionIndicator.Action {
 	}
 
 	public enum ComboMove {
-		CLOBBER(2, 0xFF00FF00),
-		SLAM   (4, 0xFFCCFF00),
-		PARRY  (6, 0xFFFFFF00),
-		CRUSH  (8, 0xFFFFCC00),
-		FURY   (10, 0xFFFF0000);
+		CLOBBER(2, 0x00FF00),
+		SLAM   (4, 0xCCFF00),
+		PARRY  (6, 0xFFFF00),
+		CRUSH  (8, 0xFFCC00),
+		FURY   (10, 0xFF0000);
 
 		public int comboReq, tintColor;
 
@@ -224,14 +241,18 @@ public class Combo extends Buff implements ActionIndicator.Action {
 			this.tintColor = tintColor;
 		}
 
+		public String title(){
+			return Messages.get(this, name() + ".name");
+		}
+
 		public String desc(int count){
 			switch (this){
 				default:
-					return Messages.get(this, name()+"_desc");
+					return Messages.get(this, name() + ".desc");
 				case SLAM:
-					return Messages.get(this, name()+"_desc", count*20);
+					return Messages.get(this,  name() + ".desc", count*20);
 				case CRUSH:
-					return Messages.get(this, name()+"_desc", count*25);
+					return Messages.get(this,  name() + ".desc", count*25);
 			}
 
 		}
@@ -346,6 +367,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 				break;
 		}
 
+		int oldPos = enemy.pos;
 		if (hero.attack(enemy, dmgMulti, dmgBonus, Char.INFINITE_ACCURACY, hero.hasTalent(Talent.SKILL)?2:1)){
 			//special on-hit effects
 			switch (moveBeingUsed) {
@@ -366,7 +388,9 @@ public class Combo extends Buff implements ActionIndicator.Action {
 							dist--;
 						}
 					}
-					WandOfBlastWave.throwChar(enemy, trajectory, dist, true, false, hero.getClass());
+					if (enemy.pos == oldPos) {
+						WandOfBlastWave.throwChar(enemy, trajectory, dist, true, false, hero);
+					}
 					break;
 				case PARRY:
 					hit(enemy);
@@ -393,8 +417,10 @@ public class Combo extends Buff implements ActionIndicator.Action {
 							if (!ch.isAlive()) {
 								if (hero.hasTalent(Talent.LETHAL_DEFENSE,Talent.RK_GLADIATOR) && hero.buff(BrokenSeal.WarriorShield.class) != null){
 									BrokenSeal.WarriorShield shield = hero.buff(BrokenSeal.WarriorShield.class);
-									shield.supercharge(Math.round(shield.maxShield() * hero.pointsInTalent(Talent.LETHAL_DEFENSE,Talent.RK_GLADIATOR)
-											/(hero.hasTalent(Talent.LETHAL_DEFENSE)?2f:3f)));
+									int shieldAmt = Math.round(shield.maxShield() * hero.pointsInTalent(Talent.LETHAL_DEFENSE,Talent.RK_GLADIATOR)
+											/(hero.hasTalent(Talent.LETHAL_DEFENSE)?2f:3f));
+									shield.supercharge(shieldAmt);
+									hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shieldAmt), FloatingText.SHIELDING);
 								}
 							}
 						}
@@ -449,8 +475,10 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		if (!enemy.isAlive() || (!wasAlly && enemy.alignment == target.alignment)) {
 			if (hero.hasTalent(Talent.LETHAL_DEFENSE,Talent.RK_GLADIATOR) && hero.buff(BrokenSeal.WarriorShield.class) != null){
 				BrokenSeal.WarriorShield shield = hero.buff(BrokenSeal.WarriorShield.class);
-				shield.supercharge(Math.round(shield.maxShield() *
-						(hero.pointsInTalent(Talent.LETHAL_DEFENSE)/2f + hero.pointsInTalent(Talent.RK_GLADIATOR)/3f)));
+				int shieldAmt =Math.round(shield.maxShield() *
+						(hero.pointsInTalent(Talent.LETHAL_DEFENSE) / 2f + hero.pointsInTalent(Talent.RK_GLADIATOR)/3f));
+				shield.supercharge(shieldAmt);
+				hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shieldAmt), FloatingText.SHIELDING);
 			}
 		}
 
@@ -472,12 +500,12 @@ public class Combo extends Buff implements ActionIndicator.Action {
 				if (target.canAttack(enemy)) {
 					targets.put(enemy, target.pos); // no need to generate a ballistica.
 					return true;
-				} else if (((Hero) target).pointsInTalent(Talent.ENHANCED_COMBO, Talent.RK_GLADIATOR) == 3
+				} else if (!target.rooted && ((Hero) target).pointsInTalent(Talent.ENHANCED_COMBO, Talent.RK_GLADIATOR) == 3
 						&& Dungeon.level.distance(target.pos, enemy.pos) <= getLeapDistance()) {
 					Ballistica b = new Ballistica(target.pos, enemy.pos, Ballistica.PROJECTILE);
 					if(b.collisionPos == enemy.pos) {
 						int leapPos = b.path.get(b.dist-1);
-						if(Dungeon.level.passable[leapPos]) {
+						if(Dungeon.level.passable[leapPos] || target.flying && Dungeon.level.avoid[leapPos]) {
 							targets.put(enemy, leapPos);
 							return true;
 						}
@@ -490,6 +518,9 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		@Override
 		protected void onInvalid(int cell) {
 			if(cell == -1) return;
+			if(target.rooted) {
+				PixelScene.shake( 1, 1f );
+			}
 			GLog.w(Messages.get(Combo.class, "bad_target"));
 		}
 

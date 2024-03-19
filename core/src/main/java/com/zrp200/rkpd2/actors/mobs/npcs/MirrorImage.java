@@ -3,7 +3,11 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
+<<<<<<< shpd/master:core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/MirrorImage.java
+ * Copyright (C) 2014-2024 Evan Debenham
+=======
  * Copyright (C) 2014-2022 Evan Debenham
+>>>>>>> HEAD:core/src/main/java/com/zrp200/rkpd2/actors/mobs/npcs/MirrorImage.java
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,7 +97,7 @@ public class MirrorImage extends AbstractMirrorImage {
 		if (hero.belongings.weapon() != null){
 			damage = hero.belongings.weapon().proc( this, enemy, damage );
 			if (!enemy.isAlive() && enemy == Dungeon.hero){
-				Dungeon.fail(getClass());
+				Dungeon.fail(this);
 				GLog.n( Messages.capitalize(Messages.get(Char.class, "kill", name())) );
 			}
 		}

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,8 @@ package com.zrp200.rkpd2.items.potions;
 
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.effects.Flare;
+import com.zrp200.rkpd2.effects.FloatingText;
+import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
 public class PotionOfExperience extends Potion {
@@ -31,11 +33,14 @@ public class PotionOfExperience extends Potion {
 		icon = ItemSpriteSheet.Icons.POTION_EXP;
 
 		bones = true;
+
+		talentFactor = 2f;
 	}
 	
 	@Override
 	public void apply( Hero hero ) {
 		identify();
+		hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(hero.maxExp()), FloatingText.EXPERIENCE);
 		hero.earnExp( hero.maxExp(), getClass() );
 		new Flare( 6, 32 ).color(0xFFFF00, true).show( curUser.sprite, 2f );
 	}

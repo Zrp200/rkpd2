@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,10 +22,17 @@
 package com.zrp200.rkpd2.levels;
 
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Bones;
+import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.mobs.Mob;
+import com.zrp200.rkpd2.items.Heap;
+import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.levels.features.LevelTransition;
+import com.watabou.utils.Random;
+
+import java.util.ArrayList;
 
 public class DeadEndLevel extends Level {
 
@@ -66,7 +73,18 @@ public class DeadEndLevel extends Level {
 		}
 		
 		int entrance = SIZE * width() + SIZE / 2 + 1;
-		transitions.add(new LevelTransition(this, entrance, LevelTransition.Type.REGULAR_ENTRANCE));
+
+		//different exit behaviour depending on main branch or side one
+		if (Dungeon.branch == 0) {
+			transitions.add(new LevelTransition(this, entrance, LevelTransition.Type.REGULAR_ENTRANCE));
+		} else {
+			transitions.add(new LevelTransition(this,
+					entrance,
+					LevelTransition.Type.BRANCH_ENTRANCE,
+					Dungeon.depth,
+					0,
+					LevelTransition.Type.BRANCH_EXIT));
+		}
 		map[entrance] = Terrain.ENTRANCE;
 		
 		return true;
@@ -87,6 +105,14 @@ public class DeadEndLevel extends Level {
 
 	@Override
 	protected void createItems() {
+		Random.pushGenerator(Random.Long());
+			ArrayList<Item> bonesItems = Bones.get();
+			if (bonesItems != null) {
+				for (Item i : bonesItems) {
+					drop(i, entrance()-width()).setHauntedIfCursed().type = Heap.Type.REMAINS;
+				}
+			}
+		Random.popGenerator();
 	}
 	
 	@Override

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +26,6 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.buffs.MagicImmune;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
-import com.zrp200.rkpd2.items.Item;
-import com.zrp200.rkpd2.items.Recipe;
 import com.zrp200.rkpd2.items.rings.RingOfEnergy;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.AlchemyScene;
@@ -146,7 +144,7 @@ public class AlchemistsToolkit extends Artifact {
 	@Override
 	public String status() {
 		if (isEquipped(Dungeon.hero) && warmUpDelay > 0 && !cursed){
-			return Messages.format( "%d%%", 100 - (int)warmUpDelay );
+			return Messages.format( "%d%%", Math.max(0, 100 - (int)warmUpDelay) );
 		} else {
 			return super.status();
 		}
@@ -221,12 +219,12 @@ public class AlchemistsToolkit extends Artifact {
 		@Override
 		public boolean act() {
 
-			if (warmUpDelay > 0 && !cursed && target.buff(MagicImmune.class) == null){
+			if (warmUpDelay > 0){
 				if (level() == 10){
 					warmUpDelay = 0;
 				} else if (warmUpDelay == 101){
 					warmUpDelay = 100f;
-				} else {
+				} else if (!cursed && target.buff(MagicImmune.class) == null) {
 					float turnsToWarmUp = (int) Math.pow(10 - level(), 2);
 					warmUpDelay -= 100 / turnsToWarmUp;
 				}

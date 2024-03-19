@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,11 +21,9 @@
 
 package com.zrp200.rkpd2.levels.painters;
 
-import com.zrp200.rkpd2.actors.mobs.npcs.Wandmaker;
 import com.zrp200.rkpd2.levels.Level;
 import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.levels.rooms.Room;
-import com.zrp200.rkpd2.levels.rooms.standard.EntranceRoom;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -34,13 +32,6 @@ public class PrisonPainter extends RegularPainter {
 	
 	@Override
 	protected void decorate(Level level, ArrayList<Room> rooms) {
-		
-		for (Room r : rooms) {
-			if (r instanceof EntranceRoom) {
-				Wandmaker.Quest.spawnWandmaker(level, r);
-				break;
-			}
-		}
 		
 		int w = level.width();
 		int l = level.length();

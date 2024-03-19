@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,19 +21,17 @@
 
 package com.zrp200.rkpd2.windows;
 
-import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.items.Ankh;
-import com.zrp200.rkpd2.items.EquipableItem;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.bags.Bag;
-import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.scenes.InterlevelScene;
 import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.sprites.ItemSprite;
+import com.zrp200.rkpd2.ui.ItemButton;
 import com.zrp200.rkpd2.ui.RedButton;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
 import com.zrp200.rkpd2.ui.Window;
@@ -50,9 +48,9 @@ public class WndResurrect extends Window {
 
 	public static Object instance;
 
-	private WndBlacksmith.ItemButton btnItem1;
-	private WndBlacksmith.ItemButton btnItem2;
-	private WndBlacksmith.ItemButton btnPressed;
+	private ItemButton btnItem1;
+	private ItemButton btnItem2;
+	private ItemButton btnPressed;
 
 	RedButton btnContinue;
 
@@ -73,7 +71,7 @@ public class WndResurrect extends Window {
 		message.setPos(0, titlebar.bottom() + GAP);
 		add( message );
 
-		btnItem1 = new WndBlacksmith.ItemButton() {
+		btnItem1 = new ItemButton() {
 			@Override
 			protected void onClick() {
 				btnPressed = btnItem1;
@@ -84,7 +82,7 @@ public class WndResurrect extends Window {
 		btnItem1.setRect( (WIDTH - BTN_GAP) / 2 - BTN_SIZE, message.bottom() + BTN_GAP, BTN_SIZE, BTN_SIZE );
 		add( btnItem1 );
 
-		btnItem2 = new WndBlacksmith.ItemButton() {
+		btnItem2 = new ItemButton() {
 			@Override
 			protected void onClick() {
 				btnPressed = btnItem2;
@@ -104,11 +102,11 @@ public class WndResurrect extends Window {
 
 				ankh.detach(Dungeon.hero.belongings.backpack);
 
-				if (btnItem1.item != null){
-					btnItem1.item.keptThoughLostInvent = true;
+				if (btnItem1.item() != null){
+					btnItem1.item().keptThoughLostInvent = true;
 				}
-				if (btnItem2.item != null){
-					btnItem2.item.keptThoughLostInvent = true;
+				if (btnItem2.item() != null){
+					btnItem2.item().keptThoughLostInvent = true;
 				}
 
 				InterlevelScene.mode = InterlevelScene.Mode.RESURRECT;
@@ -139,7 +137,7 @@ public class WndResurrect extends Window {
 			if (item != null && btnPressed.parent != null) {
 				btnPressed.item( item );
 
-				if (btnItem1.item == btnItem2.item){
+				if (btnItem1.item() == btnItem2.item()){
 					if (btnPressed == btnItem1){
 						btnItem2.clear();
 					} else {

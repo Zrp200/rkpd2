@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@
 package com.zrp200.rkpd2.items.rings;
 
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
 public class RingOfFuror extends Ring {
@@ -33,16 +32,17 @@ public class RingOfFuror extends Ring {
 
 	@Override
 	protected float multiplier() {
-		return 1.0905f;
+		return MULTIPLIER;
 	}
 
 	@Override
 	protected RingBuff buff( ) {
 		return new Furor();
 	}
-	
+
+	private static final float MULTIPLIER = 1.09051f;
 	public static float attackSpeedMultiplier(Char target ){
-		return (float)Math.pow(1.0905, getBuffedBonus(target, Furor.class));
+		return (float)Math.pow(MULTIPLIER, getBuffedBonus(target, Furor.class));
 	}
 
 	public class Furor extends RingBuff {

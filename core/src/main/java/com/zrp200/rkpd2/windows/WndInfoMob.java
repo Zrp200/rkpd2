@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -80,14 +80,14 @@ public class WndInfoMob extends WndTitledMessage {
 				extraBuffSpace += 8;
 			} while (extraBuffSpace <= 40 && !buffs.allBuffsVisible());
 
-			name.setPos(x + image.width + GAP,
+			name.setPos(x + image.width() + GAP,
 					image.height() > name.height() ? y +(image.height() - name.height()) / 2 : y);
 
 			health.setRect(image.width() + GAP, name.bottom() + GAP, w, health.height());
 
 			buffs.setPos(name.right(), name.bottom() - BuffIndicator.SIZE_SMALL-2);
 
-			height = health.bottom();
+			height = Math.max(image.y + image.height(), health.bottom());
 		}
 	}
 }

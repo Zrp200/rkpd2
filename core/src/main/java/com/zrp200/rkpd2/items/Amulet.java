@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,15 +77,20 @@ public class Amulet extends Item {
 				Statistics.amuletObtained = true;
 				hero.spend(-TIME_TO_PICK_UP);
 
-				//add a delayed actor here so pickup behaviour can fully process.
-				Actor.addDelayed(new Actor(){
+				//delay with an actor here so pickup behaviour can fully process.
+				Actor.add(new Actor(){
+
+					{
+						actPriority = VFX_PRIO;
+					}
+
 					@Override
 					protected boolean act() {
 						Actor.remove(this);
 						showAmuletScene( true );
 						return false;
 					}
-				}, -5);
+				});
 			}
 			
 			return true;

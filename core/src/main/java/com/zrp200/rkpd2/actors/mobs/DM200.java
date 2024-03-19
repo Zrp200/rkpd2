@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,22 +28,12 @@ import com.zrp200.rkpd2.actors.blobs.ToxicGas;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.mechanics.Ballistica;
-import com.zrp200.rkpd2.mechanics.ConeAOE;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.DM200Sprite;
-import com.zrp200.rkpd2.utils.BArray;
+import com.watabou.utils.BArray;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
-import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.blobs.Blob;
-import com.zrp200.rkpd2.actors.blobs.ToxicGas;
-import com.zrp200.rkpd2.items.Generator;
-import com.zrp200.rkpd2.items.Item;
-import com.zrp200.rkpd2.mechanics.Ballistica;
-import com.zrp200.rkpd2.scenes.GameScene;
-import com.zrp200.rkpd2.sprites.DM200Sprite;
 
 public class DM200 extends Mob {
 
@@ -91,7 +81,7 @@ public class DM200 extends Mob {
 		Dungeon.LimitedDrops.DM200_EQUIP.count++;
 		//uses probability tables for dwarf city
 		if (loot == Generator.Category.WEAPON){
-			return Generator.randomWeapon(4);
+			return Generator.randomWeapon(4, true);
 		} else {
 			return Generator.randomArmor(4);
 		}
@@ -115,9 +105,6 @@ public class DM200 extends Mob {
 
 	@Override
 	protected boolean act() {
-		//ensures toxic gas acts at the appropriate time when added
-		//TODO we have this check in 2 places now, can we just ensure that blobs spend an extra turn when added?
-		GameScene.add(Blob.seed(pos, 0, ToxicGas.class));
 		ventCooldown--;
 		return super.act();
 	}

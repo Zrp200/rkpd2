@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 
 package com.zrp200.rkpd2.services.updates;
 
-//TODO with install and review functionality, this service is less and less just about updates
+//TODO with review functionality, this service is about more than just updates
 // perhaps rename to PlatformService, StoreService, DistributionService, etc?
 public interface UpdateService {
 
@@ -31,8 +31,8 @@ public interface UpdateService {
 		void onConnectionFailed();
 	}
 
-	//whether the app is updateable via an ingame prompt (e.g. not a demo or an android instant app)
-	boolean isUpdateable();
+	//whether the service supports offering update notifications via an ingame prompt
+	boolean supportsUpdatePrompts();
 
 	//whether the service supports an opt-in channel for betas
 	boolean supportsBetaChannel();
@@ -41,15 +41,12 @@ public interface UpdateService {
 
 	void initializeUpdate( AvailableUpdateData update );
 
-	//whether the app installable via an ingame prompt (e.g. a demo, or an android instant app)
-	boolean isInstallable();
-
-	void initializeInstall();
 
 	interface ReviewResultCallback {
 		void onComplete();
 	}
 
+	//whether the service supports prompts to review the game via and ingame prompt
 	boolean supportsReviews();
 
 	void initializeReview(ReviewResultCallback callback);

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,8 +44,8 @@ import com.zrp200.rkpd2.services.news.NewsImpl;
 import com.zrp200.rkpd2.services.updates.UpdateImpl;
 import com.zrp200.rkpd2.services.updates.Updates;
 import com.rohitss.uceh.UCEHandler;
-import com.watabou.noosa.Game;
 import com.zrp200.rkpd2.ui.Button;
+import com.watabou.noosa.Game;
 import com.watabou.utils.FileUtils;
 
 public class AndroidLauncher extends AndroidApplication {
@@ -123,6 +123,9 @@ public class AndroidLauncher extends AndroidApplication {
 			config.g = 6;
 			config.b = 5;
 		}
+
+		//we manage this ourselves
+		config.useImmersiveMode = false;
 		
 		config.useCompass = false;
 		config.useAccelerometer = false;

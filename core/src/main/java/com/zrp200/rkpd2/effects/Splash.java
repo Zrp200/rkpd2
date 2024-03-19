@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,10 +23,13 @@ package com.zrp200.rkpd2.effects;
 
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.tiles.DungeonTilemap;
+import com.watabou.noosa.Visual;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.particles.PixelParticle;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
+
+import java.util.HashMap;
 
 public class Splash {
 	
@@ -43,11 +46,15 @@ public class Splash {
 		Emitter emitter = GameScene.emitter();
 		if (emitter == null) return;
 		emitter.pos( p );
-		
-		FACTORY.color = color;
-		FACTORY.dir = -3.1415926f / 2;
-		FACTORY.cone = 3.1415926f;
-		emitter.burst( FACTORY, n );
+
+		if (!FACTORIES.containsKey(color)){
+			FACTORIES.put(color, new SplashFactory());
+		}
+		SplashFactory fact = FACTORIES.get(color);
+		fact.color = color;
+		fact.dir = -3.1415926f / 2;
+		fact.cone = 3.1415926f;
+		emitter.burst( fact, n );
 	}
 	
 	public static void at( PointF p, final float dir, final float cone, final int color, int n ) {
@@ -59,11 +66,33 @@ public class Splash {
 		Emitter emitter = GameScene.emitter();
 		if (emitter == null) return;
 		emitter.pos( p );
-		
-		FACTORY.color = color;
-		FACTORY.dir = dir;
-		FACTORY.cone = cone;
-		emitter.burst( FACTORY, n );
+
+		if (!FACTORIES.containsKey(color)){
+			FACTORIES.put(color, new SplashFactory());
+		}
+		SplashFactory fact = FACTORIES.get(color);fact.color = color;
+		fact.dir = dir;
+		fact.cone = cone;
+		emitter.burst( fact, n );
+	}
+
+	public static void around(Visual v, final int color, int n ) {
+		if (n <= 0) {
+			return;
+		}
+
+		Emitter emitter = GameScene.emitter();
+		if (emitter == null) return;
+		emitter.pos( v );
+
+		if (!FACTORIES.containsKey(color)){
+			FACTORIES.put(color, new SplashFactory());
+		}
+		SplashFactory fact = FACTORIES.get(color);
+		fact.color = color;
+		fact.dir = -3.1415926f / 2;
+		fact.cone = 3.1415926f;
+		emitter.burst( fact, n );
 	}
 
 	public static void at( PointF p, final float dir, final float cone, final int color, int n, float interval ) {
@@ -76,14 +105,19 @@ public class Splash {
 		if (emitter == null) return;
 		emitter.pos( p );
 
-		FACTORY.color = color;
-		FACTORY.dir = dir;
-		FACTORY.cone = cone;
-		emitter.start( FACTORY, interval, n );
+		if (!FACTORIES.containsKey(color)){
+			FACTORIES.put(color, new SplashFactory());
+		}
+		SplashFactory fact = FACTORIES.get(color);
+		fact.color = color;
+		fact.dir = dir;
+		fact.cone = cone;
+		emitter.start( fact, interval, n );
 	}
-	
-	private static final SplashFactory FACTORY = new SplashFactory();
-			
+
+	//each color has its own factory, let's multiple splash effects occur at once
+	private static final HashMap<Integer, SplashFactory> FACTORIES = new HashMap<>();
+
 	private static class SplashFactory implements Emitter.Factory {
 
 		public int color;

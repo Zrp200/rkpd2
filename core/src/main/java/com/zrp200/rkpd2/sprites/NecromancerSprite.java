@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -104,13 +104,15 @@ public class NecromancerSprite extends MobSprite {
 	}
 
 	public void finishSummoning(){
-		if (summoningBones.visible) {
-			Sample.INSTANCE.play(Assets.Sounds.BONES);
-			summoningBones.burst(Speck.factory(Speck.RATTLE), 5);
-		} else {
-			summoningBones.on = false;
+		if (summoningBones != null) {
+			if (summoningBones.visible) {
+				Sample.INSTANCE.play(Assets.Sounds.BONES);
+				summoningBones.burst(Speck.factory(Speck.RATTLE), 5);
+			} else {
+				summoningBones.on = false;
+			}
+			summoningBones = null;
 		}
-		summoningBones = null;
 		idle();
 	}
 

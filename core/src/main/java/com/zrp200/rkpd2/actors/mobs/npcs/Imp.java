@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,11 +62,11 @@ public class Imp extends NPC {
 			return true;
 		}
 		if (!Quest.given && Dungeon.level.visited[pos]) {
-			if (!seenBefore) {
-				yell( Messages.get(this, "hey", Messages.titleCase(Dungeon.hero.name()) ) );
-			}
 			Notes.add( Notes.Landmark.IMP );
-			seenBefore = true;
+			if (!seenBefore && Dungeon.level.heroFOV[pos]) {
+				yell(Messages.get(this, "hey", Messages.titleCase(Dungeon.hero.name())));
+				seenBefore = true;
+			}
 		} else {
 			seenBefore = false;
 		}

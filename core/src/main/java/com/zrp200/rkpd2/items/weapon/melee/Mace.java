@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,8 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Vulnerable;
 import com.zrp200.rkpd2.actors.buffs.Weakness;
+import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
@@ -53,8 +55,8 @@ public class Mace extends MeleeWeapon {
 
 	@Override
 	protected DuelistAbility duelistAbility() {
-		// 1.65 at t2, 1.6 at t3, 1.55 at t4, 1.5 at t5
-		return new HeavyBlow(1.75f - 0.05f * tier);
+		// 1.45 at t2, 1.4 at t3, 1.35 at t4, 1.3 at t5
+		return new HeavyBlow(1.5f - 0.05f * tier);
 	}
 
 	public static class HeavyBlow extends MeleeAbility {
@@ -67,6 +69,13 @@ public class Mace extends MeleeWeapon {
 			if (enemy.isAlive()) {
 				Buff.affect(enemy, Vulnerable.class, 5f);
 				Buff.affect(enemy, Weakness.class, 5f);
+			}
+		}
+		protected int baseChargeUse(Hero hero, Char target){
+			if (target == null || (target instanceof Mob && ((Mob) target).surprisedBy(hero))) {
+				return 1;
+			} else {
+				return 2;
 			}
 		}
 	}

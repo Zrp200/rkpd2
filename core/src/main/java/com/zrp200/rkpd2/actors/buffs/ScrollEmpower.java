@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,14 +37,14 @@ public class ScrollEmpower extends Buff {
 	}
 
 	public static int boost() {
-		return hero.hasTalent(Talent.RK_BATTLEMAGE) ? 3 : 2*hero.pointsInTalent(Talent.EMPOWERING_SCROLLS);
+		return hero.hasTalent(Talent.RK_BATTLEMAGE) ? 3 : 2*hero.pointsInTalent(Talent.DESPERATE_POWER);
 	}
 
 
 	private int left;
 
-	public void reset(){
-		left = hero.pointsInTalent(Talent.EMPOWERING_SCROLLS, Talent.RK_BATTLEMAGE);
+	public void reset(int left){
+		this.left = left;
 		Item.updateQuickslot();
 	}
 

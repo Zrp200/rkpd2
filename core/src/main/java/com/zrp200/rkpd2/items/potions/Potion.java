@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,12 +30,12 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Burning;
 import com.zrp200.rkpd2.actors.buffs.Ooze;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.Splash;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.ItemStatusHandler;
 import com.zrp200.rkpd2.items.Recipe;
-import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.potions.elixirs.ElixirOfHoneyedHealing;
 import com.zrp200.rkpd2.items.potions.exotic.ExoticPotion;
 import com.zrp200.rkpd2.items.potions.exotic.PotionOfCleansing;
@@ -52,6 +52,7 @@ import com.zrp200.rkpd2.plants.Earthroot;
 import com.zrp200.rkpd2.plants.Fadeleaf;
 import com.zrp200.rkpd2.plants.Firebloom;
 import com.zrp200.rkpd2.plants.Icecap;
+import com.zrp200.rkpd2.plants.Mageroyal;
 import com.zrp200.rkpd2.plants.Plant;
 import com.zrp200.rkpd2.plants.Rotberry;
 import com.zrp200.rkpd2.plants.Sorrowmoss;
@@ -135,6 +136,9 @@ public class Potion extends Item {
 	protected static ItemStatusHandler<Potion> handler;
 	
 	protected String color;
+
+	//affects how strongly on-potion talents trigger from this potion
+	protected float talentFactor = 1;
 	
 	{
 		stackable = true;
@@ -283,6 +287,10 @@ public class Potion extends Item {
 		Sample.INSTANCE.play( Assets.Sounds.DRINK );
 		
 		hero.sprite.operate( hero.pos );
+
+		if (!anonymous){
+			Talent.onPotionUsed(curUser, curUser.pos, talentFactor);
+		}
 	}
 	
 	@Override
@@ -295,6 +303,10 @@ public class Potion extends Item {
 
 			Dungeon.level.pressCell( cell );
 			shatter( cell );
+
+			if (!anonymous){
+				Talent.onPotionUsed(curUser, cell, talentFactor);
+			}
 			
 		}
 	}
@@ -304,10 +316,10 @@ public class Potion extends Item {
 	}
 	
 	public void shatter( int cell ) {
+		splash( cell );
 		if (Dungeon.level.heroFOV[cell]) {
 			GLog.i( Messages.get(Potion.class, "shatter") );
 			Sample.INSTANCE.play( Assets.Sounds.SHATTER );
-			splash( cell );
 		}
 	}
 
@@ -380,20 +392,23 @@ public class Potion extends Item {
 	}
 	
 	protected void splash( int cell ) {
-
 		Fire fire = (Fire)Dungeon.level.blobs.get( Fire.class );
-		if (fire != null)
-			fire.clear( cell );
-
-		final int color = splashColor();
+		if (fire != null) {
+			fire.clear(cell);
+		}
 
 		Char ch = Actor.findChar(cell);
 		if (ch != null && ch.alignment == Char.Alignment.ALLY) {
 			Buff.detach(ch, Burning.class);
 			Buff.detach(ch, Ooze.class);
-			Splash.at( ch.sprite.center(), color, 5 );
-		} else {
-			Splash.at( cell, color, 5 );
+		}
+
+		if (Dungeon.level.heroFOV[cell]) {
+			if (ch != null) {
+				Splash.at(ch.sprite.center(), splashColor(), 5);
+			} else {
+				Splash.at(cell, splashColor(), 5);
+			}
 		}
 	}
 	
@@ -431,6 +446,7 @@ public class Potion extends Item {
 		static {
 			types.put(Blindweed.Seed.class,     PotionOfInvisibility.class);
 			types.put(Dreamfoil.Seed.class,     PotionOfPurity.class);
+			types.put(Mageroyal.Seed.class,     PotionOfPurity.class);
 			types.put(Earthroot.Seed.class,     PotionOfParalyticGas.class);
 			types.put(Fadeleaf.Seed.class,      PotionOfMindVision.class);
 			types.put(Firebloom.Seed.class,     PotionOfLiquidFlame.class);

@@ -3,7 +3,11 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
+<<<<<<< HEAD:core/src/main/java/com/zrp200/rkpd2/actors/buffs/SnipersMark.java
  * Copyright (C) 2014-2022 Evan Debenham
+=======
+ * Copyright (C) 2014-2024 Evan Debenham
+>>>>>>> shpd/master:core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/buffs/SnipersMark.java
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,12 +36,11 @@ import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
-import com.zrp200.rkpd2.sprites.ItemSprite;
-import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.ActionIndicator;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.ui.QuickSlotButton;
 import com.zrp200.rkpd2.utils.GLog;
+import com.zrp200.rkpd2.ui.HeroIcon;
 
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
@@ -120,7 +123,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	private static final String OBJECT    = "object";
 	private static final String OBJECTS	  = "objects";
 	private static final String LEVEL     = "level",
-								LEVELS    = LEVEL+"s";
+			LEVELS    = LEVEL+"s";
 
 	public static final float DURATION = 4f;
 
@@ -146,19 +149,19 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 				buff.cooldown() + time
 		));
 	}
-	
+
 	@Override
 	public boolean attachTo(Char target) {
 		ActionIndicator.setAction(this);
 		return super.attachTo(target);
 	}
-	
+
 	@Override
 	public void detach() {
 		super.detach();
 		ActionIndicator.clearAction(this);
 	}
-	
+
 	@Override
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
@@ -250,8 +253,13 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	}
 
 	@Override
-	public Image actionIcon() {
-		return new ItemSprite(ItemSpriteSheet.SPIRIT_BOW, null);
+	public int actionIcon() {
+		return HeroIcon.SNIPERS_MARK;
+	}
+
+	@Override
+	public int indicatorColor() {
+		return 0x444444;
 	}
 
 	// only one action handler can be active at a time.
@@ -334,6 +342,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	}
 
 	// this is the safe way to create new actions. will prevent duplication of free-targets as well.
+
 	@Override
 	public void doAction() {
 		if (hero == null) return;

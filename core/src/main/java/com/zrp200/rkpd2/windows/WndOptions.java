@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,11 +31,11 @@ import com.watabou.noosa.Image;
 
 public class WndOptions extends Window {
 
-	private static final int WIDTH_P = 120;
-	private static final int WIDTH_L = 144;
+	protected static final int WIDTH_P = 120;
+	protected static final int WIDTH_L = 144;
 
-	private static final int MARGIN 		= 2;
-	private static final int BUTTON_HEIGHT	= 18;
+	protected static final int MARGIN 		= 2;
+	protected static final int BUTTON_HEIGHT	= 18;
 
 	public WndOptions(Image icon, String title, String message, String... options) {
 		super();
@@ -73,7 +73,7 @@ public class WndOptions extends Window {
 		layoutBody(pos, message, options);
 	}
 
-	private void layoutBody(float pos, String message, String... options){
+	protected void layoutBody(float pos, String message, String... options){
 		int width = PixelScene.landscape() ? WIDTH_L : WIDTH_P;
 
 		RenderedTextBlock tfMesage = PixelScene.renderTextBlock( 6 );

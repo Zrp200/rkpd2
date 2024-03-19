@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@
 package com.zrp200.rkpd2.actors.mobs;
 
 
+import com.watabou.noosa.Game;
+import com.watabou.noosa.audio.Music;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Challenges;
@@ -61,9 +63,11 @@ import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.KingSprite;
 import com.zrp200.rkpd2.ui.BossHealthBar;
 import com.zrp200.rkpd2.ui.BuffIndicator;
+import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Bundle;
+import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
@@ -507,15 +511,11 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 		super.onDamage(dmg, src);
 		if(!isImmune( src.getClass() )) handleLockedFloor(dmg);
 	}
-	private void handleLockedFloor(int dmg) {
-		LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
-		if (lock != null) lock.addTime(dmg/3);
-	}
 
 	@Override
 	public void damage(int dmg, Object src) {
-		//hero only counts as unarmed if they have no weapon and aren't benefiting from force
-		if (src == Dungeon.hero && (Dungeon.hero.belongings.weapon() != null || Dungeon.hero.buff(RingOfForce.Force.class) != null)){
+		//hero counts as unarmed if they aren't attacking with a weapon and aren't benefiting from force
+		if (src == Dungeon.hero && (!RingOfForce.fightingUnarmed(Dungeon.hero) || Dungeon.hero.buff(RingOfForce.Force.class) != null)){
 			Statistics.qualifiedForBossChallengeBadge = false;
 		//Corrosion, corruption, and regrowth do no direct damage and so have their own custom logic
 		//Transfusion damages DK and so doesn't need custom logic
@@ -575,6 +575,14 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 			else if (isAlive() && phase == 3 && preHP > 20 && HP < 20) {
 				yell(Messages.get(this, "losing"));
 			}
+		}
+	}
+
+	private void handleLockedFloor(int dmg) {
+		LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
+		if (lock != null){
+			if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES))   lock.addTime(dmg/5f);
+			else                                                    lock.addTime(dmg/3f);
 		}
 	}
 
@@ -645,6 +653,18 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 		summonsMade = 1; //monk/warlock on 3rd summon
 		sprite.centerEmitter().start( Speck.factory( Speck.SCREAM ), 0.4f, 2 );
 		Sample.INSTANCE.play( CHALLENGE );
+		BossHealthBar.bleed(true);
+		Game.runOnRenderThread(new Callback() {
+			@Override
+			public void call() {
+				Music.INSTANCE.fadeOut(0.5f, new Callback() {
+					@Override
+					public void call() {
+						Music.INSTANCE.play(Assets.Music.CITY_BOSS_FINALE, true);
+					}
+				});
+			}
+		});
 	}
 
 	@Override
@@ -843,7 +863,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 					}
 				} else {
 					Char ch = Actor.findChar(pos);
-					ch.damage(Random.NormalIntRange(20, 40), summon);
+					ch.damage(Random.NormalIntRange(20, 40), this);
 					if (king.phase == 2){
 						if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)){
 							target.damage(target.HT/18, new KingDamager());
@@ -853,6 +873,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 					}
 					if (!ch.isAlive() && ch == Dungeon.hero) {
 						Dungeon.fail(DwarfKing.class);
+						GLog.n( Messages.capitalize(Messages.get(Char.class, "kill", Messages.get(DwarfKing.class, "name"))));
 					}
 				}
 
@@ -865,7 +886,7 @@ public class DwarfKing extends Mob implements Hero.DeathCommentator {
 
 		@Override
 		public void fx(boolean on) {
-			if (on && particles == null) {
+			if (on && (particles == null || particles.parent == null)) {
 				particles = CellEmitter.get(pos);
 
 				if (summon == DKGolem.class){

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,15 +27,12 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.items.artifacts.TalismanOfForesight;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
-import com.zrp200.rkpd2.mechanics.ShadowCaster;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
-import com.zrp200.rkpd2.utils.BArray;
+import com.watabou.utils.BArray;
 import com.watabou.utils.PathFinder;
-import com.watabou.utils.Random;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class DisplacingDart extends TippedDart {
 	
@@ -45,6 +42,11 @@ public class DisplacingDart extends TippedDart {
 
 	@Override
 	public int proc(Char attacker, Char defender, int damage) {
+
+		//only display enemies when processing charge shot
+		if (processingChargedShot && attacker.alignment == defender.alignment) {
+			return super.proc(attacker, defender, damage);
+		}
 
 		//attempts to teleport the enemy to a position 8-10 cells away from the hero
 		//prioritizes the closest visible cell to the defender, or closest non-visible if no visible are present
@@ -97,7 +99,7 @@ public class DisplacingDart extends TippedDart {
 					Dungeon.observe();
 					GameScene.updateFog();
 				} else if (!Dungeon.level.heroFOV[chosenPos]){
-					Buff.affect(attacker, TalismanOfForesight.CharAwareness.class, 5f).charID = defender.id();
+					Buff.append(attacker, TalismanOfForesight.CharAwareness.class, 5f).charID = defender.id();
 				}
 			}
 		

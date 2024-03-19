@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,11 @@
 package com.zrp200.rkpd2.actors.mobs.npcs;
 
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.blobs.CorrosiveGas;
+import com.zrp200.rkpd2.actors.blobs.ToxicGas;
+import com.zrp200.rkpd2.actors.buffs.AllyBuff;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Burning;
 import com.zrp200.rkpd2.actors.buffs.PrismaticGuard;
@@ -32,6 +36,8 @@ import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.armor.glyphs.AntiMagic;
 import com.zrp200.rkpd2.items.armor.glyphs.Brimstone;
+import com.zrp200.rkpd2.items.rings.RingOfAccuracy;
+import com.zrp200.rkpd2.items.rings.RingOfEvasion;
 import com.zrp200.rkpd2.levels.features.Chasm;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.PrismaticSprite;
@@ -88,7 +94,12 @@ public class PrismaticImage extends AbstractMirrorImage {
 			}
 		}
 	}
-	
+
+	@Override
+	public boolean isActive() {
+		return isAlive() || deathTimer > 0;
+	}
+
 	private static final String HEROID	= "hero_id";
 	private static final String TIMER	= "timer";
 	
@@ -149,6 +160,7 @@ public class PrismaticImage extends AbstractMirrorImage {
 		if (hero != null && hero.belongings.armor() != null && hero.belongings.armor().hasGlyph(AntiMagic.class, this)
 				&& AntiMagic.RESISTS.contains(src.getClass())){
 			dmg -= AntiMagic.drRoll(hero, hero.belongings.armor().buffedLvl());
+			dmg = Math.max(dmg, 0);
 		}
 		
 		super.damage(dmg, src);

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,8 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.PinCushion;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
+import com.zrp200.rkpd2.actors.mobs.DwarfKing;
 import com.zrp200.rkpd2.actors.mobs.Mimic;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.Statue;
@@ -70,23 +72,31 @@ public class Multiplicity extends Armor.Glyph {
 					((MirrorImage)m).duplicate( (Hero)defender );
 
 				} else {
+					Char toDuplicate = attacker;
+
+					if (toDuplicate instanceof Ratmogrify.TransmogRat){
+						toDuplicate = ((Ratmogrify.TransmogRat)attacker).getOriginal();
+					}
+
 					//FIXME should probably have a mob property for this
-					if (!(attacker instanceof Mob)
-							|| attacker.properties().contains(Char.Property.BOSS) || attacker.properties().contains(Char.Property.MINIBOSS)
-							|| attacker instanceof Mimic || attacker instanceof Statue || attacker instanceof NPC){
+					if (!(toDuplicate instanceof Mob)
+							|| toDuplicate.properties().contains(Char.Property.BOSS) || toDuplicate.properties().contains(Char.Property.MINIBOSS)
+							|| toDuplicate instanceof Mimic || toDuplicate instanceof Statue || toDuplicate instanceof NPC) {
 						m = Dungeon.level.createMob();
 					} else {
 						Actor.fixTime();
 						
-						m = (Mob)Bundlable.clone(attacker);
+						m = (Mob)Bundlable.clone(toDuplicate);
 						
 						if (m != null) {
 
 							m.pos = 0;
 							m.HP = m.HT;
-							if (m.buff(PinCushion.class) != null) {
-								m.remove(m.buff(PinCushion.class));
-							}
+
+							//don't duplicate stuck projectiles
+							m.remove(m.buff(PinCushion.class));
+							//don't duplicate pending damage to dwarf king
+							m.remove(DwarfKing.KingDamager.class);
 							
 							//If a thief has stolen an item, that item is not duplicated.
 							if (m instanceof Thief) {

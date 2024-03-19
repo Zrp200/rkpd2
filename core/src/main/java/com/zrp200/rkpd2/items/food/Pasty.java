@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,54 +21,20 @@
 
 package com.zrp200.rkpd2.items.food;
 
-import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.buffs.ArtifactRecharge;
 import com.zrp200.rkpd2.actors.buffs.Hunger;
-import com.zrp200.rkpd2.actors.buffs.Recharging;
 import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.effects.Speck;
+import com.zrp200.rkpd2.effects.FloatingText;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRecharging;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
-
-import java.util.Calendar;
+import com.zrp200.rkpd2.utils.Holiday;
+import com.watabou.noosa.audio.Sample;
 
 public class Pasty extends Food {
-
-	//TODO: implement fun stuff for other holidays
-	//TODO: probably should externalize this if I want to add any more festive stuff.
-	private enum Holiday{
-		NONE,
-		EASTER, //TBD
-		HWEEN,//2nd week of october though first day of november
-		XMAS //3rd week of december through first week of january
-	}
-
-	private static Holiday holiday;
-
-	static{
-
-		holiday = Holiday.NONE;
-
-		final Calendar calendar = Calendar.getInstance();
-		switch(calendar.get(Calendar.MONTH)){
-			case Calendar.JANUARY:
-				if (calendar.get(Calendar.WEEK_OF_MONTH) == 1)
-					holiday = Holiday.XMAS;
-				break;
-			case Calendar.OCTOBER:
-				if (calendar.get(Calendar.WEEK_OF_MONTH) >= 2)
-					holiday = Holiday.HWEEN;
-				break;
-			case Calendar.NOVEMBER:
-				if (calendar.get(Calendar.DAY_OF_MONTH) == 1)
-					holiday = Holiday.HWEEN;
-				break;
-			case Calendar.DECEMBER:
-				if (calendar.get(Calendar.WEEK_OF_MONTH) >= 3)
-					holiday = Holiday.XMAS;
-				break;
-		}
-	}
 
 	{
 		reset();
@@ -81,14 +47,23 @@ public class Pasty extends Food {
 	@Override
 	public void reset() {
 		super.reset();
-		switch(holiday){
-			case NONE:
+		switch(Holiday.getCurrentHoliday()){
+			case NONE: default:
 				image = ItemSpriteSheet.PASTY;
 				break;
-			case HWEEN:
+			case LUNAR_NEW_YEAR:
+				image = ItemSpriteSheet.STEAMED_FISH;
+				break;
+			case APRIL_FOOLS:
+				image = ItemSpriteSheet.CHOC_AMULET;
+				break;
+			case EASTER:
+				image = ItemSpriteSheet.EASTER_EGG;
+				break;
+			case HALLOWEEN:
 				image = ItemSpriteSheet.PUMPKIN_PIE;
 				break;
-			case XMAS:
+			case WINTER_HOLIDAYS:
 				image = ItemSpriteSheet.CANDY_CANE;
 				break;
 		}
@@ -96,18 +71,37 @@ public class Pasty extends Food {
 	
 	@Override
 	protected void satisfy(Hero hero) {
+		if (Holiday.getCurrentHoliday() == Holiday.LUNAR_NEW_YEAR){
+			//main item only clears 300 hunger on lunar new year...
+			energy = Hunger.HUNGRY;
+		}
+
 		super.satisfy(hero);
 		
-		switch(holiday){
-			case NONE:
+		switch(Holiday.getCurrentHoliday()){
+			default:
 				break; //do nothing extra
-			case HWEEN:
-				//heals for 10% max hp
-				hero.HP = Math.min(hero.HP + hero.HT/10, hero.HT);
-				hero.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
+			case LUNAR_NEW_YEAR:
+				//...but it also awards an extra item that restores 150 hunger
+				FishLeftover left = new FishLeftover();
+				if (!left.collect()){
+					Dungeon.level.drop(left, hero.pos).sprite.drop();
+				}
 				break;
-			case XMAS:
-				Buff.affect( hero, Recharging.class, 2f ); //half of a charge
+			case APRIL_FOOLS:
+				Sample.INSTANCE.play(Assets.Sounds.MIMIC);
+			case EASTER:
+				ArtifactRecharge.chargeArtifacts(hero, 2f);
+				ScrollOfRecharging.charge( hero );
+				break;
+			case HALLOWEEN:
+				//heals for 5% max hp, min of 3
+				int toHeal = Math.max(3, hero.HT/20);
+				hero.HP = Math.min(hero.HP + toHeal, hero.HT);
+				hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(toHeal), FloatingText.HEALING );
+				break;
+			case WINTER_HOLIDAYS:
+				hero.belongings.charge(0.5f); //2 turns worth
 				ScrollOfRecharging.charge( hero );
 				break;
 		}
@@ -115,24 +109,36 @@ public class Pasty extends Food {
 
 	@Override
 	public String name() {
-		switch(holiday){
+		switch(Holiday.getCurrentHoliday()){
 			case NONE: default:
-				return Messages.get(this, "pasty");
-			case HWEEN:
-				return Messages.get(this, "pie");
-			case XMAS:
-				return Messages.get(this, "cane");
+				return super.name();
+			case LUNAR_NEW_YEAR:
+				return Messages.get(this, "fish_name");
+			case APRIL_FOOLS:
+				return Messages.get(this, "amulet_name");
+			case EASTER:
+				return Messages.get(this, "egg_name");
+			case HALLOWEEN:
+				return Messages.get(this, "pie_name");
+			case WINTER_HOLIDAYS:
+				return Messages.get(this, "cane_name");
 		}
 	}
 
 	@Override
 	public String info() {
-		switch(holiday){
+		switch(Holiday.getCurrentHoliday()){
 			case NONE: default:
-				return Messages.get(this, "pasty_desc");
-			case HWEEN:
+				return super.info();
+			case LUNAR_NEW_YEAR:
+				return Messages.get(this, "fish_desc");
+			case APRIL_FOOLS:
+				return Messages.get(this, "amulet_desc");
+			case EASTER:
+				return Messages.get(this, "egg_desc");
+			case HALLOWEEN:
 				return Messages.get(this, "pie_desc");
-			case XMAS:
+			case WINTER_HOLIDAYS:
 				return Messages.get(this, "cane_desc");
 		}
 	}
@@ -140,5 +146,18 @@ public class Pasty extends Food {
 	@Override
 	public int value() {
 		return 20 * quantity;
+	}
+
+	public static class FishLeftover extends Food {
+
+		{
+			image = ItemSpriteSheet.FISH_LEFTOVER;
+			energy = Hunger.HUNGRY/2;
+		}
+
+		@Override
+		public int value() {
+			return 10 * quantity;
+		}
 	}
 }

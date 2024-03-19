@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,9 @@
 package com.zrp200.rkpd2.actors.mobs;
 
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.buffs.AscensionChallenge;
 import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.effects.FloatingText;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.PlateArmor;
@@ -44,14 +46,15 @@ public class ArmoredBrute extends Brute {
 	
 	@Override
 	public int drRoll() {
-		return super.drRoll() + Random.NormalIntRange(6, 10);
+		return super.drRoll() + 4; //4-12 DR total
 	}
 	
 	@Override
 	protected void triggerEnrage () {
 		Buff.affect(this, ArmoredRage.class).setShield(HT/2 + 1);
+		sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(HT/2 + 1), FloatingText.SHIELDING );
 		if (Dungeon.level.heroFOV[pos]) {
-			sprite.showStatus( CharSprite.NEGATIVE, Messages.get(this, "enraged") );
+			sprite.showStatus( CharSprite.WARNING, Messages.get(this, "enraged") );
 		}
 		spend( TICK );
 		hasRaged = true;
@@ -76,7 +79,7 @@ public class ArmoredBrute extends Brute {
 				return true;
 			}
 			
-			absorbDamage( 1 );
+			absorbDamage( Math.round(AscensionChallenge.statModifier(target)) );
 			
 			if (shielding() <= 0){
 				target.die(null);

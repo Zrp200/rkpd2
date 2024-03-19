@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,9 +45,9 @@ import com.zrp200.rkpd2.actors.buffs.Roots;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
-import com.zrp200.rkpd2.actors.hero.abilities.mage.ElementalBlast;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.effects.CellEmitter;
+import com.zrp200.rkpd2.effects.FloatingText;
 import com.zrp200.rkpd2.effects.MagicMissile;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.effects.particles.ShadowParticle;
@@ -57,8 +57,6 @@ import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.items.bombs.Bomb;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
 import com.zrp200.rkpd2.items.wands.WandOfBlastWave;
-import com.zrp200.rkpd2.items.wands.WandOfCorrosion;
-import com.zrp200.rkpd2.items.wands.WandOfCorruption;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.curses.Annoying;
 import com.zrp200.rkpd2.items.weapon.curses.Dazzling;
@@ -97,6 +95,8 @@ import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 public class ElementalStrike extends ArmorAbility {
@@ -155,7 +155,7 @@ public class ElementalStrike extends ArmorAbility {
 
 		Ballistica aim = new Ballistica(hero.pos, target, Ballistica.WONT_STOP);
 
-		int maxDist = 3 + hero.pointsInTalent(Talent.ELEMENTAL_REACH);
+		int maxDist = 4 + hero.pointsInTalent(Talent.ELEMENTAL_REACH);
 		int dist = Math.min(aim.dist, maxDist);
 
 		ConeAOE cone = new ConeAOE(aim,
@@ -204,6 +204,7 @@ public class ElementalStrike extends ArmorAbility {
 
 				if (enemy != null){
 					AttackIndicator.target(enemy);
+					oldEnemyPos = enemy.pos;
 					if (hero.attack(enemy, 1, 0, Char.INFINITE_ACCURACY)) {
 						Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);
 					}
@@ -249,18 +250,19 @@ public class ElementalStrike extends ArmorAbility {
 		//*** Blocking ***
 		} else if (ench instanceof Blocking){
 			if (targetsHit > 0){
-				Buff.affect(hero, Barrier.class).setShield(Math.round(5f*targetsHit*powerMulti));
+				int shield = Math.round(Math.round(6f*targetsHit*powerMulti));
+				Buff.affect(hero, Barrier.class).setShield(Math.round(6f*targetsHit*powerMulti));
+				hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shield), FloatingText.SHIELDING);
 			}
 
 		//*** Vampiric ***
 		} else if (ench instanceof Vampiric){
 			if (targetsHit > 0){
-				int heal = Math.round(2f*targetsHit*powerMulti);
+				int heal = Math.round(2.5f*targetsHit*powerMulti);
 				heal = Math.min( heal, hero.HT - hero.HP );
 				if (heal > 0){
 					hero.HP += heal;
-					hero.sprite.emitter().start( Speck.factory( Speck.HEALING ), 0.4f, 1 );
-					hero.sprite.showStatus( CharSprite.POSITIVE, Integer.toString( heal ) );
+					hero.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString( heal ), FloatingText.HEALING );
 				}
 			}
 
@@ -296,26 +298,26 @@ public class ElementalStrike extends ArmorAbility {
 		//*** Blazing ***
 		if (ench instanceof Blazing){
 			for (int cell : cone.cells) {
-				GameScene.add(Blob.seed(cell, Math.round(6 * powerMulti), Fire.class));
+				GameScene.add(Blob.seed(cell, Math.round(8 * powerMulti), Fire.class));
 			}
 
 		//*** Chilling ***
 		} else if (ench instanceof Chilling){
 			for (int cell : cone.cells) {
-				GameScene.add(Blob.seed(cell, Math.round(6 * powerMulti), Freezing.class));
+				GameScene.add(Blob.seed(cell, Math.round(8 * powerMulti), Freezing.class));
 			}
 
 		//*** Shocking ***
 		} else if (ench instanceof Shocking){
 			for (int cell : cone.cells) {
-				GameScene.add(Blob.seed(cell, Math.round(6 * powerMulti), Electricity.class));
+				GameScene.add(Blob.seed(cell, Math.round(8 * powerMulti), Electricity.class));
 			}
 
 		//*** Blooming ***
 		} else if (ench instanceof Blooming){
 			ArrayList<Integer> cells = new ArrayList<>(cone.cells);
 			Random.shuffle(cells);
-			int grassToPlace = Math.round(6*powerMulti);
+			int grassToPlace = Math.round(8*powerMulti);
 
 			//start spawning furrowed grass if exp is not being gained
 			// each hero level is worth 20 normal uses, but just 5 if no enemies are present
@@ -350,6 +352,8 @@ public class ElementalStrike extends ArmorAbility {
 		}
 	}
 
+	private int oldEnemyPos;
+
 	//effects that affect the characters within the cone AOE
 	private void perCharEffect(ConeAOE cone, Hero hero, Char primaryTarget, Weapon.Enchantment ench) {
 
@@ -366,7 +370,7 @@ public class ElementalStrike extends ArmorAbility {
 		//*** no enchantment ***
 		if (ench == null) {
 			for (Char ch : affected){
-				ch.damage(Math.round(powerMulti*Random.NormalIntRange(5, 10)), ElementalStrike.this);
+				ch.damage(Math.round(powerMulti*Random.NormalIntRange(6, 12)), ElementalStrike.this);
 			}
 
 		//*** Kinetic ***
@@ -374,7 +378,7 @@ public class ElementalStrike extends ArmorAbility {
 			if (storedKineticDamage > 0) {
 				for (Char ch : affected) {
 					if (ch != primaryTarget) {
-						ch.damage(Math.round(storedKineticDamage * 0.33f * powerMulti), ench);
+						ch.damage(Math.round(storedKineticDamage * 0.4f * powerMulti), ench);
 					}
 				}
 				storedKineticDamage = 0;
@@ -387,28 +391,39 @@ public class ElementalStrike extends ArmorAbility {
 		//*** Blooming ***
 		} else if (ench instanceof Blooming){
 			for (Char ch : affected){
-				Buff.affect(ch, Roots.class, Math.round(5f*powerMulti));
+				Buff.affect(ch, Roots.class, Math.round(6f*powerMulti));
 			}
 
 		//*** Elastic ***
 		} else if (ench instanceof Elastic){
-			//TODO sort affected by distance first? So further ones get knocked back first
+
+			//sorts affected from furthest to closest
+			Collections.sort(affected, new Comparator<Char>() {
+				@Override
+				public int compare(Char a, Char b) {
+					return Dungeon.level.distance(hero.pos, a.pos) - Dungeon.level.distance(hero.pos, b.pos);
+				}
+			});
+
 			for (Char ch : affected){
+				if (ch == primaryTarget && oldEnemyPos != primaryTarget.pos) continue;
+
 				Ballistica aim = new Ballistica(hero.pos, ch.pos, Ballistica.WONT_STOP);
-				int knockback = Math.round(4*powerMulti);
+				int knockback = Math.round(5*powerMulti);
 				WandOfBlastWave.throwChar(ch,
 						new Ballistica(ch.pos, aim.collisionPos, Ballistica.MAGIC_BOLT),
 						knockback,
 						true,
 						true,
-						ElementalStrike.this.getClass());
+						ElementalStrike.this);
 			}
 
 		//*** Lucky ***
 		} else if (ench instanceof Lucky){
 			for (Char ch : affected){
-				if (Random.Float() < 0.1f*powerMulti &&
-						ch.buff(ElementalStrikeLuckyTracker.class) == null) {
+				if (ch.alignment == Char.Alignment.ENEMY
+						&& Random.Float() < 0.125f*powerMulti
+						&& ch.buff(ElementalStrikeLuckyTracker.class) == null) {
 					Dungeon.level.drop(Lucky.genLoot(), ch.pos).sprite.drop();
 					Lucky.showFlare(ch.sprite);
 					Buff.affect(ch, ElementalStrikeLuckyTracker.class);
@@ -419,7 +434,7 @@ public class ElementalStrike extends ArmorAbility {
 		} else if (ench instanceof Projecting){
 			for (Char ch : affected){
 				if (ch != primaryTarget) {
-					ch.damage(Math.round(hero.damageRoll() * 0.25f * powerMulti), ench);
+					ch.damage(Math.round(hero.damageRoll() * 0.3f * powerMulti), ench);
 				}
 			}
 
@@ -443,7 +458,7 @@ public class ElementalStrike extends ArmorAbility {
 						&& ch instanceof Mob
 						&& ch.isAlive()) {
 					float hpMissing = 1f - (ch.HP / (float)ch.HT);
-					float chance = 0.04f + 0.16f*hpMissing; //4-20%
+					float chance = 0.05f + 0.2f*hpMissing; //5-25%
 					if (Random.Float() < chance*powerMulti){
 						Corruption.corruptionHeal(ch);
 						AllyBuff.affectAndLoot((Mob) ch, hero, Corruption.class);
@@ -467,9 +482,9 @@ public class ElementalStrike extends ArmorAbility {
 		//*** Annoying ***
 		} else if (ench instanceof Annoying){
 			for (Char ch : affected){
-				if (Random.Float() < 0.1f*powerMulti){
+				if (Random.Float() < 0.2f*powerMulti){
 					//TODO totally should add a bit of dialogue here
-					Buff.affect(ch, Amok.class, 5f);
+					Buff.affect(ch, Amok.class, 6f);
 				}
 			}
 
@@ -494,7 +509,7 @@ public class ElementalStrike extends ArmorAbility {
 		} else if (ench instanceof Dazzling){
 			for (Char ch : affected){
 				if (Random.Float() < 0.5f*powerMulti){
-					Buff.affect(ch, Blindness.class, 5f);
+					Buff.affect(ch, Blindness.class, 6f);
 				}
 			}
 
@@ -502,20 +517,20 @@ public class ElementalStrike extends ArmorAbility {
 		} else if (ench instanceof Explosive){
 			if (Random.Float() < 0.5f*powerMulti){
 				Char exploding = Random.element(affected);
-				if (exploding != null) new Bomb.MagicalBomb().explode(exploding.pos);
+				if (exploding != null) new Bomb.ConjuredBomb().explode(exploding.pos);
 			}
 
 		//*** Sacrificial ***
 		} else if (ench instanceof Sacrificial){
 			for (Char ch : affected){
-				Buff.affect(ch, Bleeding.class).set(10f*powerMulti);
+				Buff.affect(ch, Bleeding.class).set(12f*powerMulti);
 			}
 
 		//*** Wayward ***
 		} else if (ench instanceof Wayward){
 			for (Char ch : affected){
 				if (Random.Float() < 0.5f*powerMulti){
-					Buff.affect(ch, Hex.class, 5f);
+					Buff.affect(ch, Hex.class, 6f);
 				}
 			}
 
@@ -523,7 +538,7 @@ public class ElementalStrike extends ArmorAbility {
 		} else if (ench instanceof Polarized){
 			for (Char ch : affected){
 				if (Random.Float() < 0.5f*powerMulti){
-					ch.damage(Random.NormalIntRange(20, 30), ElementalStrike.this);
+					ch.damage(Random.NormalIntRange(24, 36), ElementalStrike.this);
 				}
 			}
 
@@ -531,7 +546,7 @@ public class ElementalStrike extends ArmorAbility {
 		} else if (ench instanceof Friendly){
 			for (Char ch : affected){
 				if (Random.Float() < 0.5f*powerMulti){
-					Buff.affect(ch, Charm.class, 5f).target = hero;
+					Buff.affect(ch, Charm.class, 6f).object = hero.id();
 				}
 			}
 		}

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 
 package com.zrp200.rkpd2.items.weapon.missiles.darts;
 
-import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Healing;
@@ -37,7 +36,8 @@ public class HealingDart extends TippedDart {
 	@Override
 	public int proc(Char attacker, Char defender, int damage) {
 
-		if (defender == attacker){
+		//do nothing to the hero or enemies when processing charged shot
+		if (processingChargedShot && (defender == attacker || attacker.alignment != defender.alignment)){
 			return super.proc(attacker, defender, damage);
 		}
 

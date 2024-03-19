@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -153,42 +153,46 @@ public class WildMagic extends ArmorAbility {
 		hero.sprite.zap(cell);
 
 		float startTime = Game.timeTotal;
-		if (!cur.cursed) {
-			cur.fx(aim, new Callback() {
-				@Override
-				public void call() {
-					cur.onZap(aim);
-					if (Game.timeTotal - startTime < 0.33f){
-						hero.sprite.parent.add(new Delayer(0.33f - (Game.timeTotal - startTime)) {
+		if (cur.tryToZap(hero, cell)) {
+			if (!cur.cursed) {
+				cur.fx(aim, new Callback() {
+					@Override
+					public void call() {
+						cur.onZap(aim);
+						if (Game.timeTotal - startTime < 0.33f) {
+							hero.sprite.parent.add(new Delayer(0.33f - (Game.timeTotal - startTime)) {
+								@Override
+								protected void onComplete() {
+									afterZap(cur, wands, hero, cell);
+								}
+							});
+						} else {
+							afterZap(cur, wands, hero, cell);
+						}
+					}
+				});
+			} else {
+				CursedWand.cursedZap(cur,
+						hero,
+						new Ballistica(hero.pos, cell, Ballistica.MAGIC_BOLT),
+						new Callback() {
 							@Override
-							protected void onComplete() {
-								afterZap(cur, wands, hero, cell);
+							public void call() {
+								if (Game.timeTotal - startTime < 0.33f) {
+									hero.sprite.parent.add(new Delayer(0.33f - (Game.timeTotal - startTime)) {
+										@Override
+										protected void onComplete() {
+											afterZap(cur, wands, hero, cell);
+										}
+									});
+								} else {
+									afterZap(cur, wands, hero, cell);
+								}
 							}
 						});
-					} else {
-						afterZap(cur, wands, hero, cell);
-					}
-				}
-			});
+			}
 		} else {
-			CursedWand.cursedZap(cur,
-					hero,
-					new Ballistica(hero.pos, cell, Ballistica.MAGIC_BOLT),
-					new Callback() {
-						@Override
-						public void call() {
-							if (Game.timeTotal - startTime < 0.33f){
-								hero.sprite.parent.add(new Delayer(0.33f - (Game.timeTotal - startTime)) {
-									@Override
-									protected void onComplete() {
-										afterZap(cur, wands, hero, cell);
-									}
-								});
-							} else {
-								afterZap(cur, wands, hero, cell);
-							}
-						}
-					});
+			afterZap(cur, wands, hero, cell);
 		}
 	}
 

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,11 +25,11 @@ import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.actors.hero.Talent;
-import com.zrp200.rkpd2.effects.Speck;
+import com.zrp200.rkpd2.effects.FloatingText;
 import com.zrp200.rkpd2.items.potions.PotionOfHealing;
 import com.zrp200.rkpd2.items.quest.GooBlob;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.watabou.noosa.Image;
@@ -51,7 +51,6 @@ public class ElixirOfAquaticRejuvenation extends Elixir {
 		} else {
 			Buff.affect(hero, AquaHealing.class).set(Math.round(hero.HT * 1.5f));
 		}
-		Talent.onHealingPotionUsed( hero );
 	}
 	
 	@Override
@@ -84,13 +83,23 @@ public class ElixirOfAquaticRejuvenation extends Elixir {
 				} else {
 					healAmt = (float)Math.floor(healAmt);
 				}
-				target.HP += healAmt;
-				left -= healAmt;
-				target.sprite.emitter().burst( Speck.factory( Speck.HEALING ), 1 );
+				target.HP += (int)healAmt;
+				left -= (int)healAmt;
+				target.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString((int)healAmt), FloatingText.HEALING );
+
+				if (target.HP >= target.HT) {
+					target.HP = target.HT;
+					if (target instanceof Hero) {
+						((Hero) target).resting = false;
+					}
+				}
 			}
 			
 			if (left <= 0){
 				detach();
+				if (target instanceof Hero) {
+					((Hero) target).resting = false;
+				}
 			} else {
 				spend(TICK);
 			}

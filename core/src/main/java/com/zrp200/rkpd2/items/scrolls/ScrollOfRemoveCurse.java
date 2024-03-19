@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,10 +21,13 @@
 
 package com.zrp200.rkpd2.items.scrolls;
 
+import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.buffs.Degrade;
 import com.zrp200.rkpd2.actors.hero.Belongings;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.mobs.TormentedSpirit;
 import com.zrp200.rkpd2.effects.Flare;
 import com.zrp200.rkpd2.effects.particles.ShadowParticle;
 import com.zrp200.rkpd2.items.EquipableItem;
@@ -35,12 +38,41 @@ import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.PathFinder;
 
 public class ScrollOfRemoveCurse extends InventoryScroll {
 
 	{
 		icon = ItemSpriteSheet.Icons.SCROLL_REMCURSE;
 		preferredBag = Belongings.Backpack.class;
+	}
+
+	@Override
+	public void doRead() {
+
+		TormentedSpirit spirit = null;
+		for (int i : PathFinder.NEIGHBOURS8){
+			if (Actor.findChar(curUser.pos+i) instanceof TormentedSpirit){
+				spirit = (TormentedSpirit) Actor.findChar(curUser.pos+i);
+			}
+		}
+		if (spirit != null){
+			identify();
+			Sample.INSTANCE.play( Assets.Sounds.READ );
+			readAnimation();
+
+			new Flare( 6, 32 ).show( curUser.sprite, 2f );
+
+			if (curUser.buff(Degrade.class) != null) {
+				Degrade.detach(curUser, Degrade.class);
+			}
+
+			GLog.p(Messages.get(this, "spirit"));
+			spirit.cleanse();
+		} else {
+			super.doRead();
+		}
 	}
 
 	@Override

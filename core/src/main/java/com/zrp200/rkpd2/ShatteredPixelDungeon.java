@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
  */
 
 package com.zrp200.rkpd2;
+
+import static com.watabou.utils.Bundle.addAlias;
 
 import com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfMetamorphosis;
 import com.zrp200.rkpd2.scenes.GameScene;
@@ -46,71 +48,88 @@ public class ShatteredPixelDungeon extends Game {
 
 	// shattered versions
 	//versions older than v1.2.3 are no longer supported, and data from them is ignored
-	public static final int v1_2_3  = v0_3_0/*628*/;
+	public static final int v1_2_3  = v0_3_0/*628*/; //v1.2.3 is kept for now, for old rankings score logic
 	public static final int v1_3_2  = V1_0_0/*648*/;
 	public static final int v1_4_3  = 668;
 
-	public static final int v2_0_0  = 684;
+
+	public static final int v2_0_2 = 700;
+	public static final int v2_3_0 = 765;
 	
 
 	public ShatteredPixelDungeon( PlatformSupport platform ) {
 		super( sceneClass == null ? WelcomeScene.class : sceneClass, platform );
 
-		//pre-v1.3.0
-		com.watabou.utils.Bundle.addAlias(
+		//pre-v2.3.0
+		addAlias(
 				com.zrp200.rkpd2.actors.buffs.Bleeding.class,
 				"com.zrp200.rkpd2.levels.features.Chasm$FallBleed" );
-		// REJECTED :D
-//		com.watabou.utils.Bundle.addAlias(
-//				com.zrp200.rkpd2.plants.Mageroyal.class,
-//				"com.zrp200.rkpd2.plants.Dreamfoil" );
-//		com.watabou.utils.Bundle.addAlias(
-//				com.zrp200.rkpd2.plants.Mageroyal.Seed.class,
-//				"com.zrp200.rkpd2.plants.Dreamfoil$Seed" );
+		addAlias(
+				com.zrp200.rkpd2.items.bombs.Bomb.ConjuredBomb.class,
+				"com.zrp200.rkpd2.items.bombs.Bomb$MagicalBomb" );
 
-		com.watabou.utils.Bundle.addAlias(
+		//pre-v2.2.0
+		addAlias(
 				com.zrp200.rkpd2.items.weapon.curses.Dazzling.class,
 				"com.zrp200.rkpd2.items.weapon.curses.Exhausting" );
-		com.watabou.utils.Bundle.addAlias(
-				com.zrp200.rkpd2.items.weapon.curses.Dazzling.class,
-				"com.zrp200.rkpd2.items.weapon.curses.Exhausting" );
-		com.watabou.utils.Bundle.addAlias(
+		addAlias(
 				com.zrp200.rkpd2.items.weapon.curses.Explosive.class,
 				"com.zrp200.rkpd2.items.weapon.curses.Fragile" );
 
 		//pre-v1.2.0
-		com.watabou.utils.Bundle.addAlias(
+		addAlias(
 				com.zrp200.rkpd2.items.weapon.missiles.darts./*CleansingDart*/DreamDart.class,
 				"com.zrp200.rkpd2.items.weapon.missiles.darts.SleepDart" );
 
-		com.watabou.utils.Bundle.addAlias(
+		addAlias(
 				com.zrp200.rkpd2.levels.rooms.special.CrystalVaultRoom.class,
 				"com.zrp200.rkpd2.levels.rooms.special.VaultRoom" );
 
 		// no idea if this is needed.
-		com.watabou.utils.Bundle.addAlias(com.zrp200.rkpd2.actors.buffs.SoulMark.class,
+		addAlias(com.zrp200.rkpd2.actors.buffs.SoulMark.class,
 				"com.zrp200.rkpd2.actors.buffs.SoulMark.DelayedMark");
 
 		//pre-v1.1.0
-		com.watabou.utils.Bundle.addAlias(
+		addAlias(
 				com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfDread.class,
 				"com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfPetrification" );
-		com.watabou.utils.Bundle.addAlias(
+		addAlias(
 				com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfSirensSong.class,
 				"com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfAffection" );
-		com.watabou.utils.Bundle.addAlias(
+		addAlias(
 				com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfChallenge.class,
 				"com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfConfusion" );
-		com.watabou.utils.Bundle.addAlias(
+		addAlias(
 				com.zrp200.rkpd2.items.potions.exotic.PotionOfDivineInspiration.class,
 				"com.zrp200.rkpd2.items.potions.exotic.PotionOfHolyFuror" );
-		com.watabou.utils.Bundle.addAlias(
+		addAlias(
 				com.zrp200.rkpd2.items.potions.exotic.PotionOfMastery.class,
 				"com.zrp200.rkpd2.items.potions.exotic.PotionOfAdrenalineSurge" );
-		com.watabou.utils.Bundle.addAlias(
+		addAlias(
 				ScrollOfMetamorphosis.class,
 				"com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfPolymorph" );
 
+		addAlias(
+				com.zrp200.rkpd2.levels.rooms.quest.BlacksmithRoom.QuestEntrance.class,
+				"com.zrp200.rkpd2.levels.rooms.standard.BlacksmithRoom$QuestEntrance" );
+		addAlias(
+				com.zrp200.rkpd2.levels.rooms.quest.BlacksmithRoom.class,
+				"com.zrp200.rkpd2.levels.rooms.standard.BlacksmithRoom" );
+		addAlias(
+				com.zrp200.rkpd2.levels.rooms.quest.MassGraveRoom.class,
+				"com.zrp200.rkpd2.levels.rooms.special.MassGraveRoom" );
+		addAlias(
+				com.zrp200.rkpd2.levels.rooms.quest.MassGraveRoom.Bones.class,
+				"com.zrp200.rkpd2.levels.rooms.special.MassGraveRoom$Bones" );
+		addAlias(
+				com.zrp200.rkpd2.levels.rooms.quest.RitualSiteRoom.class,
+				"com.zrp200.rkpd2.levels.rooms.standard.RitualSiteRoom" );
+		addAlias(
+				com.zrp200.rkpd2.levels.rooms.quest.RitualSiteRoom.RitualMarker.class,
+				"com.zrp200.rkpd2.levels.rooms.standard.RitualSiteRoom$RitualMarker" );
+		addAlias(
+				com.zrp200.rkpd2.levels.rooms.quest.RotGardenRoom.class,
+				"com.zrp200.rkpd2.levels.rooms.special.RotGardenRoom" );
 	}
 	
 	@Override

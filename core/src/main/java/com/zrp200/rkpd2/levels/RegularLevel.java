@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.levels;
 
 import com.zrp200.rkpd2.Bones;
+import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Actor;
@@ -29,7 +30,6 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.blobs.Blob;
 import com.zrp200.rkpd2.actors.blobs.SacrificialFire;
 import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.mobs.GoldenMimic;
 import com.zrp200.rkpd2.actors.mobs.Mimic;
@@ -39,6 +39,7 @@ import com.zrp200.rkpd2.actors.mobs.npcs.Ghost;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.Torch;
 import com.zrp200.rkpd2.items.artifacts.Artifact;
 import com.zrp200.rkpd2.items.artifacts.DriedRose;
 import com.zrp200.rkpd2.items.food.Food;
@@ -49,7 +50,6 @@ import com.zrp200.rkpd2.items.journal.RegionLorePage;
 import com.zrp200.rkpd2.items.keys.GoldenKey;
 import com.zrp200.rkpd2.items.keys.Key;
 import com.zrp200.rkpd2.journal.Document;
-import com.zrp200.rkpd2.journal.Journal;
 import com.zrp200.rkpd2.journal.Notes;
 import com.zrp200.rkpd2.levels.builders.Builder;
 import com.zrp200.rkpd2.levels.builders.FigureEightBuilder;
@@ -130,7 +130,7 @@ public abstract class RegularLevel extends Level {
 			do {
 				s = StandardRoom.createRoom();
 			} while (!s.setSizeCat( standards-i ));
-			i += s.sizeCat.roomValue-1;
+			i += s.sizeFactor()-1;
 			initRooms.add(s);
 		}
 		
@@ -221,7 +221,7 @@ public abstract class RegularLevel extends Level {
 		ArrayList<Room> stdRooms = new ArrayList<>();
 		for (Room room : rooms) {
 			if (room instanceof StandardRoom && room != roomEntrance) {
-				for (int i = 0; i < ((StandardRoom) room).sizeCat.roomValue; i++) {
+				for (int i = 0; i < ((StandardRoom) room).mobSpawnWeight(); i++) {
 					stdRooms.add(room);
 				}
 			}
@@ -247,6 +247,7 @@ public abstract class RegularLevel extends Level {
 					|| solid[mob.pos]
 					|| !roomToSpawn.canPlaceCharacter(cellToPoint(mob.pos), this)
 					|| mob.pos == exit()
+					|| traps.get(mob.pos) != null || plants.get(mob.pos) != null
 					|| (!openSpace[mob.pos] && mob.properties().contains(Char.Property.LARGE))));
 
 			if (tries >= 0) {
@@ -261,7 +262,12 @@ public abstract class RegularLevel extends Level {
 					do {
 						mob.pos = pointToCell(roomToSpawn.random());
 						tries--;
-					} while (tries >= 0 && (findMob(mob.pos) != null || !passable[mob.pos] || solid[mob.pos] || mob.pos == exit()
+					} while (tries >= 0 && (findMob(mob.pos) != null
+							|| !passable[mob.pos]
+							|| solid[mob.pos]
+							|| !roomToSpawn.canPlaceCharacter(cellToPoint(mob.pos), this)
+							|| mob.pos == exit()
+							|| traps.get(mob.pos) != null || plants.get(mob.pos) != null
 							|| (!openSpace[mob.pos] && mob.properties().contains(Char.Property.LARGE))));
 
 					if (tries >= 0) {
@@ -388,7 +394,7 @@ public abstract class RegularLevel extends Level {
 					(toDrop.isUpgradable() && Random.Int(4 - toDrop.level()) == 0)){
 
 				if (Dungeon.depth > 1 && Random.Int(10) == 0 && findMob(cell) == null){
-					mobs.add(Mimic.spawnAt(cell, toDrop, GoldenMimic.class));
+					mobs.add(Mimic.spawnAt(cell, GoldenMimic.class, toDrop));
 				} else {
 					Heap dropped = drop(toDrop, cell);
 					if (heaps.get(cell) == dropped) {
@@ -415,42 +421,68 @@ public abstract class RegularLevel extends Level {
 			}
 		}
 
-		//use a separate generator for this to prevent held items, meta progress, and talents from affecting levelgen
-		//we can use a random long for the seed as it will be the same long every time
+		//use separate generator(s) for this to prevent held items, meta progress, and talents from affecting levelgen
+		//we can use a random long for these as they will be the same longs every time
+
 		Random.pushGenerator( Random.Long() );
-
-		Item item = Bones.get();
-		if (item != null) {
-			int cell = randomDropCell();
-			if (map[cell] == Terrain.HIGH_GRASS || map[cell] == Terrain.FURROWED_GRASS) {
-				map[cell] = Terrain.GRASS;
-				losBlocking[cell] = false;
-			}
-			drop( item, cell ).setHauntedIfCursed().type = Heap.Type.REMAINS;
-		}
-
-		DriedRose rose = Dungeon.hero.belongings.getItem( DriedRose.class );
-		if (rose != null && rose.isIdentified() && !rose.cursed && Ghost.Quest.completed()){
-			//aim to drop 1 petal every 2 floors
-			int petalsNeeded = (int) Math.ceil((float)((Dungeon.depth / 2) - rose.droppedPetals) / 3);
-
-			for (int i=1; i <= petalsNeeded; i++) {
-				//the player may miss a single petal and still max their rose.
-				if (rose.droppedPetals < 11) {
-					item = new DriedRose.Petal();
-					int cell = randomDropCell();
-					drop( item, cell ).type = Heap.Type.HEAP;
+			if (Dungeon.isChallenged(Challenges.DARKNESS)){
+				int cell = randomDropCell();
+				if (map[cell] == Terrain.HIGH_GRASS || map[cell] == Terrain.FURROWED_GRASS) {
+					map[cell] = Terrain.GRASS;
+					losBlocking[cell] = false;
+				}
+				drop( new Torch(), cell );
+				//add a second torch to help with the larger floor
+				if (feeling == Feeling.LARGE){
+					cell = randomDropCell();
 					if (map[cell] == Terrain.HIGH_GRASS || map[cell] == Terrain.FURROWED_GRASS) {
 						map[cell] = Terrain.GRASS;
 						losBlocking[cell] = false;
 					}
-					rose.droppedPetals++;
+					drop( new Torch(), cell );
 				}
 			}
-		}
+		Random.popGenerator();
+
+		Random.pushGenerator( Random.Long() );
+			ArrayList<Item> bonesItems = Bones.get();
+			if (bonesItems != null) {
+				int cell = randomDropCell();
+				if (map[cell] == Terrain.HIGH_GRASS || map[cell] == Terrain.FURROWED_GRASS) {
+					map[cell] = Terrain.GRASS;
+					losBlocking[cell] = false;
+				}
+				for (Item i : bonesItems) {
+					drop(i, cell).setHauntedIfCursed().type = Heap.Type.REMAINS;
+				}
+			}
+		Random.popGenerator();
+
+		Random.pushGenerator( Random.Long() );
+			DriedRose rose = Dungeon.hero.belongings.getItem( DriedRose.class );
+			if (rose != null && rose.isIdentified() && !rose.cursed && Ghost.Quest.completed()){
+				//aim to drop 1 petal every 2 floors
+				int petalsNeeded = (int) Math.ceil((float)((Dungeon.depth / 2) - rose.droppedPetals) / 3);
+
+				for (int i=1; i <= petalsNeeded; i++) {
+					//the player may miss a single petal and still max their rose.
+					if (rose.droppedPetals < 11) {
+						Item item = new DriedRose.Petal();
+						int cell = randomDropCell();
+						drop( item, cell ).type = Heap.Type.HEAP;
+						if (map[cell] == Terrain.HIGH_GRASS || map[cell] == Terrain.FURROWED_GRASS) {
+							map[cell] = Terrain.GRASS;
+							losBlocking[cell] = false;
+						}
+						rose.droppedPetals++;
+					}
+				}
+			}
+		Random.popGenerator();
 
 		//cached rations try to drop in a special room on floors 2/3/4/6/7/8, to a max of 4/6 (3/5 for rogue, but actual rations)
-		if (Dungeon.hero.hasTalent(Talent.CACHED_RATIONS,Talent.ROYAL_PRIVILEGE)) {
+		Random.pushGenerator( Random.Long() );
+			if (Dungeon.hero.hasTalent(Talent.CACHED_RATIONS,Talent.ROYAL_PRIVILEGE)) {
 			Talent.CachedRationsDropped dropped = Buff.affect(Dungeon.hero, Talent.CachedRationsDropped.class);
 			int large = Dungeon.hero.pointsInTalent(Talent.CACHED_RATIONS),
 					small = Dungeon.hero.pointsInTalent(Talent.ROYAL_PRIVILEGE);
@@ -479,93 +511,95 @@ public abstract class RegularLevel extends Level {
 					dropped.countUp(1);
 				}
 			}
-		}
+		}Random.popGenerator();
 
 		//guide pages
-		Collection<String> allPages = Document.ADVENTURERS_GUIDE.pageNames();
-		ArrayList<String> missingPages = new ArrayList<>();
-		for ( String page : allPages){
-			if (!Document.ADVENTURERS_GUIDE.isPageFound(page)){
-				missingPages.add(page);
+		Random.pushGenerator( Random.Long() );
+			Collection<String> allPages = Document.ADVENTURERS_GUIDE.pageNames();
+			ArrayList<String> missingPages = new ArrayList<>();
+			for ( String page : allPages){
+				if (!Document.ADVENTURERS_GUIDE.isPageFound(page)){
+					missingPages.add(page);
+				}
 			}
-		}
 
-		//a total of 6 pages drop randomly, the rest are specially dropped or are given at the start
-		missingPages.remove(Document.GUIDE_SEARCHING);
+			//a total of 6 pages drop randomly, the rest are specially dropped or are given at the start
+			missingPages.remove(Document.GUIDE_SEARCHING);
 
-		//chance to find a page is 0/25/50/75/100% for floors 1/2/3/4/5+
-		float dropChance = 0.25f*(Dungeon.depth-1);
-		if (!missingPages.isEmpty() && Random.Float() < dropChance){
-			GuidePage p = new GuidePage();
-			p.page(missingPages.get(0));
-			int cell = randomDropCell();
-			if (map[cell] == Terrain.HIGH_GRASS || map[cell] == Terrain.FURROWED_GRASS) {
-				map[cell] = Terrain.GRASS;
-				losBlocking[cell] = false;
+			//chance to find a page is 0/25/50/75/100% for floors 1/2/3/4/5+
+			float dropChance = 0.25f*(Dungeon.depth-1);
+			if (!missingPages.isEmpty() && Random.Float() < dropChance){
+				GuidePage p = new GuidePage();
+				p.page(missingPages.get(0));
+				int cell = randomDropCell();
+				if (map[cell] == Terrain.HIGH_GRASS || map[cell] == Terrain.FURROWED_GRASS) {
+					map[cell] = Terrain.GRASS;
+					losBlocking[cell] = false;
+				}
+				drop( p, cell );
 			}
-			drop( p, cell );
-		}
+		Random.popGenerator();
 
 		//lore pages
 		//TODO a fair bit going on here, I might want to refactor/externalize this in the future
-		if (Document.ADVENTURERS_GUIDE.allPagesFound()){
+		Random.pushGenerator( Random.Long() );
+			if (Document.ADVENTURERS_GUIDE.allPagesFound()){
 
-			int region = 1+(Dungeon.depth-1)/5;
+				int region = 1+(Dungeon.depth-1)/5;
 
-			Document regionDoc;
-			switch( region ){
-				default: regionDoc = null; break;
-				case 1: regionDoc = Document.SEWERS_GUARD; break;
-				case 2: regionDoc = Document.PRISON_WARDEN; break;
-				case 3: regionDoc = Document.CAVES_EXPLORER; break;
-				case 4: regionDoc = Document.CITY_WARLOCK; break;
-				case 5: regionDoc = Document.HALLS_KING; break;
-			}
+				Document regionDoc;
+				switch( region ){
+					default: regionDoc = null; break;
+					case 1: regionDoc = Document.SEWERS_GUARD; break;
+					case 2: regionDoc = Document.PRISON_WARDEN; break;
+					case 3: regionDoc = Document.CAVES_EXPLORER; break;
+					case 4: regionDoc = Document.CITY_WARLOCK; break;
+					case 5: regionDoc = Document.HALLS_KING; break;
+				}
 
-			if (regionDoc != null && !regionDoc.allPagesFound()) {
+				if (regionDoc != null && !regionDoc.allPagesFound()) {
 
-				Dungeon.LimitedDrops limit = limitedDocs.get(regionDoc);
+					Dungeon.LimitedDrops limit = limitedDocs.get(regionDoc);
 
-				if (limit == null || !limit.dropped()) {
+					if (limit == null || !limit.dropped()) {
 
-					float totalPages = 0;
-					float pagesFound = 0;
-					String pageToDrop = null;
-					for (String page : regionDoc.pageNames()) {
-						totalPages++;
-						if (!regionDoc.isPageFound(page)) {
-							if (pageToDrop == null) {
-								pageToDrop = page;
+						float totalPages = 0;
+						float pagesFound = 0;
+						String pageToDrop = null;
+						for (String page : regionDoc.pageNames()) {
+							totalPages++;
+							if (!regionDoc.isPageFound(page)) {
+								if (pageToDrop == null) {
+									pageToDrop = page;
+								}
+							} else {
+								pagesFound++;
 							}
-						} else {
-							pagesFound++;
 						}
-					}
-					float percentComplete = pagesFound / totalPages;
+						float percentComplete = pagesFound / totalPages;
 
-					// initial value is the first floor in a region
-					int targetFloor = 5*(region-1) + 1;
-					targetFloor += Math.round(3*percentComplete);
+						// initial value is the first floor in a region
+						int targetFloor = 5*(region-1) + 1;
+						targetFloor += Math.round(3*percentComplete);
 
-					//TODO maybe drop last page in boss floor with custom logic?
-					if (Dungeon.depth >= targetFloor){
-						DocumentPage page = RegionLorePage.pageForDoc(regionDoc);
-						page.page(pageToDrop);
-						int cell = randomDropCell();
-						if (map[cell] == Terrain.HIGH_GRASS || map[cell] == Terrain.FURROWED_GRASS) {
-							map[cell] = Terrain.GRASS;
-							losBlocking[cell] = false;
+						//TODO maybe drop last page in boss floor with custom logic?
+						if (Dungeon.depth >= targetFloor){
+							DocumentPage page = RegionLorePage.pageForDoc(regionDoc);
+							page.page(pageToDrop);
+							int cell = randomDropCell();
+							if (map[cell] == Terrain.HIGH_GRASS || map[cell] == Terrain.FURROWED_GRASS) {
+								map[cell] = Terrain.GRASS;
+								losBlocking[cell] = false;
+							}
+							drop(page, cell);
+							if (limit != null) limit.drop();
 						}
-						drop(page, cell);
-						if (limit != null) limit.drop();
+
 					}
 
 				}
 
 			}
-
-		}
-
 		Random.popGenerator();
 
 	}

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@ package com.zrp200.rkpd2.items.stones;
 
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.levels.traps.Trap;
@@ -31,7 +30,6 @@ import com.zrp200.rkpd2.mechanics.ShadowCaster;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Point;
-import com.watabou.utils.Random;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -77,7 +75,8 @@ public class StoneOfDisarming extends Runestone {
 				curr++;
 			}
 		}
-		
+
+		Collections.shuffle(disarmCandidates);
 		Collections.sort(disarmCandidates, new Comparator<Trap>() {
 			@Override
 			public int compare(Trap o1, Trap o2) {
@@ -85,7 +84,7 @@ public class StoneOfDisarming extends Runestone {
 				if (diff < 0){
 					return -1;
 				} else if (diff == 0){
-					return Random.Int(2) == 0 ? -1 : 1;
+					return 0;
 				} else {
 					return 1;
 				}

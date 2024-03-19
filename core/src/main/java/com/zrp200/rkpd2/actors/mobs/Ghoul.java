@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,10 +29,12 @@ import com.zrp200.rkpd2.actors.buffs.AllyBuff;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.ChampionEnemy;
 import com.zrp200.rkpd2.actors.hero.abilities.duelist.Challenge;
+import com.zrp200.rkpd2.effects.FloatingText;
 import com.zrp200.rkpd2.effects.Pushing;
 import com.zrp200.rkpd2.items.Gold;
 import com.zrp200.rkpd2.levels.features.Chasm;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.GhoulSprite;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
@@ -131,7 +133,7 @@ public class Ghoul extends Mob {
 				Dungeon.level.occupyCell(child);
 				
 				if (sprite.visible) {
-					Actor.addDelayed( new Pushing( child, pos, child.pos ), -1 );
+					Actor.add( new Pushing( child, pos, child.pos ) );
 				}
 
 				for (Buff b : buffs(ChampionEnemy.class)){
@@ -238,8 +240,6 @@ public class Ghoul extends Mob {
 
 		@Override
 		public boolean act() {
-			ghoul.sprite.visible = Dungeon.level.heroFOV[ghoul.pos];
-
 			if (target.alignment != ghoul.alignment){
 				detach();
 				return true;
@@ -279,7 +279,7 @@ public class Ghoul extends Mob {
 					}
 					if (candidates.size() > 0) {
 						int newPos = Random.element( candidates );
-						Actor.addDelayed( new Pushing( ghoul, ghoul.pos, newPos ), -1 );
+						Actor.add( new Pushing( ghoul, ghoul.pos, newPos ) );
 						ghoul.pos = newPos;
 
 					} else {
@@ -294,12 +294,19 @@ public class Ghoul extends Mob {
 				Dungeon.level.mobs.add(ghoul);
 				Dungeon.level.occupyCell( ghoul );
 				ghoul.sprite.idle();
+				ghoul.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(Math.round(ghoul.HT/10f)), FloatingText.HEALING);
 				super.detach();
 				return true;
 			}
 
 			spend(TICK);
 			return true;
+		}
+
+		public void updateVisibility(){
+			if (ghoul != null && ghoul.sprite != null){
+				ghoul.sprite.visible = Dungeon.level.heroFOV[ghoul.pos];
+			}
 		}
 
 		public void set(int turns, Ghoul ghoul){

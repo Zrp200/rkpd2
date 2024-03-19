@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -155,6 +155,11 @@ public class AttackIndicator extends Tag {
 		sprite.idle();
 		sprite.paused = true;
 		sprite.visible = bg.visible;
+
+		if (sprite.width() > 20 || sprite.height() > 20){
+			sprite.scale.set(PixelScene.align(20f/Math.max(sprite.width(), sprite.height())));
+		}
+
 		add( sprite );
 
 		layout();
@@ -174,6 +179,7 @@ public class AttackIndicator extends Tag {
 	
 	@Override
 	protected void onClick() {
+		super.onClick();
 		if (enabled && Dungeon.hero.ready) {
 			if (Dungeon.hero.handle( lastTarget.pos )) {
 				Dungeon.hero.next();

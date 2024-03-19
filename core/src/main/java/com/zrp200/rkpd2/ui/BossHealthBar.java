@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -173,8 +173,6 @@ public class BossHealthBar extends Component {
 				shieldedHP.scale.x = health/(float)max;
 				rawShielding.scale.x = shield/(float)max;
 
-				if (hp.scale.x < 0.25f) bleed( true );
-
 				if (bleeding != blood.on){
 					if (bleeding)   skull.tint( 0xcc0000, 0.6f );
 					else            skull.resetColor();
@@ -218,6 +216,10 @@ public class BossHealthBar extends Component {
 
 	public static void bleed(boolean value){
 		bleeding = value;
+	}
+
+	public static boolean isBleeding(){
+		return isAssigned() && bleeding;
 	}
 
 }

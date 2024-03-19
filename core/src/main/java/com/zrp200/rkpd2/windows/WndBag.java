@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,49 +21,16 @@
 
 package com.zrp200.rkpd2.windows;
 
-import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.SPDAction;
-import com.zrp200.rkpd2.actors.buffs.LostInventory;
-import com.zrp200.rkpd2.actors.hero.Belongings;
-import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.items.EquipableItem;
-import com.zrp200.rkpd2.items.Gold;
-import com.zrp200.rkpd2.items.Item;
-import com.zrp200.rkpd2.items.bags.*;
-import com.zrp200.rkpd2.items.wands.Wand;
-import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.scenes.PixelScene;
-import com.zrp200.rkpd2.sprites.ItemSprite;
-import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
-import com.zrp200.rkpd2.ui.Icons;
-import com.zrp200.rkpd2.ui.ItemSlot;
-import com.zrp200.rkpd2.ui.QuickSlotButton;
-import com.zrp200.rkpd2.ui.RenderedTextBlock;
-import com.zrp200.rkpd2.ui.Window;
-import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.SPDAction;
 import com.zrp200.rkpd2.actors.hero.Belongings;
 import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.actors.mobs.npcs.Shopkeeper;
-import com.zrp200.rkpd2.items.EquipableItem;
-import com.zrp200.rkpd2.items.Gold;
 import com.zrp200.rkpd2.items.Item;
-import com.zrp200.rkpd2.items.Recipe;
-import com.zrp200.rkpd2.items.armor.Armor;
-import com.zrp200.rkpd2.items.artifacts.SandalsOfNature;
-import com.zrp200.rkpd2.items.artifacts.UnstableSpellbook;
-import com.zrp200.rkpd2.items.food.Food;
-import com.zrp200.rkpd2.items.potions.Potion;
-import com.zrp200.rkpd2.items.scrolls.ScrollOfRemoveCurse;
-import com.zrp200.rkpd2.items.scrolls.ScrollOfTransmutation;
-import com.zrp200.rkpd2.items.spells.Recycle;
-import com.zrp200.rkpd2.items.stones.StoneOfIntuition;
-import com.zrp200.rkpd2.items.wands.Wand;
-import com.zrp200.rkpd2.items.weapon.SpiritBow;
-import com.zrp200.rkpd2.items.weapon.melee.MeleeWeapon;
-import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
+import com.zrp200.rkpd2.items.bags.Bag;
+import com.zrp200.rkpd2.items.bags.MagicalHolster;
+import com.zrp200.rkpd2.items.bags.PotionBandolier;
+import com.zrp200.rkpd2.items.bags.ScrollHolder;
+import com.zrp200.rkpd2.items.bags.VelvetPouch;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.scenes.PixelScene;
@@ -71,21 +38,17 @@ import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.Icons;
 import com.zrp200.rkpd2.ui.InventorySlot;
-import com.zrp200.rkpd2.ui.ItemSlot;
 import com.zrp200.rkpd2.ui.QuickSlotButton;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
 import com.zrp200.rkpd2.ui.RightClickMenu;
 import com.zrp200.rkpd2.ui.Window;
-import com.watabou.gltextures.TextureCache;
 import com.watabou.input.GameAction;
 import com.watabou.input.KeyBindings;
 import com.watabou.input.KeyEvent;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.BitmapText;
-import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
-import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PointF;
 
 public class WndBag extends WndTabbed {

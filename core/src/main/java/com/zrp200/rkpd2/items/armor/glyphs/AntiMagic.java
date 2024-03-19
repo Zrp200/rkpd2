@@ -80,7 +80,7 @@ public class AntiMagic extends Armor.Glyph {
 		RESISTS.add( DisintegrationTrap.class );
 		RESISTS.add( GrimTrap.class );
 
-		RESISTS.add( Bomb.MagicalBomb.class );
+		RESISTS.add( Bomb.ConjuredBomb.class );
 		RESISTS.add( ScrollOfRetribution.class );
 		RESISTS.add( ScrollOfPsionicBlast.class );
 		RESISTS.add( ScrollOfTeleportation.class );

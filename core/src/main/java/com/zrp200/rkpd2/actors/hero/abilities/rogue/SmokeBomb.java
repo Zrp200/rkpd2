@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,9 +47,10 @@ import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.sprites.MobSprite;
 import com.zrp200.rkpd2.ui.HeroIcon;
-import com.zrp200.rkpd2.utils.BArray;
+import com.watabou.utils.BArray;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.audio.Sample;
@@ -90,17 +91,17 @@ public class SmokeBomb extends ArmorAbility {
 	}
 
 	public static boolean isValidTarget(Hero hero, int target, int limit) {
-		Char ch = Actor.findChar( target );
-		if(ch == hero) {
-			GLog.w( Messages.get(ArmorAbility.class, "self_target") );
+
+		if (target != hero.pos && hero.rooted){
+			PixelScene.shake( 1, 1f );
 			return false;
 		}
 
-		PathFinder.buildDistanceMap(hero.pos, BArray.not(Dungeon.level.solid,null), limit);
+		PathFinder.buildDistanceMap(hero.pos, BArray.or(Dungeon.level.passable, Dungeon.level.avoid, null), limit);
 
 		if ( PathFinder.distance[target] == Integer.MAX_VALUE ||
 				!Dungeon.level.heroFOV[target] ||
-				ch != null) {
+				(target != hero.pos && Actor.findChar( target ) != null)) {
 
 			GLog.w( Messages.get(SmokeBomb.class, "fov") );
 			return false;
@@ -126,6 +127,7 @@ public class SmokeBomb extends ArmorAbility {
 		GameScene.updateFog();
 	}
 
+
 	public static <T extends Mob> void doBodyReplacement(Hero hero, Talent talent, Class<T> ninjaLogClass) {
 		if(!hero.hasTalent(talent)) return;
 		for (Char ch : Actor.chars()){
@@ -137,6 +139,7 @@ public class SmokeBomb extends ArmorAbility {
 		T n = newInstance(ninjaLogClass);
 		n.pos = hero.pos;
 		GameScene.add(n);
+		Dungeon.level.occupyCell(n);
 	}
 
 	@Override

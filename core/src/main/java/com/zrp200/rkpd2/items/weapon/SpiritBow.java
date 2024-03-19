@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -164,10 +164,13 @@ public class SpiritBow extends Weapon {
 				break;
 			case NONE:
 		}
-		
+
 		if (enchantment != null && (cursedKnown || !enchantment.curse())){
-			info += "\n\n" + Messages.get(Weapon.class, "enchanted", enchantment.name());
-			info += " " + Messages.get(enchantment, "desc");
+			info += "\n\n" + Messages.capitalize(Messages.get(Weapon.class, "enchanted", enchantment.name()));
+			if (enchantHardened) info += " " + Messages.get(Weapon.class, "enchant_hardened");
+			info += " " + enchantment.desc();
+		} else if (enchantHardened){
+			info += "\n\n" + Messages.get(Weapon.class, "hardened_no_enchant");
 		}
 		
 		if (cursed && isEquipped( Dungeon.hero )) {
@@ -380,7 +383,7 @@ public class SpiritBow extends Weapon {
 		
 		@Override
 		public int STRReq(int lvl) {
-			return SpiritBow.this.STRReq(lvl);
+			return SpiritBow.this.STRReq();
 		}
 
 		@Override
@@ -436,12 +439,12 @@ public class SpiritBow extends Weapon {
 					}
 					return;
 				}
+
 				QuickSlotButton.target(enemy);
 				
-				final boolean last = flurryCount == 1;
-
 				throwSound();
-				
+
+				user.sprite.zap(cell);
 				user.sprite.parent.recycle(MissileSprite.class).
 						reset(user.sprite,
 								cell,
@@ -452,8 +455,27 @@ public class SpiritBow extends Weapon {
 										onThrow(cell);
 									}
 
-									if (last) {
-										if(--shotCount <= 0) {
+									flurryCount--;
+									if (flurryCount > 0){
+										Actor.add(new Actor() {
+
+											{
+												actPriority = VFX_PRIO-1;
+											}
+
+											@Override
+											protected boolean act() {
+												flurryActor = this;
+												int target = QuickSlotButton.autoAim(enemy, SpiritArrow.this);
+												if (target == -1) target = cell;
+												cast(user, target);
+												Actor.remove(this);
+												return false;
+											}
+										});
+										curUser.next();
+									} else {
+										if (--shotCount <= 0) {
 											if (Talent.LethalMomentumTracker.apply(user)) {
 												user.next();
 											} else {
@@ -462,39 +484,11 @@ public class SpiritBow extends Weapon {
 										}
 										flurryCount = -1;
 									}
-
 									if (flurryActor != null){
 										flurryActor.next();
 										flurryActor = null;
 									}
-								});
-				
-				user.sprite.zap(cell, new Callback() {
-					@Override
-					public void call() {
-						flurryCount--;
-						if (flurryCount > 0){
-							Actor.add(new Actor() {
-
-								{
-									actPriority = VFX_PRIO-1;
-								}
-
-								@Override
-								protected boolean act() {
-									flurryActor = this;
-									int target = QuickSlotButton.autoAim(enemy, SpiritArrow.this);
-									if (target == -1) target = cell;
-									cast(user, target);
-									Actor.remove(this);
-									return false;
-								}
-							});
-							curUser.next();
-						}
-					}
-				});
-				
+						});
 			} else {
 
 				if (user.hasTalent(Talent.SEER_SHOT, Talent.RK_WARDEN)

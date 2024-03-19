@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,13 +25,16 @@ import com.zrp200.rkpd2.ShatteredPixelDungeon;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.npcs.Imp;
 import com.zrp200.rkpd2.actors.mobs.npcs.ImpShopkeeper;
+import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.levels.Level;
 import com.zrp200.rkpd2.levels.Terrain;
-import com.zrp200.rkpd2.levels.painters.Painter;
 import com.zrp200.rkpd2.levels.rooms.special.ShopRoom;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Point;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 //shops probably shouldn't extend special room, because of cases like this.
 public class ImpShopRoom extends ShopRoom {
@@ -56,20 +59,11 @@ public class ImpShopRoom extends ShopRoom {
 
 	@Override
 	public void paint(Level level) {
-		Painter.fill( level, this, Terrain.WALL );
-		Painter.fill( level, this, 1, Terrain.EMPTY_SP );
-		Painter.fill( level, this, 3, Terrain.WATER);
-
-		for (Door door : connected.values()) {
-			door.set( Door.Type.REGULAR );
+		//this room isn't actually filled in until the city boss is defeated, at the earliest
+		//but we want to decide the items as part of levelgen
+		if (itemsToSpawn == null) {
+			itemsToSpawn = generateItems();
 		}
-
-		if (Imp.Quest.isCompleted()){
-			spawnShop(level);
-		} else {
-			impSpawned = false;
-		}
-
 	}
 
 	@Override
@@ -97,7 +91,7 @@ public class ImpShopRoom extends ShopRoom {
 	//fix for connections not being bundled normally
 	@Override
 	public Door entrance() {
-		return connected.isEmpty() ? new Door(left, top+2) : super.entrance();
+		return connected.isEmpty() ? new Door((left+right)/2 + 1, bottom-1) : super.entrance();
 	}
 
 	public void spawnShop(Level level){
@@ -111,17 +105,22 @@ public class ImpShopRoom extends ShopRoom {
 	}
 
 	private static final String IMP = "imp_spawned";
+	private static final String ITEMS = "items";
 
 	@Override
 	public void storeInBundle(Bundle bundle) {
 		super.storeInBundle(bundle);
 		bundle.put(IMP, impSpawned);
+		if (itemsToSpawn != null) bundle.put(ITEMS, itemsToSpawn);
 	}
 
 	@Override
 	public void restoreFromBundle(Bundle bundle) {
 		super.restoreFromBundle(bundle);
 		impSpawned = bundle.getBoolean(IMP);
+		if (bundle.contains( ITEMS )) {
+			itemsToSpawn = new ArrayList<>((Collection<Item>) ((Collection<?>) bundle.getCollection(ITEMS)));
+		}
 	}
 
 	@Override

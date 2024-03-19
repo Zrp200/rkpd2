@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,9 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
+import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.mobs.Mob;
-import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 
 public class Amok extends FlavourBuff {
@@ -39,9 +40,20 @@ public class Amok extends FlavourBuff {
 
 	@Override
 	public void detach() {
-		super.detach();
-		if (target instanceof Mob && target.isAlive()) {
-			((Mob) target).aggro(null);
+		//if our target is an enemy, reset any enemy-to-enemy aggro involving it
+		if (target.isAlive()) {
+			if (target.alignment == Char.Alignment.ENEMY) {
+				for (Mob m : Dungeon.level.mobs) {
+					if (m.alignment == Char.Alignment.ENEMY && m.isTargeting(target)) {
+						m.aggro(null);
+					}
+					if (target instanceof Mob && ((Mob) target).isTargeting(m)){
+						((Mob) target).aggro(null);
+					}
+				}
+			}
 		}
+
+		super.detach();
 	}
 }

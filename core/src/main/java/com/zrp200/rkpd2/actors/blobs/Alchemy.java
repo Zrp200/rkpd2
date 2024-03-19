@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,10 +24,7 @@ package com.zrp200.rkpd2.actors.blobs;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.effects.BlobEmitter;
 import com.zrp200.rkpd2.effects.Speck;
-import com.zrp200.rkpd2.items.EnergyCrystal;
 import com.zrp200.rkpd2.journal.Notes;
-import com.watabou.utils.PathFinder;
-import com.watabou.utils.Random;
 
 public class Alchemy extends Blob {
 

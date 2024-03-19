@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,6 @@ import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.GamesInProgress;
 import com.zrp200.rkpd2.actors.buffs.LostInventory;
-import com.zrp200.rkpd2.actors.buffs.MonkEnergy;
 import com.zrp200.rkpd2.items.EquipableItem;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.KindOfWeapon;
@@ -104,10 +103,6 @@ public class Belongings implements Iterable<Item> {
 		return weapon();
 	}
 
-	public KindOfWeapon weapon() { return weapon(0); }
-	public KindOfWeapon secondWep() { return weapon(1); }
-	public KindOfWeapon thirdWep() { return weapon(2); }
-
 	public KindOfWeapon weapon(int slot) {
 		return weapon(slot, false);
 	}
@@ -121,7 +116,7 @@ public class Belongings implements Iterable<Item> {
 		}
 		if (field) return weapon;
 		boolean lostInvent = owner != null && owner.buff(LostInventory.class) != null;
-		if (!lostInvent || (weapon != null && weapon.keptThoughLostInvent)){
+		if (!lostInvent || (weapon != null && weapon.keptThroughLostInventory())){
 			return weapon;
 		} else {
 			return null;
@@ -152,7 +147,7 @@ public class Belongings implements Iterable<Item> {
 
 	public Armor armor(){
 		boolean lostInvent = owner != null && owner.buff(LostInventory.class) != null;
-		if (!lostInvent || (armor != null && armor.keptThoughLostInvent)){
+		if (!lostInvent || (armor != null && armor.keptThroughLostInventory())){
 			return armor;
 		} else {
 			return null;
@@ -161,7 +156,7 @@ public class Belongings implements Iterable<Item> {
 
 	public Artifact artifact(){
 		boolean lostInvent = owner != null && owner.buff(LostInventory.class) != null;
-		if (!lostInvent || (artifact != null && artifact.keptThoughLostInvent)){
+		if (!lostInvent || (artifact != null && artifact.keptThroughLostInventory())){
 			return artifact;
 		} else {
 			return null;
@@ -170,7 +165,7 @@ public class Belongings implements Iterable<Item> {
 
 	public KindofMisc misc(){
 		boolean lostInvent = owner != null && owner.buff(LostInventory.class) != null;
-		if (!lostInvent || (misc != null && misc.keptThoughLostInvent)){
+		if (!lostInvent || (misc != null && misc.keptThroughLostInventory())){
 			return misc;
 		} else {
 			return null;
@@ -179,12 +174,16 @@ public class Belongings implements Iterable<Item> {
 
 	public Ring ring(){
 		boolean lostInvent = owner != null && owner.buff(LostInventory.class) != null;
-		if (!lostInvent || (ring != null && ring.keptThoughLostInvent)){
+		if (!lostInvent || (ring != null && ring.keptThroughLostInventory())){
 			return ring;
 		} else {
 			return null;
 		}
 	}
+
+	public KindOfWeapon weapon() { return weapon(0); }
+	public KindOfWeapon secondWep() { return weapon(1); }
+	public KindOfWeapon thirdWep() { return weapon(2); }
 
 	// ***
 	
@@ -282,7 +281,7 @@ public class Belongings implements Iterable<Item> {
 
 		for (Item item : this) {
 			if (itemClass.isInstance( item )) {
-				if (!lostInvent || item.keptThoughLostInvent) {
+				if (!lostInvent || item.keptThroughLostInventory()) {
 					return (T) item;
 				}
 			}
@@ -298,7 +297,7 @@ public class Belongings implements Iterable<Item> {
 
 		for (Item item : this) {
 			if (itemClass.isInstance( item )) {
-				if (!lostInvent || item.keptThoughLostInvent) {
+				if (!lostInvent || item.keptThroughLostInventory()) {
 					result.add((T) item);
 				}
 			}
@@ -313,7 +312,7 @@ public class Belongings implements Iterable<Item> {
 		
 		for (Item item : this) {
 			if (contains == item) {
-				if (!lostInvent || item.keptThoughLostInvent) {
+				if (!lostInvent || item.keptThroughLostInventory()) {
 					return true;
 				}
 			}
@@ -328,7 +327,7 @@ public class Belongings implements Iterable<Item> {
 		
 		for (Item item : this) {
 			if (similar != item && similar.isSimilar(item)) {
-				if (!lostInvent || item.keptThoughLostInvent) {
+				if (!lostInvent || item.keptThroughLostInventory()) {
 					//noinspection unchecked
 					return (T)item;
 				}
@@ -345,7 +344,7 @@ public class Belongings implements Iterable<Item> {
 		
 		for (Item item : this) {
 			if (item != similar && similar.isSimilar(item)) {
-				if (!lostInvent || item.keptThoughLostInvent) {
+				if (!lostInvent || item.keptThroughLostInventory()) {
 					result.add(item);
 				}
 			}

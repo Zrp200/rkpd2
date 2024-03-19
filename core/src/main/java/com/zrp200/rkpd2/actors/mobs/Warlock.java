@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -121,7 +121,7 @@ public class Warlock extends Mob implements Callback {
 			
 			if (enemy == Dungeon.hero && !enemy.isAlive()) {
 				Badges.validateDeathFromEnemyMagic();
-				Dungeon.fail( getClass() );
+				Dungeon.fail( this );
 				GLog.n( Messages.get(this, "bolt_kill") );
 			}
 		} else {
@@ -147,22 +147,10 @@ public class Warlock extends Mob implements Callback {
 			Dungeon.LimitedDrops.WARLOCK_HP.count++;
 			return new PotionOfHealing();
 		} else {
-			Item i = Generator.randomUsingDefaults(Generator.Category.POTION);
-			int healingTried = 0;
-			while (i instanceof PotionOfHealing){
-				healingTried++;
+			Item i;
+			do {
 				i = Generator.randomUsingDefaults(Generator.Category.POTION);
-			}
-
-			//return the attempted healing potion drops to the pool
-			if (healingTried > 0){
-				for (int j = 0; j < Generator.Category.POTION.classes.length; j++){
-					if (Generator.Category.POTION.classes[j] == PotionOfHealing.class){
-						Generator.Category.POTION.probs[j] += healingTried;
-					}
-				}
-			}
-
+			} while (i instanceof PotionOfHealing);
 			return i;
 		}
 

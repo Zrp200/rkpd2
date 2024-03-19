@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.ui;
 
+import com.zrp200.rkpd2.SPDSettings;
 import com.watabou.input.ControllerHandler;
 import com.watabou.input.GameAction;
 import com.watabou.input.KeyBindings;
@@ -31,8 +32,6 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.ui.Component;
 import com.watabou.utils.Signal;
-
-import java.util.ArrayList;
 
 public class Button extends Component {
 
@@ -163,7 +162,9 @@ public class Button extends Component {
 				clickReady = false; //did a long click, can't do a regular one
 				onPointerUp();
 
-				Game.vibrate( 50 );
+				if (SPDSettings.vibration()) {
+					Game.vibrate(50);
+				}
 			}
 		}
 	}

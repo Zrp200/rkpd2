@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ public class HeroIcon extends Image {
 	private static final int SIZE = 16;
 
 	//transparent icon
-	public static final int NONE    = 31;
+	public static final int NONE    = 63;
 
 	//subclasses
 	public static final int BERSERKER   = 0;
@@ -68,6 +68,15 @@ public class HeroIcon extends Image {
 	public static final int RATMOGRIFY      = 31;
 	public static final int WRATH = 15;
 
+	//action indicator visuals
+	public static final int BERSERK         = 32;
+	public static final int COMBO           = 33;
+	public static final int PREPARATION     = 34;
+	public static final int MOMENTUM        = 35;
+	public static final int SNIPERS_MARK    = 36;
+	public static final int WEAPON_SWAP     = 37;
+	public static final int MONK_ABILITIES  = 38;
+
 	public HeroIcon(HeroSubClass subCls){
 		super( Assets.Interfaces.HERO_ICONS );
 		if (film == null){
@@ -82,6 +91,14 @@ public class HeroIcon extends Image {
 			film = new TextureFilm(texture, SIZE, SIZE);
 		}
 		frame(film.get(abil.icon()));
+	}
+
+	public HeroIcon(ActionIndicator.Action action){
+		super( Assets.Interfaces.HERO_ICONS );
+		if (film == null){
+			film = new TextureFilm(texture, SIZE, SIZE);
+		}
+		frame(film.get(action.actionIcon()));
 	}
 
 }

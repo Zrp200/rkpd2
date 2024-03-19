@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.effects;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Game;
@@ -42,7 +43,7 @@ public class Pushing extends Actor {
 	private Callback callback;
 
 	{
-		actPriority = VFX_PRIO;
+		actPriority = VFX_PRIO+10;
 	}
 	
 	public Pushing( Char ch, int from, int to ) {
@@ -63,16 +64,18 @@ public class Pushing extends Actor {
 	
 	@Override
 	protected boolean act() {
-		if (sprite != null) {
+		Actor.remove( Pushing.this );
+
+		if (sprite != null && sprite.parent != null) {
 			if (Dungeon.level.heroFOV[from] || Dungeon.level.heroFOV[to]){
 				sprite.visible = true;
 			}
 			if (effect == null) {
 				new Effect();
 			}
+		} else {
+			return true;
 		}
-
-		Actor.remove( Pushing.this );
 
 		//so that all pushing effects at the same time go simultaneously
 		for ( Actor actor : Actor.all() ){
@@ -122,7 +125,8 @@ public class Pushing extends Actor {
 				killAndErase();
 				Actor.remove(Pushing.this);
 				if (callback != null) callback.call();
-				
+				GameScene.sortMobSprites();
+
 				next();
 			}
 		}

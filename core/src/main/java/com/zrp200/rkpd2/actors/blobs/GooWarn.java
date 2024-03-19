@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,16 +21,16 @@
 
 package com.zrp200.rkpd2.actors.blobs;
 
-
-
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.effects.BlobEmitter;
+import com.zrp200.rkpd2.levels.Level;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.GooSprite;
 
 public class GooWarn extends Blob {
 
-	//cosmetic blob, used to warn noobs that goo's pump up should, infact, be avoided.
+	//cosmetic blob, previously used for Goo's pump up attack (that's now handled by Goo's sprite)
+	// but is still used as a visual indicator for Arcane bombs
 
 	{
 		//this one needs to act just before the Goo
@@ -55,6 +55,20 @@ public class GooWarn extends Blob {
 			}
 		}
 
+	}
+
+	//to prevent multiple arcane bombs from visually stacking their effects
+	public void seed(Level level, int cell, int amount ) {
+		if (cur == null) cur = new int[level.length()];
+		if (off == null) off = new int[cur.length];
+
+		int toAdd = amount - cur[cell];
+		if (toAdd > 0){
+			cur[cell] += toAdd;
+			volume += toAdd;
+		}
+
+		area.union(cell%level.width(), cell/level.width());
 	}
 
 	@Override

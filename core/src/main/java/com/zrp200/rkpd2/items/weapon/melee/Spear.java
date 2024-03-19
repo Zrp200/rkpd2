@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,18 +23,12 @@ package com.zrp200.rkpd2.items.weapon.melee;
 
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.items.wands.WandOfBlastWave;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
-import com.zrp200.rkpd2.ui.AttackIndicator;
-import com.zrp200.rkpd2.utils.GLog;
-import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Callback;
 
 public class Spear extends MeleeWeapon {
 
@@ -61,15 +55,23 @@ public class Spear extends MeleeWeapon {
 
 	@Override
 	protected DuelistAbility duelistAbility() {
-		// 1.4 at t2, 1.3 at t5
-		return new MeleeAbility(1.4f - (tier-2)/30f) {
+		// 1.45 at t2, 1.3 at t5
+		return new MeleeAbility(1.45f - (tier-2)/.20f) {
 			@Override
 			protected boolean canAttack(Hero hero, Char enemy) {
 				return super.canAttack(hero, enemy) && !Dungeon.level.adjacent(hero.pos, enemy.pos);
 			}
+			int oldPos;
+
+			@Override
+			protected void beforeAbilityUsed(Hero hero, Char target) {
+				super.beforeAbilityUsed(hero, target);
+				if(target != null) oldPos = target.pos;
+			}
 
 			@Override
 			protected void proc(Hero hero, Char enemy) {
+				if (enemy.pos != oldPos) return;
 				//trace a ballistica to our target (which will also extend past them
 				Ballistica trajectory = new Ballistica(hero.pos, enemy.pos, Ballistica.STOP_TARGET);
 				//trim it to just be the part that goes past them

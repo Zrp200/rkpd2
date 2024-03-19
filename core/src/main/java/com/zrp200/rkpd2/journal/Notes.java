@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,8 @@ import java.util.Collections;
 public class Notes {
 	
 	public static abstract class Record implements Comparable<Record>, Bundlable {
-		
+
+		//TODO currently notes can only relate to branch = 0, add branch support here if that changes
 		protected int depth;
 
 		public int depth(){

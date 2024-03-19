@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,13 +30,12 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
-import com.zrp200.rkpd2.items.weapon.melee.MeleeWeapon;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.ui.ActionIndicator;
-import com.zrp200.rkpd2.utils.BArray;
+import com.watabou.utils.BArray;
 import com.zrp200.rkpd2.utils.GLog;
 import com.zrp200.rkpd2.windows.WndOptions;
 import com.watabou.noosa.audio.Sample;
@@ -44,12 +43,12 @@ import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 abstract public class KindOfWeapon extends EquipableItem {
-	
+
 	protected static final float TIME_TO_EQUIP = 1f;
 
 	protected String hitSound = Assets.Sounds.HIT;
 	protected float hitSoundPitch = 1f;
-	
+
 	@Override
 	public void execute(Hero hero, String action) {
 		if (hero.subClass == HeroSubClass.CHAMPION && action.equals(AC_EQUIP)){
@@ -122,7 +121,7 @@ abstract public class KindOfWeapon extends EquipableItem {
 	@Override
 	final public boolean doEquip( Hero hero ) { return doEquip(hero, 0); }
 	public boolean doEquip( Hero hero, int index ) {
-
+		boolean wasInInv = hero.belongings.contains(this);
 		if (!(this instanceof MissileWeapon)) {
 			// hopefully this doesn't cause weirdness
 			detachAll( hero.belongings.backpack );
@@ -130,12 +129,13 @@ abstract public class KindOfWeapon extends EquipableItem {
 		KindOfWeapon equipped = hero.belongings.weapon(index);
 
 		if (equipped == null || equipped.doUnequip( hero, true )) {
-			
+
 			hero.belongings.setWeapon(index, this);
 			activate( hero );
 			Talent.onItemEquipped(hero, this);
 			Badges.validateDuelistUnlock();
-			ActionIndicator.updateIcon();
+			ActionIndicator.refresh();
+			updateQuickslot();
 
 			int slot = Dungeon.quickslot.getSlot(this);
 			if (slot != -1) {
@@ -155,8 +155,8 @@ abstract public class KindOfWeapon extends EquipableItem {
 				GLog.n( Messages.get(KindOfWeapon.class, "equip_cursed") );
 			}
 
-			if (hero.hasTalent(Talent.SWIFT_EQUIP)) {
-				if (hero.buff(Talent.SwiftEquipCooldown.class) == null){
+			if (wasInInv && hero.hasTalent(Talent.SWIFT_EQUIP)) {
+				if (hero.buff(Talent.SwiftEquipCooldown.class) == null) {
 					hero.spendAndNext(-hero.cooldown());
 					Buff.affect(hero, Talent.SwiftEquipCooldown.class, 19f)
 							.secondUse = hero.pointsInTalent(Talent.SWIFT_EQUIP) == 2;
@@ -172,18 +172,19 @@ abstract public class KindOfWeapon extends EquipableItem {
 				hero.spendAndNext(TIME_TO_EQUIP);
 			}
 			return true;
-			
+
 		} else {
-			
+
 			collect( hero.belongings.backpack );
 			return false;
 		}
 	}
+
 	@Override
 	public boolean doUnequip( Hero hero, boolean collect, boolean single ) {
 		int index = hero.belongings.findWeapon(this);
 
-		if (index > 0) {
+		if (index > 0){
 			//do this first so that the item can go to a full inventory
 			hero.belongings.setWeapon(index, null);
 		}
@@ -217,11 +218,11 @@ abstract public class KindOfWeapon extends EquipableItem {
 	public int damageRoll( Char owner ) {
 		return Random.NormalIntRange( min(), max() );
 	}
-	
+
 	public float accuracyFactor( Char owner, Char target ) {
 		return 1f;
 	}
-	
+
 	public float delayFactor( Char owner ) {
 		return 1f;
 	}
@@ -229,7 +230,7 @@ abstract public class KindOfWeapon extends EquipableItem {
 	public int reachFactor( Char owner ){
 		return 1;
 	}
-	
+
 	public boolean canReach( Char owner, int target){
 		int reach = reachFactor(owner);
 		if (Dungeon.level.distance( owner.pos, target ) > reach){
@@ -239,9 +240,9 @@ abstract public class KindOfWeapon extends EquipableItem {
 			for (Char ch : Actor.chars()) {
 				if (ch != owner) passable[ch.pos] = false;
 			}
-			
+
 			PathFinder.buildDistanceMap(target, passable, reach);
-			
+
 			return PathFinder.distance[owner.pos] <= reach;
 		}
 	}
@@ -249,7 +250,7 @@ abstract public class KindOfWeapon extends EquipableItem {
 	public int defenseFactor( Char owner ) {
 		return 0;
 	}
-	
+
 	public int proc( Char attacker, Char defender, int damage ) {
 		return damage;
 	}
@@ -257,5 +258,5 @@ abstract public class KindOfWeapon extends EquipableItem {
 	public void hitSound( float pitch ){
 		Sample.INSTANCE.play(hitSound, 1, pitch * hitSoundPitch);
 	}
-	
+
 }

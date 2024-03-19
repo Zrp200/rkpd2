@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@
 package com.zrp200.rkpd2.items.journal;
 
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.SPDAction;
+import com.zrp200.rkpd2.SPDSettings;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.journal.Document;
@@ -30,6 +32,8 @@ import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.GameLog;
 import com.zrp200.rkpd2.utils.GLog;
+import com.watabou.input.ControllerHandler;
+import com.watabou.input.KeyBindings;
 import com.watabou.noosa.audio.Sample;
 
 public class Guidebook extends Item {
@@ -51,7 +55,11 @@ public class Guidebook extends Item {
 		//we do this here so the pickup message appears before the tutorial text
 		GameLog.wipe();
 		GLog.i( Messages.capitalize(Messages.get(Hero.class, "you_now_have", name())) );
-		GLog.p(Messages.get(GameScene.class, "tutorial_guidebook"));
+		if (SPDSettings.interfaceSize() == 0){
+			GLog.p(Messages.get(GameScene.class, "tutorial_guidebook_mobile"));
+		} else {
+			GLog.p(Messages.get(GameScene.class, "tutorial_guidebook_desktop", KeyBindings.getKeyName(KeyBindings.getFirstKeyForAction(SPDAction.JOURNAL, ControllerHandler.isControllerConnected()))));
+		}
 		GameScene.flashForDocument(Document.ADVENTURERS_GUIDE, Document.GUIDE_INTRO);
 		Sample.INSTANCE.play( Assets.Sounds.ITEM );
 		hero.spendAndNext( TIME_TO_PICK_UP );

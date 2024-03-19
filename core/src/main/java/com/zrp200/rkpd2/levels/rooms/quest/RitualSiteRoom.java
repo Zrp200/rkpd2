@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>
  */
 
-package com.zrp200.rkpd2.levels.rooms.standard;
+package com.zrp200.rkpd2.levels.rooms.quest;
 
 import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.items.quest.CeremonialCandle;
 import com.zrp200.rkpd2.levels.Level;
 import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.levels.painters.Painter;
+import com.zrp200.rkpd2.levels.rooms.standard.StandardRoom;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.tiles.CustomTilemap;
 import com.watabou.noosa.Tilemap;
@@ -36,12 +36,12 @@ public class RitualSiteRoom extends StandardRoom {
 	
 	@Override
 	public int minWidth() {
-		return Math.max(super.minWidth(), 5);
+		return Math.max(super.minWidth(), 9);
 	}
 	
 	@Override
 	public int minHeight() {
-		return Math.max(super.minHeight(), 5);
+		return Math.max(super.minHeight(), 9);
 	}
 
 	public void paint( Level level ) {
@@ -59,7 +59,7 @@ public class RitualSiteRoom extends StandardRoom {
 
 		level.customTiles.add(vis);
 		
-		Painter.fill(level, c.x-1, c.y-1, 3, 3, Terrain.EMPTY_DECO);
+		Painter.fill(level, c.x-1, c.y-1, 3, 3, Terrain.CUSTOM_DECO_EMPTY);
 
 		level.addItemToSpawn(new CeremonialCandle());
 		level.addItemToSpawn(new CeremonialCandle());

@@ -16,11 +16,11 @@ import java.util.jar.JarFile;
 
 public class PackageTrie {
 
-    /** package of core game files (for example com.shatteredpixel.shatteredpixeldungeon) **/
+    /** package of core game files (for example com.zrp200.rkpd2) **/
     private final String ROOT;
     public PackageTrie(String ROOT) {this.ROOT = ROOT;}
 
-    public PackageTrie() { this("com.shatteredpixel.shatteredpixeldungeon"); }  // backwards compatibility
+    public PackageTrie() { this("com.zrp200.rkpd2"); }  // backwards compatibility
 
     private final HashMap<String, PackageTrie> subTries = new HashMap<>();
     private final ArrayList<Class<?>> classes = new ArrayList<>();

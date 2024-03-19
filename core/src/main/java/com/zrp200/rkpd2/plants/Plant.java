@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,6 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Barkskin;
-import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -67,8 +66,7 @@ public abstract class Plant implements Bundlable {
 
 		if (Dungeon.level.heroFOV[pos]) Dungeon.hero.byTalent( (talent, points) ->
 				// 3/5 turns based on talent points spent
-				Buff.affect(Dungeon.hero, Barkskin.class)
-						.set(talent == Talent.NATURES_AID ? 3 : 2, 1 + 2 * points),
+				Barkskin.conditionallyAppend(Dungeon.hero, talent == Talent.NATURES_AID ? 3 : 2, 1 + 2 * points),
 				Talent.NATURES_AID, Talent.NOBLE_CAUSE);
 
 		wither();

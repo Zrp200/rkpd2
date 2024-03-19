@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,18 +21,20 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
+import static com.watabou.utils.Random.NormalFloat;
+
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.effects.Splash;
 import com.zrp200.rkpd2.items.weapon.curses.Sacrificial;
+import com.zrp200.rkpd2.items.weapon.melee.MeleeWeapon;
+import com.zrp200.rkpd2.items.weapon.melee.Sickle;
 import com.zrp200.rkpd2.levels.features.Chasm;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PointF;
-
-import static com.watabou.utils.Random.NormalFloat;
 
 public class Bleeding extends Buff {
 
@@ -109,8 +111,12 @@ public class Bleeding extends Buff {
 					} else if (source == Sacrificial.class){
 						Badges.validateDeathFromFriendlyMagic();
 					}
-					Dungeon.fail( getClass() );
+					Dungeon.fail( this );
 					GLog.n( Messages.get(this, "ondeath") );
+				}
+
+				if (source == Sickle.HarvestBleedTracker.class && !target.isAlive()){
+					MeleeWeapon.onAbilityKill(Dungeon.hero, target);
 				}
 				
 				spend( TICK );

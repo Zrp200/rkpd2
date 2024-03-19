@@ -3,7 +3,11 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
+<<<<<<< HEAD:core/src/main/java/com/zrp200/rkpd2/actors/buffs/SoulMark.java
  * Copyright (C) 2014-2021 Evan Debenham
+=======
+ * Copyright (C) 2014-2024 Evan Debenham
+>>>>>>> shpd/master:core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/buffs/SoulMark.java
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +27,8 @@ package com.zrp200.rkpd2.actors.buffs;
 
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.sprites.CharSprite;
+import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
@@ -30,8 +36,6 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.sprites.CharSprite;
-import com.zrp200.rkpd2.ui.BuffIndicator;
 
 import static com.zrp200.rkpd2.Dungeon.hero;
 

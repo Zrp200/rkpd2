@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.items;
 import static com.zrp200.rkpd2.Dungeon.hero;
 
 import com.zrp200.rkpd2.Assets;
+import com.zrp200.rkpd2.actors.buffs.Regeneration;
 import com.zrp200.rkpd2.actors.buffs.ShieldBuff;
 import com.zrp200.rkpd2.actors.hero.Belongings;
 import com.zrp200.rkpd2.actors.hero.Hero;
@@ -43,6 +44,7 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class BrokenSeal extends Item {
 
@@ -62,6 +64,21 @@ public class BrokenSeal extends Item {
 	}
 
 	private Armor.Glyph glyph;
+
+	public boolean canTransferGlyph(){
+		if (glyph == null){
+			return false;
+		}
+		if (hero.hasTalent(Talent.RUNIC_TRANSFERENCE) || hero.pointsInTalent(Talent.POWER_WITHIN) == 2){
+			return true;
+		} else if (hero.pointsInTalent(Talent.POWER_WITHIN) == 1
+			&& (Arrays.asList(Armor.Glyph.common).contains(glyph.getClass())
+				|| Arrays.asList(Armor.Glyph.uncommon).contains(glyph.getClass()))){
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	public Armor.Glyph getGlyph(){
 		return glyph;
@@ -205,7 +222,7 @@ public class BrokenSeal extends Item {
 		private static final float RECHARGE_RATE = 30;
 		@Override
 		public synchronized boolean act() {
-			if (shielding() < maxShield()) {
+			if (Regeneration.regenOn() && shielding() < maxShield()) {
 				partialShield += 1/(RECHARGE_RATE * (1 - ((Hero)target).shiftedPoints(Talent.IRON_WILL)/(float)maxShield())); // this adjusts the seal recharge rate.
 			}
 			

@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2022 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,8 @@ import com.zrp200.rkpd2.items.wands.WandOfBlastWave;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.ui.HeroIcon;
-import com.watabou.noosa.Camera;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
@@ -67,6 +67,11 @@ public class HeroicLeap extends ArmorAbility {
 	public void activate( ClassArmor armor, Hero hero, Integer target ) {
 		if (target != null) {
 
+			if (hero.rooted){
+				PixelScene.shake( 1, 1f );
+				return;
+			}
+
 			Ballistica route = new Ballistica(hero.pos, target, Ballistica.STOP_TARGET | Ballistica.STOP_SOLID);
 			int cell = route.collisionPos;
 
@@ -77,7 +82,7 @@ public class HeroicLeap extends ArmorAbility {
 				backTrace--;
 			}
 
-			armor.useCharge(hero, this, false);
+			armor.useCharge( hero, this, false );
 
 			final int dest = cell;
 			hero.busy();
@@ -94,13 +99,14 @@ public class HeroicLeap extends ArmorAbility {
 						    int points = hero.shiftedPoints(Talent.BODY_SLAM);
 							int damage = Random.NormalIntRange(points, 4*points);
 							damage += Math.round(hero.drRoll()*0.25f*points);
+							damage -= mob.drRoll();
 							mob.damage(damage, hero);
 						}
 						if (mob.pos == hero.pos + i && hero.hasTalent(Talent.IMPACT_WAVE)){
 							Ballistica trajectory = new Ballistica(mob.pos, mob.pos + i, Ballistica.MAGIC_BOLT);
 							int strength = 1+hero.pointsInTalent(Talent.IMPACT_WAVE);
 							strength *= 1.5; // 3/4/6 instead of 2/3/4
-							WandOfBlastWave.throwChar(mob, trajectory, strength, true, true, HeroicLeap.this.getClass());
+							WandOfBlastWave.throwChar(mob, trajectory, strength, true, true, HeroicLeap.this);
 							// 40/60/80/100
 							if (Random.Int(5) < 1+hero.pointsInTalent(Talent.IMPACT_WAVE)){
 								Buff.prolong(mob, Vulnerable.class, 5f); // 3 -> 5
@@ -110,7 +116,7 @@ public class HeroicLeap extends ArmorAbility {
 				}
 
 				WandOfBlastWave.BlastWave.blast(dest);
-				Camera.main.shake(2, 0.5f);
+				PixelScene.shake(2, 0.5f);
 
 				Invisibility.dispel();
 				hero.spendAndNext(Actor.TICK);

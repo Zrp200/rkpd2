@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,14 +23,13 @@ package com.zrp200.rkpd2.services.updates;
 
 
 import com.watabou.noosa.Game;
-import com.watabou.utils.DeviceCompat;
 
 public class DebugUpdates implements UpdateService {
 
 	private static AvailableUpdateData debugUpdateInfo;
 
 	@Override
-	public boolean isUpdateable() {
+	public boolean supportsUpdatePrompts() {
 		return false; //turn on to debug update prompts
 	}
 
@@ -58,16 +57,6 @@ public class DebugUpdates implements UpdateService {
 	@Override
 	public void initializeUpdate(AvailableUpdateData update) {
 		Game.platform.openURI( update.URL );
-	}
-
-	@Override
-	public boolean isInstallable() {
-		return false; //turn on to test install prompts
-	}
-
-	@Override
-	public void initializeInstall() {
-		//does nothing
 	}
 
 	@Override

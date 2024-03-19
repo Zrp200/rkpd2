@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,7 +97,7 @@ public class Eye extends Mob {
 					&& (super.canAttack(enemy) || aim.subPath(1, aim.dist).contains(enemy.pos))){
 				if(Actor.current() == this) {
 					beam = aim;
-					beamTarget = aim.collisionPos;
+					beamTarget = enemy.pos;
 				}
 				return true;
 			} else {
@@ -197,7 +197,7 @@ public class Eye extends Mob {
 
 				if (!ch.isAlive() && ch == Dungeon.hero) {
 					Badges.validateDeathFromEnemyMagic();
-					Dungeon.fail( getClass() );
+					Dungeon.fail( this );
 					GLog.n( Messages.get(this, "deathgaze_kill") );
 				}
 			} else {

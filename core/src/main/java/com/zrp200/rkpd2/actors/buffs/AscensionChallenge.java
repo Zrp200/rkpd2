@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,11 +24,14 @@ package com.zrp200.rkpd2.actors.buffs;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.Statistics;
+import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
 import com.zrp200.rkpd2.actors.mobs.*;
 import com.zrp200.rkpd2.actors.mobs.npcs.Shopkeeper;
 import com.zrp200.rkpd2.items.Amulet;
+import com.zrp200.rkpd2.items.artifacts.DriedRose;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.utils.GLog;
@@ -73,7 +76,7 @@ public class AscensionChallenge extends Buff {
 	}
 
 	public static float statModifier(Char ch){
-		if (Dungeon.hero.buff(AscensionChallenge.class) == null){
+		if (Dungeon.hero == null || Dungeon.hero.buff(AscensionChallenge.class) == null){
 			return 1;
 		}
 
@@ -136,6 +139,7 @@ public class AscensionChallenge extends Buff {
 
 		if (enemy instanceof Ratmogrify.TransmogRat){
 			enemy = ((Ratmogrify.TransmogRat) enemy).getOriginal();
+			if (enemy == null) return;
 		}
 
 		//only enemies that are boosted count
@@ -162,11 +166,18 @@ public class AscensionChallenge extends Buff {
 		if (chal.stacks < 8f && (int)(chal.stacks/2) != (int)(oldStacks/2f)){
 			GLog.p(Messages.get(AscensionChallenge.class, "weaken"));
 		}
+
+		//if the hero is at the max level, grant them 10 effective xp per stack cleared
+		// for the purposes of on-xp gain effects
+		if (oldStacks > chal.stacks && Dungeon.hero.lvl == Hero.MAX_LEVEL){
+			Dungeon.hero.earnExp(Math.round(10*(oldStacks - chal.stacks)), chal.getClass());
+		}
+
 		BuffIndicator.refreshHero();
 	}
 
-	//used for internal calculations like corruption, not actual exp gain
-	public static int AscensionExp(Mob m){
+	public static int AscensionCorruptResist(Mob m){
+		//default to just using their EXP value if no ascent challenge is happening
 		if (Dungeon.hero.buff(AscensionChallenge.class) == null){
 			return m.EXP;
 		}
@@ -203,6 +214,7 @@ public class AscensionChallenge extends Buff {
 	public void onLevelSwitch(){
 		if (Dungeon.depth < Statistics.highestAscent){
 			Statistics.highestAscent = Dungeon.depth;
+			justAscended = true;
 			if (Dungeon.bossLevel()){
 				Dungeon.hero.buff(Hunger.class).satisfy(Hunger.STARVING);
 				Buff.affect(Dungeon.hero, Healing.class).setHeal(Dungeon.hero.HT, 0, 20);
@@ -230,9 +242,19 @@ public class AscensionChallenge extends Buff {
 
 	}
 
+	//messages at boss levels only trigger on first ascent
+	private boolean justAscended = false;
+
 	public void saySwitch(){
 		if (Dungeon.bossLevel()){
-			GLog.p(Messages.get(this, "break"));
+			if (justAscended) {
+				GLog.p(Messages.get(this, "break"));
+				for (Char ch : Actor.chars()){
+					if (ch instanceof DriedRose.GhostHero){
+						((DriedRose.GhostHero) ch).sayAppeared();
+					}
+				}
+			}
 		} else {
 			if (Dungeon.depth == 1){
 				GLog.n(Messages.get(this, "almost"));
@@ -249,6 +271,7 @@ public class AscensionChallenge extends Buff {
 				GLog.h(Messages.get(this, "weaken_info"));
 			}
 		}
+		justAscended = false;
 	}
 
 	@Override

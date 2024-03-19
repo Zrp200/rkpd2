@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -116,8 +116,8 @@ public class TelekineticGrab extends TargetedSpell {
 
 	@Override
 	public int value() {
-		//prices of ingredients, divided by output quantity (rounded up slightly)
-		return Math.round(quantity * ((5 + 40) / 6f));
+		//prices of ingredients, divided by output quantity, rounds down
+		return (int)((10 + 40) * (quantity/6f));
 	}
 
 	public static class Recipe extends com.zrp200.rkpd2.items.Recipe.SimpleRecipe {

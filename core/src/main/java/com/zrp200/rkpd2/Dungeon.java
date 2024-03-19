@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,10 +26,12 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Amok;
 import com.zrp200.rkpd2.actors.buffs.AscensionChallenge;
 import com.zrp200.rkpd2.actors.buffs.Awareness;
+import com.zrp200.rkpd2.actors.buffs.Dread;
 import com.zrp200.rkpd2.actors.buffs.Light;
 import com.zrp200.rkpd2.actors.buffs.MagicalSight;
 import com.zrp200.rkpd2.actors.buffs.MindVision;
 import com.zrp200.rkpd2.actors.buffs.RevealedArea;
+import com.zrp200.rkpd2.actors.buffs.Terror;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.huntress.SpiritHawk;
@@ -49,15 +51,16 @@ import com.zrp200.rkpd2.items.scrolls.Scroll;
 import com.zrp200.rkpd2.items.wands.WandOfRegrowth;
 import com.zrp200.rkpd2.items.wands.WandOfWarding;
 import com.zrp200.rkpd2.journal.Notes;
+import com.zrp200.rkpd2.levels.CavesBossLevel;
 import com.zrp200.rkpd2.levels.CavesLevel;
+import com.zrp200.rkpd2.levels.CityBossLevel;
 import com.zrp200.rkpd2.levels.CityLevel;
 import com.zrp200.rkpd2.levels.DeadEndLevel;
+import com.zrp200.rkpd2.levels.HallsBossLevel;
 import com.zrp200.rkpd2.levels.HallsLevel;
 import com.zrp200.rkpd2.levels.LastLevel;
 import com.zrp200.rkpd2.levels.Level;
-import com.zrp200.rkpd2.levels.CavesBossLevel;
-import com.zrp200.rkpd2.levels.CityBossLevel;
-import com.zrp200.rkpd2.levels.HallsBossLevel;
+import com.zrp200.rkpd2.levels.MiningLevel;
 import com.zrp200.rkpd2.levels.PrisonBossLevel;
 import com.zrp200.rkpd2.levels.PrisonLevel;
 import com.zrp200.rkpd2.levels.RegularLevel;
@@ -70,10 +73,10 @@ import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.ui.QuickSlotButton;
 import com.zrp200.rkpd2.ui.Toolbar;
-import com.zrp200.rkpd2.utils.BArray;
 import com.zrp200.rkpd2.utils.DungeonSeed;
 import com.zrp200.rkpd2.windows.WndResurrect;
 import com.watabou.noosa.Game;
+import com.watabou.utils.BArray;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.FileUtils;
@@ -164,6 +167,14 @@ public class Dungeon {
 				}
 				
 			}
+
+			//pre-v2.2.0 saves
+			if (Dungeon.version < 750
+					&& Dungeon.isChallenged(Challenges.NO_SCROLLS)
+					&& UPGRADE_SCROLLS.count > 0){
+				//we now count SOU fully, and just don't drop every 2nd one
+				UPGRADE_SCROLLS.count += UPGRADE_SCROLLS.count-1;
+			}
 		}
 
 	}
@@ -179,8 +190,11 @@ public class Dungeon {
 	public static int depth;
 	//determines path the hero is on. Current uses:
 	// 0 is the default path
-	// Other numbers are currently unused
+	// 1 is for quest sub-floors
 	public static int branch;
+
+	//keeps track of what levels the game should try to load instead of creating fresh
+	public static ArrayList<Integer> generatedLevels = new ArrayList<>();
 
 	public static int gold;
 	public static int energy;
@@ -244,6 +258,7 @@ public class Dungeon {
 		
 		depth = 1;
 		branch = 0;
+		generatedLevels.clear();
 
 		gold = 0;
 		energy = 0;
@@ -270,21 +285,15 @@ public class Dungeon {
 	public static boolean isChallenged( int mask ) {
 		return (challenges & mask) != 0;
 	}
+
+	public static boolean levelHasBeenGenerated(int depth, int branch){
+		return generatedLevels.contains(depth + 1000*branch);
+	}
 	
 	public static Level newLevel() {
 		
 		Dungeon.level = null;
 		Actor.clear();
-
-		if (depth > Statistics.deepestFloor) {
-			Statistics.deepestFloor = depth;
-			
-			if (Statistics.qualifiedForNoKilling) {
-				Statistics.completedWithNoKilling = true;
-			} else {
-				Statistics.completedWithNoKilling = false;
-			}
-		}
 		
 		Level level;
 		if (branch == 0) {
@@ -339,16 +348,46 @@ public class Dungeon {
 					break;
 				default:
 					level = new DeadEndLevel();
-					Statistics.deepestFloor--;
+			}
+		} else if (branch == 1) {
+			switch (depth) {
+				case 11:
+				case 12:
+				case 13:
+				case 14:
+					level = new MiningLevel();
+					break;
+				default:
+					level = new DeadEndLevel();
 			}
 		} else {
 			level = new DeadEndLevel();
-			Statistics.deepestFloor--;
 		}
+
+		//dead end levels get cleared, don't count as generated
+		if (!(level instanceof DeadEndLevel)){
+			//this assumes that we will never have a depth value outside the range 0 to 999
+			// or -500 to 499, etc.
+			if (!generatedLevels.contains(depth + 1000*branch)) {
+				generatedLevels.add(depth + 1000 * branch);
+			}
+
+			if (depth > Statistics.deepestFloor && branch == 0) {
+				Statistics.deepestFloor = depth;
+
+				if (Statistics.qualifiedForNoKilling) {
+					Statistics.completedWithNoKilling = true;
+				} else {
+					Statistics.completedWithNoKilling = false;
+				}
+			}
+		}
+
+		Statistics.qualifiedForBossRemainsBadge = false;
 		
 		level.create();
 		
-		Statistics.qualifiedForNoKilling = !bossLevel();
+		if (branch == 0) Statistics.qualifiedForNoKilling = !bossLevel();
 		Statistics.qualifiedForBossChallengeBadge = false;
 		
 		return level;
@@ -405,20 +444,26 @@ public class Dungeon {
 	}
 
 	public static boolean interfloorTeleportAllowed(){
-		if (Dungeon.level.locked || (Dungeon.hero != null && Dungeon.hero.belongings.getItem(Amulet.class) != null)){
+		if (Dungeon.level.locked
+				|| Dungeon.level instanceof MiningLevel
+				|| (Dungeon.hero != null && Dungeon.hero.belongings.getItem(Amulet.class) != null)){
 			return false;
 		}
 		return true;
 	}
 	
 	public static void switchLevel( final Level level, int pos ) {
-		
+
+		//Position of -2 specifically means trying to place the hero the exit
 		if (pos == -2){
 			LevelTransition t = level.getTransition(LevelTransition.Type.REGULAR_EXIT);
 			if (t != null) pos = t.cell();
 		}
 
-		if (pos < 0 || pos >= level.length() || (!level.passable[pos] && !level.avoid[pos])){
+		//Place hero at the entrance if they are out of the map (often used for pox = -1)
+		// or if they are in solid terrain (except in the mining level, where that happens normally)
+		if (pos < 0 || pos >= level.length()
+				|| (!(level instanceof MiningLevel) && !level.passable[pos] && !level.avoid[pos])){
 			pos = level.getTransition(null).cell();
 		}
 		
@@ -491,12 +536,8 @@ public class Dungeon {
 	
 	public static boolean souNeeded() {
 		int souLeftThisSet;
-		//3 SOU each floor set, 1.5 (rounded) on forbidden runes challenge
-		if (isChallenged(Challenges.NO_SCROLLS)){
-			souLeftThisSet = Math.round(1.5f - (LimitedDrops.UPGRADE_SCROLLS.count - (depth / 5) * 1.5f));
-		} else {
-			souLeftThisSet = 3 - (LimitedDrops.UPGRADE_SCROLLS.count - (depth / 5) * 3);
-		}
+		//3 SOU each floor set
+		souLeftThisSet = 3 - (LimitedDrops.UPGRADE_SCROLLS.count - (depth / 5) * 3);
 		if (souLeftThisSet <= 0) return false;
 
 		int floorThisSet = (depth % 5);
@@ -525,6 +566,7 @@ public class Dungeon {
 	private static final String HERO		= "hero";
 	private static final String DEPTH		= "depth";
 	private static final String BRANCH		= "branch";
+	private static final String GENERATED_LEVELS    = "generated_levels";
 	private static final String GOLD		= "gold";
 	private static final String ENERGY		= "energy";
 	private static final String DROPPED     = "dropped%d";
@@ -584,6 +626,12 @@ public class Dungeon {
 			Statistics.storeInBundle( bundle );
 			Notes.storeInBundle( bundle );
 			Generator.storeInBundle( bundle );
+
+			int[] bundleArr = new int[generatedLevels.size()];
+			for (int i = 0; i < generatedLevels.size(); i++){
+				bundleArr[i] = generatedLevels.get(i);
+			}
+			bundle.put( GENERATED_LEVELS, bundleArr);
 			
 			Scroll.save( bundle );
 			Potion.save( bundle );
@@ -714,6 +762,18 @@ public class Dungeon {
 		Statistics.restoreFromBundle( bundle );
 		Generator.restoreFromBundle( bundle );
 
+		generatedLevels.clear();
+		if (bundle.contains(GENERATED_LEVELS)){
+			for (int i : bundle.getIntArray(GENERATED_LEVELS)){
+				generatedLevels.add(i);
+			}
+		//pre-v2.1.1 saves
+		} else  {
+			for (int i = 1; i <= Statistics.deepestFloor; i++){
+				generatedLevels.add(i);
+			}
+		}
+
 		droppedItems = new SparseArray<>();
 		for (int i=1; i <= 26; i++) {
 			
@@ -775,7 +835,7 @@ public class Dungeon {
 		Statistics.preview( info, bundle );
 	}
 	
-	public static void fail( Class cause ) {
+	public static void fail( Object cause ) {
 		if (WndResurrect.instance == null) {
 			updateLevelExplored();
 			Statistics.gameWon = false;
@@ -783,7 +843,7 @@ public class Dungeon {
 		}
 	}
 	
-	public static void win( Class cause ) {
+	public static void win( Object cause ) {
 
 		updateLevelExplored();
 		Statistics.gameWon = true;
@@ -869,12 +929,12 @@ public class Dungeon {
 		}
 
 		for (TalismanOfForesight.HeapAwareness h : hero.buffs(TalismanOfForesight.HeapAwareness.class)){
-			if (Dungeon.depth != h.depth) continue;
+			if (Dungeon.depth != h.depth || Dungeon.branch != h.branch) continue;
 			reveal(h.pos, 2);
 		}
 
 		for (RevealedArea a : hero.buffs(RevealedArea.class)){
-			if (Dungeon.depth != a.depth) continue;
+			if (Dungeon.depth != a.depth || Dungeon.branch != a.branch) continue;
 			reveal(a.pos, Dungeon.hero.hasTalent(Talent.SEER_SHOT) ? 3 : 2);
 		}
 
@@ -918,8 +978,11 @@ public class Dungeon {
 			BArray.setFalse(passable);
 	}
 
-	public static PathFinder.Path findPath(Char ch, int to, boolean[] pass, boolean[] vis, boolean chars) {
+	public static boolean[] findPassable(Char ch, boolean[] pass, boolean[] vis, boolean chars){
+		return findPassable(ch, pass, vis, chars, chars);
+	}
 
+	public static boolean[] findPassable(Char ch, boolean[] pass, boolean[] vis, boolean chars, boolean considerLarge){
 		setupPassable();
 		if (ch.flying || ch.buff( Amok.class ) != null) {
 			BArray.or( pass, Dungeon.level.avoid, passable );
@@ -927,9 +990,11 @@ public class Dungeon {
 			System.arraycopy( pass, 0, passable, 0, Dungeon.level.length() );
 		}
 
-		if (chars && Char.hasProp(ch, Char.Property.LARGE)){
+		if (considerLarge && Char.hasProp(ch, Char.Property.LARGE)){
 			BArray.and( passable, Dungeon.level.openSpace, passable );
 		}
+
+		ch.modifyPassable(passable);
 
 		if (chars) {
 			for (Char c : Actor.chars()) {
@@ -939,61 +1004,41 @@ public class Dungeon {
 			}
 		}
 
-		return PathFinder.find( ch.pos, to, passable );
+		return passable;
+	}
+
+	public static PathFinder.Path findPath(Char ch, int to, boolean[] pass, boolean[] vis, boolean chars) {
+
+		return PathFinder.find( ch.pos, to, findPassable(ch, pass, vis, chars) );
 
 	}
 	
 	public static int findStep(Char ch, int to, boolean[] pass, boolean[] visible, boolean chars ) {
 
 		if (Dungeon.level.adjacent( ch.pos, to )) {
-			return Actor.findChar( to ) == null && (pass[to] || Dungeon.level.avoid[to]) ? to : -1;
+			return Actor.findChar( to ) == null && pass[to] ? to : -1;
 		}
 
-		setupPassable();
-		if (ch.flying || ch.buff( Amok.class ) != null) {
-			BArray.or( pass, Dungeon.level.avoid, passable );
-		} else {
-			System.arraycopy( pass, 0, passable, 0, Dungeon.level.length() );
-		}
-
-		if (Char.hasProp(ch, Char.Property.LARGE)){
-			BArray.and( passable, Dungeon.level.openSpace, passable );
-		}
-
-		if (chars){
-			for (Char c : Actor.chars()) {
-				if (visible[c.pos]) {
-					passable[c.pos] = false;
-				}
-			}
-		}
-		
-		return PathFinder.getStep( ch.pos, to, passable );
+		return PathFinder.getStep( ch.pos, to, findPassable(ch, pass, visible, chars) );
 
 	}
 	
 	public static int flee( Char ch, int from, boolean[] pass, boolean[] visible, boolean chars ) {
-
-		setupPassable();
-		if (ch.flying) {
-			BArray.or( pass, Dungeon.level.avoid, passable );
-		} else {
-			System.arraycopy( pass, 0, passable, 0, Dungeon.level.length() );
-		}
-
-		if (Char.hasProp(ch, Char.Property.LARGE)){
-			BArray.and( passable, Dungeon.level.openSpace, passable );
-		}
-
+		boolean[] passable = findPassable(ch, pass, visible, false, true);
 		passable[ch.pos] = true;
 
-		//only consider chars impassable if our retreat path runs into them
-		int step = PathFinder.getStepBack( ch.pos, from, passable );
-		while (step != -1 && Actor.findChar(step) != null){
-			passable[step] = false;
-			step = PathFinder.getStepBack( ch.pos, from, passable );
+		//only consider other chars impassable if our retreat step may collide with them
+		if (chars) {
+			for (Char c : Actor.chars()) {
+				if (c.pos == from || Dungeon.level.adjacent(c.pos, ch.pos)) {
+					passable[c.pos] = false;
+				}
+			}
 		}
-		return step;
+
+		//chars affected by terror have a shorter lookahead and can't approach the fear source
+		boolean canApproachFromPos = ch.buff(Terror.class) == null && ch.buff(Dread.class) == null;
+		return PathFinder.getStepBack( ch.pos, from, canApproachFromPos ? 8 : 4, passable, canApproachFromPos );
 		
 	}
 

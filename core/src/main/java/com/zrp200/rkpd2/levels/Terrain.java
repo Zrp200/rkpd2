@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,10 +52,18 @@ public class Terrain {
 	public static final int UNLOCKED_EXIT	= 22;
 	public static final int SIGN			= 23;
 	public static final int WELL			= 24;
-	public static final int STATUE			= 25;
-	public static final int STATUE_SP		= 26;
 	public static final int BOOKSHELF		= 27;
 	public static final int ALCHEMY			= 28;
+
+	public static final int CUSTOM_DECO_EMPTY = 32; //regular empty tile that can't be overridden, used for custom visuals mainly
+	//solid environment decorations
+	public static final int CUSTOM_DECO	    = /*23*/33; //invisible decoration that will also be a custom visual, re-uses the old terrain ID for signs
+	public static final int STATUE			= 25;
+	public static final int STATUE_SP		= 26;
+	//These decorations are environment-specific
+	//33 and 34 are reserved for future statue-like decorations --- 33 is used for custom deco right now due to sign conflict
+	public static final int MINE_CRYSTAL    = 35;
+	public static final int MINE_BOULDER    = 36;
 
 	public static final int WATER		    = 29;
 	
@@ -100,10 +108,16 @@ public class Terrain {
 		flags[UNLOCKED_EXIT]= PASSABLE;
 		flags[SIGN]			= PASSABLE;
 		flags[WELL]			= AVOID;
-		flags[STATUE]		= SOLID;
-		flags[STATUE_SP]	= flags[STATUE];
 		flags[BOOKSHELF]	= flags[BARRICADE];
 		flags[ALCHEMY]		= SOLID;
+
+		flags[CUSTOM_DECO_EMPTY] = flags[EMPTY];
+		flags[CUSTOM_DECO] = SOLID;
+		flags[STATUE] = SOLID;
+		flags[STATUE_SP] = flags[STATUE];
+
+		flags[MINE_CRYSTAL] = SOLID;
+		flags[MINE_BOULDER] = SOLID;
 
 	}
 
@@ -116,16 +130,6 @@ public class Terrain {
 		default:
 			return terr;
 		}
-	}
-
-	//removes signs, places floors instead
-	public static int[] convertTilesFrom0_6_0b(int[] map){
-		for (int i = 0; i < map.length; i++){
-			if (map[i] == 23){
-				map[i] = 1;
-			}
-		}
-		return map;
 	}
 
 }

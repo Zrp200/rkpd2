@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,11 +21,11 @@
 
 package com.zrp200.rkpd2.items.weapon.enchantments;
 
-import com.watabou.utils.Random;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Barrier;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.ShieldBuff;
+import com.zrp200.rkpd2.effects.FloatingText;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.messages.Messages;
@@ -33,6 +33,7 @@ import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.watabou.noosa.Image;
+import com.watabou.utils.Random;
 
 public class Blocking extends Weapon.Enchantment {
 	
@@ -50,7 +51,9 @@ public class Blocking extends Weapon.Enchantment {
 		if (Random.Float() < procChance){
 			float powerMulti = Math.max(1f, procChance);
 			BlockBuff b = Buff.affect(attacker, BlockBuff.class);
-			b.setShield(Math.round(powerMulti * (2 + weapon.buffedLvl())));
+			int shield = Math.round(powerMulti * (2 + weapon.buffedLvl()));
+			b.setShield(shield);
+			attacker.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shield), FloatingText.SHIELDING);
 			attacker.sprite.emitter().burst(Speck.factory(Speck.LIGHT), 5);
 		}
 		

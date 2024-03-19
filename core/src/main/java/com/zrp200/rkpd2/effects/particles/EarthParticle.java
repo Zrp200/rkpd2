@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,8 @@ public class EarthParticle extends PixelParticle {
 	
 	public static final Emitter.Factory FACTORY = (emitter, index, x, y) -> emitter.recycle(EarthParticle.class).reset( x,  y );
 
+	public static final Emitter.Factory SMALL = (emitter, index, x, y) -> emitter.recycle( EarthParticle.class ).resetSmall( x,  y );
+
 	public static final Emitter.Factory FALLING = (emitter, index, x, y) -> emitter.recycle(EarthParticle.class).resetFalling( x,  y );
 
 	public EarthParticle() {
@@ -47,6 +49,17 @@ public class EarthParticle extends PixelParticle {
 
 		left = lifespan = 0.5f;
 		size = 16;
+
+		acc.y = 0;
+		speed.y = 0;
+		angularSpeed = 0;
+	}
+
+	public void resetSmall( float x, float y ) {
+		reset(x, y);
+
+		left = lifespan = 1f;
+		size = 8;
 	}
 
 	public void resetFalling( float x, float y ) {

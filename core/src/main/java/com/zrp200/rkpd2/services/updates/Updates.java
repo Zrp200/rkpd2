@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,8 @@ public class Updates {
 	private static Date lastCheck = null;
 	private static final long CHECK_DELAY = 1000*60*60; //1 hour
 
-	public static boolean isUpdateable(){
-		return supportsUpdates() && service.isUpdateable();
+	public static boolean supportsUpdatePrompts(){
+		return supportsUpdates() && service.supportsUpdatePrompts();
 	}
 
 	public static boolean supportsBetaChannel(){
@@ -46,7 +46,7 @@ public class Updates {
 	}
 
 	public static void checkForUpdate(){
-		if (!isUpdateable()) return;
+		if (!supportsUpdatePrompts()) return;
 		if (lastCheck != null && (new Date().getTime() - lastCheck.getTime()) < CHECK_DELAY) return;
 
 		//We do this so that automatically enabled beta checking (for users who DLed a beta) persists afterward
@@ -90,16 +90,6 @@ public class Updates {
 	public static void clearUpdate(){
 		updateData = null;
 		lastCheck = null;
-	}
-
-	public static boolean isInstallable(){
-		return supportsUpdates() && service.isInstallable();
-	}
-
-	public static void launchInstall(){
-		if (supportsUpdates()){
-			service.initializeInstall();
-		}
 	}
 
 	public static boolean supportsReviews() {

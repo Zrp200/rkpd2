@@ -3,7 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
- * Copyright (C) 2014-2023 Evan Debenham
+ * Copyright (C) 2014-2024 Evan Debenham
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.items.spells;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
+import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.potions.PotionOfLevitation;
@@ -51,6 +52,7 @@ public class FeatherFall extends Spell {
 		
 		detach( curUser.belongings.backpack );
 		updateQuickslot();
+		Invisibility.dispel();
 		hero.spendAndNext( 1f );
 	}
 	
@@ -80,8 +82,8 @@ public class FeatherFall extends Spell {
 	
 	@Override
 	public int value() {
-		//prices of ingredients, divided by output quantity
-		return Math.round(quantity * ((30 + 40) / 2f));
+		//prices of ingredients, divided by output quantity, rounds down
+		return (int)((30 + 40) * (quantity/2f));
 	}
 	
 	public static class Recipe extends com.zrp200.rkpd2.items.Recipe.SimpleRecipe {
