@@ -493,7 +493,7 @@ public class GameScene extends PixelScene {
 				//offset seed slightly to avoid output patterns
 				float chance = Dungeon.hero.byTalent(
 						false, false,
-						Talent.ROGUES_FORESIGHT,.30f,
+						Talent.ROGUES_FORESIGHT,.33f,
 						Talent.POWER_WITHIN, .30f);
 				Random.pushGenerator(Dungeon.seedCurDepth()+1);
 				if (reqSecrets <= 0 && Random.Float() <= chance) {

@@ -2404,6 +2404,8 @@ public class Hero extends Char {
 							chance = 0.2f - (Dungeon.depth / 100f);
 						}
 
+						if (hasTalent(Talent.ROGUES_FORESIGHT)) chance *= 1.5f;
+
 						//don't want to let the player search though hidden doors in tutorial
 						if (SPDSettings.intro()){
 							chance = 0;
