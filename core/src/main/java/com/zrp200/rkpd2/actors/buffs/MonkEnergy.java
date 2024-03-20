@@ -21,6 +21,8 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
+import static com.zrp200.rkpd2.Dungeon.hero;
+
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
@@ -40,6 +42,7 @@ import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.levels.features.Door;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.sprites.CharSprite;
@@ -56,6 +59,8 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.GameMath;
+
+import java.util.HashMap;
 
 public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
@@ -101,7 +106,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 	public boolean act() {
 		if (cooldown > 0){
 			cooldown--;
-			if (cooldown == 0 && energy >= 1){
+			if (usable()){
 				ActionIndicator.setAction(this);
 			}
 			BuffIndicator.refreshHero();
@@ -136,9 +141,14 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 		energy = bundle.getFloat(ENERGY);
 		cooldown = bundle.getInt(COOLDOWN);
 
-		if (energy >= 1 && cooldown == 0){
+		if (usable()){
 			ActionIndicator.setAction(this);
 		}
+	}
+
+	@Override
+	public boolean usable() {
+		return energy > 0 && cooldown < 1;
 	}
 
 	public void gainEnergy(Mob enemy ){
@@ -200,7 +210,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 	//10 at base, 20 at level 30
 	public int energyCap(){
-		return Math.max(10, 5 + Dungeon.hero.lvl/2);
+		return Math.max(10, 5 + hero.lvl/2);
 	}
 
 	public void abilityUsed( MonkAbility abil ){
@@ -218,7 +228,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 			}
 		}
 
-		if (cooldown > 0 || energy < 1){
+		if (!usable()){
 			ActionIndicator.clearAction(this);
 		} else {
 			ActionIndicator.refresh();
@@ -262,7 +272,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 	@Override
 	public int indicatorColor() {
-		if (abilitiesEmpowered(Dungeon.hero)){
+		if (abilitiesEmpowered(hero)){
 			return 0x99CC33;
 		} else {
 			return 0xA08840;
@@ -301,12 +311,67 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 		public abstract void doAbility(Hero hero, Integer target );
 
+		public static abstract class TargetedMonkAbility extends MonkAbility {
+
+			public String isValidTarget(Char enemy) {
+				if (enemy == null || enemy == hero || hero.isCharmedBy(enemy) || !Dungeon.level.heroFOV[enemy.pos]) {
+					return "ability_no_target";
+				}
+
+				UnarmedAbilityTracker tracker = Buff.affect(hero, UnarmedAbilityTracker.class);
+				boolean canAttack = hero.canAttack(enemy);
+				tracker.detach();
+				if (!canAttack){
+					return "ability_bad_position";
+				}
+				return null;
+			}
+			protected abstract void doAbility(Char ch, UnarmedAbilityTracker tracker, boolean empowered);
+
+			@Override
+			public final String targetingPrompt() { return null; }
+
+			@Override
+			public final void doAbility(Hero hero, Integer target) {
+				GameScene.selectCell(new CellSelector.TargetedListener() {
+
+					@Override
+					protected void action(Char enemy) {
+						UnarmedAbilityTracker tracker = Buff.affect(hero, UnarmedAbilityTracker.class);
+						hero.sprite.attack(enemy.pos, () -> {
+							AttackIndicator.target(enemy);
+							doAbility(enemy, tracker, Buff.affect(hero, MonkEnergy.class).abilitiesEmpowered(hero));
+						});
+					}
+
+					@Override
+					protected boolean isValidTarget(Char ch) {
+						if (ch == null) return false;
+						String failureReason = TargetedMonkAbility.this.isValidTarget(ch);
+						if (failureReason == null) return true;
+						reason.put(ch.pos, failureReason);
+						return false;
+					}
+
+					private final HashMap<Integer, String> reason = new HashMap();
+
+					@Override
+					protected void onInvalid(int cell) {
+						GLog.w(Messages.get(reason.containsKey(cell) ? reason.get(cell) : "ability_no_target", MeleeWeapon.class));
+					}
+
+					@Override
+					public String prompt() { return Messages.get(MeleeWeapon.class, "prompt"); }
+				});
+			}
+		}
+
 		public static class UnarmedAbilityTracker extends FlavourBuff{};
 		public static class JustHitTracker extends FlavourBuff{};
 
 		public static class FlurryEmpowerTracker extends FlavourBuff{};
 
-		public static class Flurry extends MonkAbility {
+		public static class Flurry extends TargetedMonkAbility {
 
 			@Override
 			public int energyCost() {
@@ -315,80 +380,50 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 			@Override
 			public int cooldown() {
-				return Dungeon.hero.buff(JustHitTracker.class) != null ? 0 : 5;
+				return hero.buff(JustHitTracker.class) != null ? 0 : 5;
 			}
 
 			@Override
 			public String desc() {
 				//hero unarmed damage
-				return Messages.get(this, "desc", 1, Dungeon.hero.STR()-8);
+				return Messages.get(this, "desc", 1, hero.STR()-8);
 			}
 
 			@Override
-			public String targetingPrompt() {
-				return Messages.get(MeleeWeapon.class, "prompt");
-			}
+			public void doAbility(Char enemy, UnarmedAbilityTracker tracker, boolean empowered) {
 
-			@Override
-			public void doAbility(Hero hero, Integer target) {
-				if (target == null || target == -1){
-					return;
-				}
-
-				Char enemy = Actor.findChar(target);
-				if (enemy == null || enemy == hero || hero.isCharmedBy(enemy) || !Dungeon.level.heroFOV[target]) {
-					GLog.w(Messages.get(MeleeWeapon.class, "ability_no_target"));
-					return;
-				}
-
-				UnarmedAbilityTracker tracker = Buff.affect(hero, UnarmedAbilityTracker.class);
-				if (!hero.canAttack(enemy)){
-					GLog.w(Messages.get(MeleeWeapon.class, "ability_bad_position"));
-					tracker.detach();
-					return;
-				}
-
-				if (Buff.affect(hero, MonkEnergy.class).abilitiesEmpowered(hero)){
+				if (empowered){
 					Buff.affect(hero, FlurryEmpowerTracker.class, 0f);
 				}
 
-				hero.sprite.attack(enemy.pos, new Callback() {
-					@Override
-					public void call() {
-						AttackIndicator.target(enemy);
-						hero.attack(enemy, 1, 0, Char.INFINITE_ACCURACY);
+				hero.attack(enemy, 1, 0, Char.INFINITE_ACCURACY);
 
-						if (enemy.isAlive()){
-							hero.sprite.attack(enemy.pos, new Callback() {
-								@Override
-								public void call() {
-									hero.attack(enemy, 1, 0, Char.INFINITE_ACCURACY);
-									Invisibility.dispel();
-									hero.next();
-									tracker.detach();
-									Buff.affect(hero, MonkEnergy.class).abilityUsed(Flurry.this);
-									if (hero.buff(JustHitTracker.class) != null) {
-										hero.buff(JustHitTracker.class).detach();
-									}
-									if (hero.buff(FlurryEmpowerTracker.class) != null){
-										hero.buff(FlurryEmpowerTracker.class).detach();
-									}
-								}
-							});
-						} else {
-							Invisibility.dispel();
-							hero.next();
-							tracker.detach();
-							Buff.affect(hero, MonkEnergy.class).abilityUsed(Flurry.this);
-							if (hero.buff(JustHitTracker.class) != null) {
-								hero.buff(JustHitTracker.class).detach();
-							}
-							if (hero.buff(FlurryEmpowerTracker.class) != null){
-								hero.buff(FlurryEmpowerTracker.class).detach();
-							}
+				if (enemy.isAlive()){
+					hero.sprite.attack(enemy.pos, () -> {
+						hero.attack(enemy, 1, 0, Char.INFINITE_ACCURACY);
+						Invisibility.dispel();
+						hero.next();
+						tracker.detach();
+						Buff.affect(hero, MonkEnergy.class).abilityUsed(Flurry.this);
+						if (hero.buff(JustHitTracker.class) != null) {
+							hero.buff(JustHitTracker.class).detach();
 						}
+						if (hero.buff(FlurryEmpowerTracker.class) != null){
+							hero.buff(FlurryEmpowerTracker.class).detach();
+						}
+					});
+				} else {
+					Invisibility.dispel();
+					hero.next();
+					tracker.detach();
+					Buff.affect(hero, MonkEnergy.class).abilityUsed(Flurry.this);
+					if (hero.buff(JustHitTracker.class) != null) {
+						hero.buff(JustHitTracker.class).detach();
 					}
-				});
+					if (hero.buff(FlurryEmpowerTracker.class) != null){
+						hero.buff(FlurryEmpowerTracker.class).detach();
+					}
+				}
 			}
 		}
 
@@ -518,7 +553,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 			}
 		}
 
-		public static class DragonKick extends MonkAbility {
+		public static class DragonKick extends TargetedMonkAbility {
 
 			@Override
 			public int energyCost() {
@@ -533,81 +568,52 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 			@Override
 			public String desc() {
 				//3x hero unarmed damage
-				return Messages.get(this, "desc", 3, 3*(Dungeon.hero.STR()-8));
+				return Messages.get(this, "desc", 3, 3*(hero.STR()-8));
 			}
 
 			@Override
-			public String targetingPrompt() {
-				return Messages.get(MeleeWeapon.class, "prompt");
-			}
+			public void doAbility(Char enemy, UnarmedAbilityTracker tracker, boolean empowered) {
 
-			@Override
-			public void doAbility(Hero hero, Integer target) {
-				if (target == null || target == -1){
-					return;
+				int oldPos = enemy.pos;
+				if (hero.attack(enemy, empowered ? 4.5f : 3f, 0, Char.INFINITE_ACCURACY)){
+					Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);
 				}
 
-				Char enemy = Actor.findChar(target);
-				if (enemy == null || enemy == hero || hero.isCharmedBy(enemy) || !Dungeon.level.heroFOV[target]) {
-					GLog.w(Messages.get(MeleeWeapon.class, "ability_no_target"));
-					return;
+				if (oldPos == enemy.pos){
+					//trace a ballistica to our target (which will also extend past them
+					Ballistica trajectory = new Ballistica(hero.pos, enemy.pos, Ballistica.STOP_TARGET);
+					//trim it to just be the part that goes past them
+					trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);
+					//knock them back along that ballistica
+					WandOfBlastWave.throwChar(enemy, trajectory, 6, true, false, hero);
+
+					if (trajectory.dist > 0 && enemy.isActive()) {
+						Buff.affect(enemy, Paralysis.class, Math.min( 6, trajectory.dist));
+					}
 				}
+				Invisibility.dispel();
+				hero.spendAndNext(hero.attackDelay());
+				tracker.detach();
+				Buff.affect(hero, MonkEnergy.class).abilityUsed(DragonKick.this);
 
-				UnarmedAbilityTracker tracker = Buff.affect(hero, UnarmedAbilityTracker.class);
-				if (!hero.canAttack(enemy)){
-					GLog.w(Messages.get(MeleeWeapon.class, "ability_bad_position"));
-					tracker.detach();
-					return;
-				}
-
-				hero.sprite.attack(enemy.pos, new Callback() {
-					@Override
-					public void call() {
-						AttackIndicator.target(enemy);
-						boolean empowered = Buff.affect(hero, MonkEnergy.class).abilitiesEmpowered(hero);
-
-						int oldPos = enemy.pos;
-						if (hero.attack(enemy, empowered ? 4.5f : 3f, 0, Char.INFINITE_ACCURACY)){
-							Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);
-						}
-
-						if (oldPos == enemy.pos){
+				if (empowered){
+					for (Char ch : Actor.chars()){
+						if (ch != enemy
+								&& ch.alignment == Char.Alignment.ENEMY
+								&& Dungeon.level.adjacent(ch.pos, hero.pos)){
 							//trace a ballistica to our target (which will also extend past them
-							Ballistica trajectory = new Ballistica(hero.pos, enemy.pos, Ballistica.STOP_TARGET);
+							Ballistica trajectory = new Ballistica(hero.pos, ch.pos, Ballistica.STOP_TARGET);
 							//trim it to just be the part that goes past them
 							trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);
 							//knock them back along that ballistica
-							WandOfBlastWave.throwChar(enemy, trajectory, 6, true, false, hero);
+							WandOfBlastWave.throwChar(ch, trajectory, 6, true, false, hero);
 
 							if (trajectory.dist > 0 && enemy.isActive()) {
-								Buff.affect(enemy, Paralysis.class, Math.min( 6, trajectory.dist));
-							}
-						}
-						Invisibility.dispel();
-						hero.spendAndNext(hero.attackDelay());
-						tracker.detach();
-						Buff.affect(hero, MonkEnergy.class).abilityUsed(DragonKick.this);
-
-						if (empowered){
-							for (Char ch : Actor.chars()){
-								if (ch != enemy
-										&& ch.alignment == Char.Alignment.ENEMY
-										&& Dungeon.level.adjacent(ch.pos, hero.pos)){
-									//trace a ballistica to our target (which will also extend past them
-									Ballistica trajectory = new Ballistica(hero.pos, ch.pos, Ballistica.STOP_TARGET);
-									//trim it to just be the part that goes past them
-									trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);
-									//knock them back along that ballistica
-									WandOfBlastWave.throwChar(ch, trajectory, 6, true, false, hero);
-
-									if (trajectory.dist > 0 && enemy.isActive()) {
-										Buff.affect(ch, Paralysis.class, Math.min( 6, trajectory.dist));
-									}
-								}
+								Buff.affect(ch, Paralysis.class, Math.min( 6, trajectory.dist));
 							}
 						}
 					}
-				});
+				}
 			}
 		}
 

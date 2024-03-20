@@ -63,6 +63,7 @@ public class WndMonkAbilities extends Window {
 						abilityBeingUsed = abil;
 						GameScene.selectCell(listener);
 					} else {
+						if (abil instanceof MonkEnergy.MonkAbility.TargetedMonkAbility) abilityBeingUsed = abil;
 						abil.doAbility(Dungeon.hero, null);
 					}
 				}
