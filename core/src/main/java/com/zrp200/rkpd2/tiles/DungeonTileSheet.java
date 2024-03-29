@@ -88,6 +88,7 @@ public class DungeonTileSheet {
 		chasmStitcheable.put( Terrain.FURROWED_GRASS,CHASM_FLOOR );
 		chasmStitcheable.put( Terrain.EMPTY_DECO,   CHASM_FLOOR );
 		chasmStitcheable.put( Terrain.CUSTOM_DECO,  CHASM_FLOOR );
+
 		chasmStitcheable.put( Terrain.EMPTY_WELL,   CHASM_FLOOR );
 		chasmStitcheable.put( Terrain.WELL,         CHASM_FLOOR );
 		chasmStitcheable.put( Terrain.STATUE,       CHASM_FLOOR );
@@ -104,6 +105,7 @@ public class DungeonTileSheet {
 		//special floor
 		chasmStitcheable.put( Terrain.EMPTY_SP,     CHASM_FLOOR_SP );
 		chasmStitcheable.put( Terrain.STATUE_SP,    CHASM_FLOOR_SP );
+		chasmStitcheable.put( Terrain.SIGN,  CHASM_FLOOR_SP );
 
 		//wall
 		chasmStitcheable.put( Terrain.WALL,         CHASM_WALL );
@@ -186,6 +188,7 @@ public class DungeonTileSheet {
 
 	public static final int FLAT_STATUE         = FLAT_OTHER+8;
 	public static final int FLAT_STATUE_SP      = FLAT_OTHER+9;
+	public static final int FLAT_SIGN			= FLAT_OTHER+10;
 
 	public static final int FLAT_MINE_CRYSTAL         = FLAT_OTHER+12;
 	public static final int FLAT_MINE_CRYSTAL_ALT     = FLAT_OTHER+13;
@@ -283,6 +286,7 @@ public class DungeonTileSheet {
 
 	public static final int RAISED_STATUE           = RAISED_OTHER+8;
 	public static final int RAISED_STATUE_SP        = RAISED_OTHER+9;
+	public static final int RAISED_SIGN				= RAISED_OTHER+10;
 
 	public static final int RAISED_MINE_CRYSTAL     = RAISED_OTHER+12;
 	public static final int RAISED_MINE_CRYSTAL_ALT = RAISED_OTHER+13;
@@ -426,6 +430,7 @@ public class DungeonTileSheet {
 
 		directFlatVisuals.put(Terrain.STATUE,           FLAT_STATUE);
 		directFlatVisuals.put(Terrain.STATUE_SP,        FLAT_STATUE_SP);
+		directFlatVisuals.put(Terrain.SIGN,				FLAT_SIGN);
 
 		directFlatVisuals.put(Terrain.MINE_CRYSTAL,     FLAT_MINE_CRYSTAL);
 		directFlatVisuals.put(Terrain.MINE_BOULDER,     FLAT_MINE_BOULDER);
