@@ -30,6 +30,7 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
 import com.zrp200.rkpd2.items.Amulet;
 import com.zrp200.rkpd2.items.KingsCrown;
+import com.zrp200.rkpd2.items.remains.CrownShard;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.RankingsScene;
 import com.zrp200.rkpd2.scenes.GameScene;
@@ -88,6 +89,9 @@ public class RatKing extends NPC {
 			yell(Messages.get(this, "confused"));
 		}
 	}
+
+	// this isn't stored currently
+	private boolean discussedShard = false;
 
 	@Override
 	protected boolean act() {
@@ -175,7 +179,11 @@ public class RatKing extends NPC {
 					}
 				});
 			}
-		} else if (Dungeon.hero.armorAbility instanceof Ratmogrify) {
+		} else if (!discussedShard && Dungeon.hero.belongings.getItem(CrownShard.class) != null) {
+			yell(Messages.get(this, "crownshard"));
+			discussedShard = true;
+		}
+		else if (Dungeon.hero.armorAbility instanceof Ratmogrify) {
 			yell( Messages.get(RatKing.class, "crown_after") );
 		} else {
 			yell( Messages.get(this, "what_is_it") );

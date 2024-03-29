@@ -88,6 +88,8 @@ public abstract class RemainsItem extends Item {
 				return new BowFragment();
 			case DUELIST:
 				return new BrokenHilt();
+			case RAT_KING:
+				return new CrownShard();
 		}
 	}
 
