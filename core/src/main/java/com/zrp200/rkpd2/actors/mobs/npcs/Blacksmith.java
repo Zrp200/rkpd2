@@ -31,6 +31,7 @@ import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.quest.DarkGold;
 import com.zrp200.rkpd2.items.quest.Pickaxe;
+import com.zrp200.rkpd2.items.stones.StoneOfClairvoyance;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.journal.Notes;
 import com.zrp200.rkpd2.levels.rooms.Room;
@@ -69,6 +70,10 @@ public class Blacksmith extends NPC {
 		}
 		return super.act();
 	}
+
+	private String msg(String key, Object... args) {
+		return Messages.get(Blacksmith.this, key, args);
+	}
 	
 	@Override
 	public boolean interact(Char c) {
@@ -83,37 +88,29 @@ public class Blacksmith extends NPC {
 		Statistics.questScores[2] = 3000;
 
 		if (!Quest.given) {
-String msg1 = "";
+			String msg1 = "";
 			String msg2 = "";
 
 			if (Quest.type == Quest.OLD){
 				//pre-v2.2.0 saves
 				msg1 = Quest.alternative ? Messages.get(Blacksmith.this, "blood_1") : Messages.get(Blacksmith.this, "gold_1");
 			} else {
+				msg1 += msg("intro_quest")
+						+ "\n\n" + msg("intro_quest_start");
 
-				switch (Dungeon.hero.heroClass){
-					case WARRIOR:   msg1 += Messages.get(Blacksmith.this, "intro_quest_warrior"); break;
-					case MAGE:      msg1 += Messages.get(Blacksmith.this, "intro_quest_mage"); break;
-					case ROGUE:     msg1 += Messages.get(Blacksmith.this, "intro_quest_rogue"); break;
-					case HUNTRESS:  msg1 += Messages.get(Blacksmith.this, "intro_quest_huntress"); break;
-					case DUELIST:   msg1 += Messages.get(Blacksmith.this, "intro_quest_duelist"); break;
-					//case CLERIC: msg1 += Messages.get(Blacksmith.this, "intro_quest_cleric"); break;
-				}
-
-				msg1 += "\n\n" + Messages.get(Blacksmith.this, "intro_quest_start");
-
+				msg2 += msg("intro_quest_common");
 				switch (Quest.type){
 					case Quest.CRYSTAL: msg2 += Messages.get(Blacksmith.this, "intro_quest_crystal"); break;
 					case Quest.GNOLL:   msg2 += Messages.get(Blacksmith.this, "intro_quest_gnoll"); break;
 					case Quest.FUNGI:   msg2 += Messages.get(Blacksmith.this, "intro_quest_fungi"); break;
 				}
+				msg2 += "\n\n" + msg("bonus_item");
 
 			}
 
-			// FIXME change quest
-
 			final String msg1Final = msg1;
-			final String msg2Final = msg2;			Game.runOnRenderThread( () ->
+			final String msg2Final = msg2;
+			Game.runOnRenderThread( () ->
 				GameScene.show( new WndQuest( Blacksmith.this,
 					msg1Final) {
 					@Override
@@ -122,13 +119,18 @@ String msg1 = "";
 
 						Quest.given = true;
 						Quest.completed = false;
+						Quest.favor += 2000; // yeah I'll let you skip it if you want.
 						Notes.add(Notes.Landmark.TROLL);
+						Item stones = new StoneOfClairvoyance().quantity(2); // I'm not evil.
 						Item pick = Quest.pickaxe != null ? Quest.pickaxe : new Pickaxe();
-						if (pick.doPickUp(Dungeon.hero)) {
-							GLog.i(Messages.capitalize(Messages.get(Dungeon.hero, "you_now_have", pick.name())));
-						} else {
-							Dungeon.level.drop(pick, Dungeon.hero.pos).sprite.drop();
+						for (Item item : new Item[]{pick, stones}) {
+							if (item.doPickUp(Dungeon.hero)) {
+								GLog.i(Messages.capitalize(Messages.get(Dungeon.hero, "you_now_have", item.name())));
+							} else {
+								Dungeon.level.drop(item, Dungeon.hero.pos).sprite.drop();
+							}
 						}
+
 						Quest.pickaxe = null;
 
 						if (msg2Final != "") {
@@ -199,32 +201,35 @@ String msg1 = "";
 					case Quest.FUNGI:   msg += Messages.get(Blacksmith.this, "reminder_fungi"); break;
 				}
 				tell(msg);
+				handleRewards(); // you can still do stuff since I front-loaded some favor
 
 			}
 		} else if (Quest.type == Quest.OLD && Quest.reforges == 0) {
 
 			Game.runOnRenderThread(() -> GameScene.show( new WndBlacksmith.WndReforge( Blacksmith.this, null ) ));
 
-		} else if (Quest.rewardsAvailable()) {
-
-			Game.runOnRenderThread(new Callback() {
-				@Override
-				public void call() {
-					//in case game was closed during smith reward selection
-					if (Quest.smithRewards != null && Quest.smiths > 0){
-						GameScene.show( new WndBlacksmith.WndSmith( Blacksmith.this, Dungeon.hero ) );
-					} else {
-						GameScene.show(new WndBlacksmith(Blacksmith.this, Dungeon.hero));
-					}
-				}
-			});
-
-		} else {
+		} else if (!handleRewards()){
 			
 			tell( Messages.get(this, "get_lost") );
 			
 		}
 
+		return true;
+	}
+
+	private boolean handleRewards() {
+		if (!Quest.rewardsAvailable()) return false;
+		Game.runOnRenderThread(new Callback() {
+			@Override
+			public void call() {
+				//in case game was closed during smith reward selection
+				if (Quest.smithRewards != null && Quest.smiths > 0){
+					GameScene.show( new WndBlacksmith.WndSmith( Blacksmith.this, Dungeon.hero ) );
+				} else {
+					GameScene.show(new WndBlacksmith(Blacksmith.this, Dungeon.hero));
+				}
+			}
+		});
 		return true;
 	}
 	
@@ -472,10 +477,13 @@ String msg1 = "";
 		public static void complete(){
 			completed = true;
 
+			int existingFavor = favor;
 			favor = 0;
 			DarkGold gold = Dungeon.hero.belongings.getItem(DarkGold.class);
 			if (gold != null){
-				favor += Math.min(2000, gold.quantity()*50);
+				int maxGold = 30;
+				float favorPerGold = 2000f/maxGold;
+				favor += Math.round(favorPerGold * Math.min(maxGold, gold.quantity()));
 				gold.detachAll(Dungeon.hero.belongings.backpack);
 			}
 
@@ -492,6 +500,7 @@ String msg1 = "";
 			if (bossBeaten) favor += 1000;
 
 			Statistics.questScores[2] = favor;
+			favor += existingFavor;
 		}
 
 		public static boolean rewardsAvailable(){

@@ -98,20 +98,23 @@ public class MiningLevel extends CavesLevel {
 		s.setSizeCat();
 		initRooms.add(s);
 
-		int rooms = 3;
+		// -33%
+		int rooms = 2;
 		for (int i = 0; i < rooms; i++){
 			s = new MineLargeRoom();
 			s.setSizeCat();
 			initRooms.add(s);
 		}
 
-		rooms = Random.NormalIntRange(6, 8);
+		// -33%
+		rooms = Random.NormalIntRange(4, 6);
 		for (int i = 0; i < rooms; i++){
 			s = new MineSmallRoom();
 			s.setSizeCat();
 			initRooms.add(s);
 		}
 
+		// unchanged
 		rooms = Random.NormalIntRange(1, 2);
 		for (int i = 0; i < rooms; i++){
 			initRooms.add(new MineSecretRoom());
@@ -141,10 +144,13 @@ public class MiningLevel extends CavesLevel {
 		return false;
 	}
 
+	private final int MAX_GOLD = 30;
+
 	@Override
 	protected Painter painter() {
 		return new MiningLevelPainter()
-				.setGold(Random.NormalIntRange(42, 46))
+				// 33 - 39
+				.setGold(Random.NormalIntRange((int)(MAX_GOLD*1.1), (int)(MAX_GOLD*1.3)))
 				.setWater(Blacksmith.Quest.Type() == Blacksmith.Quest.FUNGI ? 0.1f : 0.35f, 6)
 				.setGrass(Blacksmith.Quest.Type() == Blacksmith.Quest.FUNGI ? 0.65f : 0.10f, 3);
 	}
@@ -254,14 +260,14 @@ public class MiningLevel extends CavesLevel {
 
 			String warnText;
 			DarkGold gold = hero.belongings.getItem(DarkGold.class);
-			int goldAmount = gold == null ? 0 : gold.quantity();
-			if (goldAmount < 10){
+			int goldAmount = gold == null ? 0 : (gold.quantity() * 100)/30;
+			if (goldAmount < 25){
 				warnText = Messages.get(Blacksmith.class, "exit_warn_none");
-			} else if (goldAmount < 20){
+			} else if (goldAmount < 50){
 				warnText = Messages.get(Blacksmith.class, "exit_warn_low");
-			} else if (goldAmount < 30){
+			} else if (goldAmount < 75){
 				warnText = Messages.get(Blacksmith.class, "exit_warn_med");
-			} else if (goldAmount < 40){
+			} else if (goldAmount < 100){
 				warnText = Messages.get(Blacksmith.class, "exit_warn_high");
 			} else {
 				warnText = Messages.get(Blacksmith.class, "exit_warn_full");

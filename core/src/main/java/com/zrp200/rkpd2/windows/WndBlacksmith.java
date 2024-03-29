@@ -27,6 +27,7 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.hero.Belongings;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.mobs.npcs.Blacksmith;
 import com.zrp200.rkpd2.items.BrokenSeal;
 import com.zrp200.rkpd2.items.EquipableItem;
@@ -67,47 +68,53 @@ public class WndBlacksmith extends Window {
 		titlebar.label( Messages.titleCase( troll.name() ) );
 		titlebar.setRect( 0, 0, width, 0 );
 		add( titlebar );
-
-		RenderedTextBlock message = PixelScene.renderTextBlock( Messages.get(this, "prompt", Blacksmith.Quest.favor), 6 );
+		RenderedTextBlock message = PixelScene.renderTextBlock(
+				Messages.get(this,
+						Blacksmith.Quest.completed() ? "postquest" :
+						Dungeon.hero.heroClass == HeroClass.RAT_KING ? "prequest_rk" : "prequest"
+				) + Messages.get(this, "prompt", Blacksmith.Quest.favor),
+				6);
 		message.maxWidth( width );
 		message.setPos(0, titlebar.bottom() + GAP);
 		add( message );
 
 		ArrayList<RedButton> buttons = new ArrayList<>();
 
-		int pickaxeCost = Statistics.questScores[2] >= 2500 ? 0 : 250;
-		RedButton pickaxe = new RedButton(Messages.get(this, "pickaxe", pickaxeCost), 6){
-			@Override
-			protected void onClick() {
-				GameScene.show(new WndOptions(
-						troll.sprite(),
-						Messages.titleCase( troll.name() ),
-						Messages.get(WndBlacksmith.class, "pickaxe_verify") + (pickaxeCost == 0 ? "\n\n" + Messages.get(WndBlacksmith.class, "pickaxe_free") : ""),
-						Messages.get(WndBlacksmith.class, "pickaxe_yes"),
-						Messages.get(WndBlacksmith.class, "pickaxe_no")
-				){
-					@Override
-					protected void onSelect(int index) {
-						if (index == 0){
-							if (Blacksmith.Quest.pickaxe.doPickUp( Dungeon.hero )) {
-								GLog.i( Messages.capitalize(Messages.get(Dungeon.hero, "you_now_have", Blacksmith.Quest.pickaxe.name()) ));
-							} else {
-								Dungeon.level.drop( Blacksmith.Quest.pickaxe, Dungeon.hero.pos ).sprite.drop();
-							}
-							Blacksmith.Quest.favor -= pickaxeCost;
-							Blacksmith.Quest.pickaxe = null;
-							WndBlacksmith.this.hide();
+		if (Blacksmith.Quest.completed()) {
+			int pickaxeCost = Statistics.questScores[2] >= 2500 ? 0 : 250;
+			RedButton pickaxe = new RedButton(Messages.get(this, "pickaxe", pickaxeCost), 6){
+				@Override
+				protected void onClick() {
+					GameScene.show(new WndOptions(
+							troll.sprite(),
+							Messages.titleCase( troll.name() ),
+							Messages.get(WndBlacksmith.class, "pickaxe_verify") + (pickaxeCost == 0 ? "\n\n" + Messages.get(WndBlacksmith.class, "pickaxe_free") : ""),
+							Messages.get(WndBlacksmith.class, "pickaxe_yes"),
+							Messages.get(WndBlacksmith.class, "pickaxe_no")
+					){
+						@Override
+						protected void onSelect(int index) {
+							if (index == 0){
+								if (Blacksmith.Quest.pickaxe.doPickUp( Dungeon.hero )) {
+									GLog.i( Messages.capitalize(Messages.get(Dungeon.hero, "you_now_have", Blacksmith.Quest.pickaxe.name()) ));
+								} else {
+									Dungeon.level.drop( Blacksmith.Quest.pickaxe, Dungeon.hero.pos ).sprite.drop();
+								}
+								Blacksmith.Quest.favor -= pickaxeCost;
+								Blacksmith.Quest.pickaxe = null;
+								WndBlacksmith.this.hide();
 
-							if (!Blacksmith.Quest.rewardsAvailable()){
-								Notes.remove( Notes.Landmark.TROLL );
+								if (!Blacksmith.Quest.rewardsAvailable()){
+									Notes.remove( Notes.Landmark.TROLL );
+								}
 							}
 						}
-					}
-				});
-			}
-		};
-		pickaxe.enable(Blacksmith.Quest.pickaxe != null && Blacksmith.Quest.favor >= pickaxeCost);
-		buttons.add(pickaxe);
+					});
+				}
+			};
+			pickaxe.enable(Blacksmith.Quest.pickaxe != null && Blacksmith.Quest.favor >= pickaxeCost);
+			buttons.add(pickaxe);
+		}
 
 		int reforgecost = 500 + 1000*Blacksmith.Quest.reforges;
 		RedButton reforge = new RedButton(Messages.get(this, "reforge", reforgecost), 6){
@@ -170,14 +177,14 @@ public class WndBlacksmith extends Window {
 				GameScene.show(new WndOptions(
 						troll.sprite(),
 						Messages.titleCase( troll.name() ),
-						Messages.get(WndBlacksmith.class, "cashout_verify", Blacksmith.Quest.favor),
+						Messages.get(WndBlacksmith.class, "cashout_verify", Blacksmith.Quest.favor * 2),
 						Messages.get(WndBlacksmith.class, "cashout_yes"),
 						Messages.get(WndBlacksmith.class, "cashout_no")
 				){
 					@Override
 					protected void onSelect(int index) {
 						if (index == 0){
-							new Gold(Blacksmith.Quest.favor).doPickUp(Dungeon.hero, Dungeon.hero.pos);
+							new Gold(Blacksmith.Quest.favor * 2).doPickUp(Dungeon.hero, Dungeon.hero.pos);
 							Blacksmith.Quest.favor = 0;
 							WndBlacksmith.this.hide();
 						}
@@ -295,7 +302,7 @@ public class WndBlacksmith extends Window {
 					Blacksmith.Quest.favor -= 500 + 1000*Blacksmith.Quest.reforges;
 					Blacksmith.Quest.reforges++;
 
-					if (!Blacksmith.Quest.rewardsAvailable()){
+					if (!Blacksmith.Quest.rewardsAvailable() && Blacksmith.Quest.completed()){
 						Notes.remove( Notes.Landmark.TROLL );
 					}
 
@@ -396,7 +403,7 @@ public class WndBlacksmith extends Window {
 				Sample.INSTANCE.play(Assets.Sounds.EVOKE);
 				Item.evoke( Dungeon.hero );
 
-				if (!Blacksmith.Quest.rewardsAvailable()){
+				if (!Blacksmith.Quest.rewardsAvailable() && Blacksmith.Quest.completed()){
 					Notes.remove( Notes.Landmark.TROLL );
 				}
 			}
