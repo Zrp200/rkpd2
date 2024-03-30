@@ -25,9 +25,7 @@ import com.watabou.noosa.Image;
 import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges.Badge;
-import com.zrp200.rkpd2.actors.buffs.Degrade;
 import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath;
-import com.zrp200.rkpd2.actors.hero.abilities.rogue.SmokeBomb;
 import com.zrp200.rkpd2.effects.BadgeBanner;
 import com.zrp200.rkpd2.items.armor.WarriorArmor;
 import com.zrp200.rkpd2.items.bags.VelvetPouch;
@@ -36,7 +34,6 @@ import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.enchantments.Explosive;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.ChangesScene;
-import com.zrp200.rkpd2.sprites.HeroSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.sprites.KingSprite;
@@ -54,7 +51,6 @@ import static com.zrp200.rkpd2.sprites.HeroSprite.avatar;
 
 import static com.zrp200.rkpd2.sprites.ItemSpriteSheet.*;
 
-import static com.zrp200.rkpd2.ui.Icons.BUFFS;
 import static com.zrp200.rkpd2.ui.Icons.DEPTH;
 import static com.zrp200.rkpd2.ui.Icons.DISPLAY_LAND;
 import static com.zrp200.rkpd2.ui.Icons.INFO;
@@ -68,74 +64,15 @@ import static com.zrp200.rkpd2.ui.Window.*;
 import static java.util.Arrays.asList;
 
 // TODO should I have a separate section for shattered changes?
-public class RKPD2Changes {
-
-    private RKPD2Changes() {} // singleton
-    public static void addAllChanges( ArrayList<ChangeInfo> changeInfos ){
-        for(ChangeInfo[] section : new RKPD2Changes().changes) changeInfos.addAll(asList(section));
-    }
-
-    // utility
-    private static ChangeButton bugFixes(String... messages) {
-        return new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), get(ChangesScene.class, "bugfixes"), messages);
-    }
-    private static ChangeButton misc(String... messages) {
-        return new ChangeButton(get(PREFS), get(ChangesScene.class,"misc"), messages);
-    }
-
-    // section types
-    private static ChangeInfo NewContent(ChangeButton... buttons) {
-        return new ChangeInfo(
-                Messages.get(ChangesScene.class, "new"),
-                false, TITLE_COLOR,
-                "",
-                buttons);
-    }
-    private static ChangeInfo Buffs(ChangeButton... buttons) {
-        return new ChangeInfo(
-                Messages.get(ChangesScene.class, "buffs"),
-                false, POSITIVE,
-                "",
-                buttons);
-    }
-    private static ChangeInfo Changes(ChangeButton... buttons) {
-        return new ChangeInfo(
-                Messages.get(ChangesScene.class, "changes"),
-                false, WARNING, "",
-                buttons);
-    }
-    private static ChangeInfo Nerfs(ChangeButton... buttons) {
-        return new ChangeInfo(
-                Messages.get(ChangesScene.class, "nerfs"),
-                false, NEGATIVE,
-                "",
-                buttons);
-    }
-
-    private static ChangeButton info(String message) {
-        return new ChangeButton(get(INFO), "Developer Commentary", message);
-    }
-
-    // more utils
-
-    /** makes a list in the standard PD style.
-     * [lineSpace] determines the number of spaces between each list item.
-     * If you want to append extra spaces, you should do it at the end of the previous item, rather than at the start of that item.*/
-    private static String list(String... items) { return list(1, items); }
-    private static String list(int lineSpace, String... items) {
-        StringBuilder builder = new StringBuilder();
-        for (int j=0; j < lineSpace; j++) builder.append('\n');
-        for (String item : items) {
-            builder.append("_-_ ").append( item );
-            for (int j = 0; j < lineSpace; j++) builder.append('\n');
-        }
-        return builder.toString();
-    }
-
+interface ChangeLog {
     // yet another attempt at formatting changes. not sure if this is any better than the last one, but one thing is certain: I HATE the way it's done in Shattered.
     // in this case I made it so you could add buttons in the ChangeInfo constructor; this is 'lustrous' style
 
-    final ChangeInfo[][] changes = {
+    ChangeInfo[][] getChanges();
+}
+
+public enum RKPD2Changes {
+    v1(() -> new ChangeInfo[][]{
         {
             new ChangeInfo("v2.0.0", true, TITLE_COLOR,
                     new ChangeButton(DUELIST, "Added duelist!"
@@ -257,7 +194,7 @@ public class RKPD2Changes {
                     bugFixes(
                             "_Highlights:_" + list("Victory and Champion badges not being awarded in some cases", "Various rare crash and hang bugs", "Various minor visual/textual errors")
                                     +"\n"+
-                            "_Allies & Enemies:_" + list("Characters rarely managing to enter eternal fire", "Summons from guardian traps counting as regular statues in some cases", "Rare cases where ranged allies would refuse to target nearby enemies", "Various rare cases where characters might stack on each other", "Albino Rats causing bleed when hitting for 0 damage", "Necromancers being able to summon through crystal doors", "Giant necromancers summoning skeletons into doorways", "Goo immediately using pump up attack if previous pump up attack was interrupted by sleep")
+                                    "_Allies & Enemies:_" + list("Characters rarely managing to enter eternal fire", "Summons from guardian traps counting as regular statues in some cases", "Rare cases where ranged allies would refuse to target nearby enemies", "Various rare cases where characters might stack on each other", "Albino Rats causing bleed when hitting for 0 damage", "Necromancers being able to summon through crystal doors", "Giant necromancers summoning skeletons into doorways", "Goo immediately using pump up attack if previous pump up attack was interrupted by sleep")
                                     + "\n" +
                             "_Items:_" + list("Honeypots not reacting correctly to being teleported", "Rare cases where lost inventory and items on stairs could softlock the game", "Hero armor transferring rarely deleting the warrior's broken seal", "Scrolls of Mirror Image not identifying in rare cases", "Various incorrect interactions between kinetic/viscosity and damage mitigating effects", "Wand of Fireblast sometimes not igniting adjacent items or barricades", "Ring of Furor not affecting Sniper specials", "Cursed rings of force still heavily buffing melee attacks", "Armband not breaking invisibility", "Various quirks with charge spending on timekeeper's hourglass", "Stones of Aggression working more effectively than intended", "Chalice of Blood benefiting from recharging when the hero is starving", "Cases where explosive curse would create explosions at the wrong location", "Cases where spellbook could generate scrolls of lullaby", "Heavy boomerangs getting an accuracy penalty when returning", "Rare consistency errors in potion of might buff description", "Death to aqua blast counting as death to geyser trap", "Reading spellbook not spending a turn if the scroll was cancelled", "Screen orientation changes cancelling scroll of enchantment", "Magical infusion incorrectly clearing curses on wands and rings", "Multiplicity glyph rarely duplicating NPCs", "Rare cases where potion of healing-related talents wouldn't trigger", "Cursed horn of plenty affecting non-food items", "Being able to self-target with cursed wands in rare cases", "Some thrown weapons triggering traps as Tengu jumps", "Magic resistance not applying to some cursed wand effects")
                                     +"\n"+
@@ -268,7 +205,7 @@ public class RKPD2Changes {
         },
         { // v1.0.0
             new ChangeInfo("v1.0.0",true,TITLE_COLOR,
-                    info(Messages.get(this, "100")),
+                    info(Messages.get(RKPD2Changes.class, "100")),
                     new ChangeButton(new ItemSprite(ItemSpriteSheet.SHORTSWORD, new ItemSprite.Glowing(0x000000)), "New Curse!", "In addition to the new curses added in Shattered v1.3, I've added an RKPD2-exclusive curse:\n\n_Chaotic_ weapons will usually roll a random weapon curse on hit, but every once in a while it'll roll a wand curse!"),
                     new ChangeButton(new ItemSprite(CLEANSING_DART), "Vetoed Sleep Dart Removal",
                             "In Shattered v1.2, Evan came up with the brilliant idea of nerfing _sleep darts_ into the ground. To avoid suspicion, he also made _dreamfoil_ unable to inflict magical sleep, so as to appear to be fair."
@@ -367,10 +304,12 @@ public class RKPD2Changes {
                 )
             )
         },
+    }),
+    v0(() -> new ChangeInfo[][]{
         { // v0.3
             new ChangeInfo("v0.3",true, TITLE_COLOR),
             NewContent(
-                info(Messages.get(this, "030")), // trying something different with this.
+                info(Messages.get(RKPD2Changes.class, "030")), // trying something different with this.
                 new ChangeButton(new ItemSprite(ARMOR_RAT_KING), "New Rat King Armor Ability!", "_Omni-Ability_ is an armor ability generator. Every time you use it, it will generate a new armor ability for you to use out of the existing ones. It's currently a tad unwieldy (especially with abilities that summon things) and more than a little bit confusing, but it should finally give Rat King what many have been waiting for: access to every armor ability without exception in one slot!")
             ),
             new ChangeInfo("From SHPD v1.1", false, SHPX_COLOR, "",
@@ -746,5 +685,78 @@ public class RKPD2Changes {
                             + "\nHowever, since I only know English and do not have an active translation project, I've set the language to English. Sorry!"));
                 }}
         },
-    };
+    });
+
+    private final ChangeLog changes;
+    RKPD2Changes(ChangeLog changes) { this.changes = changes; }
+
+    public void addAllChanges(ArrayList<ChangeInfo> changeInfos) {
+        for (ChangeInfo[] section : changes.getChanges()) changeInfos.addAll(asList(section));
+    }
+
+    // utility
+    private static ChangeButton bugFixes(String... messages) {
+        return new ChangeButton(new Image(Assets.Sprites.SPINNER, 144, 0, 16, 16), get(ChangesScene.class, "bugfixes"), messages);
+    }
+
+    private static ChangeButton misc(String... messages) {
+        return new ChangeButton(get(PREFS), get(ChangesScene.class, "misc"), messages);
+    }
+
+    // section types
+    private static ChangeInfo NewContent(ChangeButton... buttons) {
+        return new ChangeInfo(
+                Messages.get(ChangesScene.class, "new"),
+                false, TITLE_COLOR,
+                "",
+                buttons);
+    }
+
+    private static ChangeInfo Buffs(ChangeButton... buttons) {
+        return new ChangeInfo(
+                Messages.get(ChangesScene.class, "buffs"),
+                false, POSITIVE,
+                "",
+                buttons);
+    }
+
+    private static ChangeInfo Changes(ChangeButton... buttons) {
+        return new ChangeInfo(
+                Messages.get(ChangesScene.class, "changes"),
+                false, WARNING, "",
+                buttons);
+    }
+
+    private static ChangeInfo Nerfs(ChangeButton... buttons) {
+        return new ChangeInfo(
+                Messages.get(ChangesScene.class, "nerfs"),
+                false, NEGATIVE,
+                "",
+                buttons);
+    }
+
+    private static ChangeButton info(String message) {
+        return new ChangeButton(get(INFO), "Developer Commentary", message);
+    }
+
+    // more utils
+
+    /**
+     * makes a list in the standard PD style.
+     * [lineSpace] determines the number of spaces between each list item.
+     * If you want to append extra spaces, you should do it at the end of the previous item, rather than at the start of that item.
+     */
+    private static String list(String... items) {
+        return list(1, items);
+    }
+
+    private static String list(int lineSpace, String... items) {
+        StringBuilder builder = new StringBuilder();
+        for (int j = 0; j < lineSpace; j++) builder.append('\n');
+        for (String item : items) {
+            builder.append("_-_ ").append(item);
+            for (int j = 0; j < lineSpace; j++) builder.append('\n');
+        }
+        return builder.toString();
+    }
 }
