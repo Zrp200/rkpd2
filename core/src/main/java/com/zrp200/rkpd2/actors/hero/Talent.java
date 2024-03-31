@@ -933,7 +933,7 @@ public enum Talent {
 			Dungeon.observe();
 		}
 		if (hero.hasTalent(LIQUID_AGILITY)){
-			Buff.prolong(hero, RestoredAgilityTracker.class, hero.cooldown() + Math.max(0, factor-1));
+			Buff.prolong(hero, RestoredAgilityTracker.class, hero.cooldown() + Math.max(0, factor/*-1*/));
 		}
 	}
 
