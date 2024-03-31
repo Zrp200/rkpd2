@@ -34,6 +34,7 @@ import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.enchantments.Explosive;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.ChangesScene;
+import com.zrp200.rkpd2.sprites.BlacksmithSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.sprites.KingSprite;
@@ -74,10 +75,21 @@ interface ChangeLog {
 public enum RKPD2Changes {
     v1(() -> new ChangeInfo[][]{
         {
+            new ChangeInfo("Coming Soon", true, TITLE_COLOR,
+                    new ChangeButton(Icons.get(Icons.SHPX), "Future Shattered Updates",
+                            "I plan on implementing future Shattered updates, to prevent this mod from becoming outdated."),
+                    new ChangeButton(DUELIST, "The monk is currently missing an extra t4 talent, and Rat King does not have her implemented at all.")
+            )
+        },
+        {
             new ChangeInfo("v2.0.0", true, TITLE_COLOR,
+                    info(Messages.get(RKPD2Changes.class, "200")),
                     new ChangeButton(DUELIST, "Added duelist!"
                             +"\n\nNotable changes from SHPD:" + list(2,
                             "Maximum ability charges increased by 50%",
+                            "Some weapon abilities have been buffed" + list(
+                                    "Lunge now works at a distance of 2, letting it be used for spacing."
+                            ),
                             "Most T1-3 talents buffed heavily. T4 talents are unchanged.",
                             "Added an additional talent to Champion that allows equipping of thrown weapons, which can be used to extend most abilities' effective range, or a third weapon. _Monk ability is WIP._"
                     ) + "\n\n_Rat King currently does not have access to Duelist's mechanics_"),
@@ -102,6 +114,7 @@ public enum RKPD2Changes {
                                     "Now preserves a slightly random proportion of Preparation on kill in addition to nullifying the attack delay of the killing blow.",
                                     "I'd also say that it no longer works on successive kills without preparation, but the mechanic was bugged to not work anyway.")
                                     + "That said:\n_Warrior's Lethal Momentum_ now correctly works on follow-up attacks as well!"
+                            + '\n' + list("Rogue's Foresight buffed to 66%/99% detection, and grants additional chances to notice hidden stuff.")
                     ),
                     new ChangeButton(new ItemSprite(CROWN),
                             "Talent and Armor Ability Changes",
@@ -111,8 +124,44 @@ public enum RKPD2Changes {
                                     + list("_Shrug it Off_ now just directly boosts the damage resistance from endure to 60/68/74/80%, instead of reducing max damage taken")
                                     + list("_Wild Magic_ now spends 0.5 wand charges at base. Conserved magic can reduce this to 0.1")
                                     + list("_Double Jump_ charge reduction nerfed to 16%/30%/41%/50% from 20%/36%/50%/60%/68%")
-                    )
+                    ),
+                    bugFixes(list(
+                            "Fixed an exploit allowing Rogue to gain infinite healing from talents",
+                            "Rat King sometimes healing beyond his max hp when eating."
+                    ))
             ),
+            new ChangeInfo("From SHPD v2.2-3", false, SHPX_COLOR,
+                    new ChangeButton(new BlacksmithSprite(), "Quests rework", "Implemented the blacksmith quest with changes:" + list(
+                            "The mining area is a bit smaller, and only requires 30 gold",
+                            "You get 2000 favor for free!",
+                            "Updated blacksmith quotes to be more appropriate to speaking with royalty."
+                    ) + "\n\n"
+                            + "_Implemented Wandmaker quest changes:_"
+                            + "\n\n_Corpse Dust Quest:_ The mass grave room now always spawns at least a bit away from the entrance, and wraith spawning is more consistent."
+                            + "\n\n_Elemental Embers Quest:_"
+                            + list(
+                            "HP up to 60 from 30, attacking power reduced, no longer ignites on-hit",
+                            "Now shoots an avoidable fireball in a 3x3 area",
+                            "The summon elemental spell is unchanged")
+                            + "\n_Rotberry Quest:_" + list(
+                            "Rot lashers are now much stronger, but take 1 turn to notice an adjacent enemy before attacking",
+                            "Room layout is now much more chaotic, with more grass and crumbling walls",
+                            "There is now a guaranteed safe path to the rot heart")),
+                    new ChangeButton(Icons.get(Icons.AUDIO), "Audio", "Added additional audio tracks."),
+                    new ChangeButton(new ItemSprite(ItemSpriteSheet.REMAINS), "Heroes Remains Items", "Implemented heroes remains items, and added an additional one, for....reasons."),
+                    new ChangeButton(new ItemSprite(CHOC_AMULET), "Added holiday items", "You can enjoy holiday items in RKPD2 as well now! Enjoy your free amulet!"),
+                    new ChangeButton(Icons.get(Icons.BUFFS), "Floating Text Icons", "Implemented floating text icons, replacing text in a lot of cases."),
+                    misc(list(
+                            "Updated to the latest version of Shattered's game library (libGDX), which has a few benefits:\n" + list("Improved vibration on modern iOS devices", "Improved changing audio device behavior", "Misc. stability & compatibility improvements"),
+                            "Magical fire is now cleared by frost next to it, in addition to on top of it",
+                            "Tengu's fire wall attack now ignites items\n",
+                            "Improved music transitions in main menu when game was just won\n",
+                            "Added support for controller vibration",
+                            "Added a vibration toggle in the settings\n",
+                            "Updated translators and translator credits\n",
+                            "Improved the sprites for Armored Brutes and DM-201s", "Random scroll and potion drops are now more consistent throughout a run", "DM-300's rockfall attack now uses positional danger indicators", "Improved visual clarity of sparks in the DM-300 fight", "Removed unnecessary game log entries when DM-300 uses abilities\n", "Added a warning when trying to steal from shops with less than 100% success chance", "Curse infusion now preserves an existing curse on items that don't have the curse infusion bonus yet", "long pressing on the ghost equip window now shows the stats of equipped items", "Ghosts and Rogue's shadow clone are now considered inorganic (immune to bleed, toxic, poison)", "Corrupted allies no longer attack passive enemies", "Spirit hawk now interrupts the hero when it expires\n", "Surface scene now shows night later in the evening as well as after midnight", "Did a consistency pass on heal over time effects interrupting the hero resting", "Long-press to assign quickslot now works in the full UI inventory pane, just like the mobile inventory window", "Added support for themed icons on Android 13+", "Removed support for saves prior to v1.4.3 --- this means prior to rkpd2 1.0.0 :(")),
+                    // lmao
+                    bugFixes(list("Enemies continuing to fight each other after amok expires in many cases", "Rounding errors causing tipped darts to last longer than intended in some cases", "Corpse dust quest tracking all wraiths instead of just the ones it spawned", "Final boss fight not properly interacting with the into darkness challenge", "Tengu behaving slightly incorrectly when taking massive damage", "Mimics not dropping their loot if corrupted while hiding", "Rare errors in DM-201 target selection", "Rotberry seed being deleted in rare cases", "Rare cases where the game would freeze after reviving via unblessed ankh", "Some bombs and explosion-spawning effects incorrectly dealing magic damage", "Foresight effects not triggering after level transition", "Projecting missile weapons not working on enemies inside solid terrain", "Cursed wand of warding having different targeting properties than other wands", "Thrown potions not clearing fire/ooze if they shattered out of view", "Retribution and psionic blast not applying to all visible characters in very rare cases", "Degrade debuff not applying to thrown weapons", "Cloak of shadows not losing charge if it is dispelled as it is activated", "Items being assignable to non-visible quickslots in specific cases", "Rare quickslot errors when bags which already contain items are collected", "Damage from Body Slam talent ignoring armor", "Cases where prismatic images could keep appearing and then disappearing", "Hero not being able to self-trample plants when standing on stairs", "Berserker being able to rage without his seal equipped in some cases", "Allies rarely spawning on hazards after ankh revive", "Ally warp working on corrupted DM-201s", "Various rare crash and freeze bugs", "Various minor visual and textual errors", "Tutorial becoming stuck in rare cases", "Beta updates setting not working as intended", "Music fading not working in rare cases", "Scrolling pane in journal window freezing in rare cases", "Some items being incorrectly consumed when the game is closed while they are being used", "Mage's Staff not being affected by the degrade debuff", "Further characters sometimes rendering on top of closer large characters", "Dwarf King's Crown rarely triggering the effect of the runic transference talent", "Exploit where multiplicity curse could be used to skip some of Dwarf King's second phase", "Various errors with class armor conversion and Warrior's broken seal", "Ring of Force incorrectly displaying +99.99% when at +7, instead of +100%", "Living Earth and Transfusion wands granting their self-buffs when shooting NPCs", "Several obscure issues with noisemakers", "Trap effects from reclaim trap spell not scaling with ascension challenge", "Horn of Plenty occasionally having the wrong visuals for its charge state", "Damage caused to Yog's fists not correctly adding time to boss regen limit", "Ambitious Imp sometimes calling out to the hero when not visible", "Phantom Piranhas rapidly teleporting when corrupted", "DM-300 fight sometimes not having a safe route to a power pylon", "Mimics not dropping loot when they are killed via chasm while hiding", "Tengu very rarely throwing bombs ontop of each other", "Piranhas throwing themselves off chasms in very rare cases", "The Rogue's body replacement talent not triggering effects like chasms and traps", "Various rare crash issues", "Various minor visual and textual errors", "Various rare cases where levelgen could differ between two runs on the same seed", "Into Darkness and Barren Land challenges affecting levelgen", "Items in Imp's shop not being affected by dungeon seed", "Gold ore appearing on the back face of walls in regular caves levels", "Starflower plant VFX triggering even when out of the hero's FOV", "Storm Clouds not correctly clearing fire or harming fiery enemies", "Cases where pushing effects could cause pitfalls to trigger early", "Combining diagonal direction keys on desktop causing rare errors", "Cases where default keybindings could override custom ones", "Crashes caused by text input windows for controller users", "System gestures in iOS sometimes registering as taps within the game", "Endure ability not working properly when used twice quickly", "Melee damage of Mage's Staff benefiting from talents that boost wand levels", "Various blink effects allowing movement over magical fire", "Some game actions being possible while meditating", "Various minor visual and textual errors"))),
             new ChangeInfo("From SHPD v2.0", false, SHPX_COLOR,
                 new ChangeButton(Icons.get(Icons.STAIRS), "Ascension",
                         "_-_ Enemies to kill per floor reduced to 2 from 2.5. Thresholds for all amulet debuff effects adjusted to compensate\n"
@@ -129,7 +178,7 @@ public enum RKPD2Changes {
                     new ChangeButton(new ItemSprite(ItemSpriteSheet.RING_TOPAZ),"Item Changes",
                         "_Buffs_:\n"
                                 + list("_Pickaxe_ can now benefit from upgrades enchantments and augmentation, if you feel like using it for fun.")
-                                + list("Ring of Energy_ now also applies a recharging boost to hero armor abilities. All the boosts it gives are now standardized to +15%.", "_Ring of Arcana_ enchantment boost up to +17.5% per level, from +15%")
+                                + list("_Ring of Energy_ now also applies a recharging boost to hero armor abilities. All the boosts it gives are now standardized to +15%.", "_Ring of Arcana_ enchantment boost up to +17.5% per level, from +15%")
                                 + list("_Glyph of Repulsion_ now only knocks back enemies who are adjacent to the hero. This should make it slightly better versus ranged enemies.", "_Glyph of Flow_ now grants +50% movespeed in water per level, up from +25%")
                                 + list("_Horn of Plenty_ now gains 2 levels from being fed a pasty, up from 1.5", "_Horn of Plenty_ now gains 4 levels from being fed a meat pie, up from 3"),
                             "_Major Nerfs_:"
@@ -150,7 +199,7 @@ public enum RKPD2Changes {
                             "_Highlights:_" + list("The game now remembers if the player removes the waterskin from their quickslot right after starting a run", "The damage warning vfx now always interrupts the hero, regardless of any other factors", "The deadly misstep badge can now also be unlocked with disintegration traps", "Added metamorphosis effects to the two remaining talents that previously couldn't be gained by metamorphosis", "Desktop users can now toggle fullscreen with right-alt + enter", "Added a setting to enable/disable playing music in background on desktop", "Added a 5th games in progress slot for the Duelist","The changes screen now supports more text for a single entry. On mobile UI the changes window can now have multiple tabs, on full UI the changes pane on the right is now scrollable."),
                             "_Effects:_" + list("Backup barrier now triggers before wand zaps fully resolve", "The chasm warning screen now also appears when levitation is about to end.", "Levitation now prevents damage from floor electricity during the DM-300 fight"),
                             "_Hero, Allies, & Enemies:_" + list("The hero can now also self-trample plants, in addition to grass", "Ripper demons will now try to leap even if their destination is blocked by terrain", "Red Sentry attacks can now be dodged or blocked, but are very accurate.", "Knockback effects now round up after being halved vs. bosses"),
-                            "_Levelgen:" + list("Adjusted the layout of sacrifice rooms to provide some cover from ranged enemies", "Secret rooms now never affect the generation of items in other rooms", "Items and Enemies can no longer spawn on the Wandmaker quest ritual marker."),
+                            "_Levelgen:_" + list("Adjusted the layout of sacrifice rooms to provide some cover from ranged enemies", "Secret rooms now never affect the generation of items in other rooms", "Items and Enemies can no longer spawn on the Wandmaker quest ritual marker."),
                             "_Items:_" + list("Several artifacts now cancel invisibility when used", "Items no longer spawn on pitfall traps", "Ritual candles now light if they are placed correctly", "Item selectors now always open the main backpack if their preferred bag isn't present", "Quickslot contents are now automatically swapped if a newly equipped item that is not quickslotted replaces an item that was quickslotted. This should make weapon swapping gameplay smoother."),
                             "_Misc:_" + list("Updated the icons for several talents", "Healing no longer interrupts resting when HP is already full", "Updated various code libraries", "Attacking an enemy now properly sets them as the auto-targeting target in all cases")),
                     bugFixes(
