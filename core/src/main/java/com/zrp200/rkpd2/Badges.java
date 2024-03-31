@@ -227,7 +227,9 @@ public class Badges {
 	
 	private static final HashSet<String> removedBadges = new HashSet<>();
 	static{
-		//no removed badges currently
+		//v1.3.0 (These were removed and re-added internally as new unlock reqs were added)
+		removedBadges.add("YASD");
+		removedBadges.add("DEATH_FROM_GLYPH");
 	}
 
 	private static final HashMap<String, String> renamedBadges = new HashMap<>();

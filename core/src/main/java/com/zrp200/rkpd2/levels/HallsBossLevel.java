@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.levels;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Bones;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.ShatteredPixelDungeon;
 import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
@@ -326,6 +327,8 @@ public class HallsBossLevel extends Level {
 	@Override
 	public boolean activateTransition(Hero hero, LevelTransition transition) {
 		if (transition.type == LevelTransition.Type.REGULAR_ENTRANCE
+				//ascension challenge only works on runs started on v1.3+
+				&& Dungeon.initialVersion > ShatteredPixelDungeon.v1_2_3
 				&& hero.belongings.getItem(Amulet.class) != null
 				&& hero.buff(AscensionChallenge.class) == null) {
 
