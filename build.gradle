@@ -18,7 +18,7 @@ allprojects {
         appPackageName = 'com.zrp200.rkpd2'
 
         appVersionCode = 768
-        appVersionName = '2.0.0-Shattered-2.3.2-IMPL'
+        appVersionName = '2.0.0'
 
         appJavaCompatibility = JavaVersion.VERSION_1_8
 
