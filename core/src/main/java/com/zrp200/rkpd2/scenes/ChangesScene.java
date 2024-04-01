@@ -210,7 +210,7 @@ public class ChangesScene extends PixelScene {
 				panel.innerHeight() + 2);
 		list.scrollTo(0, 0);
 
-		String[] labels = {"1-2.X", "0.X", "SHPD 2.X", "SHPD 1.X"};
+		String[] labels = {"1-2.X", "0.X"/*, "SHPD 2.X", "SHPD 1.X"*/};
 		float bx = list.left()-4f;
 		for (int n=0; n < labels.length; n++) {
 			final int N = n;
