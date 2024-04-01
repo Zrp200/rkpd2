@@ -773,7 +773,7 @@ public enum Talent {
 					: (int) Math.ceil( (talent == HEARTY_MEAL ? 2.5 : 2) * Math.pow(1.5,strength-1) );
 			healing[0] += boost;
 		}, ROYAL_PRIVILEGE, HEARTY_MEAL);
-		healing[0] = Math.max(healing[0], hero.HT - hero.HP); // prevent overheal
+		healing[0] = Math.min(healing[0], hero.HT - hero.HP); // prevent overheal
 
 		if(healing[0] > 0) {
 			hero.HP += healing[0];

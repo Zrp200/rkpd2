@@ -82,6 +82,11 @@ public class Rapier extends MeleeWeapon {
 		int maxDistance = hero.heroClass == HeroClass.DUELIST ? 3 : 2;
 		int actualDistance = Dungeon.level.distance(hero.pos, target);
 
+		if (actualDistance == 1) {
+			GLog.w(Messages.get(wep, "ability_bad_position"));
+			return;
+		}
+
 		Char enemy = Actor.findChar(target);
 		//duelist can lunge out of her FOV, but this wastes the ability instead of cancelling if there is no target
 		if (Dungeon.level.heroFOV[target] && actualDistance == 2) {
