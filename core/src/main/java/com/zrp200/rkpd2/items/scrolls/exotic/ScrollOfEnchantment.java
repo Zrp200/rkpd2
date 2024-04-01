@@ -28,6 +28,7 @@ import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.scrolls.InventoryScroll;
+import com.zrp200.rkpd2.items.scrolls.Scroll;
 import com.zrp200.rkpd2.items.stones.StoneOfEnchantment;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.Weapon;
@@ -131,7 +132,7 @@ public class ScrollOfEnchantment extends ExoticScroll {
 		public void onSelect(final Item item) {
 
 			if (item instanceof Weapon){
-if (!identifiedByUse) {
+				if (!identifiedByUse) {
 					curItem.detach(curUser.belongings.backpack);
 				}
 				identifiedByUse = false;
@@ -153,7 +154,7 @@ if (!identifiedByUse) {
 
 				GameScene.show(new WndGlyphSelect((Armor) item, glyphs[0], glyphs[1], glyphs[2]));
 			} else if (identifiedByUse){
-				((ScrollOfEnchantment)curItem).confirmCancelation();
+				ScrollOfEnchantment.this.confirmCancelation();
 			}
 		}
 	};
@@ -192,7 +193,7 @@ if (!identifiedByUse) {
 			if (index < 3) {
 				wep.enchant(enchantments[index]);
 				GLog.p(Messages.get(StoneOfEnchantment.class, "weapon"));
-				((ScrollOfEnchantment)curItem).readAnimation();
+				((Scroll)curItem).readAnimation();
 
 				Sample.INSTANCE.play( Assets.Sounds.READ );
 				Enchanting.show(curUser, wep);
@@ -255,7 +256,7 @@ if (!identifiedByUse) {
 			if (index < 3) {
 				arm.inscribe(glyphs[index]);
 				GLog.p(Messages.get(StoneOfEnchantment.class, "armor"));
-				((ScrollOfEnchantment)curItem).readAnimation();
+				((Scroll)curItem).readAnimation();
 
 				Sample.INSTANCE.play( Assets.Sounds.READ );
 				Enchanting.show(curUser, arm);
