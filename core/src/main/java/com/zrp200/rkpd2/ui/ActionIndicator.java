@@ -174,7 +174,6 @@ public class ActionIndicator extends Tag {
 	public static boolean setAction(Action action){
 		if(action == null || !action.usable()) return false;
 		synchronized (ActionIndicator.class) {
-			if (ActionIndicator.action == action) return false;
 			ActionIndicator.action = action;
 			refresh();
 		}
@@ -198,7 +197,7 @@ public class ActionIndicator extends Tag {
 
 		for(int i = (start+1)%actionBuffClasses.length; i != start && i < actionBuffClasses.length; i++) {
 			for(Buff b : Dungeon.hero.buffs(actionBuffClasses[i])) {
-				if( setAction( (Action) b ) ) return true;
+				if( b != action && setAction( (Action) b ) ) return true;
 			}
 			if(cycle && i+1 == actionBuffClasses.length) i = -1;
 		}
