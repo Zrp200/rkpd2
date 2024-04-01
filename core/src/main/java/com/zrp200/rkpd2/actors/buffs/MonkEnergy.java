@@ -198,7 +198,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 			}
 		}
-		energyGain *= enGainMulti;
+		energyGain *= 1+(enGainMulti-1)*2;
 
 		energy = Math.min(energy+energyGain, energyCap());
 
@@ -210,7 +210,7 @@ public class MonkEnergy extends Buff implements ActionIndicator.Action {
 
 	//10 at base, 20 at level 30
 	public int energyCap(){
-		return Math.max(10, 5 + hero.lvl/2);
+		return Math.max(20, 10 + hero.lvl);
 	}
 
 	public void abilityUsed( MonkAbility abil ){
