@@ -27,7 +27,6 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.levels.features.Door;
 import com.zrp200.rkpd2.messages.Messages;
@@ -79,48 +78,29 @@ public class Rapier extends MeleeWeapon {
 			return;
 		}
 
-		int maxDistance = hero.heroClass == HeroClass.DUELIST ? 3 : 2;
-		int actualDistance = Dungeon.level.distance(hero.pos, target);
-
 		Char enemy = Actor.findChar(target);
 		//duelist can lunge out of her FOV, but this wastes the ability instead of cancelling if there is no target
-		if (Dungeon.level.heroFOV[target] && actualDistance == 2) {
+		if (Dungeon.level.heroFOV[target]) {
 			if (enemy == null || enemy == hero || hero.isCharmedBy(enemy)) {
 				GLog.w(Messages.get(wep, "ability_no_target"));
 				return;
 			}
 		}
 
-
-		if (hero.rooted || actualDistance < maxDistance
-				|| actualDistance-(maxDistance -1) > wep.reachFactor(hero)){
+		if (hero.rooted || Dungeon.level.distance(hero.pos, target) < 2
+				|| Dungeon.level.distance(hero.pos, target)-1 > wep.reachFactor(hero)){
 			GLog.w(Messages.get(wep, "ability_bad_position"));
 			if (hero.rooted) PixelScene.shake( 1, 1f );
 			return;
 		}
 
-		// todo use ballistica like the other similar mechanics
-
 		int lungeCell = -1;
 		for (int i : PathFinder.NEIGHBOURS8){
-			int pos = hero.pos+i;
-			if (!Dungeon.level.passable[pos] || Actor.findChar(pos) != null) continue;
-			if (Dungeon.level.distance(pos, target) <= wep.reachFactor(hero)
-					&& (!Dungeon.level.avoid[pos] || hero.flying)){
+			if (Dungeon.level.distance(hero.pos+i, target) <= wep.reachFactor(hero)
+					&& Actor.findChar(hero.pos+i) == null
+					&& (Dungeon.level.passable[hero.pos+i] || (Dungeon.level.avoid[hero.pos+i] && hero.flying))){
 				if (lungeCell == -1 || Dungeon.level.trueDistance(hero.pos + i, target) < Dungeon.level.trueDistance(lungeCell, target)){
 					lungeCell = hero.pos + i;
-				}
-			} else if (maxDistance == 3 && Dungeon.level.passable[pos] && Actor.findChar(pos) == null) {
-				for (int j : PathFinder.NEIGHBOURS8) {
-					if (i+j == 0) continue; // already checked
-					int newPos = pos+j;
-					if (Dungeon.level.distance(newPos, target) <= wep.reachFactor(hero)
-							&& Actor.findChar(newPos) == null
-							&& (Dungeon.level.passable[newPos] || (Dungeon.level.avoid[newPos] && hero.flying))) {
-						if (lungeCell == -1 || Dungeon.level.trueDistance(newPos, target) < Dungeon.level.trueDistance(lungeCell, target)) {
-							lungeCell = newPos;
-						}
-					}
 				}
 			}
 		}
