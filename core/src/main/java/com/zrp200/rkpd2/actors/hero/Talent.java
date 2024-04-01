@@ -1150,7 +1150,7 @@ public enum Talent {
 			if (hero.buff(PatientStrikeTracker.class) != null
 					&& !(hero.belongings.attackingWeapon() instanceof MissileWeapon)){
 				hero.buff(PatientStrikeTracker.class).detach();
-				dmg += Random.IntRange(hero.pointsInTalent(Talent.PATIENT_STRIKE), 2);
+				dmg += hero.pointsInTalent(Talent.PATIENT_STRIKE) == 1 ? 3 : Random.IntRange(4,5);
 			}
 		}
 

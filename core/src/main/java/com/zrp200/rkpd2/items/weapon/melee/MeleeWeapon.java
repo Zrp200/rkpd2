@@ -329,8 +329,8 @@ public class MeleeWeapon extends Weapon {
 		if (hero.heroClass == HeroClass.DUELIST
 				&& hero.hasTalent(Talent.AGGRESSIVE_BARRIER)
 				&& (hero.HP / (float)hero.HT) < 0.20f*(1+hero.pointsInTalent(Talent.AGGRESSIVE_BARRIER))){
-			Buff.affect(hero, Barrier.class).setShield(3);
-			hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, "3", FloatingText.SHIELDING);
+			Buff.affect(hero, Barrier.class).setShield(5);
+			hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, "5", FloatingText.SHIELDING);
 		}
 
 		if (hero.buff(Talent.CombinedLethalityAbilityTracker.class) != null
