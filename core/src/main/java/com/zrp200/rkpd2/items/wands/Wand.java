@@ -226,6 +226,7 @@ public abstract class Wand extends Item {
 		}
 
 		SoulMark.process(target,wandLevel,chargesUsed,delay);
+		if (Dungeon.hero.hasTalent(Talent.DEADLY_FOLLOWUP)) Buff.prolong(Dungeon.hero, Talent.DeadlyFollowupTracker.class, 5f).object = target.id();
 	}
 
 	@Override
