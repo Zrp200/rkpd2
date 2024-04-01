@@ -782,7 +782,12 @@ public enum Talent {
 		}
 		if (hero.hasTalent(IRON_STOMACH,ROYAL_MEAL)){
 			if (hero.cooldown() > 0) {
-				Buff.affect(hero, WarriorFoodImmunity.class, hero.cooldown());
+				if (hero.hasTalent(IRON_STOMACH)) {
+					Buff.prolong(hero, WarriorFoodImmunity.class, hero.cooldown()+1);
+				} else {
+					Buff.affect(hero, WarriorFoodImmunity.class, hero.cooldown());
+				}
+
 			}
 		}
 		boolean charge = false;
