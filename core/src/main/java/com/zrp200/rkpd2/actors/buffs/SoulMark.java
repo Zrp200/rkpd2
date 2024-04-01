@@ -3,11 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
-<<<<<<< HEAD:core/src/main/java/com/zrp200/rkpd2/actors/buffs/SoulMark.java
- * Copyright (C) 2014-2021 Evan Debenham
-=======
  * Copyright (C) 2014-2024 Evan Debenham
->>>>>>> shpd/master:core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/buffs/SoulMark.java
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
