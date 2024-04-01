@@ -758,7 +758,7 @@ public enum Talent {
 	public static class NatureBerriesDropped extends CounterBuff{{revivePersists = true;}};
 
 	public static void onFoodEaten( Hero hero, float foodVal, Item foodSource ){
-		final int[] healing = new int[0];
+		final int[] healing = new int[1];
 		hero.byTalent( (talent, points) -> {
 			// somehow I managed to make it even more confusing than before.
 			int factor = talent == HEARTY_MEAL ? 3 : 4;
