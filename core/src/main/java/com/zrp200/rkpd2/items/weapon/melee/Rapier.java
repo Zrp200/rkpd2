@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.items.weapon.melee;
 
+import com.watabou.utils.BArray;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
@@ -96,6 +97,8 @@ public class Rapier extends MeleeWeapon {
 			}
 		}
 
+		int bestDistance = Integer.MAX_VALUE;
+
 
 		if (hero.rooted || actualDistance > maxDistance
 				|| actualDistance-(maxDistance -1) > wep.reachFactor(hero)){
@@ -107,6 +110,7 @@ public class Rapier extends MeleeWeapon {
 		// todo use ballistica like the other similar mechanics
 
 		int lungeCell = -1;
+		int lungeCell2 = -1;
 		for (int i : PathFinder.NEIGHBOURS8){
 			int pos = hero.pos+i;
 			if (Dungeon.level.distance(pos, target) <= wep.reachFactor(hero)
@@ -123,13 +127,14 @@ public class Rapier extends MeleeWeapon {
 					if (Dungeon.level.distance(newPos, target) <= wep.reachFactor(hero)
 							&& Actor.findChar(newPos) == null
 							&& (Dungeon.level.passable[newPos] || (Dungeon.level.avoid[newPos] && hero.flying))) {
-						if (lungeCell == -1 || Dungeon.level.trueDistance(newPos, target) < Dungeon.level.trueDistance(lungeCell, target)) {
-							lungeCell = newPos;
+						if (lungeCell2 == -1 || Dungeon.level.trueDistance(newPos, target) < Dungeon.level.trueDistance(lungeCell2, target)) {
+							lungeCell2 = newPos;
 						}
 					}
 				}
 			}
 		}
+		if (lungeCell == -1) lungeCell = lungeCell2;
 
 		if (lungeCell == -1){
 			GLog.w(Messages.get(wep, "ability_bad_position"));
