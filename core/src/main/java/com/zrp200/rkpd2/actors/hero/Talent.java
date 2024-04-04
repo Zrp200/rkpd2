@@ -1021,7 +1021,7 @@ public enum Talent {
 			}
 			if (shiftedTalent != null) {
 				// +1 for dedicated talent, +1 otherwise.
-				id = hero.shiftedPoints(shiftedTalent, otherTalent) == 2;
+				id = hero.shiftedPoints(shiftedTalent, otherTalent) >= 2;
 			} else if (item instanceof Ring) {
 				// Thief's Intuition
 				switch(hero.shiftedPoints(THIEFS_INTUITION, ROYAL_INTUITION)) {
