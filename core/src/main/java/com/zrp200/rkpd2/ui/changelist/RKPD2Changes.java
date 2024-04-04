@@ -133,6 +133,8 @@ public enum RKPD2Changes {
                             "Rat King sometimes healing beyond his max hp when eating."
                     ))
             ),
+            new ChangeInfo("v2.0.2", false, TITLE_COLOR,
+                    bugFixes(list("Crash whenever Bright Fist attacks", "Eating full healing uncondiditionally", "On id talents sometimes not working", "Minor text errors", "Bugged rat king portrait", "Weird lunge behavior"))),
             new ChangeInfo("From SHPD v2.2-3", false, SHPX_COLOR,
                     new ChangeButton(new BlacksmithSprite(), "Quests rework", "Implemented the blacksmith quest with changes:" + list(
                             "The mining area is a bit smaller, and only requires 30 gold",
