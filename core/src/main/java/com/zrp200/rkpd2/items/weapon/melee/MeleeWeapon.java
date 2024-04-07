@@ -578,9 +578,10 @@ public class MeleeWeapon extends Weapon {
 		}
 
 		public static int nSlots() {
-			return hero.subClass != HeroSubClass.CHAMPION ? 1 :
-					// elite dexterity lets you equip weapons at +3
-					Math.max(hero.pointsInTalent(Talent.ELITE_DEXTERITY), 2);
+			int slots = 1;
+			if (hero.subClass.is(HeroSubClass.CHAMPION)) slots++;
+			if (hero.hasTalent(Talent.ELITE_DEXTERITY)) slots++;
+			return slots;
 		}
 
 		public int chargeCap(int n) {
