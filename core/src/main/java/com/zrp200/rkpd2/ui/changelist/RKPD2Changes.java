@@ -133,6 +133,28 @@ public enum RKPD2Changes {
                             "Rat King sometimes healing beyond his max hp when eating."
                     ))
             ),
+            new ChangeInfo("v2.0.3", false, TITLE_COLOR,
+                    new ChangeButton(INSCRIBED_POWER, "Inscribed Power, Desperate Power, and their equivalents",
+                            "It turns out that these talents didn't actually work! Well, now they do, with some changes:" +
+                                    "\n\n_Desperate Power_:"
+                                    + list("Now boosts levels by what its description says, instead of the +1/+2/+3 that was accidentally implemented.",
+                                        "Rat King's Desperate Power now actually works, and does +1/+2/+3")
+                                    + "\n_Inscribed Power_:" + list(
+                                        "Removed outdated description; it now just has its old +2 effect at +1, and its old +3 effect at +2",
+                                        "Amount of wand zaps given increased by 1",
+                                        "This probably makes it silly, but this mod is silly anyway."
+                                    )
+                                    + "\n_Inscribed Stealth_:"
+                                    + list("Buffed to be 6/9 turns of stealth, instead of having no buff at all.", "Removed outdated description, and added a comment")
+                    ),
+                    new ChangeButton(ELITE_DEXTERITY, "Talent Icons", "Changed the talent icons for Elite Dexterity, Assassin's Lethal Momentum, and Lethal Rush to better match similar talents"),
+                    bugFixes("Caused by v2.0.0:" + list(
+                            "Lethal Rush always proccing",
+                            "Outdated description for Iron Stomach",
+                            "Bad highlighting for Law of Consumption",
+                            "Elite Dexterity only recharging when upgraded to +3"
+                    ) + "Existed Prior:" + list("Staff not always showing level"))
+            ),
             new ChangeInfo("v2.0.2", false, TITLE_COLOR,
                     bugFixes(list("Crash whenever Bright Fist attacks", "Eating full healing uncondiditionally", "On id talents sometimes not working", "Minor text errors", "Bugged rat king portrait", "Weird lunge behavior"))),
             new ChangeInfo("From SHPD v2.2-3", false, SHPX_COLOR,

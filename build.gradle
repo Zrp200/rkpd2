@@ -17,8 +17,8 @@ allprojects {
         appName = 'RKPD2'
         appPackageName = 'com.zrp200.rkpd2'
 
-        appVersionCode = 773
-        appVersionName = '2.0.2'
+        appVersionCode = 774
+        appVersionName = '2.0.3'
 
         appJavaCompatibility = JavaVersion.VERSION_1_8
 
