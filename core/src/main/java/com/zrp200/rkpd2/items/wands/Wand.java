@@ -371,8 +371,8 @@ public abstract class Wand extends Item {
 				lvl += ScrollEmpower.boost();
 			}
 
-			if (curCharges == 1 && charger.target instanceof Hero && ((Hero)charger.target).hasTalent(Talent.DESPERATE_POWER)){
-				lvl += ((Hero)charger.target).pointsInTalent(Talent.DESPERATE_POWER);
+			if (curCharges == 1 && charger.target instanceof Hero && ((Hero)charger.target).hasTalent(Talent.DESPERATE_POWER, Talent.RK_BATTLEMAGE)){
+				lvl += ((Hero)charger.target).byTalent(Talent.DESPERATE_POWER, 2f, Talent.RK_BATTLEMAGE, 1f);
 			}
 
 			Momentum momentum = charger.target.buff(Momentum.class);

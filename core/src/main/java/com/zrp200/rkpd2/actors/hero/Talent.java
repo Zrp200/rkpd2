@@ -959,12 +959,21 @@ public enum Talent {
 
 	public static void onScrollUsed( Hero hero, int pos, float factor ){
 		if (hero.hasTalent(INSCRIBED_POWER, RESTORATION)){
-			// 2/3 empowered wand zaps
-			Buff.affect(hero, ScrollEmpower.class).reset((int) (factor * (1 + hero.pointsInTalent(INSCRIBED_POWER, RESTORATION))));
+			// 2/3 empowered wand zaps, 3 for inscribed power
+			// inscribed power overrides restoration
+			int left = hero.hasTalent(RESTORATION) ? hero.shiftedPoints(RESTORATION) : 3;
+			Buff.affect(hero, ScrollEmpower.class).reset((int) factor * left);
 		}
 		if (hero.hasTalent(INSCRIBED_STEALTH, RESTORATION)){
-			// 3/5 turns of stealth
-			Buff.affect(hero, Invisibility.class, factor * (1 + 2*hero.pointsInTalent(INSCRIBED_STEALTH, RESTORATION)));
+			// 3/5 turns of stealth (restoration), . inscribed stealth overrides restoration
+			int points;
+			if (hero.hasTalent(INSCRIBED_STEALTH)) {
+				points = hero.pointsInTalent(INSCRIBED_STEALTH);
+				factor *= 2;
+			} else {
+				points = hero.pointsInTalent(RESTORATION);
+			}
+			Buff.affect(hero, Invisibility.class, factor * (1 + 2*points));
 			Sample.INSTANCE.play( Assets.Sounds.MELD );
 		}
 	}

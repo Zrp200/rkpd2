@@ -21,7 +21,6 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
-import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
@@ -29,6 +28,7 @@ import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 
 import static com.zrp200.rkpd2.Dungeon.hero;
+import static com.zrp200.rkpd2.actors.hero.Talent.INSCRIBED_POWER;
 
 public class ScrollEmpower extends Buff {
 
@@ -37,7 +37,8 @@ public class ScrollEmpower extends Buff {
 	}
 
 	public static int boost() {
-		return hero.hasTalent(Talent.RK_BATTLEMAGE) ? 3 : 2*hero.pointsInTalent(Talent.DESPERATE_POWER);
+		// 2 for restoration, 2/4 for inscribed power. +1 inscribed power is the same as +2 shattered's.
+		return 2 + 2*(1+hero.pointsInTalent(INSCRIBED_POWER)/2);
 	}
 
 
