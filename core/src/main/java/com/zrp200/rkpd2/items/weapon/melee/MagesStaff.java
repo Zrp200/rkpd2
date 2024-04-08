@@ -25,7 +25,6 @@ import static com.zrp200.rkpd2.Dungeon.*;
 
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
-import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.ArtifactRecharge;
 import com.zrp200.rkpd2.actors.buffs.Buff;
@@ -166,8 +165,8 @@ public class MagesStaff extends MeleeWeapon {
 
 	@Override
 	public int buffedVisiblyUpgraded() {
-		if (curUser != null && wand != null){
-			return Math.max(super.buffedVisiblyUpgraded(), wand.buffedVisiblyUpgraded()-curUser.getBonus(wand));
+		if (wand != null){
+			return Math.max(super.buffedVisiblyUpgraded(), wand.buffedVisiblyUpgraded());
 		} else {
 			return super.buffedVisiblyUpgraded();
 		}
