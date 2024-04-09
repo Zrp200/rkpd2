@@ -165,19 +165,16 @@ public class Armor extends EquipableItem {
 			if (sealBuff != null) sealBuff.setArmor(null);
 
 			BrokenSeal detaching = seal;
-			degrade(seal.level());
-
-			if(seal.level() > 1) {
-				int excess = seal.level() - 1;
-				Item sous = new ScrollOfUpgrade().quantity(excess);
-				Dungeon.level.drop(sous, Dungeon.hero.pos);
-				seal.level(1);
-			}
 
 			seal = null;
 
 			if (detaching.level() > 0){
-				degrade();
+				degrade(detaching.level());
+				// legacy code, remove in the future
+				if (detaching.level() > 1) {
+					Dungeon.level.drop(new ScrollOfUpgrade().quantity(detaching.level()-1), hero.pos);
+					seal.level(1);
+				}
 			}
 			if (detaching.canTransferGlyph()){
 				inscribe(null);
