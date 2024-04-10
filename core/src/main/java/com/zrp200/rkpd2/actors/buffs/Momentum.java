@@ -209,9 +209,7 @@ public class Momentum extends Buff implements ActionIndicator.Action {
 		momentumStacks = bundle.getInt(STACKS);
 		freerunTurns = bundle.getInt(FREERUN_TURNS);
 		freerunCooldown = bundle.getInt(FREERUN_CD);
-		if ( usable() ){
-			ActionIndicator.setAction(this);
-		}
+		ActionIndicator.setAction(this);
 		movedLastTurn = false;
 	}
 

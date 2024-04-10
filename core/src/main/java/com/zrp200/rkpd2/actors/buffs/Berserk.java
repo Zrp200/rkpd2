@@ -101,9 +101,7 @@ public class Berserk extends Buff implements ActionIndicator.Action {
 		levelRecovery = bundle.getFloat(LEVEL_RECOVERY);
 		turnRecovery = bundle.getInt(TURN_RECOVERY);
 
-		if( usable() ){
-			ActionIndicator.setAction(this);
-		}
+		ActionIndicator.setAction(this);
 	}
 
 	// this basically covers all of berserker's "buffed" talents.
@@ -169,10 +167,8 @@ public class Berserk extends Buff implements ActionIndicator.Action {
 				if (power <= 0 && state != State.RECOVERING) detach();
 				else if (power < 1f) {
 					power = Math.max(0, power);
-					ActionIndicator.clearAction(this);
-				} else {
-					ActionIndicator.refresh();
 				}
+				ActionIndicator.refresh();
 			}
 		}
 		spend(TICK);
