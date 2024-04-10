@@ -97,6 +97,9 @@ public class ActionIndicator extends Tag {
 		super.update();
 
 		synchronized (ActionIndicator.class) {
+			// auto clear unusable actions
+			if (action != null && !action.usable()) clearAction(action);
+
 			if (!visible && action != null) {
 				visible = true;
 				needsRefresh = true;
