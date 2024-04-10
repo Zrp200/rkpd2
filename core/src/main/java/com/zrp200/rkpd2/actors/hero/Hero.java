@@ -43,6 +43,7 @@ import com.zrp200.rkpd2.actors.mobs.Mimic;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.actors.mobs.Monk;
 import com.zrp200.rkpd2.actors.mobs.Snake;
+import com.zrp200.rkpd2.actors.mobs.npcs.Blacksmith;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.CheckedCell;
 import com.zrp200.rkpd2.effects.FloatingText;
@@ -1061,7 +1062,7 @@ public class Hero extends Char {
 					} else if (item instanceof DarkGold) {
 						DarkGold existing = belongings.getItem(DarkGold.class);
 						if (existing != null){
-							if (existing.quantity() >= 40) {
+							if (existing.quantity() >= Blacksmith.Quest.MAX_GOLD) {
 								GLog.p(Messages.get(DarkGold.class, "you_now_have", existing.quantity()));
 							} else {
 								GLog.i(Messages.get(DarkGold.class, "you_now_have", existing.quantity()));

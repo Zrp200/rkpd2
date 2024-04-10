@@ -21,6 +21,8 @@
 
 package com.zrp200.rkpd2.levels;
 
+import static com.zrp200.rkpd2.actors.mobs.npcs.Blacksmith.Quest.MAX_GOLD;
+
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Bones;
 import com.zrp200.rkpd2.Challenges;
@@ -144,8 +146,6 @@ public class MiningLevel extends CavesLevel {
 		return false;
 	}
 
-	private final int MAX_GOLD = 30;
-
 	@Override
 	protected Painter painter() {
 		return new MiningLevelPainter()
@@ -260,7 +260,7 @@ public class MiningLevel extends CavesLevel {
 
 			String warnText;
 			DarkGold gold = hero.belongings.getItem(DarkGold.class);
-			int goldAmount = gold == null ? 0 : (gold.quantity() * 100)/30;
+			int goldAmount = gold == null ? 0 : (gold.quantity() * 100)/MAX_GOLD;
 			if (goldAmount < 25){
 				warnText = Messages.get(Blacksmith.class, "exit_warn_none");
 			} else if (goldAmount < 50){

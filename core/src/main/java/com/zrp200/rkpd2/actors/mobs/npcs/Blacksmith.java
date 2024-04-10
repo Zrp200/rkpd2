@@ -264,6 +264,9 @@ public class Blacksmith extends NPC {
 		public static final int CRYSTAL = 1;
 		public static final int GNOLL = 2;
 		public static final int FUNGI = 3; //The fungi quest is not implemented, only exists partially in code
+
+		public final static int MAX_GOLD = 30;
+
 		//pre-v2.2.0
 		private static boolean alternative; //false for mining gold, true for bat blood
 
@@ -481,9 +484,8 @@ public class Blacksmith extends NPC {
 			favor = 0;
 			DarkGold gold = Dungeon.hero.belongings.getItem(DarkGold.class);
 			if (gold != null){
-				int maxGold = 30;
-				float favorPerGold = 2000f/maxGold;
-				favor += Math.round(favorPerGold * Math.min(maxGold, gold.quantity()));
+				float favorPerGold = 2000f/MAX_GOLD;
+				favor += Math.round(favorPerGold * Math.min(MAX_GOLD, gold.quantity()));
 				gold.detachAll(Dungeon.hero.belongings.backpack);
 			}
 
