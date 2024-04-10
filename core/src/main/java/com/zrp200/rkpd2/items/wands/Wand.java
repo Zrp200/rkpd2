@@ -671,10 +671,12 @@ public abstract class Wand extends Item {
 					//This triggers before the wand zap, mostly so the barrier helps vs skeletons
 					if (curWand.curCharges == curWand.chargesPerCast()
 							&& curWand.charger != null && curWand.charger.target == curUser){
-						final int[] shield = {0};
+						final int[] shieldToGive = {0};
 						curUser.byTalent( (talent, points) -> {
+							// grants 3-5 shielding
 							int shielding = 1 + 2 * points;
 							if (talent == Talent.BACKUP_BARRIER) {
+								// 5-8
 								shielding = Math.round(shielding * 1.5f);
 							}
 							if (curUser.heroClass == (
@@ -683,7 +685,7 @@ public abstract class Wand extends Item {
 							)) {
 								//regular. If hero owns wand but it isn't in belongings it must be in the staff
 								if (!curUser.belongings.contains(curWand)) {
-									shield[0] += shielding;
+									shieldToGive[0] += shielding;
 								}
 							}
 							//metamorphed. Triggers if wand is highest level hero has
@@ -696,32 +698,11 @@ public abstract class Wand extends Item {
 								}
 								if (highest){
 									//grants 3/5 shielding
-									shield[0] += shielding;
+									shieldToGive[0] += shielding;
 								}
 							}
 						}, Talent.BACKUP_BARRIER, Talent.NOBLE_CAUSE);
-
-						if (curUser.heroClass == HeroClass.MAGE && !curUser.belongings.contains(curWand)){
-							//grants 3/5 shielding
-							int shieldToGive = 1 + 2 * Dungeon.hero.pointsInTalent(Talent.BACKUP_BARRIER);
-							Buff.affect(Dungeon.hero, Barrier.class).setShield(shieldToGive);
-							Dungeon.hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shieldToGive), FloatingText.SHIELDING);
-
-						//metamorphed. Triggers if wand is highest level hero has
-						} else if (curUser.heroClass != HeroClass.MAGE) {
-							boolean highest = true;
-							for (Item i : curUser.belongings.getAllItems(Wand.class)){
-								if (i.level() > curWand.level()){
-									highest = false;
-								}
-							}
-							if (highest){
-								//grants 3/5 shielding
-								int shieldToGive = 1 + 2 * Dungeon.hero.pointsInTalent(Talent.BACKUP_BARRIER);
-								Buff.affect(Dungeon.hero, Barrier.class).setShield(shieldToGive);
-								Dungeon.hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shieldToGive), FloatingText.SHIELDING);
-							}
-						}
+						Dungeon.hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shieldToGive[0]), FloatingText.SHIELDING);
 					}
 
 					if (curWand.cursed){
