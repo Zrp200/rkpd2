@@ -133,7 +133,14 @@ public enum RKPD2Changes {
                             "Rat King sometimes healing beyond his max hp when eating."
                     ))
             ),
-            new ChangeInfo("v2.0.3", false, TITLE_COLOR,
+            new ChangeInfo("v2.0.4",false,TITLE_COLOR, bugFixes(list(
+                    "detaching the seal degrading armor",
+                    "elite dexterity not working as intended/described",
+                    "elite dexterity switch prompt not always showing the correct weapons",
+                    "backup barrier not giving correct amount of shielding",
+                    "Blacksmith quest not correctly indicating quest completion"
+            ))),
+            new ChangeInfo("v2.0.1-3", false, TITLE_COLOR,
                     new ChangeButton(INSCRIBED_POWER, "Inscribed Power, Desperate Power, and their equivalents",
                             "It turns out that these talents didn't actually work! Well, now they do, with some changes:" +
                                     "\n\n_Desperate Power_:"
@@ -152,11 +159,15 @@ public enum RKPD2Changes {
                             "Lethal Rush always proccing",
                             "Outdated description for Iron Stomach",
                             "Bad highlighting for Law of Consumption",
-                            "Elite Dexterity only recharging when upgraded to +3"
+                            "Elite Dexterity only recharging when upgraded to +3",
+                            "Crash whenever Bright Fist attacks",
+                            "Eating full healing uncondiditionally",
+                            "On id talents sometimes not working",
+                            "Minor text errors",
+                            "Bugged rat king portrait",
+                            "Weird lunge behavior"
                     ) + "Existed Prior:" + list("Staff not always showing level"))
             ),
-            new ChangeInfo("v2.0.2", false, TITLE_COLOR,
-                    bugFixes(list("Crash whenever Bright Fist attacks", "Eating full healing uncondiditionally", "On id talents sometimes not working", "Minor text errors", "Bugged rat king portrait", "Weird lunge behavior"))),
             new ChangeInfo("From SHPD v2.2-3", false, SHPX_COLOR,
                     new ChangeButton(new BlacksmithSprite(), "Quests rework", "Implemented the blacksmith quest with changes:" + list(
                             "The mining area is a bit smaller, and only requires 30 gold",
