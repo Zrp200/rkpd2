@@ -655,7 +655,9 @@ public class MeleeWeapon extends Weapon {
 
 		@Override
 		public boolean usable() {
-			return target == hero && hero.subClass == HeroSubClass.CHAMPION;
+			return target == hero && hero.subClass == HeroSubClass.CHAMPION
+					// disable if elite dexterity +1 is being used.
+					&& hero.belongings.thirdWep() == null || hero.pointsInTalent(Talent.ELITE_DEXTERITY) > 1;
 		}
 
 		@Override

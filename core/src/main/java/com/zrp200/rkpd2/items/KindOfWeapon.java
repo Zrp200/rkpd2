@@ -60,25 +60,33 @@ abstract public class KindOfWeapon extends EquipableItem {
 			slotOfUnequipped = -1;
 
 			// missile weapon with one slot open should just auto-add.
-			if (this instanceof MissileWeapon &&
-					(points > 1 || hero.belongings.weapon == null || hero.belongings.secondWep == null)) {
-				KindOfWeapon third = hero.belongings.thirdWep;
-				if (third == null || third instanceof MissileWeapon) {
-					int slot = Dungeon.quickslot.getSlot( KindOfWeapon.this );
-					doEquip(hero, 2);
-					return;
+			if (this instanceof MissileWeapon) {
+				if(points > 1 || hero.belongings.secondWep == null) {
+					KindOfWeapon third = hero.belongings.thirdWep;
+					if (third == null || third instanceof MissileWeapon) {
+						int slot = Dungeon.quickslot.getSlot( KindOfWeapon.this );
+						doEquip(hero, 2);
+						return;
+					}
 				}
+			} else if (points == 1 && hero.belongings.thirdWep != null && hero.belongings.weapon == null) {
+				// second slot disabled
+				super.execute(hero, action);
+				return;
 			}
 
-			String[] names = new String[Math.max(points, 2)];
+			// equipping thrown and melee at the same time only works at +2
+			// equipping melee to thrown slot only works at +3
+			String[] names = new String[points < (KindOfWeapon.this instanceof MissileWeapon ? 2 : 3) ? 2 : 3];
 			final String[] name_key = {"primary", "secondary", "tertiary"};
 			KindOfWeapon[] weapons = hero.belongings.weapons();
-			if(names.length == 2 && weapons[2] != null) {
+			//noinspection ConstantValue
+			if(names.length == 2 && weapons[2] != null && (points < 3 || KindOfWeapon.this instanceof MissileWeapon)) {
 				// pretend it's in a different slot
 				weapons[weapons[0] == null ? 0 : 1] = weapons[2];
 			}
 			for (int i = 0; i < names.length; i++) {
-				KindOfWeapon weapon = hero.belongings.weapon(i);
+				KindOfWeapon weapon = weapons[i];
 				names[i] = Messages.titleCase(weapon != null ? weapon.trueName() : Messages.get(KindOfWeapon.class, "empty"));
 				if (names[i].length() > 18) names[i] = names[i].substring(0, 15) + "...";
 				names[i] = Messages.get(KindOfWeapon.class, "which_equip_" + name_key[i], names[i]);
@@ -93,14 +101,24 @@ abstract public class KindOfWeapon extends EquipableItem {
 				protected void onSelect(int index) {
 					super.onSelect(index);
 					if (index < 0 || index >= names.length) return;
-					if (index != 2 && KindOfWeapon.this instanceof MissileWeapon) {
+					KindOfWeapon replaced = weapons[index];
+					int dst = index, src = index;
+					// index is the "pretend" slot
+					if (points < 3 && replaced instanceof MissileWeapon ^ KindOfWeapon.this instanceof MissileWeapon) {
+						if (replaced instanceof MissileWeapon) {
+							// equipping melee to thrown slot
+							src = 2;
+						} else if (points < 2) {
+							// equipping thrown to melee slot
+							dst = 2;
+						}
+					}
+					if (dst != src) {
 						// we want to avoid equipping a missile weapon to the wrong slot, so move it to the correct slot before equipping
-						KindOfWeapon replaced = hero.belongings.weapon(index, true);
-						hero.belongings.setWeapon(2, replaced);
-						hero.belongings.setWeapon(index, null);
-						if (!doEquip(hero, 2)) {
-							// put the weapon back into its expected slot
-							hero.belongings.setWeapon(index, replaced);
+						hero.belongings.setWeapon(dst, replaced);
+						hero.belongings.setWeapon(src, null);
+						if (!doEquip(hero, dst)) {
+							hero.belongings.setWeapon(src, replaced);
 						}
 					} else {
 						doEquip(hero, index);
