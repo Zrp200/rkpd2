@@ -67,11 +67,12 @@ public class AndroidLauncher extends AndroidApplication {
 		} catch (Exception e){
 			AndroidMissingNativesHandler.errorMsg = e.getMessage();
 			Intent intent = new Intent(this, AndroidMissingNativesHandler.class);
-			new UCEHandler.Builder(this).setUCEHEnabled(!googlePlay).build();
 			startActivity(intent);
 			finish();
 			return;
 		}
+
+		new UCEHandler.Builder(this).setUCEHEnabled(!googlePlay).build();
 
 		//there are some things we only need to set up on first launch
 		if (instance == null) {
