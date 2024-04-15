@@ -179,7 +179,7 @@ public class Pickaxe extends MeleeWeapon {
 
 	@Override
 	public String defaultAction() {
-		if (super.defaultAction().equals(AC_ABILITY)){
+		if (AC_ABILITY.equals(super.defaultAction())){
 			return AC_ABILITY;
 		} else if (Blacksmith.Quest.oldMiningQuest()) {
 			return AC_MINE;
