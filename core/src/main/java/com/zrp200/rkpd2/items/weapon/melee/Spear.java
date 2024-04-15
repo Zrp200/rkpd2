@@ -56,7 +56,7 @@ public class Spear extends MeleeWeapon {
 	@Override
 	protected DuelistAbility duelistAbility() {
 		// 1.45 at t2, 1.3 at t5
-		return new MeleeAbility(1.45f - (tier-2)/.20f) {
+		return new MeleeAbility(1.45f - (tier-2)/20f) {
 			@Override
 			protected boolean canAttack(Hero hero, Char enemy) {
 				return super.canAttack(hero, enemy) && !Dungeon.level.adjacent(hero.pos, enemy.pos);
