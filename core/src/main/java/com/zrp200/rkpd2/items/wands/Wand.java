@@ -702,7 +702,7 @@ public abstract class Wand extends Item {
 								}
 							}
 						}, Talent.BACKUP_BARRIER, Talent.NOBLE_CAUSE);
-						Dungeon.hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shieldToGive[0]), FloatingText.SHIELDING);
+						if (shieldToGive[0] > 0) Dungeon.hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shieldToGive[0]), FloatingText.SHIELDING);
 					}
 
 					if (curWand.cursed){
