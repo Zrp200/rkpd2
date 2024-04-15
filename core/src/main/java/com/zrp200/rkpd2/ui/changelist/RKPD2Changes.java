@@ -133,13 +133,21 @@ public enum RKPD2Changes {
                             "Rat King sometimes healing beyond his max hp when eating."
                     ))
             ),
-            new ChangeInfo("v2.0.4",false,TITLE_COLOR, bugFixes(list(
-                    "detaching the seal degrading armor",
-                    "elite dexterity not working as intended/described",
-                    "elite dexterity switch prompt not always showing the correct weapons",
-                    "backup barrier not giving correct amount of shielding",
-                    "Blacksmith quest not correctly indicating quest completion"
-            ))),
+            new ChangeInfo("v2.0.4-v2.0.5",false,TITLE_COLOR, bugFixes(
+                    "_2.0.5_:" + list(
+                        "Crash when interacting with the pickaxe under certain scenarios",
+                        "Glaive's spike not doing damage",
+                        "Backup barrier always visually activating",
+                        "Crash handler not activating :("
+                    ),
+                    "_2.0.4_:" + list(
+                        "detaching the seal degrading armor",
+                        "elite dexterity not working as intended/described",
+                        "elite dexterity switch prompt not always showing the correct weapons",
+                        "backup barrier not giving correct amount of shielding",
+                        "Blacksmith quest not correctly indicating quest completion"
+                    )
+            )),
             new ChangeInfo("v2.0.1-3", false, TITLE_COLOR,
                     new ChangeButton(INSCRIBED_POWER, "Inscribed Power, Desperate Power, and their equivalents",
                             "It turns out that these talents didn't actually work! Well, now they do, with some changes:" +
