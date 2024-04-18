@@ -76,7 +76,7 @@ public class Barkskin extends Buff {
 	public static int getGrassDuration(Hero hero) {
 		float modifier = 0;
 		if(hero.hasTalent(Talent.BARKSKIN, Talent.RK_WARDEN)) {
-			modifier = hero.byTalent(true, true,
+			modifier = hero.byTalent(
 					Talent.BARKSKIN, BARKSKIN_MODIFIER,
 					Talent.RK_WARDEN, .5f);
 		} else if(hero.canHaveTalent(Talent.BARKSKIN)) {
