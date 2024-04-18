@@ -513,7 +513,7 @@ public class Hero extends Char {
 		Invisibility.dispel();
 		belongings.thrownWeapon = null;
 
-		if (hit && wasEnemy && subClass == HeroSubClass.GLADIATOR || subClass == HeroSubClass.KING){
+		if (hit && wasEnemy && subClass.is(HeroSubClass.GLADIATOR)){
 			Buff.affect( this, Combo.class ).hit( enemy );
 		}
 
@@ -1492,7 +1492,7 @@ public class Hero extends Char {
 	@Override
 	public int defenseProc( Char enemy, int damage ) {
 		
-		if (damage > 0 && (subClass == HeroSubClass.BERSERKER || subClass == HeroSubClass.KING)){
+		if (damage > 0 && subClass.is(HeroSubClass.BERSERKER)){
 			Berserk berserk = Buff.affect(this, Berserk.class);
 			berserk.damage(damage);
 		}
@@ -1751,7 +1751,7 @@ public class Hero extends Char {
 				return false;
 			}
 
-			if (subClass == HeroSubClass.FREERUNNER || subClass == HeroSubClass.KING){
+			if (subClass.is(HeroSubClass.FREERUNNER)){
 				Buff.affect(this, Momentum.class).gainStack();
 			}
 
@@ -2211,7 +2211,7 @@ public class Hero extends Char {
 		Invisibility.dispel();
 		spend( attackDelay() );
 
-		if (wasEnemy && subClass == HeroSubClass.GLADIATOR || subClass == HeroSubClass.KING){
+		if (wasEnemy && subClass.is(HeroSubClass.GLADIATOR)){
 			Combo combo = Buff.affect( this, Combo.class );
 			if(hit) combo.hit(enemy);
 			else 	combo.miss();

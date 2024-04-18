@@ -311,8 +311,7 @@ public class CloakOfShadows extends Artifact {
 			Hero hero = SafeCast.cast(target, Hero.class);
 			if (hero != null && super.attachTo(target)) {
 				target.invisible++;
-				if (hero.subClass == HeroSubClass.ASSASSIN
-						|| hero.subClass == HeroSubClass.KING) {
+				if (hero.subClass.is(HeroSubClass.ASSASSIN)) {
 					Buff.affect(target, Preparation.class);
 				}
 				if (hero.hasTalent(Talent.MENDING_SHADOWS,Talent.NOBLE_CAUSE)){
