@@ -178,8 +178,7 @@ public class Challenge extends ArmorAbility {
 		GameScene.flash(0x80FFFFFF);
 		Sample.INSTANCE.play(Assets.Sounds.DESCEND);
 
-		armor.charge -= chargeUse( hero );
-		armor.updateQuickslot();
+		armor.useCharge(hero, this);
 		Invisibility.dispel();
 		hero.sprite.zap(target);
 
