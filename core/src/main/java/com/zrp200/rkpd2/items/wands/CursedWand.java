@@ -128,6 +128,7 @@ public class CursedWand {
 			//anti-entropy
 			case 0: default:
 				Char target = Actor.findChar(targetPos);
+				if (user == null) return cursedEffect(origin, null, targetPos);
 				if (Random.Int(2) == 0) {
 					if (target != null) Buff.affect(target, Burning.class).reignite(target);
 					Buff.affect(user, Frost.class, Frost.DURATION);
@@ -204,7 +205,7 @@ public class CursedWand {
 			//Health transfer
 			case 1:
 				final Char target = Actor.findChar( targetPos );
-				if (target != null) {
+				if (user != null && target != null) {
 					int damage = Dungeon.scalingDepth() * 2;
 					Char toHeal, toDamage;
 
@@ -251,6 +252,7 @@ public class CursedWand {
 
 			//shock and recharge
 			case 3:
+				if (user == null) return cursedEffect(origin, null, targetPos);
 				new ShockingTrap().set( user.pos ).activate();
 				Buff.prolong(user, Recharging.class, Recharging.DURATION);
 				ScrollOfRecharging.charge(user);
@@ -297,6 +299,7 @@ public class CursedWand {
 
 			//inter-level teleportation
 			case 2:
+				if (user == null) return cursedEffect(origin, null, targetPos);
 				if (Dungeon.depth > 1 && Dungeon.interfloorTeleportAllowed() && user == Dungeon.hero) {
 
 					//each depth has 1 more weight than the previous depth.
@@ -329,6 +332,7 @@ public class CursedWand {
 
 			//great forest fire!
 			case 0: default:
+				if (user == null) return cursedEffect(origin, null, targetPos);
 				for (int i = 0; i < Dungeon.level.length(); i++){
 					GameScene.add( Blob.seed(i, 15, Regrowth.class));
 				}
@@ -423,7 +427,7 @@ public class CursedWand {
 			//random transmogrification
 			case 3:
 				//skips this effect if there is no item to transmogrify
-				if (origin == null || origin.unique || user != Dungeon.hero || !Dungeon.hero.belongings.contains(origin)){
+				if (origin == null || origin.unique || user != Dungeon.hero || !Dungeon.hero.belongings.contains(origin) || origin.isEquipped(Dungeon.hero)){
 					return cursedEffect(origin, user, targetPos);
 				}
 				origin.detach(Dungeon.hero.belongings.backpack);
