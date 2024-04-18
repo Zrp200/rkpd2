@@ -327,6 +327,8 @@ public class CursedWand {
 		}
 	}
 
+	public static boolean disableCursedWandError = false;
+
 	private static boolean veryRareEffect(final Item origin, final Char user, final int targetPos){
 		switch(Random.Int(4)){
 
@@ -386,7 +388,7 @@ public class CursedWand {
 				
 				try {
 					Dungeon.saveAll();
-					if(Messages.lang() != Languages.ENGLISH){
+					if(disableCursedWandError || Messages.lang() != Languages.ENGLISH){
 						//Don't bother doing this joke to none-english speakers, I doubt it would translate.
 						return cursedEffect(origin, user, targetPos);
 					} else {

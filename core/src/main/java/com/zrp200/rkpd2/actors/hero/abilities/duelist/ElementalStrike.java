@@ -56,9 +56,11 @@ import com.zrp200.rkpd2.items.KindOfWeapon;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.items.bombs.Bomb;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
+import com.zrp200.rkpd2.items.wands.CursedWand;
 import com.zrp200.rkpd2.items.wands.WandOfBlastWave;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.curses.Annoying;
+import com.zrp200.rkpd2.items.weapon.curses.Chaotic;
 import com.zrp200.rkpd2.items.weapon.curses.Dazzling;
 import com.zrp200.rkpd2.items.weapon.curses.Displacing;
 import com.zrp200.rkpd2.items.weapon.curses.Explosive;
@@ -93,6 +95,7 @@ import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
+import com.zrp200.rkpd2.utils.GLog;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -126,6 +129,7 @@ public class ElementalStrike extends ArmorAbility {
 		effectTypes.put(Wayward.class,      MagicMissile.SHADOW_CONE);
 		effectTypes.put(Polarized.class,    MagicMissile.SHADOW_CONE);
 		effectTypes.put(Friendly.class,     MagicMissile.SHADOW_CONE);
+		effectTypes.put(Chaotic.class,		MagicMissile.RAINBOW_CONE);
 
 		effectTypes.put(null,               MagicMissile.MAGIC_MISS_CONE);
 	}
@@ -209,7 +213,7 @@ public class ElementalStrike extends ArmorAbility {
 					}
 				}
 
-				perCellEffect(cone, finalEnchantment);
+				perCellEffect(cone, finalEnchantment, enemy);
 
 				perCharEffect(cone, hero, enemy, finalEnchantment);
 
@@ -283,7 +287,7 @@ public class ElementalStrike extends ArmorAbility {
 	public static class ElementalStrikeFurrowCounter extends CounterBuff{{revivePersists = true;}};
 
 	//effects that affect the cells of the environment themselves
-	private void perCellEffect(ConeAOE cone, Weapon.Enchantment ench){
+	private void perCellEffect(ConeAOE cone, Weapon.Enchantment ench, Char enemy){
 
 		int targetsHit = 0;
 		for (Char ch : Actor.chars()){
@@ -293,6 +297,7 @@ public class ElementalStrike extends ArmorAbility {
 		}
 
 		float powerMulti = 1f + 0.30f*Dungeon.hero.pointsInTalent(Talent.STRIKING_FORCE);
+		final float MAX_POWER = 1f + 0.30f*4;
 
 		//*** Blazing ***
 		if (ench instanceof Blazing){
@@ -348,6 +353,23 @@ public class ElementalStrike extends ArmorAbility {
 				}
 			}
 			Dungeon.observe();
+		} else if (ench instanceof Chaotic) {
+			KindOfWeapon weapon = Dungeon.hero.belongings.weapon();
+			try {
+				CursedWand.disableCursedWandError = true;
+				for (int cell : cone.cells) {
+					// 45 / 59 / 72 / 86 / 100% proc per character
+					// halved for empty tiles, and empty tiles are less likely to proc on you.
+					Char c = Actor.findChar(cell);
+					if (c != null ? c == enemy : Random.Int(2) == 0) continue;
+					if (powerMulti > Random.Float(MAX_POWER)) {
+						// empty cells are less likely to trigger hero related effects
+						CursedWand.cursedEffect(weapon, c != null || Random.Float(powerMulti) < .5f ? Dungeon.hero : null, cell);
+					}
+				}
+			} finally {
+				CursedWand.disableCursedWandError = false;
+			}
 		}
 	}
 
