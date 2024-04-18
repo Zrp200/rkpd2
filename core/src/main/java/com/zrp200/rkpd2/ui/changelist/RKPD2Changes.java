@@ -133,8 +133,14 @@ public enum RKPD2Changes {
                             "Rat King sometimes healing beyond his max hp when eating."
                     ))
             ),
-            new ChangeInfo("v2.0.4-v2.0.5",false,TITLE_COLOR, bugFixes(
-                    "_2.0.5_:" + list(
+            new ChangeInfo("v2.0.4-v2.0.6",false,TITLE_COLOR,
+                misc("_2.0.6_" + list("Added an Elemental Strike effect for Chaotic curse. It's rather...chaotic, if you ask me.")),
+                bugFixes(
+                    "_2.0.6_:" + list(
+                            "Barkskin talent giving more barkskin than intended",
+                            "Omniability getting stuck on duelist abilities",
+                            "Rat King always gaining combo when attacking")
+                    + "_2.0.5_:" + list(
                         "Crash when interacting with the pickaxe under certain scenarios",
                         "Glaive's spike not doing damage",
                         "Backup barrier always visually activating",
