@@ -325,8 +325,6 @@ public class ElementalBlast extends ArmorAbility {
 										if (shielding > 0){
 											healing -= shielding;
 											Buff.affect(mob, Barrier.class).setShield(shielding);
-										} else {
-											shielding = 0;
 										}
 										mob.HP += healing;
 
@@ -334,9 +332,6 @@ public class ElementalBlast extends ArmorAbility {
 
 										if (healing > 0) {
 											mob.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(healing), FloatingText.HEALING);
-										}
-										if (shielding > 0){
-											mob.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shielding), FloatingText.SHIELDING);
 										}
 									} else {
 										if (!mob.properties().contains(Char.Property.UNDEAD)) {
@@ -402,7 +397,6 @@ public class ElementalBlast extends ArmorAbility {
 						charsHit = Math.min(5, charsHit);
 						if (charsHit > 0 && hero.hasTalent(Talent.REACTIVE_BARRIER, Talent.RAT_BLAST)){
 							int shielding = charsHit*(int)hero.byTalent(Talent.REACTIVE_BARRIER, 3, Talent.RAT_BLAST, 2.5f);
-							hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shielding), FloatingText.SHIELDING);
 							Buff.affect(hero, Barrier.class).setShield(shielding);
 						}
 

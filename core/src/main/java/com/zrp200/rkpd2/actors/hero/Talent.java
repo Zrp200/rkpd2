@@ -904,13 +904,11 @@ public enum Talent {
 				if (shield != null) {
 					// 50/75% of total shield
 					int shieldToGive = Math.round(factor * shield.maxShield() * hero.byTalent(/*stacks*/true, /*shifted*/true, LIQUID_WILLPOWER, 0.5f, RESTORATION, 0.25f));
-					hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shieldToGive), FloatingText.SHIELDING);
 					shield.supercharge(shieldToGive);
 				}
 			} else {
 				// 5/7.5% of max HP
 				int shieldToGive = Math.round( factor * hero.HT * hero.byTalent(/*stacks*/true, /*shifted*/true, LIQUID_WILLPOWER, 0.04f, RESTORATION, 0.025f));
-				hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shieldToGive), FloatingText.SHIELDING);
 				Buff.affect(hero, Barrier.class).setShield(shieldToGive);
 			}
 		}

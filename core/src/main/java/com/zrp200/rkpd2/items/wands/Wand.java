@@ -455,7 +455,6 @@ public abstract class Wand extends Item {
 			if (Dungeon.hero.hasTalent(Talent.EXCESS_CHARGE) && curCharges >= maxCharges){
 				int shieldToGive = Math.round(buffedLvl()*0.67f*Dungeon.hero.pointsInTalent(Talent.EXCESS_CHARGE));
 				Buff.affect(Dungeon.hero, Barrier.class).setShield(shieldToGive);
-				Dungeon.hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shieldToGive), FloatingText.SHIELDING);
 			}
 		}
 
@@ -642,7 +641,6 @@ public abstract class Wand extends Item {
 						// shield battery gives 1.5x boost compared to standard, the minus one lets restoration at +2 give the 1.5x boost as well.
 						shield *= Math.pow(1.5f, curUser.shiftedPoints(Talent.SHIELD_BATTERY, Talent.RESTORATION)-1);
 						Buff.affect(curUser, Barrier.class).setShield(Math.round(shield));
-						curUser.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(Math.round(shield)), FloatingText.SHIELDING);
 						curWand.curCharges = 0;
 						curUser.sprite.operate(curUser.pos);
 						Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);
@@ -702,7 +700,10 @@ public abstract class Wand extends Item {
 								}
 							}
 						}, Talent.BACKUP_BARRIER, Talent.NOBLE_CAUSE);
-						if (shieldToGive[0] > 0) Dungeon.hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shieldToGive[0]), FloatingText.SHIELDING);
+						if (shieldToGive[0] > 0) {
+							Buff.affect(Dungeon.hero, Barrier.class).setShield(shieldToGive[0]);
+						}
+
 					}
 
 					if (curWand.cursed){

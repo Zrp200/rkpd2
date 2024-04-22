@@ -212,7 +212,6 @@ public class DeathMark extends ArmorAbility {
 				target.die(this);
 				int shld = Math.round(initialHP * (0.125f* hero.shiftedPoints(Talent.DEATHLY_DURABILITY)));
 				if (shld > 0 && target.alignment != Char.Alignment.ALLY){
-					Dungeon.hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shld), FloatingText.SHIELDING);
 					Buff.affect(hero, Barrier.class).setShield(shld);
 				}
 			}

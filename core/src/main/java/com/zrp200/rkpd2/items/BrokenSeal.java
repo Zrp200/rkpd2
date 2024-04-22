@@ -243,6 +243,7 @@ public class BrokenSeal extends Item {
 			if (maxShield > shielding()){
 				setShield(maxShield);
 			}
+			vfx(maxShield);
 		}
 
 		public synchronized void setArmor(Armor arm){
