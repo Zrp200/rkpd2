@@ -4,7 +4,7 @@ android {
     namespace 'com.zrp200.rkpd2.android'
     signingConfigs {
         release {
-            storeFile file('1.keystore')
+            storeFile file('*./1.keystore')
             storePassword '1'
             keyAlias '1'
             keyPassword '1'
