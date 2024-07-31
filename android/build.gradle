@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 
-//android {
+android {
 //    namespace 'com.zrp200.rkpd2.android'
 //    signingConfigs {
 //        release {
