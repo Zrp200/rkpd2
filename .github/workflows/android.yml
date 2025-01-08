@@ -3,9 +3,11 @@ name: Android CI
 
 on:
   push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    paths:
+     - 'action.on' # 只有 特定 文件的更改才构建
+#    branches: [ "master" ]
+#  pull_request:
+#    branches: [ "master" ]
 
 jobs:
   build:
@@ -17,7 +19,7 @@ jobs:
     - name: set up JDK 
       uses: actions/setup-java@v4
       with:
-        java-version: '21'
+        java-version: '23'
         distribution: 'temurin'
         cache: gradle
 
@@ -28,5 +30,5 @@ jobs:
       run: ./gradlew assembleDebug 
     - uses: actions/upload-artifact@v4
       with:
-        name: my-artifact
+        name: apk
         path: '**/*.apk'
