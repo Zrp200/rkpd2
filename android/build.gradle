@@ -2,14 +2,16 @@ apply plugin: 'com.android.application'
 
 android {
     namespace 'com.zrp200.rkpd2.android'
+
     signingConfigs {
         release {
-            storeFile file('C:\\Users\\Zrp200\\Zrp200.jks')
-            storePassword 'palkia'
-            keyAlias 'Zrp200'
-            keyPassword 'palkia'
+            storeFile file('1.keystore')
+            storePassword '1'
+            keyAlias '1'
+            keyPassword '1'
         }
-    }
+    } 
+
     compileSdk appAndroidCompileSDK
     compileOptions.sourceCompatibility = compileOptions.targetCompatibility = appJavaCompatibility
 
@@ -44,8 +46,8 @@ android {
             //This makes release APKs smaller and more efficient, but also makes debugging trickier
             //as the information produced in stack traces must be de-obfuscated.
             //See here: https://developer.android.com/studio/build/shrink-code#decode-stack-trace
-            shrinkResources true
-            minifyEnabled true
+            shrinkResources false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             dependencies {
