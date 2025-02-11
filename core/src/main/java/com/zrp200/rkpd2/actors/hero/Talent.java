@@ -982,31 +982,6 @@ public enum Talent {
 		}
 	}
 
-	public static void onUpgradeScrollUsed( Hero hero ){
-		// fixme it's probably going to look like someone threw up spellsprites
-		if (hero.hasTalent(INSCRIBED_POWER, RESTORATION)){
-			int charge = 2+2*hero.pointsInTalent(INSCRIBED_POWER);
-			MagesStaff staff = hero.belongings.getItem(MagesStaff.class);
-			int pointDiff = hero.pointsInTalent(RESTORATION) - hero.pointsInTalent(INSCRIBED_POWER);
-			boolean charged = false;
-			if(hero.hasTalent(INSCRIBED_POWER)) {
-				hero.belongings.charge(charge, true);
-			}
-			if (staff != null && pointDiff > 0) {
-				staff.gainCharge( charge + 2*pointDiff, true);
-				charged = true;
-			}
-			if(staff == null && hero.hasTalent(RESTORATION)) {
-				Buff.affect(hero, Recharging.class, 4 + 8 * hero.pointsInTalent(RESTORATION));
-				charged = true;
-			}
-			if(charged) {
-				ScrollOfRecharging.charge(hero);
-				SpellSprite.show( hero, SpellSprite.CHARGE );
-			}
-		}
-	}
-
 	public static void onArtifactUsed( Hero hero ){
 		if (hero.hasTalent(ENHANCED_RINGS,RK_ASSASSIN)){
 			float duration = 3f*hero.pointsInTalent(ENHANCED_RINGS,RK_ASSASSIN);
