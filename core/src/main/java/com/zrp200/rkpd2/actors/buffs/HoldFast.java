@@ -50,7 +50,7 @@ public class HoldFast extends Buff {
 
 	public int armorBonus(){
 		if (pos == target.pos && target instanceof Hero){
-			return Random.NormalIntRange(0, 2* ((Hero) target).pointsInTalent(Talent.HOLD_FAST));
+			return Random.NormalIntRange(0, armor());
 		} else {
 			detach();
 			return 0;
