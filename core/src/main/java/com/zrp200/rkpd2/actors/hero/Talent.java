@@ -72,7 +72,6 @@ import com.zrp200.rkpd2.items.wands.Wand;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.melee.Gloves;
-import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.items.weapon.melee.MeleeWeapon;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.levels.Level;
@@ -675,8 +674,11 @@ public enum Talent {
 		return comment == Messages.NO_TEXT_FOUND ? desc : desc + "\n\n" + comment;
 	}
 
+	private static boolean upgrading = false;
+
 	public static void onTalentUpgraded( Hero hero, Talent talent ){
 		int points = hero.pointsInTalent(talent);
+		upgrading = true;
 		switch(talent) {
 			case IRON_WILL:
 			case NOBLE_CAUSE:
@@ -757,6 +759,7 @@ public enum Talent {
 					break;
 				}
 		}
+		upgrading = false;
 	}
 
 	public static class CachedRationsDropped extends CounterBuff{{revivePersists = true;}};
@@ -1065,10 +1068,12 @@ public enum Talent {
 		if(id || curseID && !item.cursedKnown) {
 			if (id) item.identify();
 			else {
-				// fixme this doesn't use .properties file.
-				GLog.w("The %s is %s",
-						item.name(),
-						item.visiblyCursed() ? "cursed!" : "free of malevolent magic.");
+				item.cursedKnown = true;
+				// suppress message if reran during talent upgrading, because it's bound to be confusing
+				if (!upgrading) {
+					// delegate to proper message instead of creating my own
+					GLog.w(Messages.get(item, item.visiblyCursed() ? item instanceof Wand ? "curse_discover" : "cursed" : "not_cursed"));
+				}
 			}
 			if (hero.sprite.emitter() != null) hero.sprite.emitter().burst(
 					Speck.factory(Speck.QUESTION),1);
