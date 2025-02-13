@@ -441,12 +441,8 @@ abstract public class Weapon extends KindOfWeapon {
 			if(applyArcana) multi *= RingOfArcana.enchantPowerMultiplier(attacker);
 			Berserk rage = attacker.buff(Berserk.class);
 			if (rage != null) {
-				multi = rage.enchantFactor(multi);
-//				multi += rage.rageAmount() * ((Hero) attacker).byTalent(
-//						Talent.ENRAGED_CATALYST, 1/5f,
-//						Talent.RK_BERSERKER, 0.15f);
+				multi += rage.enchantFactor(multi);
 			}
-
 			// note I'm specifically preventing it from lowering the chance. I already handled that in Weapon#attackProc.
 			multi += Math.max(0, Talent.SpiritBladesTracker.getProcModifier()-1);
 
