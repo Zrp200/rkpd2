@@ -452,8 +452,11 @@ public abstract class Wand extends Item {
 
 		//inside staff
 		if (charger != null && charger.target == Dungeon.hero && !Dungeon.hero.belongings.contains(this)){
-			if (Dungeon.hero.hasTalent(Talent.EXCESS_CHARGE) && curCharges >= maxCharges){
-				int shieldToGive = Math.round(buffedLvl()*0.67f*Dungeon.hero.pointsInTalent(Talent.EXCESS_CHARGE));
+			if (Dungeon.hero.hasTalent(Talent.EXCESS_CHARGE, Talent.RK_BATTLEMAGE) && curCharges >= maxCharges){
+				int shieldToGive = Math.round(buffedLvl()*Dungeon.hero.byTalent(
+						Talent.EXCESS_CHARGE, 1f,
+						Talent.RK_BATTLEMAGE, 0.67f
+				));
 				Buff.affect(Dungeon.hero, Barrier.class).setShield(shieldToGive);
 			}
 		}
@@ -625,7 +628,7 @@ public abstract class Wand extends Item {
 				int cell = shot.collisionPos;
 				
 				if (target == curUser.pos || cell == curUser.pos) {
-					if (target == curUser.pos){
+					if (target == curUser.pos && curUser.hasTalent(Talent.SHIELD_BATTERY, Talent.RESTORATION)){
 
 						if (curUser.buff(MagicImmune.class) != null){
 							GLog.w( Messages.get(Wand.class, "no_magic") );
