@@ -1430,25 +1430,21 @@ public class Hero extends Char {
 
 		float mult = Talent.SpiritBladesTracker.getProcModifier();
 
-		// subclass logic here
-		switch(subClass) {
-			case KING: case BATTLEMAGE:
-				MagesStaff staff = belongings.getItem(MagesStaff.class);
-				if(staff != null && (staff == wep || hasTalent(Talent.SORCERY)) && (mult == 1 || Random.Float() < mult)){
-					if(staff == wep || Random.Int(5) < pointsInTalent(Talent.SORCERY)) {
-						staff.procBM();
-					}
-					if(staff == wep || Random.Int(3) < pointsInTalent(Talent.SORCERY))
-						if (buff(Talent.EmpoweredStrikeTracker.class) != null) {
-							buff(Talent.EmpoweredStrikeTracker.class).detach();
-							damage = Math.round(damage * (
-									1f + byTalent(
-											Talent.EMPOWERED_STRIKE, 1/4f,
-											Talent.RK_BATTLEMAGE, 1/6f)
-									));
-						}
-						staff.procWand(enemy, damage);
-					}
+		if (subClass.is(HeroSubClass.BATTLEMAGE)) {
+			boolean isStaff = wep instanceof MagesStaff;
+			MagesStaff staff = isStaff ? (MagesStaff) wep :
+					hasTalent(Talent.SORCERY) ? belongings.getItem(MagesStaff.class) :
+							null;
+			if (staff != null && Random.Float() < mult) {
+				int points = pointsInTalent(Talent.SORCERY);
+				damage = staff.procBM(
+						enemy,
+						damage,
+						isStaff || Random.Int(5) < points,
+						isStaff || Random.Int(3) < points,
+						true
+				);
+			}
 		}
 		if (wep != null) damage = wep.proc( this, enemy, damage );
 

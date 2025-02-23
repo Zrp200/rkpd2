@@ -25,6 +25,7 @@ import static com.zrp200.rkpd2.Dungeon.*;
 
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
+import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.ArtifactRecharge;
 import com.zrp200.rkpd2.actors.buffs.Buff;
@@ -172,29 +173,43 @@ public class MagesStaff extends MeleeWeapon {
 		}
 	}
 
-	public void procBM() {
-		int points = hero.shiftedPoints(Talent.MYSTICAL_CHARGE, Talent.RK_BATTLEMAGE);
-		if (points > 0){
-			ArtifactRecharge.chargeArtifacts(hero, points/2f);
+	public int procBM(Char defender, int damage, boolean procTalents, boolean procWand, boolean isPhysical) {
+		if (procTalents) {
+			int points = hero.shiftedPoints(Talent.MYSTICAL_CHARGE, Talent.RK_BATTLEMAGE);
+			if (points > 0) {
+				ArtifactRecharge.chargeArtifacts(hero, points/2f);
+			}
 		}
-/* todo implement
-		Talent.EmpoweredStrikeTracker empoweredStrike = attacker.buff(Talent.EmpoweredStrikeTracker.class);
+
+		if (!procWand) return damage;
+
+		Talent.EmpoweredStrikeTracker empoweredStrike = hero.buff(Talent.EmpoweredStrikeTracker.class);
+		if (empoweredStrike != null) {
+			if (!isPhysical) empoweredStrike.detach(); // temporarily remove it to prevent it from being processed
+			else {
+				damage = Math.round(damage * (
+						1f + hero.byTalent(
+								Talent.EMPOWERED_STRIKE, 1/4f,
+								Talent.RK_BATTLEMAGE, 1/6f)));
+			}
+		}
+
+		if (wand != null) {
+			if (wand.curCharges < wand.maxCharges) wand.partialCharge += 0.5f;
+			ScrollOfRecharging.charge(hero);
+			wand.onHit(this, hero, defender, damage);
+		}
+
 		if (empoweredStrike != null){
-			damage = Math.round( damage * (1f + Dungeon.hero.pointsInTalent(Talent.EMPOWERED_STRIKE)/6f));
+			if (!isPhysical) empoweredStrike.attachTo(hero);
+			else {
+				empoweredStrike.detach();
+				if ((!(defender instanceof Mob) || !((Mob) defender).surprisedBy(hero))){
+					Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG, 0.75f, 1.2f);
+				}
+			}
 		}
-*/
-
-		if (wand.curCharges < wand.maxCharges) gainCharge(0.5f);
-
-//		if (empoweredStrike != null){
-//			empoweredStrike.detach();
-//			if (!(defender instanceof Mob) || !((Mob) defender).surprisedBy(attacker)){
-//				Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG, 0.75f, 1.2f);
-//			}
-//		}
-	}
-	public void procWand(Char defender, int damage) {
-		wand.onHit(this, hero,defender,damage);
+		return damage;
 	}
 
 	@Override
