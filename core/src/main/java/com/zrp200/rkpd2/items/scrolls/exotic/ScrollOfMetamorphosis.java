@@ -27,6 +27,7 @@ import static com.zrp200.rkpd2.actors.hero.Talent.*;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
+import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.effects.Transmuting;
@@ -230,6 +231,10 @@ public class ScrollOfMetamorphosis extends ExoticScroll {
 						break;
 					} else {
 						if (curTalentsAtTier.contains(talent)){
+							clsTalentsAtTier.remove(talent);
+						}
+						if (talent == STRONGMAN && curUser.subClass == HeroSubClass.MONK) {
+							// avoid redundancy
 							clsTalentsAtTier.remove(talent);
 						}
 						if (restrictedTalents.containsKey(talent)

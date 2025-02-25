@@ -238,12 +238,15 @@ public class Hero extends Char {
 			strBonus += buff.boost();
 		}
 
-		// TODO buff for warrior
-		if (hasTalent(Talent.STRONGMAN,Talent.RK_BERSERKER)){ // note that you need to have points in this.
+		if (canHaveTalent(Talent.STRONGMAN) || canHaveTalent(Talent.MONASTIC_MIGHT) || hasTalent(Talent.RK_BERSERKER)){ // note that you need to have points in this.
 			float boost = Math.max(
-					0.05f + 0.08f*pointsInTalent(Talent.STRONGMAN), // get it? ~1.5x. Very, very slightly worse than v0.0.1
+					0.05f + 0.08f*pointsInTalent(Talent.STRONGMAN, Talent.MONASTIC_MIGHT), // get it? ~1.5x. Very, very slightly worse than v0.0.1
 					0.03f + 0.05f*pointsInTalent(Talent.RK_BERSERKER)
 			);
+			if (canHaveTalent(Talent.STRONGMAN) || canHaveTalent(Talent.MONASTIC_MIGHT)) {
+				boost = Math.max(boost, 0.08f);
+			}
+
 			strBonus += (int)Math.floor(STR * boost);
 		}
 
