@@ -25,7 +25,6 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.ActionIndicator;
@@ -37,10 +36,10 @@ import com.watabou.utils.Bundle;
 public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
 	public int object = 0;
-	public int level = 0;
+	public float percentDmgBonus = 0;
 
 	private static final String OBJECT    = "object";
-	private static final String LEVEL    = "level";
+	private static final String BONUS    = "bonus";
 
 	public static final float DURATION = 4f;
 
@@ -48,9 +47,9 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		type = buffType.POSITIVE;
 	}
 
-	public void set(int object, int level){
+	public void set(int object, float bonus){
 		this.object = object;
-		this.level = level;
+		this.percentDmgBonus = bonus;
 	}
 	
 	@Override
@@ -69,14 +68,14 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put( OBJECT, object );
-		bundle.put( LEVEL, level );
+		bundle.put( BONUS, percentDmgBonus );
 	}
 
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
 		super.restoreFromBundle( bundle );
 		object = bundle.getInt( OBJECT );
-		level = bundle.getInt( LEVEL );
+		percentDmgBonus = bundle.getInt( BONUS );
 	}
 
 	@Override
@@ -89,11 +88,6 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		return Math.max(0, (DURATION - visualcooldown()) / DURATION);
 	}
 
-	@Override
-	public String desc() {
-		return Messages.get(this, "desc");
-	}
-	
 	@Override
 	public String actionName() {
 		SpiritBow bow = Dungeon.hero.belongings.getItem(SpiritBow.class);
@@ -139,7 +133,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		if (cell == -1) return;
 		
 		bow.sniperSpecial = true;
-		bow.sniperSpecialBonusDamage = level*Dungeon.hero.pointsInTalent(Talent.SHARED_UPGRADES)/10f;
+		bow.sniperSpecialBonusDamage = percentDmgBonus;
 		
 		arrow.cast(hero, cell);
 		detach();

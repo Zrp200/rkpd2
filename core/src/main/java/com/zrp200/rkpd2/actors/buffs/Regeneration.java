@@ -23,8 +23,12 @@ package com.zrp200.rkpd2.actors.buffs;
 
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.spells.SpiritForm;
 import com.zrp200.rkpd2.items.artifacts.ChaliceOfBlood;
 import com.zrp200.rkpd2.items.rings.RingOfEnergy;
+import com.zrp200.rkpd2.items.trinkets.ChaoticCenser;
+import com.zrp200.rkpd2.items.trinkets.SaltCube;
+import com.watabou.utils.Bundle;
 
 public class Regeneration extends Buff {
 	
@@ -33,35 +37,59 @@ public class Regeneration extends Buff {
 		//healing is much more useful if you get some of it off before taking damage
 		actPriority = HERO_PRIO - 1;
 	}
-	
-	private static final float REGENERATION_DELAY = 10;
+
+	private float partialRegen = 0f;
+
+	private static final float REGENERATION_DELAY = 10; //1HP every 10 turns
 	
 	@Override
 	public boolean act() {
 		if (target.isAlive()) {
 
-			if (target.HP < regencap() && !((Hero)target).isStarving()) {
-				if (regenOn()) {
+			//if other trinkets ever get buffs like this should probably make the buff attaching
+			// behaviour more like wands/rings/artifacts
+			if (ChaoticCenser.averageTurnsUntilGas() != -1){
+				Buff.affect(Dungeon.hero, ChaoticCenser.CenserGasTracker.class);
+			}
+
+			if (regenOn() && target.HP < regencap() && !((Hero)target).isStarving()) {
+				boolean chaliceCursed = false;
+				int chaliceLevel = -1;
+				if (target.buff(MagicImmune.class) == null) {
+					if (Dungeon.hero.buff(ChaliceOfBlood.chaliceRegen.class) != null) {
+						chaliceCursed = Dungeon.hero.buff(ChaliceOfBlood.chaliceRegen.class).isCursed();
+						chaliceLevel = Dungeon.hero.buff(ChaliceOfBlood.chaliceRegen.class).itemLevel();
+					} else if (Dungeon.hero.buff(SpiritForm.SpiritFormBuff.class) != null
+							&& Dungeon.hero.buff(SpiritForm.SpiritFormBuff.class).artifact() instanceof ChaliceOfBlood) {
+						chaliceLevel = SpiritForm.artifactLevel();
+					}
+				}
+
+				float delay = REGENERATION_DELAY;
+				if (chaliceLevel != -1 && target.buff(MagicImmune.class) == null) {
+					if (chaliceCursed) {
+						delay *= 1.5f;
+					} else {
+						//15% boost at +0, scaling to a 500% boost at +10
+						delay -= 1.33f + chaliceLevel*0.667f;
+						delay /= RingOfEnergy.artifactChargeMultiplier(target);
+					}
+				}
+				delay /= SaltCube.healthRegenMultiplier();
+
+				partialRegen += 1f / delay;
+
+				if (partialRegen >= 1) {
 					target.HP += 1;
+					partialRegen--;
 					if (target.HP == regencap()) {
 						((Hero) target).resting = false;
 					}
 				}
+
 			}
 
-			ChaliceOfBlood.chaliceRegen regenBuff = Dungeon.hero.buff( ChaliceOfBlood.chaliceRegen.class);
-
-			float delay = REGENERATION_DELAY;
-			if (regenBuff != null && target.buff(MagicImmune.class) == null) {
-				if (regenBuff.isCursed()) {
-					delay *= 1.5f;
-				} else {
-					//15% boost at +0, scaling to a 500% boost at +10
-					delay -= 1.33f + regenBuff.itemLevel()*0.667f;
-					delay /= RingOfEnergy.artifactChargeMultiplier(target);
-				}
-			}
-			spend( delay );
+			spend( TICK );
 			
 		} else {
 			
@@ -82,5 +110,19 @@ public class Regeneration extends Buff {
 			return false;
 		}
 		return true;
+	}
+
+	public static final String PARTIAL_REGEN = "partial_regen";
+
+	@Override
+	public void storeInBundle(Bundle bundle) {
+		super.storeInBundle(bundle);
+		bundle.put(PARTIAL_REGEN, partialRegen);
+	}
+
+	@Override
+	public void restoreFromBundle(Bundle bundle) {
+		super.restoreFromBundle(bundle);
+		partialRegen = bundle.getFloat(PARTIAL_REGEN);
 	}
 }

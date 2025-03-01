@@ -28,9 +28,15 @@ import com.zrp200.rkpd2.actors.buffs.Hex;
 import com.zrp200.rkpd2.actors.buffs.MagicalSleep;
 import com.zrp200.rkpd2.actors.buffs.Vulnerable;
 import com.zrp200.rkpd2.actors.buffs.Weakness;
+import com.zrp200.rkpd2.actors.hero.spells.Judgement;
 import com.zrp200.rkpd2.actors.hero.abilities.duelist.ElementalStrike;
 import com.zrp200.rkpd2.actors.hero.abilities.mage.ElementalBlast;
 import com.zrp200.rkpd2.actors.hero.abilities.mage.WarpBeacon;
+import com.zrp200.rkpd2.actors.hero.spells.GuidingLight;
+import com.zrp200.rkpd2.actors.hero.spells.HolyLance;
+import com.zrp200.rkpd2.actors.hero.spells.HolyWeapon;
+import com.zrp200.rkpd2.actors.hero.spells.Smite;
+import com.zrp200.rkpd2.actors.hero.spells.Sunray;
 import com.zrp200.rkpd2.actors.mobs.CrystalWisp;
 import com.zrp200.rkpd2.actors.mobs.DM100;
 import com.zrp200.rkpd2.actors.mobs.Eye;
@@ -88,6 +94,13 @@ public class AntiMagic extends Armor.Glyph {
 		RESISTS.add( ScrollOfTeleportation.class );
 		RESISTS.add( HolyDart.class );
 
+		RESISTS.add( GuidingLight.class );
+		RESISTS.add( HolyWeapon.class );
+		RESISTS.add( Sunray.class );
+		RESISTS.add( HolyLance.class );
+		RESISTS.add( Smite.class );
+		RESISTS.add( Judgement.class );
+
 		RESISTS.add( ElementalBlast.class );
 		RESISTS.add( CursedWand.class );
 		RESISTS.add( WandOfBlastWave.class );
@@ -103,7 +116,9 @@ public class AntiMagic extends Armor.Glyph {
 
 		RESISTS.add( ElementalStrike.class );
 		RESISTS.add( Blazing.class );
+		RESISTS.add( WandOfFireblast.FireBlastOnHit.class );
 		RESISTS.add( Shocking.class );
+		RESISTS.add( WandOfLightning.LightningOnHit.class );
 		RESISTS.add( Grim.class );
 
 		RESISTS.add( WarpBeacon.class );
@@ -119,19 +134,18 @@ public class AntiMagic extends Armor.Glyph {
 	
 	@Override
 	public int proc(Armor armor, Char attacker, Char defender, int damage) {
-		//no proc effect, see:
-		// Hero.damage
-		// GhostHero.damage
-		// Shadowclone.damage
-		// ArmoredStatue.damage
-		// PrismaticImage.damage
+		//no proc effect, triggers in Char.damage
 		return damage;
 	}
 	
-	public static int drRoll( Char ch, int level ){
-		return Random.NormalIntRange(
-				Math.round(level * genericProcChanceMultiplier(ch)),
-				Math.round((3 + (level*1.5f)) * genericProcChanceMultiplier(ch)));
+	public static int drRoll( Char owner, int level ){
+		if (level == -1){
+			return 0;
+		} else {
+			return Random.NormalIntRange(
+					Math.round(level * genericProcChanceMultiplier(owner)),
+					Math.round((3 + (level * 1.5f)) * genericProcChanceMultiplier(owner)));
+		}
 	}
 
 	@Override

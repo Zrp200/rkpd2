@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.actors.buffs.LostInventory;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
+import com.zrp200.rkpd2.items.artifacts.HolyTome;
 import com.zrp200.rkpd2.items.bags.MagicalHolster;
 import com.zrp200.rkpd2.items.wands.Wand;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
@@ -57,6 +58,8 @@ public class LostBackpack extends Item {
 					((EquipableItem) i).activate(hero);
 				} else if ( i instanceof CloakOfShadows && hero.hasTalent(Talent.LIGHT_CLOAK)){
 					((CloakOfShadows) i).activate(hero);
+				} else if ( i instanceof HolyTome && hero.hasTalent(Talent.LIGHT_READING)){
+					((HolyTome) i).activate(hero);
 				} else if (i instanceof Wand){
 					if (holster != null && holster.contains(i)){
 						((Wand) i).charge(hero, MagicalHolster.HOLSTER_SCALE_FACTOR);

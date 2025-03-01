@@ -50,12 +50,22 @@ import com.watabou.utils.Callback;
 import com.watabou.utils.PointF;
 import com.watabou.utils.Random;
 
-public class WandOfTransfusion extends Wand {
+public class WandOfTransfusion extends DamageWand {
 
 	{
 		image = ItemSpriteSheet.WAND_TRANSFUSION;
 
 		collisionProperties = Ballistica.PROJECTILE;
+	}
+
+	@Override
+	public int min(int level) {
+		return 3 + level;
+	}
+
+	@Override
+	public int max(int level) {
+		return 6 + 2*level;
 	}
 
 	private boolean freeCharge = false;
@@ -124,7 +134,7 @@ public class WandOfTransfusion extends Wand {
 				
 				//harms the undead
 				} else {
-					ch.damage(Random.NormalIntRange(3 + buffedLvl(), 6+2*buffedLvl()), this);
+					ch.damage(damageRoll(), this);
 					ch.sprite.emitter().start(ShadowParticle.UP, 0.05f, 10 + buffedLvl());
 					Sample.INSTANCE.play(Assets.Sounds.BURNING);
 				}
@@ -179,11 +189,27 @@ public class WandOfTransfusion extends Wand {
 
 	@Override
 	public String statsDesc() {
-		int selfDMG = Math.round(Dungeon.hero.HT*0.05f);
+		int selfDMG = Dungeon.hero != null ? Math.round(Dungeon.hero.HT*0.05f): 1;
 		if (levelKnown)
-			return Messages.get(this, "stats_desc", selfDMG, selfDMG + 3*buffedLvl(), 5+buffedLvl(), 3+buffedLvl()/2, 6+ buffedLvl());
+			return Messages.get(this, "stats_desc", selfDMG, selfDMG + 3*buffedLvl(), 5+buffedLvl(), min(), max());
 		else
-			return Messages.get(this, "stats_desc", selfDMG, selfDMG, 5, 3, 6);
+			return Messages.get(this, "stats_desc", selfDMG, selfDMG, 5, min(0), max(0));
+	}
+
+	@Override
+	public String upgradeStat1(int level) {
+		int selfDMG = Dungeon.hero != null ? Math.round(Dungeon.hero.HT*0.05f): 1;
+		return Integer.toString(selfDMG + 3*level);
+	}
+
+	@Override
+	public String upgradeStat2(int level) {
+		return Integer.toString(5 + level);
+	}
+
+	@Override
+	public String upgradeStat3(int level) {
+		return super.upgradeStat1(level); //damage
 	}
 
 	private static final String FREECHARGE = "freecharge";

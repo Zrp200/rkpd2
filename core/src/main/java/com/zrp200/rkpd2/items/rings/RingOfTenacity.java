@@ -30,6 +30,7 @@ public class RingOfTenacity extends Ring {
 
 	{
 		icon = ItemSpriteSheet.Icons.RING_TENACITY;
+		buffClass = Tenacity.class;
 	}
 
 	public String statsInfo() {
@@ -44,6 +45,11 @@ public class RingOfTenacity extends Ring {
 		} else {
 			return Messages.get(this, "typical_stats", Messages.decimalFormat("#.##", 15f));
 		}
+	}
+
+	public String upgradeStat1(int level){
+		if (cursed && cursedKnown) level = Math.min(-1, level-3);
+		return Messages.decimalFormat("#.##", 100f * (1f - Math.pow(0.85f, level+1))) + "%";
 	}
 
 	@Override

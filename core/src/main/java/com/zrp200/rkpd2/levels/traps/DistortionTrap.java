@@ -29,18 +29,19 @@ import com.zrp200.rkpd2.actors.mobs.Acidic;
 import com.zrp200.rkpd2.actors.mobs.Albino;
 import com.zrp200.rkpd2.actors.mobs.ArmoredBrute;
 import com.zrp200.rkpd2.actors.mobs.Bandit;
-import com.zrp200.rkpd2.actors.mobs.Bestiary;
 import com.zrp200.rkpd2.actors.mobs.CausticSlime;
 import com.zrp200.rkpd2.actors.mobs.DM201;
 import com.zrp200.rkpd2.actors.mobs.Elemental;
 import com.zrp200.rkpd2.actors.mobs.Mimic;
 import com.zrp200.rkpd2.actors.mobs.Mob;
+import com.zrp200.rkpd2.actors.mobs.MobSpawner;
 import com.zrp200.rkpd2.actors.mobs.Piranha;
 import com.zrp200.rkpd2.actors.mobs.Senior;
 import com.zrp200.rkpd2.actors.mobs.Statue;
 import com.zrp200.rkpd2.actors.mobs.Wraith;
 import com.zrp200.rkpd2.actors.mobs.npcs.RatKing;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
+import com.zrp200.rkpd2.journal.Bestiary;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -111,7 +112,7 @@ public class DistortionTrap extends Trap{
 					do {
 						floor = Random.Int(25);
 					} while( Dungeon.bossLevel(floor));
-					mob = Reflection.newInstance(Bestiary.getMobRotation(floor).get(0));
+					mob = Reflection.newInstance(MobSpawner.getMobRotation(floor).get(0));
 					break;
 				case 2:
 					switch (2){
@@ -155,6 +156,8 @@ public class DistortionTrap extends Trap{
 			if ((t = Dungeon.level.traps.get(mob.pos)) != null && t.active){
 				if (t.disarmedByActivation) t.disarm();
 				t.reveal();
+				Bestiary.setSeen(t.getClass());
+				Bestiary.countEncounter(t.getClass());
 				t.activate();
 			}
 			ScrollOfTeleportation.appear(mob, mob.pos);

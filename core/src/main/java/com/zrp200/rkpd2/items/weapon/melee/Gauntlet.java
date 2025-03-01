@@ -50,7 +50,23 @@ public class Gauntlet extends MeleeWeapon {
 
 	@Override
 	protected void duelistAbility(Hero hero, Integer target) {
-		Sai.comboStrikeAbility(hero, target, 0.35f, this);
+		//+(5+lvl) damage, roughly +50% base damage, +50% scaling
+		int dmgBoost = augment.damageFactor(5 + buffedLvl());
+		Sai.comboStrikeAbility(hero, target, 0, dmgBoost, this);
+	}
+
+	@Override
+	public String abilityInfo() {
+		int dmgBoost = levelKnown ? 5 + buffedLvl() : 5;
+		if (levelKnown){
+			return Messages.get(this, "ability_desc", augment.damageFactor(dmgBoost));
+		} else {
+			return Messages.get(this, "typical_ability_desc", augment.damageFactor(dmgBoost));
+		}
+	}
+
+	public String upgradeAbilityStat(int level){
+		return "+" + augment.damageFactor(5 + level);
 	}
 
 }

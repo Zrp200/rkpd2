@@ -22,9 +22,7 @@
 package com.zrp200.rkpd2.items.weapon.melee;
 
 import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
@@ -51,17 +49,25 @@ public class BattleAxe extends MeleeWeapon {
 	}
 
 	@Override
-	protected int baseChargeUse(Hero hero, Char target){
-		if (target == null || (target instanceof Mob && ((Mob) target).surprisedBy(hero))) {
-			return 1;
-		} else {
-			return 2;
-		}
+	protected void duelistAbility(Hero hero, Integer target) {
+		//+(5+1.5*lvl) damage, roughly +40% base dmg, +50% scaling
+		int dmgBoost = augment.damageFactor(5 + Math.round(1.5f*buffedLvl()));
+		Mace.heavyBlowAbility(hero, target, 1, dmgBoost, this);
 	}
 
 	@Override
-	protected void duelistAbility(Hero hero, Integer target) {
-		Mace.heavyBlowAbility(hero, target, 1.35f, this);
+	public String abilityInfo() {
+		int dmgBoost = levelKnown ? 5 + Math.round(1.5f*buffedLvl()) : 5;
+		if (levelKnown){
+			return Messages.get(this, "ability_desc", augment.damageFactor(min()+dmgBoost), augment.damageFactor(max()+dmgBoost));
+		} else {
+			return Messages.get(this, "typical_ability_desc", min(0)+dmgBoost, max(0)+dmgBoost);
+		}
+	}
+
+	public String upgradeAbilityStat(int level){
+		int dmgBoost = 5 + Math.round(1.5f*level);
+		return augment.damageFactor(min(level)+dmgBoost) + "-" + augment.damageFactor(max(level)+dmgBoost);
 	}
 
 }

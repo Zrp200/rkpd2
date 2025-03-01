@@ -24,12 +24,12 @@ package com.zrp200.rkpd2.items.wands;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.buffs.WandEmpower;
+import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.messages.Messages;
 import com.watabou.noosa.audio.Sample;
-import com.watabou.utils.Random;
 
 //for wands that directly damage a target
-//wands with AOE effects count here (e.g. fireblast), but wands with indrect damage do not (e.g. venom, transfusion)
+//wands with AOE or circumstantial direct damage count here (e.g. fireblast, transfusion), but wands with indirect damage do not (e.g. corrosion)
 public abstract class DamageWand extends Wand{
 
 	public int min(){
@@ -49,7 +49,7 @@ public abstract class DamageWand extends Wand{
 	}
 
 	public int damageRoll(int lvl){
-		int dmg = Random.NormalIntRange(min(lvl), max(lvl));
+		int dmg = Hero.heroDamageIntRange(min(lvl), max(lvl));
 		WandEmpower emp = Dungeon.hero.buff(WandEmpower.class);
 		if (emp != null){
 			dmg += emp.dmgBoost;
@@ -68,5 +68,10 @@ public abstract class DamageWand extends Wand{
 			return Messages.get(this, "stats_desc", min(), max());
 		else
 			return Messages.get(this, "stats_desc", min(0), max(0));
+	}
+
+	@Override
+	public String upgradeStat1(int level) {
+		return min(level) + "-" + max(level);
 	}
 }

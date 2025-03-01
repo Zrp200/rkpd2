@@ -27,6 +27,7 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
 import com.zrp200.rkpd2.items.KingsCrown;
+import com.zrp200.rkpd2.journal.Notes;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.RatKingSprite;
@@ -82,6 +83,11 @@ public class RatKing extends NPC {
 		if (firstAdded && Dungeon.depth != 5){
 			yell(Messages.get(this, "confused"));
 		}
+	}
+
+	@Override
+	public Notes.Landmark landmark() {
+		return Dungeon.depth == 5 ? Notes.Landmark.RAT_KING : null;
 	}
 
 	@Override
@@ -161,8 +167,12 @@ public class RatKing extends NPC {
 	
 	@Override
 	public String description() {
-		if (Holiday.getCurrentHoliday() == Holiday.WINTER_HOLIDAYS){
-			return Messages.get(this, "desc_festive");
+		if (Dungeon.hero != null && Dungeon.hero.armorAbility instanceof Ratmogrify){
+			return Messages.get(this, "desc_crown");
+		} else if (Holiday.getCurrentHoliday() == Holiday.APRIL_FOOLS){
+			return Messages.get(this, "desc_birthday");
+		} else if (Holiday.getCurrentHoliday() == Holiday.WINTER_HOLIDAYS){
+			return Messages.get(this, "desc_winter");
 		} else {
 			return super.description();
 		}

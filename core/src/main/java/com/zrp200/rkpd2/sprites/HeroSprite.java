@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.sprites;
 
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.buffs.HeroDisguise;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.scenes.GameScene;
@@ -60,6 +61,11 @@ public class HeroSprite extends CharSprite {
 			idle();
 		else
 			die();
+	}
+
+	public void disguise(HeroClass cls){
+		texture( cls.spritesheet() );
+		updateArmor();
 	}
 	
 	public void updateArmor() {
@@ -166,6 +172,14 @@ public class HeroSprite extends CharSprite {
 		}
 		
 		return tiers;
+	}
+
+	public static Image avatar( Hero hero ){
+		if (hero.buff(HeroDisguise.class) != null){
+			return avatar(hero.buff(HeroDisguise.class).getDisguise(), hero.tier());
+		} else {
+			return avatar(hero.heroClass, hero.tier());
+		}
 	}
 	
 	public static Image avatar( HeroClass cl, int armorTier ) {

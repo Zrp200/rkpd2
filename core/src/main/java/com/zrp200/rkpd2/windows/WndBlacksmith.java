@@ -37,6 +37,7 @@ import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfUpgrade;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.melee.MeleeWeapon;
+import com.zrp200.rkpd2.journal.Catalog;
 import com.zrp200.rkpd2.journal.Notes;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
@@ -53,7 +54,7 @@ import java.util.ArrayList;
 public class WndBlacksmith extends Window {
 
 	private static final int WIDTH_P = 120;
-	private static final int WIDTH_L = 160;
+	private static final int WIDTH_L = 180;
 
 	private static final int GAP  = 2;
 
@@ -442,6 +443,8 @@ public class WndBlacksmith extends Window {
 				if (!Blacksmith.Quest.rewardsAvailable()){
 					Notes.remove( Notes.Landmark.TROLL );
 				}
+
+				Catalog.countUse(item.getClass());
 			}
 		}
 	}
@@ -506,6 +509,13 @@ public class WndBlacksmith extends Window {
 					@Override
 					protected void onClick() {
 						RewardWindow.this.hide();
+
+						if (item instanceof Weapon && Blacksmith.Quest.smithEnchant != null){
+							((Weapon) item).enchant(Blacksmith.Quest.smithEnchant);
+						} else if (item instanceof Armor && Blacksmith.Quest.smithGlyph != null){
+							((Armor) item).inscribe(Blacksmith.Quest.smithGlyph);
+						}
+
 						item.identify(false);
 						Sample.INSTANCE.play(Assets.Sounds.EVOKE);
 						Item.evoke( Dungeon.hero );

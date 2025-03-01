@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.actors.buffs.Barrier;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.journal.Catalog;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
@@ -105,6 +106,7 @@ public class Waterskin extends Item {
 
 				if (Dewdrop.consumeDew(dropsNeeded, hero, true)){
 					volume -= dropsNeeded;
+					Catalog.countUses(Dewdrop.class, dropsNeeded);
 
 					hero.spend(TIME_TO_DRINK);
 					hero.busy();
@@ -125,7 +127,7 @@ public class Waterskin extends Item {
 
 	@Override
 	public String info() {
-		String info = desc();
+		String info = super.info();
 
 		if (volume == 0){
 			info += "\n\n" + Messages.get(this, "desc_water");

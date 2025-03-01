@@ -26,29 +26,28 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.AllyBuff;
-import com.zrp200.rkpd2.actors.buffs.Burning;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
 import com.zrp200.rkpd2.actors.hero.abilities.huntress.SpiritHawk;
 import com.zrp200.rkpd2.actors.mobs.npcs.DirectableAlly;
 import com.zrp200.rkpd2.effects.particles.SmokeParticle;
+import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
-import com.zrp200.rkpd2.items.armor.glyphs.AntiMagic;
-import com.zrp200.rkpd2.items.armor.glyphs.Brimstone;
 import com.zrp200.rkpd2.levels.CityLevel;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.HeroSprite;
 import com.zrp200.rkpd2.sprites.MobSprite;
 import com.zrp200.rkpd2.ui.HeroIcon;
-import com.watabou.utils.BArray;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.noosa.tweeners.Tweener;
+import com.watabou.utils.BArray;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
@@ -238,14 +237,12 @@ public class ShadowClone extends ArmorAbility {
 		}
 
 		@Override
-		public boolean isImmune(Class effect) {
-			if (effect == Burning.class
-					&& Random.Int(4) < Dungeon.hero.pointsInTalent(Talent.CLONED_ARMOR)
-					&& Dungeon.hero.belongings.armor() != null
-					&& Dungeon.hero.belongings.armor().hasGlyph(Brimstone.class, this)){
-				return true;
+		public int glyphLevel(Class<? extends Armor.Glyph> cls) {
+			if (Dungeon.hero != null && Random.Int(4) < Dungeon.hero.pointsInTalent(Talent.CLONED_ARMOR)){
+				return Math.max(super.glyphLevel(cls), Dungeon.hero.glyphLevel(cls));
+			} else {
+				return super.glyphLevel(cls);
 			}
-			return super.isImmune(effect);
 		}
 
 		@Override
@@ -257,21 +254,6 @@ public class ShadowClone extends ArmorAbility {
 			} else {
 				return damage;
 			}
-		}
-
-		@Override
-		public void damage(int dmg, Object src) {
-
-			//TODO improve this when I have proper damage source logic
-			if (Random.Int(4) < Dungeon.hero.pointsInTalent(Talent.CLONED_ARMOR)
-					&& Dungeon.hero.belongings.armor() != null
-					&& Dungeon.hero.belongings.armor().hasGlyph(AntiMagic.class, this)
-					&& AntiMagic.RESISTS.contains(src.getClass())){
-				dmg -= AntiMagic.drRoll(Dungeon.hero, Dungeon.hero.belongings.armor().buffedLvl());
-				dmg = Math.max(dmg, 0);
-			}
-
-			super.damage(dmg, src);
 		}
 
 		@Override
@@ -367,7 +349,7 @@ public class ShadowClone extends ArmorAbility {
 		public ShadowSprite() {
 			super();
 
-			texture( Dungeon.hero.heroClass.spritesheet() );
+			texture( HeroClass.ROGUE.spritesheet() );
 
 			TextureFilm film = new TextureFilm( HeroSprite.tiers(), 6, 12, 15 );
 

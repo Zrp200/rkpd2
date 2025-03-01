@@ -30,6 +30,7 @@ public class RingOfAccuracy extends Ring {
 
 	{
 		icon = ItemSpriteSheet.Icons.RING_ACCURACY;
+		buffClass = Accuracy.class;
 	}
 	
 	public String statsInfo() {
@@ -44,6 +45,11 @@ public class RingOfAccuracy extends Ring {
 		} else {
 			return Messages.get(this, "typical_stats", Messages.decimalFormat("#.##", 30f));
 		}
+	}
+
+	public String upgradeStat1(int level){
+		if (cursed && cursedKnown) level = Math.min(-1, level-3);
+		return Messages.decimalFormat("#.##", 100f * (Math.pow(1.3f, level+1)-1f)) + "%";
 	}
 	
 	@Override

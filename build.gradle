@@ -2,11 +2,12 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url = uri("https://storage.googleapis.com/r8-releases/raw")
+        }
     }
     dependencies {
-        //the R8 version bundled with AGP 8.1.0+ causes crashes on very old Android versions
-        //This affects ICS and Lollipop at least, maybe also KitKat
-        classpath 'com.android.tools.build:gradle:8.0.2'
+        classpath 'com.android.tools.build:gradle:8.7.1'
     }
 }
 
@@ -14,20 +15,20 @@ allprojects {
 
     ext {
         appName = 'Shattered Pixel Dungeon'
-        appPackageName = 'com.zrp200.rkpd2'
+        appPackageName = 'com.shatteredpixel.shatteredpixeldungeon'
 
-        appVersionCode = 768
-        appVersionName = '2.3.2'
+        appVersionCode = 831
+        appVersionName = '3.0.0'
 
         appJavaCompatibility = JavaVersion.VERSION_1_8
 
-        appAndroidCompileSDK = 33 //compile SDK is still 33 atm as we're sticking with AGP 8.0.2
+        appAndroidCompileSDK = 34
         appAndroidMinSDK = 14
         appAndroidTargetSDK = 34
 
         gdxVersion = '1.12.1'
         gdxControllersVersion = '2.2.4-SNAPSHOT'
-        robovmVersion = '2.3.20'
+        robovmVersion = '2.3.21'
     }
     version = appVersionName
 

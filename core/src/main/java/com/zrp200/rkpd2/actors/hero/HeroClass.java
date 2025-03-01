@@ -28,6 +28,9 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.QuickSlot;
 import com.zrp200.rkpd2.SPDSettings;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
+import com.zrp200.rkpd2.actors.hero.abilities.cleric.AscendedForm;
+import com.zrp200.rkpd2.actors.hero.abilities.cleric.PowerOfMany;
+import com.zrp200.rkpd2.actors.hero.abilities.cleric.Trinity;
 import com.zrp200.rkpd2.actors.hero.abilities.duelist.Challenge;
 import com.zrp200.rkpd2.actors.hero.abilities.duelist.ElementalStrike;
 import com.zrp200.rkpd2.actors.hero.abilities.duelist.Feint;
@@ -48,21 +51,25 @@ import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.Waterskin;
 import com.zrp200.rkpd2.items.armor.ClothArmor;
 import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
+import com.zrp200.rkpd2.items.artifacts.HolyTome;
 import com.zrp200.rkpd2.items.bags.VelvetPouch;
 import com.zrp200.rkpd2.items.food.Food;
 import com.zrp200.rkpd2.items.potions.PotionOfHealing;
 import com.zrp200.rkpd2.items.potions.PotionOfInvisibility;
 import com.zrp200.rkpd2.items.potions.PotionOfLiquidFlame;
 import com.zrp200.rkpd2.items.potions.PotionOfMindVision;
+import com.zrp200.rkpd2.items.potions.PotionOfPurity;
 import com.zrp200.rkpd2.items.potions.PotionOfStrength;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfIdentify;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfLullaby;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfMagicMapping;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfMirrorImage;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRage;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfRemoveCurse;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfUpgrade;
 import com.zrp200.rkpd2.items.wands.WandOfMagicMissile;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
+import com.zrp200.rkpd2.items.weapon.melee.Cudgel;
 import com.zrp200.rkpd2.items.weapon.melee.Dagger;
 import com.zrp200.rkpd2.items.weapon.melee.Gloves;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
@@ -71,6 +78,7 @@ import com.zrp200.rkpd2.items.weapon.melee.WornShortsword;
 import com.zrp200.rkpd2.items.weapon.missiles.ThrowingKnife;
 import com.zrp200.rkpd2.items.weapon.missiles.ThrowingSpike;
 import com.zrp200.rkpd2.items.weapon.missiles.ThrowingStone;
+import com.zrp200.rkpd2.journal.Catalog;
 import com.zrp200.rkpd2.messages.Messages;
 import com.watabou.utils.DeviceCompat;
 
@@ -80,7 +88,8 @@ public enum HeroClass {
 	MAGE( HeroSubClass.BATTLEMAGE, HeroSubClass.WARLOCK ),
 	ROGUE( HeroSubClass.ASSASSIN, HeroSubClass.FREERUNNER ),
 	HUNTRESS( HeroSubClass.SNIPER, HeroSubClass.WARDEN ),
-	DUELIST( HeroSubClass.CHAMPION, HeroSubClass.MONK );
+	DUELIST( HeroSubClass.CHAMPION, HeroSubClass.MONK ),
+	CLERIC( HeroSubClass.PRIEST, HeroSubClass.PALADIN );
 
 	private HeroSubClass[] subClasses;
 
@@ -127,6 +136,10 @@ public enum HeroClass {
 			case DUELIST:
 				initDuelist( hero );
 				break;
+
+			case CLERIC:
+				initCleric( hero );
+				break;
 		}
 
 		if (SPDSettings.quickslotWaterskin()) {
@@ -152,6 +165,8 @@ public enum HeroClass {
 				return Badges.Badge.MASTERY_HUNTRESS;
 			case DUELIST:
 				return Badges.Badge.MASTERY_DUELIST;
+			case CLERIC:
+				return Badges.Badge.MASTERY_CLERIC;
 		}
 		return null;
 	}
@@ -164,6 +179,7 @@ public enum HeroClass {
 
 		if (hero.belongings.armor != null){
 			hero.belongings.armor.affixSeal(new BrokenSeal());
+			Catalog.setSeen(BrokenSeal.class); //as it's not added to the inventory
 		}
 
 		new PotionOfHealing().identify();
@@ -228,6 +244,21 @@ public enum HeroClass {
 		new ScrollOfMirrorImage().identify();
 	}
 
+	private static void initCleric( Hero hero ) {
+
+		(hero.belongings.weapon = new Cudgel()).identify();
+		hero.belongings.weapon.activate(hero);
+
+		HolyTome tome = new HolyTome();
+		(hero.belongings.artifact = tome).identify();
+		hero.belongings.artifact.activate( hero );
+
+		Dungeon.quickslot.setSlot(0, tome);
+
+		new PotionOfPurity().identify();
+		new ScrollOfRemoveCurse().identify();
+	}
+
 	public String title() {
 		return Messages.get(HeroClass.class, name());
 	}
@@ -256,6 +287,8 @@ public enum HeroClass {
 				return new ArmorAbility[]{new SpectralBlades(), new NaturesPower(), new SpiritHawk()};
 			case DUELIST:
 				return new ArmorAbility[]{new Challenge(), new ElementalStrike(), new Feint()};
+			case CLERIC:
+				return new ArmorAbility[]{new AscendedForm(), new Trinity(), new PowerOfMany()};
 		}
 	}
 
@@ -271,6 +304,8 @@ public enum HeroClass {
 				return Assets.Sprites.HUNTRESS;
 			case DUELIST:
 				return Assets.Sprites.DUELIST;
+			case CLERIC: //TODO CLERIC finish sprite sheet
+				return Assets.Sprites.CLERIC;
 		}
 	}
 
@@ -286,6 +321,8 @@ public enum HeroClass {
 				return Assets.Splashes.HUNTRESS;
 			case DUELIST:
 				return Assets.Splashes.DUELIST;
+			case CLERIC: //TODO CLERIC finish cleric splash
+				return Assets.Splashes.CLERIC;
 		}
 	}
 	
@@ -304,6 +341,8 @@ public enum HeroClass {
 				return Badges.isUnlocked(Badges.Badge.UNLOCK_HUNTRESS);
 			case DUELIST:
 				return Badges.isUnlocked(Badges.Badge.UNLOCK_DUELIST);
+			case CLERIC:
+				return Badges.isUnlocked(Badges.Badge.UNLOCK_CLERIC);
 		}
 	}
 	

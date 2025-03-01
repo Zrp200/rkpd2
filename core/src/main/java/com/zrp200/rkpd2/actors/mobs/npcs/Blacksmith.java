@@ -31,6 +31,7 @@ import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.quest.DarkGold;
 import com.zrp200.rkpd2.items.quest.Pickaxe;
+import com.zrp200.rkpd2.items.trinkets.ParchmentScrap;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.journal.Notes;
 import com.zrp200.rkpd2.levels.rooms.Room;
@@ -56,16 +57,20 @@ public class Blacksmith extends NPC {
 
 		properties.add(Property.IMMOVABLE);
 	}
-	
+
+	@Override
+	public Notes.Landmark landmark() {
+		return (!Quest.completed() || Quest.rewardsAvailable()) ? Notes.Landmark.TROLL : null;
+	}
+
 	@Override
 	protected boolean act() {
 		if (Dungeon.hero.buff(AscensionChallenge.class) != null){
 			die(null);
-			Notes.remove( Notes.Landmark.TROLL );
+			Notes.remove( landmark() );
 			return true;
-		}
-		if (Dungeon.level.visited[pos] && !Quest.started()){
-			Notes.add( Notes.Landmark.TROLL );
+		} else if (!Quest.rewardsAvailable() && Quest.completed()){
+			Notes.remove( landmark() );
 		}
 		return super.act();
 	}
@@ -95,7 +100,7 @@ public class Blacksmith extends NPC {
 					case ROGUE:     msg1 += Messages.get(Blacksmith.this, "intro_quest_rogue"); break;
 					case HUNTRESS:  msg1 += Messages.get(Blacksmith.this, "intro_quest_huntress"); break;
 					case DUELIST:   msg1 += Messages.get(Blacksmith.this, "intro_quest_duelist"); break;
-					//case CLERIC: msg1 += Messages.get(Blacksmith.this, "intro_quest_cleric"); break;
+					case CLERIC:    msg1 += Messages.get(Blacksmith.this, "intro_quest_cleric"); break;
 				}
 
 				msg1 += "\n\n" + Messages.get(Blacksmith.this, "intro_quest_start");
@@ -120,7 +125,6 @@ public class Blacksmith extends NPC {
 
 							Quest.given = true;
 							Quest.completed = false;
-							Notes.add( Notes.Landmark.TROLL );
 							Item pick = Quest.pickaxe != null ? Quest.pickaxe : new Pickaxe();
 							if (pick.doPickUp( Dungeon.hero )) {
 								GLog.i( Messages.capitalize(Messages.get(Dungeon.hero, "you_now_have", pick.name()) ));
@@ -287,6 +291,8 @@ public class Blacksmith extends NPC {
 
 		//pre-generate these so they are consistent between seeds
 		public static ArrayList<Item> smithRewards;
+		public static Weapon.Enchantment smithEnchant;
+		public static Armor.Glyph smithGlyph;
 		
 		public static void reset() {
 			type        = 0;
@@ -306,6 +312,8 @@ public class Blacksmith extends NPC {
 			smiths      = 0;
 
 			smithRewards = null;
+			smithEnchant = null;
+			smithGlyph = null;
 		}
 		
 		private static final String NODE	= "blacksmith";
@@ -326,6 +334,8 @@ public class Blacksmith extends NPC {
 		private static final String UPGRADES	= "upgrades";
 		private static final String SMITHS	    = "smiths";
 		private static final String SMITH_REWARDS = "smith_rewards";
+		private static final String ENCHANT		= "enchant";
+		private static final String GLYPH		= "glyph";
 		
 		public static void storeInBundle( Bundle bundle ) {
 			
@@ -349,7 +359,13 @@ public class Blacksmith extends NPC {
 				node.put( UPGRADES, upgrades );
 				node.put( SMITHS, smiths );
 
-				if (smithRewards != null) node.put( SMITH_REWARDS, smithRewards );
+				if (smithRewards != null) {
+					node.put( SMITH_REWARDS, smithRewards );
+					if (smithEnchant != null) {
+						node.put(ENCHANT, smithEnchant);
+						node.put(GLYPH, smithGlyph);
+					}
+				}
 			}
 			
 			bundle.put( NODE, node );
@@ -386,6 +402,10 @@ public class Blacksmith extends NPC {
 
 				if (node.contains( SMITH_REWARDS )){
 					smithRewards = new ArrayList<>((Collection<Item>) ((Collection<?>) node.getCollection( SMITH_REWARDS )));
+					if (node.contains(ENCHANT)) {
+						smithEnchant = (Weapon.Enchantment) node.get(ENCHANT);
+						smithGlyph   = (Armor.Glyph) node.get(GLYPH);
+					}
 				}
 
 			} else {
@@ -447,6 +467,18 @@ public class Blacksmith extends NPC {
 				}
 				i.cursed = false;
 			}
+
+			// 30% base chance to be enchanted, stored separately so status isn't revealed early
+			//we generate first so that the outcome doesn't affect the number of RNG rolls
+			smithEnchant = Weapon.Enchantment.random();
+			smithGlyph = Armor.Glyph.random();
+
+			float enchantRoll = Random.Float();
+			if (enchantRoll > 0.3f * ParchmentScrap.enchantChanceMultiplier()){
+				smithEnchant = null;
+				smithGlyph = null;
+			}
+
 		}
 
 		public static int Type(){

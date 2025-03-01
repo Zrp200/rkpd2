@@ -27,6 +27,7 @@ import com.zrp200.rkpd2.actors.buffs.MagicImmune;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.rings.RingOfEnergy;
+import com.zrp200.rkpd2.journal.Catalog;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.AlchemyScene;
 import com.zrp200.rkpd2.scenes.GameScene;
@@ -115,12 +116,14 @@ public class AlchemistsToolkit extends Artifact {
 							Sample.INSTANCE.playDelayed(Assets.Sounds.PUFF, 0.5f);
 							Dungeon.hero.sprite.operate(Dungeon.hero.pos);
 							upgrade();
+							Catalog.countUse(AlchemistsToolkit.class);
 						} else if (index == 1){
 							Dungeon.energy -= 6*maxLevels;
 							Sample.INSTANCE.play(Assets.Sounds.DRINK);
 							Sample.INSTANCE.playDelayed(Assets.Sounds.PUFF, 0.5f);
 							Dungeon.hero.sprite.operate(Dungeon.hero.pos);
 							upgrade(maxLevels);
+							Catalog.countUses(AlchemistsToolkit.class, maxLevels);
 						}
 
 					}
@@ -159,7 +162,7 @@ public class AlchemistsToolkit extends Artifact {
 	public void charge(Hero target, float amount) {
 		if (target.buff(MagicImmune.class) != null) return;
 		partialCharge += 0.25f*amount;
-		if (partialCharge >= 1){
+		while (partialCharge >= 1){
 			partialCharge--;
 			charge++;
 			updateQuickslot();

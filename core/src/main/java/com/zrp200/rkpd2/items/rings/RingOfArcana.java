@@ -30,6 +30,7 @@ public class RingOfArcana extends Ring {
 
 	{
 		icon = ItemSpriteSheet.Icons.RING_ARCANA;
+		buffClass = Arcana.class;
 	}
 
 	public String statsInfo() {
@@ -44,6 +45,11 @@ public class RingOfArcana extends Ring {
 		} else {
 			return Messages.get(this, "typical_stats", Messages.decimalFormat("#.##", 17.5f));
 		}
+	}
+
+	public String upgradeStat1(int level){
+		if (cursed) level = Math.min(-1, level-3);
+		return Messages.decimalFormat("#.##", 100f * (Math.pow(1.175f, level+1)-1f)) + "%";
 	}
 
 	@Override

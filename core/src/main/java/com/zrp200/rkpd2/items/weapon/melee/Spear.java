@@ -27,6 +27,7 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.effects.Pushing;
 import com.zrp200.rkpd2.items.wands.WandOfBlastWave;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
@@ -61,10 +62,27 @@ public class Spear extends MeleeWeapon {
 
 	@Override
 	protected void duelistAbility(Hero hero, Integer target) {
-		Spear.spikeAbility(hero, target, 1.45f, this);
+		//+(9+2*lvl) damage, roughly +83% base damage, +80% scaling
+		int dmgBoost = augment.damageFactor(9 + Math.round(2f*buffedLvl()));
+		Spear.spikeAbility(hero, target, 1, dmgBoost, this);
 	}
 
-	public static void spikeAbility(Hero hero, Integer target, float dmgMulti, MeleeWeapon wep){
+	@Override
+	public String abilityInfo() {
+		int dmgBoost = levelKnown ? 9 + Math.round(2f*buffedLvl()) : 9;
+		if (levelKnown){
+			return Messages.get(this, "ability_desc", augment.damageFactor(min()+dmgBoost), augment.damageFactor(max()+dmgBoost));
+		} else {
+			return Messages.get(this, "typical_ability_desc", min(0)+dmgBoost, max(0)+dmgBoost);
+		}
+	}
+
+	public String upgradeAbilityStat(int level){
+		int dmgBoost = 9 + Math.round(2f*level);
+		return augment.damageFactor(min(level)+dmgBoost) + "-" + augment.damageFactor(max(level)+dmgBoost);
+	}
+
+	public static void spikeAbility(Hero hero, Integer target, float dmgMulti, int dmgBoost, MeleeWeapon wep){
 		if (target == null) {
 			return;
 		}
@@ -77,7 +95,7 @@ public class Spear extends MeleeWeapon {
 
 		hero.belongings.abilityWeapon = wep;
 		if (!hero.canAttack(enemy) || Dungeon.level.adjacent(hero.pos, enemy.pos)){
-			GLog.w(Messages.get(wep, "ability_bad_position"));
+			GLog.w(Messages.get(wep, "ability_target_range"));
 			hero.belongings.abilityWeapon = null;
 			return;
 		}
@@ -89,15 +107,16 @@ public class Spear extends MeleeWeapon {
 				wep.beforeAbilityUsed(hero, enemy);
 				AttackIndicator.target(enemy);
 				int oldPos = enemy.pos;
-				if (hero.attack(enemy, dmgMulti, 0, Char.INFINITE_ACCURACY)) {
-					if (enemy.isAlive() && enemy.pos == oldPos){
+				//do not push if enemy has moved, or another push is active (e.g. elastic)
+				if (hero.attack(enemy, dmgMulti, dmgBoost, Char.INFINITE_ACCURACY)) {
+					if (enemy.isAlive() && enemy.pos == oldPos && !Pushing.pushingExistsForChar(enemy)){
 						//trace a ballistica to our target (which will also extend past them
 						Ballistica trajectory = new Ballistica(hero.pos, enemy.pos, Ballistica.STOP_TARGET);
 						//trim it to just be the part that goes past them
 						trajectory = new Ballistica(trajectory.collisionPos, trajectory.path.get(trajectory.path.size() - 1), Ballistica.PROJECTILE);
 						//knock them back along that ballistica
 						WandOfBlastWave.throwChar(enemy, trajectory, 1, true, false, hero);
-					} else {
+					} else if (!enemy.isAlive()) {
 						wep.onAbilityKill(hero, enemy);
 					}
 					Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);

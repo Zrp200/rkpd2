@@ -24,16 +24,15 @@ package com.zrp200.rkpd2.items;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.buffs.LostInventory;
 import com.zrp200.rkpd2.actors.buffs.MagicImmune;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.effects.particles.ShadowParticle;
-import com.zrp200.rkpd2.items.journal.Guidebook;
 import com.zrp200.rkpd2.journal.Document;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
 
 import java.util.ArrayList;
 
@@ -41,6 +40,8 @@ public abstract class EquipableItem extends Item {
 
 	public static final String AC_EQUIP		= "EQUIP";
 	public static final String AC_UNEQUIP	= "UNEQUIP";
+
+	public int customNoteID = -1;
 
 	{
 		bones = true;
@@ -57,7 +58,6 @@ public abstract class EquipableItem extends Item {
 	public boolean doPickUp(Hero hero, int pos) {
 		if (super.doPickUp(hero, pos)){
 			if (!isIdentified() && !Document.ADVENTURERS_GUIDE.isPageRead(Document.GUIDE_IDING)){
-				GLog.p(Messages.get(Guidebook.class, "hint"));
 				GameScene.flashForDocument(Document.ADVENTURERS_GUIDE, Document.GUIDE_IDING);
 			}
 			return true;
@@ -117,8 +117,8 @@ public abstract class EquipableItem extends Item {
 		Sample.INSTANCE.play( Assets.Sounds.CURSED );
 	}
 
-	protected float time2equip( Hero hero ) {
-		return 1;
+	protected float timeToEquip( Hero hero ) {
+		return 1f;
 	}
 
 	public abstract boolean doEquip( Hero hero );
@@ -127,15 +127,15 @@ public abstract class EquipableItem extends Item {
 
 		if (cursed
 				&& hero.buff(MagicImmune.class) == null
-				&& (hero.buff(LostInventory.class) == null || keptThroughLostInventory())) {
+				&& (!hero.belongings.lostInventory() || keptThroughLostInventory())) {
 			GLog.w(Messages.get(EquipableItem.class, "unequip_cursed"));
 			return false;
 		}
 
 		if (single) {
-			hero.spendAndNext( time2equip( hero ) );
+			hero.spendAndNext( timeToEquip( hero ) );
 		} else {
-			hero.spend( time2equip( hero ) );
+			hero.spend( timeToEquip( hero ) );
 		}
 
 		slotOfUnequipped = Dungeon.quickslot.getSlot(this);
@@ -159,4 +159,18 @@ public abstract class EquipableItem extends Item {
 	}
 
 	public void activate( Char ch ){}
+
+	private static final String CUSTOM_NOTE_ID = "custom_note_id";
+
+	@Override
+	public void storeInBundle(Bundle bundle) {
+		super.storeInBundle(bundle);
+		if (customNoteID != -1)     bundle.put(CUSTOM_NOTE_ID, customNoteID);
+	}
+
+	@Override
+	public void restoreFromBundle(Bundle bundle) {
+		super.restoreFromBundle(bundle);
+		if (bundle.contains(CUSTOM_NOTE_ID))    customNoteID = bundle.getInt(CUSTOM_NOTE_ID);
+	}
 }

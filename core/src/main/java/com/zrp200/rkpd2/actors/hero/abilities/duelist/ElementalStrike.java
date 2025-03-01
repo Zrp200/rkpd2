@@ -370,7 +370,7 @@ public class ElementalStrike extends ArmorAbility {
 		//*** no enchantment ***
 		if (ench == null) {
 			for (Char ch : affected){
-				ch.damage(Math.round(powerMulti*Random.NormalIntRange(6, 12)), ElementalStrike.this);
+				ch.damage(Math.round(powerMulti* Hero.heroDamageIntRange(6, 12)), ElementalStrike.this);
 			}
 
 		//*** Kinetic ***
@@ -538,7 +538,7 @@ public class ElementalStrike extends ArmorAbility {
 		} else if (ench instanceof Polarized){
 			for (Char ch : affected){
 				if (Random.Float() < 0.5f*powerMulti){
-					ch.damage(Random.NormalIntRange(24, 36), ElementalStrike.this);
+					ch.damage(Hero.heroDamageIntRange(24, 36), ElementalStrike.this);
 				}
 			}
 

@@ -28,6 +28,7 @@ import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
 import com.zrp200.rkpd2.items.artifacts.TimekeepersHourglass;
+import com.zrp200.rkpd2.items.weapon.melee.RoundShield;
 import com.zrp200.rkpd2.plants.Swiftthistle;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.BuffIndicator;
@@ -110,6 +111,11 @@ public class Invisibility extends FlavourBuff {
 		Swiftthistle.TimeBubble bubble =  ch.buff( Swiftthistle.TimeBubble.class );
 		if (bubble != null){
 			bubble.detach();
+		}
+
+		RoundShield.GuardTracker guard = ch.buff(RoundShield.GuardTracker.class);
+		if (guard != null && guard.hasBlocked){
+			guard.detach();
 		}
 	}
 }

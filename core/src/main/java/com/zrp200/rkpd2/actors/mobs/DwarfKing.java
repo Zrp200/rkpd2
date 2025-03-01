@@ -52,6 +52,7 @@ import com.zrp200.rkpd2.items.rings.RingOfForce;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
 import com.zrp200.rkpd2.items.wands.Wand;
 import com.zrp200.rkpd2.items.wands.WandOfLightning;
+import com.zrp200.rkpd2.journal.Bestiary;
 import com.zrp200.rkpd2.levels.CityBossLevel;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
@@ -466,7 +467,7 @@ public class DwarfKing extends Mob {
 		} else if (phase == 3 && !(src instanceof Viscosity.DeferedDamage)){
 			if (dmg >= 0) {
 				Viscosity.DeferedDamage deferred = Buff.affect( this, Viscosity.DeferedDamage.class );
-				deferred.prolong( dmg );
+				deferred.extend( dmg );
 
 				sprite.showStatus( CharSprite.WARNING, Messages.get(Viscosity.class, "deferred", dmg) );
 			}
@@ -476,7 +477,7 @@ public class DwarfKing extends Mob {
 		super.damage(dmg, src);
 
 		LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
-		if (lock != null && !isImmune(src.getClass())){
+		if (lock != null && !isImmune(src.getClass()) && !isInvulnerable(src.getClass())){
 			if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES))   lock.addTime(dmg/5f);
 			else                                                    lock.addTime(dmg/3f);
 		}
@@ -497,9 +498,14 @@ public class DwarfKing extends Mob {
 				for (Summoning s : buffs(Summoning.class)) {
 					s.detach();
 				}
-				for (Mob m : Dungeon.level.mobs.toArray(new Mob[0])) {
-					if (m instanceof Ghoul || m instanceof Monk || m instanceof Warlock || m instanceof Golem) {
-						m.die(null);
+				Bestiary.skipCountingEncounters = true;
+				for (Mob m : getSubjects()) {
+					m.die(null);
+				}
+				Bestiary.skipCountingEncounters = false;
+				for (Buff b: buffs()){
+					if (b instanceof LifeLink){
+						b.detach();
 					}
 				}
 			}
@@ -522,7 +528,7 @@ public class DwarfKing extends Mob {
 					});
 				}
 			});
-		} else if (phase == 3 && preHP > 20 && HP < 20){
+		} else if (phase == 3 && preHP > 20 && HP < 20 && isAlive()){
 			yell( Messages.get(this, "losing") );
 		}
 	}
@@ -547,7 +553,7 @@ public class DwarfKing extends Mob {
 			h.destroy();
 		}
 
-		if (Dungeon.level.solid[pos]){
+		if (pos == CityBossLevel.throne){
 			Dungeon.level.drop(new KingsCrown(), pos + Dungeon.level.width()).sprite.drop(pos);
 		} else {
 			Dungeon.level.drop(new KingsCrown(), pos).sprite.drop();
@@ -561,9 +567,11 @@ public class DwarfKing extends Mob {
 
 		Dungeon.level.unseal();
 
+		Bestiary.skipCountingEncounters = true;
 		for (Mob m : getSubjects()){
 			m.die(null);
 		}
+		Bestiary.skipCountingEncounters = false;
 
 		LloydsBeacon beacon = Dungeon.hero.belongings.getItem(LloydsBeacon.class);
 		if (beacon != null) {
@@ -749,6 +757,10 @@ public class DwarfKing extends Mob {
 	}
 
 	public static class KingDamager extends Buff {
+
+		{
+			revivePersists = true;
+		}
 
 		@Override
 		public boolean act() {

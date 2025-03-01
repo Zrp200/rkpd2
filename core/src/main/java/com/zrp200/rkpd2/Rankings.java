@@ -33,6 +33,7 @@ import com.zrp200.rkpd2.items.potions.Potion;
 import com.zrp200.rkpd2.items.quest.CorpseDust;
 import com.zrp200.rkpd2.items.rings.Ring;
 import com.zrp200.rkpd2.items.scrolls.Scroll;
+import com.zrp200.rkpd2.items.trinkets.Trinket;
 import com.zrp200.rkpd2.journal.Notes;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.QuickSlotButton;
@@ -263,7 +264,7 @@ public enum Rankings {
 					}
 				}
 			}
-			if (!Dungeon.quickslot.contains(item)) {
+			if (!(item instanceof Trinket) && !Dungeon.quickslot.contains(item)) {
 				belongings.backpack.items.remove(item);
 			}
 		}

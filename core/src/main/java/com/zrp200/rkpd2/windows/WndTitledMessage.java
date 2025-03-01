@@ -49,12 +49,13 @@ public class WndTitledMessage extends Window {
 		add(titlebar);
 
 		RenderedTextBlock text = PixelScene.renderTextBlock( 6 );
+		if (!useHighlighting()) text.setHightlighting(false);
 		text.text( message, width );
 		text.setPos( titlebar.left(), titlebar.bottom() + 2*GAP );
 		add( text );
 
 		while (PixelScene.landscape()
-				&& text.bottom() > (PixelScene.MIN_HEIGHT_L - 10)
+				&& text.bottom() > targetHeight()
 				&& width < WIDTH_MAX){
 			width += 20;
 			titlebar.setRect(0, 0, width, 0);
@@ -65,5 +66,13 @@ public class WndTitledMessage extends Window {
 		bringToFront(titlebar);
 
 		resize( width, (int)text.bottom() + 2 );
+	}
+
+	protected boolean useHighlighting(){
+		return true;
+	}
+
+	protected float targetHeight() {
+		return PixelScene.MIN_HEIGHT_L - 10;
 	}
 }

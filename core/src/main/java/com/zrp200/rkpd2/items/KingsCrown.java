@@ -30,6 +30,7 @@ import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
+import com.zrp200.rkpd2.journal.Catalog;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.HeroSprite;
@@ -89,6 +90,7 @@ public class KingsCrown extends Item {
 	public void upgradeArmor(Hero hero, Armor armor, ArmorAbility ability) {
 
 		detach(hero.belongings.backpack);
+		Catalog.countUse( getClass() );
 
 		hero.sprite.emitter().burst( Speck.factory( Speck.CROWN), 12 );
 		hero.spend(Actor.TICK);

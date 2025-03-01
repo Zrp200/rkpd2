@@ -26,15 +26,17 @@ import com.zrp200.rkpd2.items.bombs.Bomb;
 import com.zrp200.rkpd2.items.food.Blandfruit;
 import com.zrp200.rkpd2.items.food.MeatPie;
 import com.zrp200.rkpd2.items.food.StewedMeat;
-import com.zrp200.rkpd2.items.potions.AlchemicalCatalyst;
 import com.zrp200.rkpd2.items.potions.Potion;
+import com.zrp200.rkpd2.items.potions.brews.AquaBrew;
 import com.zrp200.rkpd2.items.potions.brews.BlizzardBrew;
 import com.zrp200.rkpd2.items.potions.brews.CausticBrew;
 import com.zrp200.rkpd2.items.potions.brews.InfernalBrew;
 import com.zrp200.rkpd2.items.potions.brews.ShockingBrew;
+import com.zrp200.rkpd2.items.potions.brews.UnstableBrew;
 import com.zrp200.rkpd2.items.potions.elixirs.ElixirOfAquaticRejuvenation;
 import com.zrp200.rkpd2.items.potions.elixirs.ElixirOfArcaneArmor;
 import com.zrp200.rkpd2.items.potions.elixirs.ElixirOfDragonsBlood;
+import com.zrp200.rkpd2.items.potions.elixirs.ElixirOfFeatherFall;
 import com.zrp200.rkpd2.items.potions.elixirs.ElixirOfHoneyedHealing;
 import com.zrp200.rkpd2.items.potions.elixirs.ElixirOfIcyTouch;
 import com.zrp200.rkpd2.items.potions.elixirs.ElixirOfMight;
@@ -43,18 +45,18 @@ import com.zrp200.rkpd2.items.potions.exotic.ExoticPotion;
 import com.zrp200.rkpd2.items.scrolls.Scroll;
 import com.zrp200.rkpd2.items.scrolls.exotic.ExoticScroll;
 import com.zrp200.rkpd2.items.spells.Alchemize;
-import com.zrp200.rkpd2.items.spells.AquaBlast;
-import com.zrp200.rkpd2.items.spells.ArcaneCatalyst;
 import com.zrp200.rkpd2.items.spells.BeaconOfReturning;
 import com.zrp200.rkpd2.items.spells.CurseInfusion;
-import com.zrp200.rkpd2.items.spells.FeatherFall;
 import com.zrp200.rkpd2.items.spells.MagicalInfusion;
 import com.zrp200.rkpd2.items.spells.PhaseShift;
 import com.zrp200.rkpd2.items.spells.ReclaimTrap;
 import com.zrp200.rkpd2.items.spells.Recycle;
 import com.zrp200.rkpd2.items.spells.SummonElemental;
 import com.zrp200.rkpd2.items.spells.TelekineticGrab;
+import com.zrp200.rkpd2.items.spells.UnstableSpell;
 import com.zrp200.rkpd2.items.spells.WildEnergy;
+import com.zrp200.rkpd2.items.trinkets.Trinket;
+import com.zrp200.rkpd2.items.trinkets.TrinketCatalyst;
 import com.zrp200.rkpd2.items.wands.Wand;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.watabou.utils.Reflection;
@@ -96,7 +98,7 @@ public abstract class Recipe {
 		}
 		
 		@Override
-		public final boolean testIngredients(ArrayList<Item> ingredients) {
+		public boolean testIngredients(ArrayList<Item> ingredients) {
 			
 			int[] needed = inQuantity.clone();
 			
@@ -119,12 +121,12 @@ public abstract class Recipe {
 			return true;
 		}
 		
-		public final int cost(ArrayList<Item> ingredients){
+		public int cost(ArrayList<Item> ingredients){
 			return cost;
 		}
 		
 		@Override
-		public final Item brew(ArrayList<Item> ingredients) {
+		public Item brew(ArrayList<Item> ingredients) {
 			if (!testIngredients(ingredients)) return null;
 			
 			int[] needed = inQuantity.clone();
@@ -148,7 +150,7 @@ public abstract class Recipe {
 		}
 		
 		//ingredients are ignored, as output doesn't vary
-		public final Item sampleOutput(ArrayList<Item> ingredients){
+		public Item sampleOutput(ArrayList<Item> ingredients){
 			try {
 				Item result = Reflection.newInstance(output);
 				result.quantity(outQuantity);
@@ -174,37 +176,39 @@ public abstract class Recipe {
 		new ExoticPotion.PotionToExotic(),
 		new ExoticScroll.ScrollToExotic(),
 		new ArcaneResin.Recipe(),
-		new Alchemize.Recipe(),
-		new StewedMeat.oneMeat()
+		new BlizzardBrew.Recipe(),
+		new InfernalBrew.Recipe(),
+		new AquaBrew.Recipe(),
+		new ShockingBrew.Recipe(),
+		new ElixirOfDragonsBlood.Recipe(),
+		new ElixirOfIcyTouch.Recipe(),
+		new ElixirOfToxicEssence.Recipe(),
+		new ElixirOfMight.Recipe(),
+		new ElixirOfFeatherFall.Recipe(),
+		new MagicalInfusion.Recipe(),
+		new BeaconOfReturning.Recipe(),
+		new PhaseShift.Recipe(),
+		new Recycle.Recipe(),
+		new TelekineticGrab.Recipe(),
+		new SummonElemental.Recipe(),
+		new StewedMeat.oneMeat(),
+		new TrinketCatalyst.Recipe(),
+		new Trinket.UpgradeTrinket()
 	};
 	
 	private static Recipe[] twoIngredientRecipes = new Recipe[]{
 		new Blandfruit.CookFruit(),
 		new Bomb.EnhanceBomb(),
-		new AlchemicalCatalyst.Recipe(),
-		new ArcaneCatalyst.Recipe(),
+		new UnstableBrew.Recipe(),
+		new CausticBrew.Recipe(),
 		new ElixirOfArcaneArmor.Recipe(),
 		new ElixirOfAquaticRejuvenation.Recipe(),
-		new ElixirOfDragonsBlood.Recipe(),
-		new ElixirOfIcyTouch.Recipe(),
-		new ElixirOfMight.Recipe(),
 		new ElixirOfHoneyedHealing.Recipe(),
-		new ElixirOfToxicEssence.Recipe(),
-		new BlizzardBrew.Recipe(),
-		new InfernalBrew.Recipe(),
-		new ShockingBrew.Recipe(),
-		new CausticBrew.Recipe(),
-		new AquaBlast.Recipe(),
-		new BeaconOfReturning.Recipe(),
+		new UnstableSpell.Recipe(),
+		new Alchemize.Recipe(),
 		new CurseInfusion.Recipe(),
-		new FeatherFall.Recipe(),
-		new MagicalInfusion.Recipe(),
-		new PhaseShift.Recipe(),
 		new ReclaimTrap.Recipe(),
-		new Recycle.Recipe(),
 		new WildEnergy.Recipe(),
-		new TelekineticGrab.Recipe(),
-		new SummonElemental.Recipe(),
 		new StewedMeat.twoMeat()
 	};
 	

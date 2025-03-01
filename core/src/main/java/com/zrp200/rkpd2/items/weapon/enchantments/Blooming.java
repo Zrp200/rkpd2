@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.items.weapon.enchantments;
 
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.Regeneration;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.particles.LeafParticle;
 import com.zrp200.rkpd2.items.weapon.Weapon;
@@ -97,7 +98,11 @@ public class Blooming extends Weapon.Enchantment {
 		if ((t == Terrain.EMPTY || t == Terrain.EMPTY_DECO || t == Terrain.EMBERS
 				|| t == Terrain.GRASS || t == Terrain.FURROWED_GRASS)
 				&& Dungeon.level.plants.get(cell) == null){
-			Level.set(cell, Terrain.HIGH_GRASS);
+			if (!Regeneration.regenOn()){
+				Level.set(cell, Terrain.FURROWED_GRASS);
+			} else {
+				Level.set(cell, Terrain.HIGH_GRASS);
+			}
 			GameScene.updateMap(cell);
 			CellEmitter.get( cell ).burst( LeafParticle.LEVEL_SPECIFIC, 4 );
 			return true;

@@ -52,7 +52,11 @@ public class Greataxe extends MeleeWeapon {
 
 	@Override
 	public int STRReq(int lvl) {
-		return STRReq(tier+1, lvl); //20 base strength req, up from 18
+		int req = STRReq(tier+1, lvl); //20 base strength req, up from 18
+		if (masteryPotionBonus){
+			req -= 2;
+		}
+		return req;
 	}
 
 	@Override
@@ -79,7 +83,7 @@ public class Greataxe extends MeleeWeapon {
 
 		hero.belongings.abilityWeapon = this;
 		if (!hero.canAttack(enemy)){
-			GLog.w(Messages.get(this, "ability_bad_position"));
+			GLog.w(Messages.get(this, "ability_target_range"));
 			hero.belongings.abilityWeapon = null;
 			return;
 		}
@@ -90,16 +94,38 @@ public class Greataxe extends MeleeWeapon {
 			public void call() {
 				beforeAbilityUsed(hero, enemy);
 				AttackIndicator.target(enemy);
-				if (hero.attack(enemy, 1.50f, 0, Char.INFINITE_ACCURACY)){
+
+				//+(15+(2*lvl)) damage, roughly +60% base damage, +55% scaling
+				int dmgBoost = augment.damageFactor(15 + 2*buffedLvl());
+
+				if (hero.attack(enemy, 1, dmgBoost, Char.INFINITE_ACCURACY)){
 					Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);
-					if (!enemy.isAlive()){
-						onAbilityKill(hero, enemy);
-					}
 				}
+
 				Invisibility.dispel();
-				hero.spendAndNext(hero.attackDelay());
+				if (!enemy.isAlive()){
+					hero.next();
+					onAbilityKill(hero, enemy);
+				} else {
+					hero.spendAndNext(hero.attackDelay());
+				}
 				afterAbilityUsed(hero);
 			}
 		});
+	}
+
+	@Override
+	public String abilityInfo() {
+		int dmgBoost = levelKnown ? 15 + 2*buffedLvl() : 15;
+		if (levelKnown){
+			return Messages.get(this, "ability_desc", augment.damageFactor(min()+dmgBoost), augment.damageFactor(max()+dmgBoost));
+		} else {
+			return Messages.get(this, "typical_ability_desc", min(0)+dmgBoost, max(0)+dmgBoost);
+		}
+	}
+
+	public String upgradeAbilityStat(int level){
+		int dmgBoost = 15 + 2*level;
+		return augment.damageFactor(min(level)+dmgBoost) + "-" + augment.damageFactor(max(level)+dmgBoost);
 	}
 }

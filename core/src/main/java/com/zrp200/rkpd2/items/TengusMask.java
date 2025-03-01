@@ -30,6 +30,7 @@ import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.Speck;
+import com.zrp200.rkpd2.journal.Catalog;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
@@ -93,6 +94,7 @@ public class TengusMask extends Item {
 	public void choose( HeroSubClass way ) {
 		
 		detach( curUser.belongings.backpack );
+		Catalog.countUse( getClass() );
 		
 		curUser.spend( Actor.TICK );
 		curUser.busy();

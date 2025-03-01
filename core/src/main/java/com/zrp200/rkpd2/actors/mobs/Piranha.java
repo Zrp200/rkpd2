@@ -29,9 +29,13 @@ import com.zrp200.rkpd2.actors.blobs.Electricity;
 import com.zrp200.rkpd2.actors.blobs.Freezing;
 import com.zrp200.rkpd2.actors.buffs.BlobImmunity;
 import com.zrp200.rkpd2.actors.buffs.Burning;
+import com.zrp200.rkpd2.actors.buffs.Levitation;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.food.MysteryMeat;
+import com.zrp200.rkpd2.items.trinkets.RatSkull;
 import com.zrp200.rkpd2.sprites.PiranhaSprite;
+import com.watabou.utils.BArray;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
@@ -65,7 +69,10 @@ public class Piranha extends Mob {
 	@Override
 	protected boolean act() {
 		
-		if (!Dungeon.level.water[pos]) {
+		if (!Dungeon.level.water[pos] || flying) {
+			if (sprite != null && buff(Levitation.class) != null){
+				sprite.emitter().burst(Speck.factory( Speck.JET ), 10);
+			}
 			dieOnLand();
 			return true;
 		} else {
@@ -129,7 +136,7 @@ public class Piranha extends Mob {
 			return false;
 		}
 		
-		int step = Dungeon.findStep( this, target, Dungeon.level.water, fieldOfView, true );
+		int step = Dungeon.findStep( this, target, BArray.and(Dungeon.level.water, Dungeon.level.passable, null), fieldOfView, true );
 		if (step != -1) {
 			move( step );
 			return true;
@@ -140,7 +147,7 @@ public class Piranha extends Mob {
 	
 	@Override
 	protected boolean getFurther( int target ) {
-		int step = Dungeon.flee( this, target, Dungeon.level.water, fieldOfView, true );
+		int step = Dungeon.flee( this, target, BArray.and(Dungeon.level.water, Dungeon.level.passable, null), fieldOfView, true );
 		if (step != -1) {
 			move( step );
 			return true;
@@ -197,7 +204,8 @@ public class Piranha extends Mob {
 	}
 
 	public static Piranha random(){
-		if (Random.Int(50) == 0){
+		float altChance = 1/50f * RatSkull.exoticChanceMultiplier();
+		if (Random.Float() < altChance){
 			return new PhantomPiranha();
 		} else {
 			return new Piranha();

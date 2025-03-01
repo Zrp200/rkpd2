@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.blobs.Blob;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.mobs.Mob;
+import com.watabou.noosa.Game;
 import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.SparseArray;
@@ -90,7 +91,12 @@ public abstract class Actor implements Bundlable {
 	}
 
 	public void clearTime() {
-		time = 0;
+		spendConstant(-Actor.now());
+		if (this instanceof Char){
+			for (Buff b : ((Char) this).buffs()){
+				b.spendConstant(-Actor.now());
+			}
+		}
 	}
 
 	public void timeToNow() {
@@ -229,7 +235,7 @@ public abstract class Actor implements Bundlable {
 	}
 
 	public static int curActorPriority() {
-		return current != null ? current.actPriority : DEFAULT;
+		return current != null ? current.actPriority : HERO_PRIO;
 	}
 	
 	public static boolean keepActorThreadAlive = true;
@@ -242,7 +248,7 @@ public abstract class Actor implements Bundlable {
 		do {
 			
 			current = null;
-			if (!interrupted) {
+			if (!interrupted && !Game.switchingScene()) {
 				float earliest = Float.MAX_VALUE;
 
 				for (Actor actor : all) {
