@@ -25,6 +25,7 @@ import static com.zrp200.rkpd2.Dungeon.hero;
 
 import static java.lang.Math.max;
 
+import com.watabou.utils.Reflection;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.GamesInProgress;
@@ -39,10 +40,10 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.CounterBuff;
 import com.zrp200.rkpd2.actors.buffs.EnhancedRings;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
+import com.zrp200.rkpd2.actors.buffs.GreaterHaste;
 import com.zrp200.rkpd2.actors.buffs.Haste;
 import com.zrp200.rkpd2.actors.buffs.Hunger;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
-import com.zrp200.rkpd2.actors.buffs.LostInventory;
 import com.zrp200.rkpd2.actors.buffs.PhysicalEmpower;
 import com.zrp200.rkpd2.actors.buffs.Preparation;
 import com.zrp200.rkpd2.actors.buffs.Recharging;
@@ -52,7 +53,10 @@ import com.zrp200.rkpd2.actors.buffs.ScrollEmpower;
 import com.zrp200.rkpd2.actors.buffs.WandEmpower;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
 import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
+import com.zrp200.rkpd2.actors.hero.spells.DivineSense;
+import com.zrp200.rkpd2.actors.hero.spells.RecallInscription;
 import com.zrp200.rkpd2.actors.mobs.Mob;
+import com.zrp200.rkpd2.effects.Flare;
 import com.zrp200.rkpd2.effects.FloatingText;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.effects.SpellSprite;
@@ -60,14 +64,19 @@ import com.zrp200.rkpd2.items.BrokenSeal;
 import com.zrp200.rkpd2.items.EquipableItem;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.Armor;
-import com.zrp200.rkpd2.items.artifacts.Artifact;
 import com.zrp200.rkpd2.items.armor.ClothArmor;
+import com.zrp200.rkpd2.items.artifacts.Artifact;
 import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
+import com.zrp200.rkpd2.items.artifacts.HolyTome;
 import com.zrp200.rkpd2.items.artifacts.HornOfPlenty;
 import com.zrp200.rkpd2.items.potions.Potion;
 import com.zrp200.rkpd2.items.rings.Ring;
 import com.zrp200.rkpd2.items.scrolls.Scroll;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRecharging;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfUpgrade;
+import com.zrp200.rkpd2.items.stones.Runestone;
+import com.zrp200.rkpd2.items.stones.StoneOfIntuition;
+import com.zrp200.rkpd2.items.trinkets.ShardOfOblivion;
 import com.zrp200.rkpd2.items.wands.Wand;
 import com.zrp200.rkpd2.items.weapon.SpiritBow;
 import com.zrp200.rkpd2.items.weapon.Weapon;
@@ -80,6 +89,7 @@ import com.zrp200.rkpd2.levels.features.HighGrass;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.CharSprite;
+import com.zrp200.rkpd2.ui.ActionIndicator;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
@@ -87,7 +97,6 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
-import com.zrp200.rkpd2.ui.ActionIndicator;
 import com.zrp200.rkpd2.utils.GLog;
 
 import java.util.ArrayList;
@@ -99,7 +108,7 @@ import java.util.LinkedHashMap;
 public enum Talent {
 
 	//Warrior T1
-	HEARTY_MEAL(0), VETERANS_INTUITION(1), TEST_SUBJECT(2), IRON_WILL(3),
+	HEARTY_MEAL(0), VETERANS_INTUITION(1), PROVOKED_ANGER(2), IRON_WILL(3),
 	//Warrior T2
 	IRON_STOMACH(4), LIQUID_WILLPOWER(5), RUNIC_TRANSFERENCE(6), LETHAL_MOMENTUM(7), IMPROVISED_PROJECTILES(8),
 	//Warrior T3
@@ -117,7 +126,7 @@ public enum Talent {
 	SUSTAINED_RETRIBUTION(23, 4), SHRUG_IT_OFF(24, 4), EVEN_THE_ODDS(25, 4),
 
 	//Mage T1
-	ENERGIZING_MEAL_I(36), SCHOLARS_INTUITION(33), TESTED_HYPOTHESIS(34), BACKUP_BARRIER(35),
+	ENERGIZING_MEAL_I(36), SCHOLARS_INTUITION(33), LINGERING_MAGIC(34), BACKUP_BARRIER(35),
 	//Mage T2
 	ENERGIZING_MEAL_II(36), INSCRIBED_POWER(37), WAND_PRESERVATION(38), ARCANE_VISION(39), SHIELD_BATTERY(40),
 	//Mage T3
@@ -174,15 +183,32 @@ public enum Talent {
 	//Duelist T3
 	PRECISE_ASSAULT(137, 3), DEADLY_FOLLOWUP(138, 3),
 	//Champion T3
-	SECONDARY_CHARGE(139, 3), TWIN_UPGRADES(140, 3), COMBINED_LETHALITY(141, 3), ELITE_DEXTERITY(158, 3),
+	VARIED_CHARGE(139, 3), TWIN_UPGRADES(140, 3), COMBINED_LETHALITY(141, 3), ELITE_DEXTERITY(158, 3),
 	//Monk T3
 	UNENCUMBERED_SPIRIT(142, 3), MONASTIC_VIGOR(143, 3), COMBINED_ENERGY(144, 3), MONASTIC_MIGHT(159),
 	//Challenge T4
 	CLOSE_THE_GAP(145, 4), INVIGORATING_VICTORY(146, 4), ELIMINATION_MATCH(147, 4),
 	//Elemental Strike T4
 	ELEMENTAL_REACH(148, 4), STRIKING_FORCE(149, 4), DIRECTED_POWER(150, 4),
-	//Duelist A3 T4
+	//Feint T4
 	FEIGNED_RETREAT(151, 4), EXPOSE_WEAKNESS(152, 4), COUNTER_ABILITY(153, 4),
+
+	//Cleric T1
+	SATIATED_SPELLS(160), HOLY_INTUITION(161), SEARING_LIGHT(162), SHIELD_OF_LIGHT(163),
+	//Cleric T2
+	ENLIGHTENING_MEAL(164), RECALL_INSCRIPTION(165), SUNRAY(166), DIVINE_SENSE(167), BLESS(168),
+	//Cleric T3
+	CLEANSE(169, 3), LIGHT_READING(170, 3),
+	//Priest T3
+	HOLY_LANCE(171, 3), HALLOWED_GROUND(172, 3), MNEMONIC_PRAYER(173, 3),
+	//Paladin T3
+	LAY_ON_HANDS(174, 3), AURA_OF_PROTECTION(175, 3), WALL_OF_LIGHT(176, 3),
+	//Ascended Form T4
+	DIVINE_INTERVENTION(177, 4), JUDGEMENT(178, 4), FLASH(179, 4),
+	//Trinity T4
+	BODY_FORM(180, 4), MIND_FORM(181, 4), SPIRIT_FORM(182, 4),
+	//Power of Many T4
+	BEAMING_RAY(183, 4), LIFE_LINK(184, 4), STASIS(185, 4),
 
 	//universal T4
 	HEROIC_ENERGY(26, 4) {
@@ -203,6 +229,7 @@ public enum Talent {
 				case ROGUE: return 90;
 				case HUNTRESS: return 122;
 				case DUELIST: return 154;
+                case CLERIC: return 186;
 				// Rat King handled on line 164
 			}
 		}
@@ -261,7 +288,7 @@ public enum Talent {
 		private static final TalentCallback process = (talent, points) -> {
 			if( Random.Float() < ( (talent == LETHAL_MOMENTUM ? 2 : 1) + points )
 					/ (talent == PURSUIT ? 3f : 4f) ) {
-				Buff.prolong(hero, LethalMomentumTracker.class, 1f);
+				Buff.prolong(hero, LethalMomentumTracker.class, 0f);
 			}
 		};
 		// check if it applies
@@ -368,7 +395,10 @@ public enum Talent {
 	}
 	public static class StrikingWaveTracker extends FlavourBuff{};
 	public static class WandPreservationCounter extends CounterBuff{{revivePersists = true;}};
-	public static class EmpoweredStrikeTracker extends FlavourBuff{};
+	public static class EmpoweredStrikeTracker extends FlavourBuff{
+		//blast wave on-hit doesn't resolve instantly, so we delay detaching for it
+		public boolean delayedDetach = false;
+	};
 	public static class ProtectiveShadowsTracker extends Buff {
 		private float incHeal = 1, incShield = 1;
 
@@ -499,7 +529,27 @@ public enum Talent {
 		public void tintIcon(Image icon) { icon.hardlight(0.35f, 0f, 0.7f); }
 		public float iconFadePercent() { return Math.max(0, visualcooldown() / 50); }
 	};
-	public static class RestoredAgilityTracker extends FlavourBuff{};
+	public static class LiquidAgilEVATracker extends FlavourBuff{};
+	public static class LiquidAgilACCTracker extends FlavourBuff{
+		public int uses;
+
+		{ type = buffType.POSITIVE; }
+		public int icon() { return BuffIndicator.INVERT_MARK; }
+		public void tintIcon(Image icon) { icon.hardlight(0.5f, 0f, 1f); }
+		public float iconFadePercent() { return Math.max(0, 1f - (visualcooldown() / 5)); }
+
+		private static final String USES = "uses";
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(USES, uses);
+		}
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			uses = bundle.getInt(USES);
+		}
+	};
 	public static class LethalHasteCooldown extends Cooldown {
 		public static void applyLethalHaste(Hero hero, boolean viaAbility) {
 			if (!hero.hasTalent(LETHAL_HASTE)) return;
@@ -511,8 +561,9 @@ public enum Talent {
 				if (hero.buff(LethalHasteCooldown.class) != null) return;
 				affectHero(LethalHasteCooldown.class);
 			}
-			float duration = 1.67f + hero.pointsInTalent(Talent.LETHAL_HASTE);
-			Buff.prolong(hero, Haste.class, duration);
+			// todo shift
+			int duration = 2 * 2 + hero.pointsInTalent(LETHAL_HASTE);
+			Buff.affect(hero, GreaterHaste.class).set(duration);
 			Buff.prolong(hero, Adrenaline.class, duration); // :D
 
 		}
@@ -526,7 +577,7 @@ public enum Talent {
 	public static class SwiftEquipCooldown extends FlavourBuff{
 		public boolean secondUse;
 		public boolean hasSecondUse(){
-			return secondUse && cooldown() > 14f;
+			return secondUse;
 		}
 
 		public int icon() { return BuffIndicator.TIME; }
@@ -587,20 +638,59 @@ public enum Talent {
 			left = bundle.getInt(LEFT);
 		}
 	};
+	public static class VariedChargeTracker extends Buff{
+		public Class weapon;
+
+		private static final String WEAPON    = "weapon";
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(WEAPON, weapon);
+		}
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			weapon = bundle.getClass(WEAPON);
+		}
+	}
 	public static class CombinedLethalityAbilityTracker extends FlavourBuff{
 		public MeleeWeapon weapon;
 	};
-	public static class CombinedLethalityTriggerTracker extends FlavourBuff{
-		{ type = buffType.POSITIVE; }
-		public int icon() { return BuffIndicator.CORRUPT; }
-		public void tintIcon(Image icon) { icon.hardlight(0.6f, 0.15f, 0.6f); }
-		public float iconFadePercent() { return Math.max(0, 1f - (visualcooldown() / 5)); }
-	};
 	public static class CombinedEnergyAbilityTracker extends FlavourBuff{
-		public int energySpent = -1;
+		public boolean monkAbilused = false;
 		public boolean wepAbilUsed = false;
+
+		private static final String MONK_ABIL_USED  = "monk_abil_used";
+		private static final String WEP_ABIL_USED   = "wep_abil_used";
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(MONK_ABIL_USED, monkAbilused);
+			bundle.put(WEP_ABIL_USED, wepAbilUsed);
+		}
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			monkAbilused = bundle.getBoolean(MONK_ABIL_USED);
+			wepAbilUsed = bundle.getBoolean(WEP_ABIL_USED);
+		}
 	}
-	public static class CounterAbilityTacker extends FlavourBuff{};
+	public static class CounterAbilityTacker extends FlavourBuff{}
+	public static class SatiatedSpellsTracker extends Buff{
+		@Override
+		public int icon() {
+			return BuffIndicator.SPELL_FOOD;
+		}
+	}
+	//used for metamorphed searing light
+	public static class SearingLightCooldown extends FlavourBuff{
+		@Override
+		public int icon() {
+			return BuffIndicator.TIME;
+		}
+		public void tintIcon(Image icon) { icon.hardlight(0f, 0f, 1f); }
+		public float iconFadePercent() { return Math.max(0, visualcooldown() / 20); }
+	}
 
 	int icon;
 	int maxPoints;
@@ -722,7 +812,7 @@ public enum Talent {
 				if (hero.pointsInTalent(LIGHT_CLOAK, RK_FREERUNNER) == 1) {
 					for (Item item : hero.belongings.backpack) {
 						if (item instanceof CloakOfShadows) {
-							if (hero.buff(LostInventory.class) == null || item.keptThroughLostInventory()) {
+							if (!hero.belongings.lostInventory() || item.keptThroughLostInventory()) {
 								((CloakOfShadows) item).activate(hero);
 							}
 						}
@@ -739,11 +829,11 @@ public enum Talent {
 				for(RevealedArea buff : hero.buffs(RevealedArea.class)) buff.postpone(buff.cooldown() * mod);
 				break;
 
-			case HEIGHTENED_SENSES: case FARSIGHT: case RK_SNIPER: case KINGS_VISION:
+			case HEIGHTENED_SENSES: case FARSIGHT: case RK_SNIPER: case KINGS_VISION: case DIVINE_SENSE:
 				Dungeon.observe();
 				break;
 
-			case SECONDARY_CHARGE: case TWIN_UPGRADES: case DESPERATE_POWER:
+			case TWIN_UPGRADES: case DESPERATE_POWER: case STRONGMAN: case MONASTIC_MIGHT: case DURABLE_PROJECTILES:
 				Item.updateQuickslot();
 				break;
 
@@ -759,6 +849,21 @@ public enum Talent {
 					break;
 				}
 		}
+
+		if (talent == LIGHT_READING && hero.heroClass == HeroClass.CLERIC){
+			for (Item item : Dungeon.hero.belongings.backpack){
+				if (item instanceof HolyTome){
+					if (!hero.belongings.lostInventory() || item.keptThroughLostInventory()) {
+						((HolyTome) item).activate(Dungeon.hero);
+					}
+				}
+			}
+		}
+
+		//if we happen to have spirit form applied with a ring of might
+		if (talent == SPIRIT_FORM){
+			Dungeon.hero.updateHT(false);
+		}
 		upgrading = false;
 	}
 
@@ -767,27 +872,14 @@ public enum Talent {
 	public static class NatureBerriesDropped extends CounterBuff{{revivePersists = true;}};
 
 	public static void onFoodEaten( Hero hero, float foodVal, Item foodSource ){
-		final int[] healing = new int[1];
-		hero.byTalent( (talent, points) -> {
-			// somehow I managed to make it even more confusing than before.
-			int factor = talent == HEARTY_MEAL ? 3 : 4;
-			double missingHP = 1-(double)hero.HP/hero.HT;
-			int strength = (int)(missingHP * factor);
-			if(talent != HEARTY_MEAL) strength--; // missing 1/4 hp is not rewarded with healing normally.
-			if(strength-- == 0) return; // adjusting for the addition of one point.
-			strength += points;
-			// hearty meal heals for (2.5/4)/(4/6). priv heals for (2/3)/(3/5)
-			int boost = talent == HEARTY_MEAL && strength == 1
-					? Random.round(2.5f) // simulate 2.5
-					: (int) Math.ceil( (talent == HEARTY_MEAL ? 2.5 : 2) * Math.pow(1.5,strength-1) );
-			healing[0] += boost;
-		}, ROYAL_PRIVILEGE, HEARTY_MEAL);
-		healing[0] = Math.min(healing[0], hero.HT - hero.HP); // prevent overheal
-
-		if(healing[0] > 0) {
-			hero.HP += healing[0];
-			hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(healing[0]), FloatingText.HEALING);
-
+        // fixme implement unique hearty meal effect
+		if (hero.hasTalent(HEARTY_MEAL, ROYAL_PRIVILEGE)){
+			//3/5 HP healed, when hero is below 30% health
+			if (hero.HP/(float)hero.HT <= 0.3f) {
+				int healing = 1 + 2 * hero.pointsInTalent(HEARTY_MEAL, ROYAL_PRIVILEGE);
+				hero.HP = Math.min(hero.HP + healing, hero.HT);
+				hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(healing), FloatingText.HEALING);
+			}
 		}
 		if (hero.hasTalent(IRON_STOMACH,ROYAL_MEAL)){
 			if (hero.cooldown() > 0) {
@@ -829,7 +921,7 @@ public enum Talent {
 			if(talent == MYSTICAL_MEAL) {
 				// current behavior 'corrupts' the existing buff if you use a horn of plenty
 				// but this is preferable to the alternative...
-				buff.prolong((float)Math.ceil(duration*1.5)); // 5-8 turns of recharge!!!
+				buff.extend((float)Math.ceil(duration*1.5)); // 5-8 turns of recharge!!!
 			}
 			else if(buff.left() < duration){
 				buff.set(duration);
@@ -855,11 +947,43 @@ public enum Talent {
 		}
 		if (hero.hasTalent(FOCUSED_MEAL)){
 			if (hero.heroClass == HeroClass.DUELIST){
-				//1/1.5 charge for the duelist
-				Buff.affect( hero, MeleeWeapon.Charger.class ).gainCharge(/*0.5f*/1f*(hero.pointsInTalent(FOCUSED_MEAL)+1));
+                //1/1.5 charge for the duelist
+                Buff.affect( hero, MeleeWeapon.Charger.class ).gainCharge(0.5f*(hero.pointsInTalent(FOCUSED_MEAL)+1));
+				ScrollOfRecharging.charge( hero );
 			} else {
 				// lvl/3 / lvl/2 bonus dmg on next hit for other classes
 				Buff.affect( hero, PhysicalEmpower.class).set(Math.round(hero.lvl / (4f - hero.pointsInTalent(FOCUSED_MEAL))), 1);
+			}
+		}
+		if (hero.hasTalent(SATIATED_SPELLS)){
+			if (hero.heroClass == HeroClass.CLERIC) {
+				Buff.affect(hero, SatiatedSpellsTracker.class);
+			} else {
+				//3/5 shielding, delayed up to 10 turns
+				int amount = 1 + 2*hero.pointsInTalent(SATIATED_SPELLS);
+				Barrier b = Buff.affect(hero, Barrier.class);
+				if (b.shielding() <= amount){
+					b.setShield(amount);
+					b.delay(Math.max(10-b.cooldown(), 0));
+				}
+			}
+		}
+		if (hero.hasTalent(ENLIGHTENING_MEAL)){
+			if (hero.heroClass == HeroClass.CLERIC) {
+				HolyTome tome = hero.belongings.getItem(HolyTome.class);
+				if (tome != null) {
+					tome.directCharge( 0.5f * (1+hero.pointsInTalent(ENLIGHTENING_MEAL)));
+					ScrollOfRecharging.charge(hero);
+				}
+			} else {
+				//2/3 turns of recharging
+				ArtifactRecharge buff = Buff.affect( hero, ArtifactRecharge.class);
+				if (buff.left() < 1 + (hero.pointsInTalent(ENLIGHTENING_MEAL))){
+					Buff.affect( hero, ArtifactRecharge.class).set(1 + (hero.pointsInTalent(ENLIGHTENING_MEAL))).ignoreHornOfPlenty = foodSource instanceof HornOfPlenty;
+				}
+				Buff.prolong( hero, Recharging.class, 1 + (hero.pointsInTalent(ENLIGHTENING_MEAL)) );
+				ScrollOfRecharging.charge( hero );
+				SpellSprite.show(hero, SpellSprite.CHARGE);
 			}
 		}
 	}
@@ -960,11 +1084,14 @@ public enum Talent {
 			Dungeon.observe();
 		}
 		if (hero.hasTalent(LIQUID_AGILITY)){
-			Buff.prolong(hero, RestoredAgilityTracker.class, hero.cooldown() + Math.max(0, factor/*-1*/));
+			Buff.prolong(hero, LiquidAgilEVATracker.class, hero.cooldown() + Math.max(0, factor/*-1*/));
+			if (factor >= 0.5f){
+				Buff.prolong(hero, LiquidAgilACCTracker.class, 5f).uses = Math.round(factor);
+			}
 		}
 	}
 
-	public static void onScrollUsed( Hero hero, int pos, float factor ){
+	public static void onScrollUsed( Hero hero, int pos, float factor, Class<?extends Item> cls ){
 		if (hero.hasTalent(INSCRIBED_POWER, RESTORATION)){
 			// 2/3 empowered wand zaps, 3 for inscribed power
 			// inscribed power overrides restoration
@@ -983,7 +1110,37 @@ public enum Talent {
 			Buff.affect(hero, Invisibility.class, factor * (1 + 2*points));
 			Sample.INSTANCE.play( Assets.Sounds.MELD );
 		}
+        if (hero.hasTalent(RECALL_INSCRIPTION) && Scroll.class.isAssignableFrom(cls) && cls != ScrollOfUpgrade.class){
+            if (hero.heroClass == HeroClass.CLERIC){
+                Buff.prolong(hero, RecallInscription.UsedItemTracker.class, hero.pointsInTalent(RECALL_INSCRIPTION) == 2 ? 300 : 10).item = cls;
+            } else {
+                // 10/15%
+                if (Random.Int(20) < 1 + hero.pointsInTalent(RECALL_INSCRIPTION)){
+                    Reflection.newInstance(cls).collect();
+                    GLog.p("refunded!");
+                }
+            }
+        }
 	}
+
+    public static void onRunestoneUsed( Hero hero, int pos, Class<?extends Item> cls ){
+        if (hero.hasTalent(RECALL_INSCRIPTION) && Runestone.class.isAssignableFrom(cls)){
+            if (hero.heroClass == HeroClass.CLERIC){
+                Buff.prolong(hero, RecallInscription.UsedItemTracker.class, hero.pointsInTalent(RECALL_INSCRIPTION) == 2 ? 300 : 10).item = cls;
+            } else {
+
+                //don't trigger on 1st intuition use
+                if (cls.equals(StoneOfIntuition.class) && hero.buff(StoneOfIntuition.IntuitionUseTracker.class) != null){
+                    return;
+                }
+                // 10/15%
+                if (Random.Int(20) < 1 + hero.pointsInTalent(RECALL_INSCRIPTION)){
+                    Reflection.newInstance(cls).collect();
+                    GLog.p("refunded!");
+                }
+            }
+        }
+    }
 
 	public static void onArtifactUsed( Hero hero ){
 		if (hero.hasTalent(ENHANCED_RINGS,RK_ASSASSIN)){
@@ -991,13 +1148,32 @@ public enum Talent {
 			if(hero.hasTalent(ENHANCED_RINGS)) Buff.affect(hero, EnhancedRings.class, duration);
 			else Buff.prolong(hero, EnhancedRings.class, duration);
 		}
+
+		if (Dungeon.hero.heroClass != HeroClass.CLERIC
+				&& Dungeon.hero.hasTalent(Talent.DIVINE_SENSE)){
+			Buff.prolong(Dungeon.hero, DivineSense.DivineSenseTracker.class, Dungeon.hero.cooldown()+1);
+		}
+
+		// 10/20/30%
+		if (Dungeon.hero.heroClass != HeroClass.CLERIC
+				&& Dungeon.hero.hasTalent(Talent.CLEANSE)
+				&& Random.Int(10) < Dungeon.hero.pointsInTalent(Talent.CLEANSE)){
+			boolean removed = false;
+			for (Buff b : Dungeon.hero.buffs()) {
+				if (b.type == Buff.buffType.NEGATIVE) {
+					b.detach();
+					removed = true;
+				}
+			}
+			if (removed) new Flare( 6, 32 ).color(0xFF4CD2, true).show( Dungeon.hero.sprite, 2f );
+		}
 	}
 
 	public static void onItemEquipped( Hero hero, Item item ) {
 		if (item.isIdentified()) return; // all talent interactions here regard identification
-		boolean id = false;
+		boolean identify = false;
 		if (hero.pointsInTalent(ROYAL_INTUITION) == 2) {
-			id = true;
+			identify = true;
 		} else {
 			// Armsmaster
 			Talent shiftedTalent, otherTalent;
@@ -1012,22 +1188,25 @@ public enum Talent {
 			}
 			if (shiftedTalent != null) {
 				// +1 for dedicated talent, +1 otherwise.
-				id = hero.shiftedPoints(shiftedTalent, otherTalent) >= 2;
+				identify = hero.shiftedPoints(shiftedTalent, otherTalent) >= 2;
 			} else if (item instanceof Ring) {
 				// Thief's Intuition
 				switch(hero.shiftedPoints(THIEFS_INTUITION, ROYAL_INTUITION)) {
-					case 2: case 3: id = true; break;
+					case 2: case 3: identify = true; break;
 					case 1: ((Ring) item).setKnown(); break;
 				}
 			}
 		}
-		if (id) {
-			item.identify();
-			if (hero.sprite.emitter() != null) hero.sprite.emitter().burst(
-					Speck.factory(Speck.QUESTION),
-					1
-			);
-		}
+
+		if (identify) {
+            if(!ShardOfOblivion.passiveIDDisabled()) {
+                item.identify();
+            }
+            if (hero.sprite.emitter() != null) hero.sprite.emitter().burst(
+                    Speck.factory(Speck.QUESTION),
+                    1
+            );
+        }
 	}
 
 	public static void onItemCollected( Hero hero, Item item ){
@@ -1080,34 +1259,21 @@ public enum Talent {
 		}
 	}
 
-	//note that IDing can happen in alchemy scene, so be careful with VFX here
-	// near-identical talents in this area do stack, they're simple enough where it's really quite trivial to do so.
-	public static void onItemIdentified( Hero hero, Item item ){
-		int heal = 0;
-		for(Talent talent : new Talent[]{TEST_SUBJECT, KINGS_WISDOM}) {
-			//heal for 2/3 HP
-			int points = hero.pointsInTalent(talent);
-			if( points == 0 ) continue;
-			heal += 1 + points;
-			if(talent == TEST_SUBJECT) heal += points == 1 ? Random.Int(2) : 1; // 2-3/4
-		}
-		heal = Math.min(heal, hero.HT-hero.HP);
-		if(heal > 0) {
-			hero.HP += heal;
-			if (hero.sprite != null) {
-				hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(heal), FloatingText.HEALING);
-			}
-		}
-		hero.byTalent( (talent, points) -> {
-			//2/3 turns of wand recharging
-			int duration = 1 + points;
-			if(talent == TESTED_HYPOTHESIS) duration = (int)Math.ceil(duration*1.5f); // 3/5
-			Buff.affect(hero, Recharging.class, duration);
-			ScrollOfRecharging.charge(hero);
-		}, TESTED_HYPOTHESIS, KINGS_WISDOM);
-	}
-
 	public static int onAttackProc( Hero hero, Char enemy, int dmg ){
+
+		if (hero.hasTalent(Talent.PROVOKED_ANGER, Talent.KINGS_WISDOM)
+			&& hero.buff(ProvokedAngerTracker.class) != null){
+			dmg += 1 + hero.pointsInTalent(Talent.PROVOKED_ANGER);
+			hero.buff(ProvokedAngerTracker.class).detach();
+		}
+
+        int points = hero.pointsInTalent(Talent.LINGERING_MAGIC, KINGS_WISDOM);
+		if (points > 0
+				&& hero.buff(LingeringMagicTracker.class) != null){
+			dmg += Random.IntRange(points , 2);
+			hero.buff(LingeringMagicTracker.class).detach();
+		}
+
 		if (hero.hasTalent(Talent.SUCKER_PUNCH,KINGS_WISDOM)
 				&& enemy instanceof Mob && ((Mob) enemy).surprisedBy(hero)
 				&& enemy.buff(SuckerPunchTracker.class) == null){
@@ -1154,13 +1320,25 @@ public enum Talent {
 				}
 			} else if (hero.buff(DeadlyFollowupTracker.class) != null
 					&& hero.buff(DeadlyFollowupTracker.class).object == enemy.id()){
-				dmg = Math.round(dmg * (1.0f + /*.08f*/.16f*hero.pointsInTalent(DEADLY_FOLLOWUP)));
+				dmg = Math.round(dmg * (1.0f + /*.1f*/.16f*hero.pointsInTalent(DEADLY_FOLLOWUP)));
 			}
 		}
 
 		return dmg;
 	}
 
+	public static class ProvokedAngerTracker extends FlavourBuff{
+		{ type = Buff.buffType.POSITIVE; }
+		public int icon() { return BuffIndicator.WEAPON; }
+		public void tintIcon(Image icon) { icon.hardlight(1.43f, 1.43f, 1.43f); }
+		public float iconFadePercent() { return Math.max(0, 1f - (visualcooldown() / 5)); }
+	}
+	public static class LingeringMagicTracker extends FlavourBuff{
+		{ type = Buff.buffType.POSITIVE; }
+		public int icon() { return BuffIndicator.WEAPON; }
+		public void tintIcon(Image icon) { icon.hardlight(1.43f, 1.43f, 0f); }
+		public float iconFadePercent() { return Math.max(0, 1f - (visualcooldown() / 5)); }
+	}
 	public static class SuckerPunchTracker extends Buff{};
 	public static class FollowupStrikeTracker extends FlavourBuff{
 		public int object;
@@ -1201,10 +1379,10 @@ public enum Talent {
 		//tier 1
 		switch (cls){
 			case WARRIOR: default:
-				Collections.addAll(tierTalents, HEARTY_MEAL, VETERANS_INTUITION, TEST_SUBJECT, IRON_WILL);
+				Collections.addAll(tierTalents, HEARTY_MEAL, VETERANS_INTUITION, PROVOKED_ANGER, IRON_WILL);
 				break;
 			case MAGE:
-				Collections.addAll(tierTalents, ENERGIZING_MEAL_I, SCHOLARS_INTUITION, TESTED_HYPOTHESIS, BACKUP_BARRIER);
+				Collections.addAll(tierTalents, ENERGIZING_MEAL_I, SCHOLARS_INTUITION, LINGERING_MAGIC, BACKUP_BARRIER);
 				break;
 			case ROGUE:
 				Collections.addAll(tierTalents, CACHED_RATIONS, THIEFS_INTUITION, SUCKER_PUNCH, MENDING_SHADOWS);
@@ -1214,6 +1392,9 @@ public enum Talent {
 				break;
 			case DUELIST:
 				Collections.addAll(tierTalents, STRENGTHENING_MEAL, ADVENTURERS_INTUITION, PATIENT_STRIKE, AGGRESSIVE_BARRIER);
+				break;
+			case CLERIC:
+				Collections.addAll(tierTalents, SATIATED_SPELLS, HOLY_INTUITION, SEARING_LIGHT, SHIELD_OF_LIGHT);
 				break;
 			case RAT_KING:
 				Collections.addAll(tierTalents, ROYAL_PRIVILEGE, ROYAL_INTUITION, KINGS_WISDOM, NOBLE_CAUSE);
@@ -1244,6 +1425,9 @@ public enum Talent {
 			case DUELIST:
 				Collections.addAll(tierTalents, FOCUSED_MEAL, LIQUID_AGILITY, WEAPON_RECHARGING, LETHAL_HASTE, SWIFT_EQUIP);
 				break;
+			case CLERIC:
+				Collections.addAll(tierTalents, ENLIGHTENING_MEAL, RECALL_INSCRIPTION, SUNRAY, DIVINE_SENSE, BLESS);
+				break;
 			case RAT_KING:
 				Collections.addAll(tierTalents, ROYAL_MEAL, RESTORATION, POWER_WITHIN, KINGS_VISION, PURSUIT);
 		}
@@ -1271,6 +1455,9 @@ public enum Talent {
 				break;
 			case DUELIST:
 				Collections.addAll(tierTalents, PRECISE_ASSAULT, DEADLY_FOLLOWUP);
+				break;
+			case CLERIC:
+				Collections.addAll(tierTalents, CLEANSE, LIGHT_READING);
 				break;
 			case RAT_KING: break; // no unique talents... :(
 		}
@@ -1327,10 +1514,16 @@ public enum Talent {
 						NATURES_BETTER_AID);
 				break;
 			case CHAMPION:
-				Collections.addAll(tierTalents, SECONDARY_CHARGE, TWIN_UPGRADES, COMBINED_LETHALITY, ELITE_DEXTERITY);
+				Collections.addAll(tierTalents, VARIED_CHARGE, TWIN_UPGRADES, COMBINED_LETHALITY, ELITE_DEXTERITY);
 				break;
 			case MONK:
 				Collections.addAll(tierTalents, UNENCUMBERED_SPIRIT, MONASTIC_VIGOR, COMBINED_ENERGY, MONASTIC_MIGHT);
+				break;
+			case PRIEST:
+				Collections.addAll(tierTalents, HOLY_LANCE, HALLOWED_GROUND, MNEMONIC_PRAYER);
+				break;
+			case PALADIN:
+				Collections.addAll(tierTalents, LAY_ON_HANDS, AURA_OF_PROTECTION, WALL_OF_LIGHT);
 				break;
 			case KING: // this should be *lovely*
 				Collections.addAll(tierTalents, RK_BERSERKER, RK_BATTLEMAGE, RK_ASSASSIN, RK_SNIPER, RK_GLADIATOR, RK_WARLOCK, RK_FREERUNNER, RK_WARDEN);
@@ -1389,11 +1582,16 @@ public enum Talent {
 
 	private static final HashSet<String> removedTalents = new HashSet<>();
 	static{
+		//v2.4.0
+		removedTalents.add("TEST_SUBJECT");
+		removedTalents.add("TESTED_HYPOTHESIS");
 		//v2.2.0
 		removedTalents.add("EMPOWERING_SCROLLS");
 	}
 	private static final HashMap<String, String> renamedTalents = new HashMap();
 	static {
+		//v2.4.0
+		renamedTalents.put("SECONDARY_CHARGE",          "VARIED_CHARGE");
 		//v2.2.0
 		renamedTalents.put("RESTORED_WILLPOWER",        "LIQUID_WILLPOWER");
 		renamedTalents.put("ENERGIZING_UPGRADE",        "INSCRIBED_POWER");

@@ -34,6 +34,7 @@ import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.Speck;
+import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.armor.glyphs.AntiMagic;
 import com.zrp200.rkpd2.items.armor.glyphs.Brimstone;
 import com.zrp200.rkpd2.items.rings.RingOfAccuracy;
@@ -133,8 +134,8 @@ public class PrismaticImage extends AbstractMirrorImage {
 	@Override
 	protected int heroEvasion() {
 		// armor boosts contribute to evasion
-		return hero.belongings.armor != null ? 
-				(int)hero.belongings.armor().evasionFactor(this, super.heroEvasion()) 
+		return hero.belongings.armor != null ?
+				(int)hero.belongings.armor().evasionFactor(this, super.heroEvasion())
 				: super.heroEvasion();
 	}
 	
@@ -152,18 +153,14 @@ public class PrismaticImage extends AbstractMirrorImage {
 		}
 		return super.defenseProc(enemy, damage);
 	}
-	
+
 	@Override
-	public void damage(int dmg, Object src) {
-		
-		//TODO improve this when I have proper damage source logic
-		if (hero != null && hero.belongings.armor() != null && hero.belongings.armor().hasGlyph(AntiMagic.class, this)
-				&& AntiMagic.RESISTS.contains(src.getClass())){
-			dmg -= AntiMagic.drRoll(hero, hero.belongings.armor().buffedLvl());
-			dmg = Math.max(dmg, 0);
+	public int glyphLevel(Class<? extends Armor.Glyph> cls) {
+		if (hero != null){
+			return Math.max(super.glyphLevel(cls), hero.glyphLevel(cls));
+		} else {
+			return super.glyphLevel(cls);
 		}
-		
-		super.damage(dmg, src);
 	}
 	
 	@Override
@@ -190,7 +187,7 @@ public class PrismaticImage extends AbstractMirrorImage {
 		@Override
 		public boolean act(boolean enemyInFOV, boolean justAlerted) {
 			if (!enemyInFOV){
-				Buff.affect(hero, PrismaticGuard.class).set( HP );
+				Buff.affect(hero, PrismaticGuard.class).set( PrismaticImage.this );
 				destroy();
 				CellEmitter.get(pos).start( Speck.factory(Speck.LIGHT), 0.2f, 3 );
 				sprite.die();

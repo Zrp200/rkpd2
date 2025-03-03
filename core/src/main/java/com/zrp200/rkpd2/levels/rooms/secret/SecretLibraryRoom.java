@@ -33,6 +33,8 @@ import com.zrp200.rkpd2.items.scrolls.ScrollOfRetribution;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfTerror;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfTransmutation;
+import com.zrp200.rkpd2.items.scrolls.exotic.ExoticScroll;
+import com.zrp200.rkpd2.items.trinkets.ExoticCrystals;
 import com.zrp200.rkpd2.levels.Level;
 import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.levels.painters.Painter;
@@ -93,6 +95,13 @@ public class SecretLibraryRoom extends SecretRoom {
 			
 			Class<?extends Scroll> scrollCls = Random.chances(chances);
 			chances.put(scrollCls, 0f);
+
+			if (ExoticScroll.regToExo.containsKey(scrollCls)){
+				if (Random.Float() < ExoticCrystals.consumableExoticChance()){
+					scrollCls = ExoticScroll.regToExo.get(scrollCls);
+				}
+			}
+
 			level.drop( Reflection.newInstance(scrollCls), pos );
 		}
 	}

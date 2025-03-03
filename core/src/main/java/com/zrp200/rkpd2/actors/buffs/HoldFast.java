@@ -21,7 +21,8 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
-import com.zrp200.rkpd2.Dungeon;
+import static com.zrp200.rkpd2.Dungeon.hero;
+
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.messages.Messages;
@@ -50,7 +51,7 @@ public class HoldFast extends Buff {
 
 	public int armorBonus(){
 		if (pos == target.pos && target instanceof Hero){
-			return Random.NormalIntRange(0, armor());
+			return Random.NormalIntRange(armorMin(), armorMax());
 		} else {
 			detach();
 			return 0;
@@ -67,13 +68,18 @@ public class HoldFast extends Buff {
 		icon.hardlight(1.9f, 2.4f, 3.25f);
 	}
 
-	public static int armor() {
-		return Math.max(3*Dungeon.hero.pointsInTalent(Talent.HOLD_FAST), 2*Dungeon.hero.pointsInTalent(Talent.RK_BERSERKER));
+	public static int armorMin() {
+        // todo buff
+		return hero.pointsInTalent(Talent.HOLD_FAST, Talent.RK_BERSERKER);
 	}
+    public static int armorMax() {
+        // todo buff
+        return 2 * hero.pointsInTalent(Talent.HOLD_FAST, Talent.RK_BERSERKER);
+    }
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", Dungeon.hero.heroClass.title(), armor());
+		return Messages.get(this, "desc", armorMin(), armorMax());
 	}
 
 	private static final String POS = "pos";

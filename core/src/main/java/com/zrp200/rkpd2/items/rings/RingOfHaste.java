@@ -28,11 +28,17 @@ public class RingOfHaste extends Ring {
 
 	{
 		icon = ItemSpriteSheet.Icons.RING_HASTE;
+		buffClass = Haste.class;
 	}
 
 	@Override
 	protected float multiplier() {
-		return 1.2f;
+		return 1.175f;
+	}
+
+	@Override
+	public String upgradeStat1(int level) {
+		return formatBonus(level + 1);
 	}
 
 	@Override
@@ -41,7 +47,7 @@ public class RingOfHaste extends Ring {
 	}
 	
 	public static float speedMultiplier( Char target ){
-		return (float)Math.pow(1.2, getBuffedBonus(target, Haste.class));
+		return (float)Math.pow(1.175, getBuffedBonus(target, Haste.class));
 	}
 	
 	public class Haste extends RingBuff {

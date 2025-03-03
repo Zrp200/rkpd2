@@ -31,6 +31,7 @@ import com.zrp200.rkpd2.items.bags.MagicalHolster;
 import com.zrp200.rkpd2.items.potions.Potion;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.items.weapon.missiles.darts.Dart;
+import com.zrp200.rkpd2.journal.Catalog;
 import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
@@ -146,11 +147,13 @@ public class LiquidMetal extends Item {
 					GLog.w(Messages.get(LiquidMetal.class, "already_fixed"));
 					return;
 				} else if (maxToUse < quantity()) {
+					Catalog.countUses(LiquidMetal.class, maxToUse);
 					m.repair(maxToUse*durabilityPerMetal);
 					quantity(quantity()-maxToUse);
 					GLog.i(Messages.get(LiquidMetal.class, "apply", maxToUse));
 
 				} else {
+					Catalog.countUses(LiquidMetal.class, quantity());
 					m.repair(quantity()*durabilityPerMetal);
 					GLog.i(Messages.get(LiquidMetal.class, "apply", quantity()));
 					detachAll(Dungeon.hero.belongings.backpack);

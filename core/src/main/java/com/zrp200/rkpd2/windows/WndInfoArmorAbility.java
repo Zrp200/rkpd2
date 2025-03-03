@@ -27,8 +27,6 @@ import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
 import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
 import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.sprites.ItemSprite;
-import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.HeroIcon;
 import com.zrp200.rkpd2.ui.TalentButton;
 import com.zrp200.rkpd2.ui.TalentsPane;
@@ -56,5 +54,10 @@ public class WndInfoArmorAbility extends WndTitledMessage {
 	public static LinkedHashMap<Talent, Integer> initializeTalents(ArmorAbility ability) {
 		ArrayList<LinkedHashMap<Talent, Integer>> talentList = Talent.initArmorTalents(ability);
 		return talentList.size() < 4 ? new LinkedHashMap<>() : talentList.get(3);
+	}
+
+	@Override
+	protected float targetHeight() {
+		return super.targetHeight()-40;
 	}
 }

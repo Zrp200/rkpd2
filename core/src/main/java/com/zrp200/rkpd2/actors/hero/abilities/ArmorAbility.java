@@ -21,9 +21,9 @@
 
 package com.zrp200.rkpd2.actors.hero.abilities;
 
-import com.zrp200.rkpd2.actors.Char;
 import static com.zrp200.rkpd2.Dungeon.hero;
 
+import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
@@ -70,15 +70,26 @@ public abstract class ArmorAbility implements Bundlable {
 		return new Ballistica( user.pos, dst, Ballistica.PROJECTILE ).collisionPos;
 	}
 
-	// shpd reduced charge use by 12%/23%/32%/40%
-	// rkpd2 reduced charge use by 16/30/40/50%
-	private static final double HEROIC_ENERGY_REDUCTION = 0.839;
-
 	public float chargeUse( Hero hero ){
 		float chargeUse = baseChargeUse;
 		// we only want Heroic Energy to apply if it's supposed to apply; because it's so generally distributed
 		if (hasTalent(Talent.HEROIC_ENERGY) && hero.hasTalent(Talent.HEROIC_ENERGY)){
-			chargeUse *= Math.pow( HEROIC_ENERGY_REDUCTION, hero.pointsInTalent(Talent.HEROIC_ENERGY));
+			// shpd reduced charge use by 12%/23%/32%/40%
+			// rkpd2 reduced charge use by 16/30/40/50%
+			switch (hero.pointsInTalent(Talent.HEROIC_ENERGY)){
+				case 1:
+					chargeUse *= 0.84f/*0.88f*/;
+					break;
+				case 2:
+					chargeUse *= 0.3f;/*0.77f*/;
+					break;
+				case 3:
+					chargeUse *= 0.4f/*0.68f*/;
+					break;
+				case 4:
+					chargeUse *= 0.5f/*0.6f*/;
+					break;
+			}
 		}
 		return chargeUse;
 	}

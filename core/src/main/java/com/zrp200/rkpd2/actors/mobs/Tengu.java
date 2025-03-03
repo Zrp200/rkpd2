@@ -37,6 +37,7 @@ import com.zrp200.rkpd2.actors.buffs.Burning;
 import com.zrp200.rkpd2.actors.buffs.Doom;
 import com.zrp200.rkpd2.actors.buffs.Dread;
 import com.zrp200.rkpd2.actors.buffs.LockedFloor;
+import com.zrp200.rkpd2.actors.buffs.Roots;
 import com.zrp200.rkpd2.actors.buffs.Terror;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
@@ -90,8 +91,6 @@ public class Tengu extends Mob {
 		defenseSkill = 15;
 		
 		HUNTING = new Hunting();
-		
-		flying = true; //doesn't literally fly, but he is fleet-of-foot enough to avoid hazards
 		
 		properties.add(Property.BOSS);
 		
@@ -154,7 +153,7 @@ public class Tengu extends Mob {
 		dmg = beforeHitHP - HP;
 
 		LockedFloor lock = Dungeon.hero.buff(LockedFloor.class);
-		if (lock != null) {
+		if (lock != null && !isImmune(src.getClass()) && !isInvulnerable(src.getClass())){
 			if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES))   lock.addTime(2*dmg/3f);
 			else                                                    lock.addTime(dmg);
 		}
@@ -349,6 +348,7 @@ public class Tengu extends Mob {
 	}
 	
 	{
+		immunities.add( Roots.class );
 		immunities.add( Blindness.class );
 		immunities.add( Dread.class );
 		immunities.add( Terror.class );
@@ -397,7 +397,9 @@ public class Tengu extends Mob {
 				if (canUseAbility()){
 					return useAbility();
 				}
-				
+
+				recentlyAttackedBy.clear();
+				target = enemy.pos;
 				return doAttack( enemy );
 				
 			} else {

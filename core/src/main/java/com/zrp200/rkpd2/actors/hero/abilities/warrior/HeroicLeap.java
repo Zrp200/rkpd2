@@ -39,6 +39,7 @@ import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.ui.HeroIcon;
+import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
@@ -97,7 +98,7 @@ public class HeroicLeap extends ArmorAbility {
 					if (mob != null && mob != hero && mob.alignment != Char.Alignment.ALLY) {
 						if (hero.canHaveTalent(Talent.BODY_SLAM)){
 						    int points = hero.shiftedPoints(Talent.BODY_SLAM);
-							int damage = Random.NormalIntRange(points, 4*points);
+							int damage = Hero.heroDamageIntRange(points, 4*points);
 							damage += Math.round(hero.drRoll()*0.25f*points);
 							damage -= mob.drRoll();
 							mob.damage(damage, hero);

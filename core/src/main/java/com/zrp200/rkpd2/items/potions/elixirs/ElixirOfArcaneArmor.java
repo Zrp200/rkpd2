@@ -24,9 +24,13 @@ package com.zrp200.rkpd2.items.potions.elixirs;
 import com.zrp200.rkpd2.actors.buffs.ArcaneArmor;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.potions.exotic.PotionOfEarthenArmor;
 import com.zrp200.rkpd2.items.quest.GooBlob;
+import com.zrp200.rkpd2.journal.Catalog;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
+
+import java.util.ArrayList;
 
 public class ElixirOfArcaneArmor extends Elixir {
 	
@@ -37,12 +41,6 @@ public class ElixirOfArcaneArmor extends Elixir {
 	@Override
 	public void apply(Hero hero) {
 		Buff.affect(hero, ArcaneArmor.class).set(5 + hero.lvl/2, 80);
-	}
-	
-	@Override
-	public int value() {
-		//prices of ingredients
-		return quantity * (60 + 30);
 	}
 	
 	public static class Recipe extends com.zrp200.rkpd2.items.Recipe.SimpleRecipe {
@@ -56,6 +54,11 @@ public class ElixirOfArcaneArmor extends Elixir {
 			output = ElixirOfArcaneArmor.class;
 			outQuantity = 1;
 		}
-		
+
+		@Override
+		public Item brew(ArrayList<Item> ingredients) {
+			Catalog.countUse(GooBlob.class);
+			return super.brew(ingredients);
+		}
 	}
 }

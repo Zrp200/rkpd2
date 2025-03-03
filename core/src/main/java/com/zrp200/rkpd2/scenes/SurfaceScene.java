@@ -115,7 +115,7 @@ public class SurfaceScene extends PixelScene {
 		add( window );
 
 		Calendar cal = GregorianCalendar.getInstance();
-		boolean dayTime = cal.get(Calendar.HOUR_OF_DAY) >= 7 && cal.get(Calendar.HOUR_OF_DAY) <= 20;
+		boolean dayTime = cal.get(Calendar.HOUR_OF_DAY) >= 8 && cal.get(Calendar.HOUR_OF_DAY) <= 19;
 		
 		Sky sky = new Sky( dayTime );
 		sky.scale.set( SKY_WIDTH, SKY_HEIGHT );
@@ -265,9 +265,7 @@ public class SurfaceScene extends PixelScene {
 		gameOver.setSize( SKY_WIDTH - FRAME_MARGIN_X * 2, BUTTON_HEIGHT );
 		gameOver.setPos( frame.x + FRAME_MARGIN_X * 2, frame.y + frame.height + 4 );
 		add( gameOver );
-		
-		Badges.validateHappyEnd();
-		
+
 		fadeIn();
 	}
 
@@ -288,8 +286,6 @@ public class SurfaceScene extends PixelScene {
 
 	@Override
 	public void destroy() {
-		Badges.saveGlobal();
-		
 		Camera.remove( viewport );
 		super.destroy();
 	}
@@ -425,7 +421,7 @@ public class SurfaceScene extends PixelScene {
 			}
 			else {
 				texture(Assets.Sprites.AVATARS);
-				frame( new TextureFilm( texture, WIDTH, HEIGHT ).get( cl.ordinal() ) );
+				//TODO CLERIC victory spriteframe( new TextureFilm( texture, WIDTH, HEIGHT ).get( cl.ordinal() ) );
 			}
 		}
 	}

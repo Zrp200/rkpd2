@@ -21,9 +21,6 @@
 
 package com.zrp200.rkpd2.items.weapon.melee;
 
-import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
 public class WornShortsword extends Sword {
@@ -36,5 +33,7 @@ public class WornShortsword extends Sword {
 		
 		bones = false;
 	}
+
+	//+(3+lvl) damage, roughly +55% base dmg, +67% scaling
 
 }

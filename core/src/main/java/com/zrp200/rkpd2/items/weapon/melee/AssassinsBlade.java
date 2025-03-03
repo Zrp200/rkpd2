@@ -30,11 +30,12 @@ public class AssassinsBlade extends Dirk {
 		hitSoundPitch = 0.9f;
 
 		tier = 4;
-
+	}
 		//20 base, down from 25
 		//scaling unchanged
 
-		//deals 50% toward max to max on surprise, instead of min to max.
-		surpriseTowardMax = 0.50f;
-	}@Override protected int maxDist() { return 4; }
+	@Override
+	protected int maxDist() {
+		return 3;
+	}
 }

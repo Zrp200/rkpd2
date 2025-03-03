@@ -24,6 +24,7 @@ package com.zrp200.rkpd2.items;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Blindness;
@@ -37,6 +38,7 @@ import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.items.weapon.missiles.darts.Dart;
 import com.zrp200.rkpd2.items.weapon.missiles.darts.TippedDart;
 import com.zrp200.rkpd2.journal.Catalog;
+import com.zrp200.rkpd2.journal.Notes;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
@@ -267,7 +269,7 @@ public class Item implements Bundlable {
 
 	}
 	
-	public boolean collect() {
+	public final boolean collect() {
 		return collect( Dungeon.hero.belongings.backpack );
 	}
 	
@@ -289,7 +291,18 @@ public class Item implements Bundlable {
 			return split;
 		}
 	}
-	
+
+	public Item duplicate(){
+		Item dupe = Reflection.newInstance(getClass());
+		if (dupe == null){
+			return null;
+		}
+		Bundle copy = new Bundle();
+		this.storeInBundle(copy);
+		dupe.restoreFromBundle(copy);
+		return dupe;
+	}
+
 	public final Item detach( Bag container ) {
 		
 		if (quantity <= 0) {
@@ -339,7 +352,7 @@ public class Item implements Bundlable {
 	}
 	
 	public boolean isSimilar( Item item ) {
-		return level == item.level && getClass() == item.getClass();
+		return getClass() == item.getClass();
 	}
 
 	protected void onDetach(){}
@@ -359,7 +372,7 @@ public class Item implements Bundlable {
 	public int buffedLvl(){
 		int lvl = level();
 		//only the hero can be affected by Degradation
-		if (Dungeon.hero.buff(Degrade.class) != null && (isEquipped( Dungeon.hero ) || Dungeon.hero.belongings.contains( this ))) lvl = Degrade.reduceLevel(lvl);
+		if (Dungeon.hero != null && Dungeon.hero.buff(Degrade.class) != null && (isEquipped( Dungeon.hero ) || Dungeon.hero.belongings.contains( this ))) lvl = Degrade.reduceLevel(lvl);
 		return lvl + Dungeon.hero.getBonus(this);
 	}
 
@@ -433,7 +446,7 @@ public class Item implements Bundlable {
 
 		if (byHero && Dungeon.hero != null && Dungeon.hero.isAlive()){
 			Catalog.setSeen(getClass());
-			if (!isIdentified()) Talent.onItemIdentified(Dungeon.hero, this);
+			Statistics.itemTypesDiscovered.add(getClass());
 		}
 
 		levelKnown = true;
@@ -484,6 +497,20 @@ public class Item implements Bundlable {
 	public Emitter emitter() { return null; }
 	
 	public String info() {
+
+		if (Dungeon.hero != null) {
+			Notes.CustomRecord note;
+			if (this instanceof EquipableItem) {
+				note = Notes.findCustomRecord(((EquipableItem) this).customNoteID);
+			} else {
+				note = Notes.findCustomRecord(getClass());
+			}
+			if (note != null){
+				//we swap underscore(0x5F) with low macron(0x2CD) here to avoid highlighting in the item window
+				return Messages.get(this, "custom_note", note.title().replace('_', 'ˍ')) + "\n\n" + desc();
+			}
+		}
+
 		return desc();
 	}
 	
@@ -674,6 +701,11 @@ public class Item implements Bundlable {
 	
 	protected static Hero curUser = null;
 	protected static Item curItem = null;
+	public void setCurrent( Hero hero ){
+		curUser = hero;
+		curItem = this;
+	}
+
 	protected static CellSelector.Listener thrower = new CellSelector.Listener() {
 		@Override
 		public void onSelect( Integer target ) {

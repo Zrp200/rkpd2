@@ -34,24 +34,39 @@ public class RingOfEnergy extends Ring {
 
 	{
 		icon = ItemSpriteSheet.Icons.RING_ENERGY;
+		buffClass = Energy.class;
 	}
+    
+    private static final float MULTIPLIER = 1.175f;
 
 	@Override
 	protected float multiplier() {
-		return 1.15f;
+		return MULTIPLIER;
 	}
 
-	@Override
+    @Override
+    public String upgradeStat1(int level) {
+        if (cursed && cursedKnown) level = Math.min(-1, level-3);
+        return formatBonus(level + 1);
+    }
+
+    @Override
 	protected RingBuff buff( ) {
 		return new Energy();
 	}
 	
 	public static float wandChargeMultiplier( Char target ){
-		return (float)Math.pow(1.15, getBuffedBonus(target, Energy.class));
+		float bonus = (float)Math.pow(MULTIPLIER, getBuffedBonus(target, Energy.class));
+
+		if (target instanceof Hero && ((Hero) target).heroClass != HeroClass.CLERIC && ((Hero) target).hasTalent(Talent.LIGHT_READING)){
+			bonus *= 1f + (0.2f * ((Hero) target).pointsInTalent(Talent.LIGHT_READING)/3f);
+		}
+
+		return bonus;
 	}
 
 	public static float artifactChargeMultiplier( Char target ){
-		float bonus = (float)Math.pow(1.15, getBuffedBonus(target, Energy.class));
+		float bonus = (float)Math.pow(MULTIPLIER, getBuffedBonus(target, Energy.class));
 
 		Hero hero = SafeCast.cast(target, Hero.class);
 		if (hero != null && hero.heroClass != HeroClass.ROGUE && hero.hasTalent(Talent.LIGHT_CLOAK)){
@@ -62,7 +77,7 @@ public class RingOfEnergy extends Ring {
 	}
 
 	public static float armorChargeMultiplier( Char target ){
-		return (float)Math.pow(1.15, getBuffedBonus(target, Energy.class));
+		return (float)Math.pow(MULTIPLIER, getBuffedBonus(target, Energy.class));
 	}
 
 	public class Energy extends RingBuff {

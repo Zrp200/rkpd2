@@ -35,21 +35,28 @@ import com.zrp200.rkpd2.actors.blobs.WellWater;
 import com.zrp200.rkpd2.actors.buffs.Awareness;
 import com.zrp200.rkpd2.actors.buffs.Blindness;
 import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.Burning;
 import com.zrp200.rkpd2.actors.buffs.ChampionEnemy;
 import com.zrp200.rkpd2.actors.buffs.LockedFloor;
 import com.zrp200.rkpd2.actors.buffs.MagicalSight;
 import com.zrp200.rkpd2.actors.buffs.MindVision;
+import com.zrp200.rkpd2.actors.buffs.Ooze;
 import com.zrp200.rkpd2.actors.buffs.PinCushion;
 import com.zrp200.rkpd2.actors.buffs.Regeneration;
 import com.zrp200.rkpd2.actors.buffs.RevealedArea;
 import com.zrp200.rkpd2.actors.buffs.Shadows;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.actors.hero.abilities.cleric.PowerOfMany;
 import com.zrp200.rkpd2.actors.hero.abilities.huntress.SpiritHawk;
-import com.zrp200.rkpd2.actors.mobs.Bestiary;
+import com.zrp200.rkpd2.actors.hero.spells.DivineSense;
+import com.zrp200.rkpd2.actors.hero.spells.Stasis;
 import com.zrp200.rkpd2.actors.mobs.GnollGeomancer;
+import com.zrp200.rkpd2.actors.mobs.Mimic;
 import com.zrp200.rkpd2.actors.mobs.Mob;
+import com.zrp200.rkpd2.actors.mobs.MobSpawner;
 import com.zrp200.rkpd2.actors.mobs.Piranha;
 import com.zrp200.rkpd2.actors.mobs.YogFist;
 import com.zrp200.rkpd2.actors.mobs.npcs.Blacksmith;
@@ -63,10 +70,17 @@ import com.zrp200.rkpd2.items.Stylus;
 import com.zrp200.rkpd2.items.Torch;
 import com.zrp200.rkpd2.items.artifacts.TalismanOfForesight;
 import com.zrp200.rkpd2.items.artifacts.TimekeepersHourglass;
+import com.zrp200.rkpd2.items.bombs.Bomb;
 import com.zrp200.rkpd2.items.potions.PotionOfStrength;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfUpgrade;
+import com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfChallenge;
 import com.zrp200.rkpd2.items.stones.StoneOfEnchantment;
 import com.zrp200.rkpd2.items.stones.StoneOfIntuition;
+import com.zrp200.rkpd2.items.trinkets.DimensionalSundial;
+import com.zrp200.rkpd2.items.trinkets.EyeOfNewt;
+import com.zrp200.rkpd2.items.trinkets.MossyClump;
+import com.zrp200.rkpd2.items.trinkets.TrapMechanism;
+import com.zrp200.rkpd2.items.trinkets.TrinketCatalyst;
 import com.zrp200.rkpd2.items.wands.WandOfRegrowth;
 import com.zrp200.rkpd2.items.wands.WandOfWarding;
 import com.zrp200.rkpd2.items.weapon.missiles.HeavyBoomerang;
@@ -97,7 +111,6 @@ import com.watabou.utils.Point;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 import com.watabou.utils.SparseArray;
-import com.zrp200.rkpd2.actors.hero.HeroClass;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -115,7 +128,15 @@ public abstract class Level implements Bundlable {
 		DARK,
 		LARGE,
 		TRAPS,
-		SECRETS
+		SECRETS;
+
+		public String title(){
+			return Messages.get(this, name()+"_title");
+		}
+
+		public String desc() {
+			return Messages.get(this, name()+"_desc");
+		}
 	}
 
 	protected int width;
@@ -216,17 +237,19 @@ public abstract class Level implements Bundlable {
 				Dungeon.LimitedDrops.ARCANE_STYLI.count++;
 				addItemToSpawn( new Stylus() );
 			}
-			//one scroll of transmutation is guaranteed to spawn somewhere on chapter 2-4
-			int enchChapter = (int)((Dungeon.seed / 10) % 3) + 1;
-			if ( Dungeon.depth / 5 == enchChapter &&
-					Dungeon.seed % 4 + 1 == Dungeon.depth % 5){
+			if ( Dungeon.enchStoneNeeded() ){
+				Dungeon.LimitedDrops.ENCH_STONE.drop();
 				addItemToSpawn( new StoneOfEnchantment() );
 			}
-			
-			if ( Dungeon.depth == ((Dungeon.seed % 3) + 1)){
+			if ( Dungeon.intStoneNeeded() ){
+				Dungeon.LimitedDrops.INT_STONE.drop();
 				addItemToSpawn( new StoneOfIntuition() );
 			}
-			
+			if ( Dungeon.trinketCataNeeded() ){
+				Dungeon.LimitedDrops.TRINKET_CATA.drop();
+				addItemToSpawn( new TrinketCatalyst());
+			}
+
 			if (Dungeon.depth > 1) {
 				//50% chance of getting a level feeling
 				//~7.15% chance for each feeling
@@ -242,8 +265,7 @@ public abstract class Level implements Bundlable {
 						break;
 					case 3:
 						feeling = Feeling.DARK;
-						addItemToSpawn(new Torch());
-						viewDistance = Math.round(viewDistance/2f);
+						viewDistance = Math.round(5*viewDistance/8f);
 						break;
 					case 4:
 						feeling = Feeling.LARGE;
@@ -255,6 +277,15 @@ public abstract class Level implements Bundlable {
 					case 6:
 						feeling = Feeling.SECRETS;
 						break;
+					default:
+						//if-else statements are fine here as only one chance can be above 0 at a time
+						if (Random.Float() < MossyClump.overrideNormalLevelChance()){
+							feeling = MossyClump.getNextFeeling();
+						} else if (Random.Float() < TrapMechanism.overrideNormalLevelChance()) {
+							feeling = TrapMechanism.getNextFeeling();
+						} else {
+							feeling = Feeling.NONE;
+						}
 				}
 			}
 		}
@@ -416,8 +447,9 @@ public abstract class Level implements Bundlable {
 		}
 
 		feeling = bundle.getEnum( FEELING, Feeling.class );
-		if (feeling == Feeling.DARK)
-			viewDistance = Math.round(viewDistance/2f);
+		if (feeling == Feeling.DARK) {
+			viewDistance = Math.round(5 * viewDistance / 8f);
+		}
 
 		if (bundle.contains( "mobs_to_spawn" )) {
 			for (Class<? extends Mob> mob : bundle.getClassArray("mobs_to_spawn")) {
@@ -426,7 +458,7 @@ public abstract class Level implements Bundlable {
 		}
 
 		if (bundle.contains( "respawner" )){
-			respawner = (Respawner) bundle.get("respawner");
+			respawner = (MobSpawner) bundle.get("respawner");
 		}
 
 		buildFlagMaps();
@@ -486,7 +518,7 @@ public abstract class Level implements Bundlable {
 	
 	public Mob createMob() {
 		if (mobsToSpawn == null || mobsToSpawn.isEmpty()) {
-			mobsToSpawn = Bestiary.getMobRotation(Dungeon.depth);
+			mobsToSpawn = MobSpawner.getMobRotation(Dungeon.depth);
 		}
 
 		Mob m = Reflection.newInstance(mobsToSpawn.remove(0));
@@ -521,7 +553,9 @@ public abstract class Level implements Bundlable {
 		for (LevelTransition transition : transitions){
 			//if we don't specify a type, prefer to return any entrance
 			if (type == null &&
-					(transition.type == LevelTransition.Type.REGULAR_ENTRANCE || transition.type == LevelTransition.Type.SURFACE)){
+					(transition.type == LevelTransition.Type.REGULAR_ENTRANCE
+							|| transition.type == LevelTransition.Type.BRANCH_ENTRANCE
+							|| transition.type == LevelTransition.Type.SURFACE)){
 				return transition;
 			} else if (transition.type == type){
 				return transition;
@@ -566,9 +600,17 @@ public abstract class Level implements Bundlable {
 		Swiftthistle.TimeBubble timeBubble = Dungeon.hero.buff(Swiftthistle.TimeBubble.class);
 		if (timeBubble != null) timeBubble.disarmPresses();
 
-		//iron stomach does not persist through chasm falling
+		//iron stomach and challenge arena do not persist between floors
 		Talent.WarriorFoodImmunity foodImmune = Dungeon.hero.buff(Talent.WarriorFoodImmunity.class);
 		if (foodImmune != null) foodImmune.detach();
+		ScrollOfChallenge.ChallengeArena arena = Dungeon.hero.buff(ScrollOfChallenge.ChallengeArena.class);
+		if (arena != null) arena.detach();
+
+		Char ally = Stasis.getStasisAlly();
+		if (Char.hasProp(ally, Char.Property.IMMOVABLE)){
+			Dungeon.hero.buff(Stasis.StasisBuff.class).act();
+			GLog.w(Messages.get(Stasis.StasisBuff.class, "left_behind"));
+		}
 
 		//spend the hero's partial turns,  so the hero cannot take partial turns between floors
 		Dungeon.hero.spendToWhole();
@@ -599,7 +641,14 @@ public abstract class Level implements Bundlable {
 	public ArrayList<Item> getItemsToPreserveFromSealedResurrect(){
 		ArrayList<Item> items = new ArrayList<>();
 		for (Heap h : heaps.valueList()){
-			if (h.type == Heap.Type.HEAP) items.addAll(h.items);
+			if (h.type == Heap.Type.HEAP) {
+				for (Item i : h.items){
+					if (i instanceof Bomb){
+						((Bomb) i).fuse = null;
+					}
+					items.add(i);
+				}
+			}
 		}
 		for (Mob m : mobs){
 			for (PinCushion b : m.buffs(PinCushion.class)){
@@ -665,11 +714,11 @@ public abstract class Level implements Bundlable {
 		return null;
 	}
 
-	private Respawner respawner;
+	private MobSpawner respawner;
 
 	public Actor addRespawner() {
 		if (respawner == null){
-			respawner = new Respawner();
+			respawner = new MobSpawner();
 			Actor.addDelayed(respawner, respawnCooldown());
 		} else {
 			Actor.add(respawner);
@@ -680,50 +729,22 @@ public abstract class Level implements Bundlable {
 		return respawner;
 	}
 
-	public static class Respawner extends Actor {
-		{
-			actPriority = BUFF_PRIO; //as if it were a buff.
-		}
-
-		@Override
-		protected boolean act() {
-
-			if (Dungeon.level.mobCount() < Dungeon.level.mobLimit()) {
-
-				if (Dungeon.level.spawnMob(12)){
-					spend(Dungeon.level.respawnCooldown());
-				} else {
-					//try again in 1 turn
-					spend(TICK);
-				}
-
-			} else {
-				spend(Dungeon.level.respawnCooldown());
-			}
-
-			return true;
-		}
-
-		protected void resetCooldown(){
-			spend(-cooldown());
-			spend(Dungeon.level.respawnCooldown());
-		}
-	}
-
 	public float respawnCooldown(){
+		float cooldown;
 		if (Statistics.amuletObtained){
 			if (Dungeon.depth == 1){
 				//very fast spawns on floor 1! 0/2/4/6/8/10/12, etc.
-				return (Dungeon.level.mobCount()) * (TIME_TO_RESPAWN / 25f);
+				cooldown = (Dungeon.level.mobCount()) * (TIME_TO_RESPAWN / 25f);
 			} else {
 				//respawn time is 5/5/10/15/20/25/25, etc.
-				return Math.round(GameMath.gate( TIME_TO_RESPAWN/10f, Dungeon.level.mobCount() * (TIME_TO_RESPAWN / 10f), TIME_TO_RESPAWN / 2f));
+				cooldown = Math.round(GameMath.gate( TIME_TO_RESPAWN/10f, Dungeon.level.mobCount() * (TIME_TO_RESPAWN / 10f), TIME_TO_RESPAWN / 2f));
 			}
 		} else if (Dungeon.level.feeling == Feeling.DARK){
-			return 2*TIME_TO_RESPAWN/3f;
+			cooldown = 2*TIME_TO_RESPAWN/3f;
 		} else {
-			return TIME_TO_RESPAWN;
+			cooldown = TIME_TO_RESPAWN;
 		}
+		return cooldown / DimensionalSundial.spawnMultiplierAtCurrentTime();
 	}
 
 	public boolean spawnMob(int disLimit){
@@ -788,6 +809,14 @@ public abstract class Level implements Bundlable {
 			return null;
 
 		if (match == null){
+			//if we have a trinket catalyst, always return that first
+			for (Item item : itemsToSpawn){
+				if (item instanceof TrinketCatalyst){
+					itemsToSpawn.remove(item);
+					return item;
+				}
+			}
+
 			Item item = Random.element(itemsToSpawn);
 			itemsToSpawn.remove(item);
 			return item;
@@ -1095,6 +1124,16 @@ public abstract class Level implements Bundlable {
 
 		if (!ch.flying){
 
+			//we call act here instead of detach in case the debuffs haven't managed to deal dmg once yet
+			if (map[ch.pos] == Terrain.WATER){
+				if (ch.buff(Burning.class) != null){
+					ch.buff(Burning.class).act();
+				}
+				if (ch.buff(Ooze.class) != null){
+					ch.buff(Ooze.class).act();
+				}
+			}
+
 			if ( (map[ch.pos] == Terrain.GRASS || map[ch.pos] == Terrain.EMBERS)
 				&& ch == Dungeon.hero && Dungeon.hero.hasTalent(
 						Talent.REJUVENATING_STEPS,Talent.POWER_WITHIN,
@@ -1230,7 +1269,7 @@ public abstract class Level implements Bundlable {
 		int cy = c.pos / width();
 		
 		boolean sighted = c.buff( Blindness.class ) == null && c.buff( Shadows.class ) == null
-						&& c.buff( TimekeepersHourglass.timeStasis.class ) == null && c.isAlive();
+						&& c.isAlive();
 		if (sighted) {
 			boolean[] blocking = null;
 
@@ -1272,13 +1311,14 @@ public abstract class Level implements Bundlable {
 			if (blocking == null){
 				blocking = Dungeon.level.losBlocking;
 			}
-			
-			int viewDist = c.viewDistance;
+
+			float viewDist = c.viewDistance;
 			if (c instanceof Hero){
 				viewDist *= ((Hero)c).getViewDistanceModifier();
+				viewDist *= EyeOfNewt.visionRangeMultiplier();
 			}
 			
-			ShadowCaster.castShadow( cx, cy, fieldOfView, blocking, viewDist );
+			ShadowCaster.castShadow( cx, cy, width(), fieldOfView, blocking, Math.round(viewDist) );
 		} else {
 			BArray.setFalse(fieldOfView);
 		}
@@ -1343,19 +1383,47 @@ public abstract class Level implements Bundlable {
 			Dungeon.hero.mindVisionEnemies.clear();
 			if (c.buff( MindVision.class ) != null) {
 				for (Mob mob : mobs) {
+					if (mob instanceof Mimic && mob.alignment == Char.Alignment.NEUTRAL&& ((Mimic) mob).stealthy()){
+						continue;
+					}
 					for (int i : PathFinder.NEIGHBOURS9) {
 						heroMindFov[mob.pos + i] = true;
 					}
 				}
-			} else if (hero.hasTalent(Talent.HEIGHTENED_SENSES, Talent.KINGS_VISION) || hero.heroClass == HeroClass.HUNTRESS) {
-				int points = hero.pointsInTalent(Talent.HEIGHTENED_SENSES,Talent.KINGS_VISION);
-				// todo should this transfer the innate?
-				if(hero.heroClass == HeroClass.HUNTRESS || hero.hasTalent(Talent.HEIGHTENED_SENSES)) points++; // yup.
-				for (Mob mob : mobs) {
-					int p = mob.pos;
-					if (!fieldOfView[p] && distance(c.pos, p) <= 1+points) {
-						for (int i : PathFinder.NEIGHBOURS9) {
-							heroMindFov[mob.pos + i] = true;
+			} else {
+
+				int mindVisRange = 0;
+                int points = hero.pointsInTalent(Talent.HEIGHTENED_SENSES,Talent.KINGS_VISION);
+                // todo should this transfer the innate?
+                if(hero.heroClass == HeroClass.HUNTRESS || hero.hasTalent(Talent.HEIGHTENED_SENSES)) points++; // free point for huntress
+                if (points > 0) {
+                    mindVisRange = 1+((Hero) c).pointsInTalent(Talent.HEIGHTENED_SENSES);
+                }
+				if (c.buff(DivineSense.DivineSenseTracker.class) != null){
+					if (((Hero) c).heroClass == HeroClass.CLERIC){
+						mindVisRange = 4+4*((Hero) c).pointsInTalent(Talent.DIVINE_SENSE);
+					} else {
+						mindVisRange = 1+2*((Hero) c).pointsInTalent(Talent.DIVINE_SENSE);
+					}
+				}
+				mindVisRange = Math.max(mindVisRange, EyeOfNewt.mindVisionRange());
+
+				//power of many's life link spell allows allies to get divine sense
+				Char ally = PowerOfMany.getPoweredAlly();
+				if (ally != null && ally.buff(DivineSense.DivineSenseTracker.class) == null){
+					ally = null;
+				}
+
+				if (mindVisRange >= 1) {
+					for (Mob mob : mobs) {
+						if (mob instanceof Mimic && mob.alignment == Char.Alignment.NEUTRAL && ((Mimic) mob).stealthy()){
+							continue;
+						}
+						int p = mob.pos;
+						if (!fieldOfView[p] && (distance(c.pos, p) <= mindVisRange || (ally != null && distance(ally.pos, p) <= mindVisRange))) {
+							for (int i : PathFinder.NEIGHBOURS9) {
+								heroMindFov[mob.pos + i] = true;
+							}
 						}
 					}
 				}
@@ -1385,7 +1453,8 @@ public abstract class Level implements Bundlable {
 			for (Mob m : mobs){
 				if (m instanceof WandOfWarding.Ward
 						|| m instanceof WandOfRegrowth.Lotus
-						|| m instanceof SpiritHawk.HawkAlly){
+						|| m instanceof SpiritHawk.HawkAlly
+						|| m.buff(PowerOfMany.PowerBuff.class) != null){
 					if (m.fieldOfView == null || m.fieldOfView.length != length()){
 						m.fieldOfView = new boolean[length()];
 						Dungeon.level.updateFieldOfView( m, m.fieldOfView );
@@ -1450,6 +1519,11 @@ public abstract class Level implements Bundlable {
 		return (float)Math.sqrt(Math.pow(Math.abs( ax - bx ), 2) + Math.pow(Math.abs( ay - by ), 2));
 	}
 
+	//usually just if a cell is solid, but other cases exist too
+	public boolean invalidHeroPos( int tile ){
+		return !passable[tile] && !avoid[tile];
+	}
+
 	//returns true if the input is a valid tile within the level
 	public boolean insideMap( int tile ){
 				//top and bottom row and beyond
@@ -1490,6 +1564,7 @@ public abstract class Level implements Bundlable {
 			case Terrain.OPEN_DOOR:
 				return Messages.get(Level.class, "open_door_name");
 			case Terrain.ENTRANCE:
+			case Terrain.ENTRANCE_SP:
 				return Messages.get(Level.class, "entrace_name");
 			case Terrain.EXIT:
 				return Messages.get(Level.class, "exit_name");
@@ -1539,6 +1614,7 @@ public abstract class Level implements Bundlable {
 			case Terrain.WATER:
 				return Messages.get(Level.class, "water_desc");
 			case Terrain.ENTRANCE:
+			case Terrain.ENTRANCE_SP:
 				return Messages.get(Level.class, "entrance_desc");
 			case Terrain.EXIT:
 			case Terrain.UNLOCKED_EXIT:

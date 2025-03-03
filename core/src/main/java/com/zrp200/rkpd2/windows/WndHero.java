@@ -21,8 +21,10 @@
 
 package com.zrp200.rkpd2.windows;
 
-import com.zrp200.rkpd2.Assets;
+import com.watabou.input.KeyBindings;
+import com.watabou.input.KeyEvent;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.SPDAction;
 import com.zrp200.rkpd2.ShatteredPixelDungeon;
 import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.buffs.Buff;
@@ -42,8 +44,6 @@ import com.zrp200.rkpd2.ui.TalentButton;
 import com.zrp200.rkpd2.ui.TalentsPane;
 import com.zrp200.rkpd2.ui.Window;
 import com.zrp200.rkpd2.utils.DungeonSeed;
-import com.watabou.gltextures.SmartTexture;
-import com.watabou.gltextures.TextureCache;
 import com.watabou.noosa.Gizmo;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Image;
@@ -119,6 +119,16 @@ public class WndHero extends WndTabbed {
 	}
 
 	@Override
+	public boolean onSignal(KeyEvent event) {
+		if (event.pressed && KeyBindings.getActionForKey( event ) == SPDAction.HERO_INFO) {
+			onBackPressed();
+			return true;
+		} else {
+			return super.onSignal(event);
+		}
+	}
+
+	@Override
 	public void offset(int xOffset, int yOffset) {
 		super.offset(xOffset, yOffset);
 		talents.layout();
@@ -145,7 +155,7 @@ public class WndHero extends WndTabbed {
 			Hero hero = Dungeon.hero;
 
 			IconTitle title = new IconTitle();
-			title.icon( HeroSprite.avatar(hero.heroClass, hero.tier()) );
+			title.icon( HeroSprite.avatar(hero) );
 			if (hero.name().equals(hero.className()))
 				title.label( Messages.get(this, "title", hero.lvl, hero.className() ).toUpperCase( Locale.ENGLISH ) );
 			else

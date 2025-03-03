@@ -21,7 +21,6 @@
 
 package com.zrp200.rkpd2.items.weapon;
 
-import com.watabou.noosa.particles.Emitter;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
@@ -29,9 +28,9 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.RevealedArea;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.huntress.NaturesPower;
-import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.effects.Splash;
 import com.zrp200.rkpd2.effects.particles.LeafParticle;
 import com.zrp200.rkpd2.items.Item;
@@ -56,11 +55,16 @@ import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.sprites.MissileSprite;
 import com.zrp200.rkpd2.ui.QuickSlotButton;
 import com.watabou.noosa.audio.Sample;
+import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 import com.watabou.utils.Reflection;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SpiritBow extends Weapon {
 	
@@ -142,7 +146,7 @@ public class SpiritBow extends Weapon {
 
 	@Override
 	public String info() {
-		String info = desc();
+		String info = super.info();
 		
 		info += "\n\n" + Messages.get( SpiritBow.class, "stats",
 				Math.round(augment.damageFactor(min())),
@@ -215,7 +219,7 @@ public class SpiritBow extends Weapon {
 		if (owner instanceof Hero) {
 			int exStr = ((Hero)owner).STR() - STRReq();
 			if (exStr > 0) {
-				damage += Random.IntRange( 0, exStr );
+				damage += Hero.heroDamageIntRange( 0, exStr );
 			}
 		}
 
@@ -441,7 +445,7 @@ public class SpiritBow extends Weapon {
 				}
 
 				QuickSlotButton.target(enemy);
-				
+
 				throwSound();
 
 				user.sprite.zap(cell);
@@ -495,7 +499,7 @@ public class SpiritBow extends Weapon {
 						&& user.buff(Talent.SeerShotCooldown.class) == null){
 					int shotPos = throwPos(user, dst);
 					if (Actor.findChar(shotPos) == null) {
-						new RevealedArea(shotPos, Dungeon.depth).attachTo(user);
+						new RevealedArea(shotPos).attachTo(user);
 					}
 				}
 				forceSkipDelay = sniperSpecial && --shotCount > 0;

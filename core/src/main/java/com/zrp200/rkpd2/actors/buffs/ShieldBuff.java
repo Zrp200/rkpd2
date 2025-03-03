@@ -80,6 +80,10 @@ public abstract class ShieldBuff extends Buff {
 		if (vfx) vfx(amt);
 		incShield(amt);
 	}
+	//doesn't add shield, but postpones it detereorating
+	public void delay( float value ){
+		spend(value);
+	}
 	
 	public void decShield(){
 		decShield(1);

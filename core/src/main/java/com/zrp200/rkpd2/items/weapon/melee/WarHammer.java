@@ -32,9 +32,11 @@ public class WarHammer extends Mace {
 
 		tier = 5;
 		ACC = 1.20f; //20% boost to accuracy
-	}
 
-	//24 base, down from 30
-	//scaling unchanged
+		//24 base, down from 30
+		//scaling unchanged
+
+		//+(6+1.5*lvl) damage, roughly +40% base dmg, +45% scaling
+	}
 
 }

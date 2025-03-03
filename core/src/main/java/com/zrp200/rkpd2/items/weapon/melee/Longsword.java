@@ -31,4 +31,6 @@ public class Longsword extends Sword {
 		tier = 4;
 	}
 
+	//+(6+lvl) damage, roughly +40% base dmg, +33% scaling
+
 }

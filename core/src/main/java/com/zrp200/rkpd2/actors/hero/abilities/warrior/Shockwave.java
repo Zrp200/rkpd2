@@ -21,6 +21,11 @@
 
 package com.zrp200.rkpd2.actors.hero.abilities.warrior;
 
+import static com.zrp200.rkpd2.actors.hero.Talent.AFTERSHOCK;
+import static com.zrp200.rkpd2.actors.hero.Talent.EXPANDING_WAVE;
+import static com.zrp200.rkpd2.actors.hero.Talent.SHOCK_FORCE;
+import static com.zrp200.rkpd2.actors.hero.Talent.STRIKING_WAVE;
+
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
@@ -31,11 +36,13 @@ import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.buffs.Paralysis;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
 import com.zrp200.rkpd2.actors.hero.abilities.rat_king.OmniAbility;
 import com.zrp200.rkpd2.actors.mobs.Mimic;
 import com.zrp200.rkpd2.effects.MagicMissile;
+import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.mechanics.ConeAOE;
@@ -46,11 +53,6 @@ import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
-
-import static com.zrp200.rkpd2.actors.hero.Talent.AFTERSHOCK;
-import static com.zrp200.rkpd2.actors.hero.Talent.EXPANDING_WAVE;
-import static com.zrp200.rkpd2.actors.hero.Talent.SHOCK_FORCE;
-import static com.zrp200.rkpd2.actors.hero.Talent.STRIKING_WAVE;
 
 public class Shockwave extends ArmorAbility {
 
@@ -105,7 +107,7 @@ public class Shockwave extends ArmorAbility {
 						Char ch = Actor.findChar(cell);
 						if (ch != null && ch.alignment != hero.alignment){
 							int scalingStr = hero.STR()-10;
-							int damage = Random.NormalIntRange(5 + scalingStr, 10 + 2*scalingStr);
+							int damage = Hero.heroDamageIntRange(5 + scalingStr, 10 + 2*scalingStr);
 							float modifier = (1f + hero.byTalent(
 									SHOCK_FORCE, .25f,
 									AFTERSHOCK, .15f));

@@ -22,11 +22,13 @@
 package com.zrp200.rkpd2.items.stones;
 
 import com.zrp200.rkpd2.actors.hero.Belongings;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfUpgrade;
 import com.zrp200.rkpd2.items.scrolls.exotic.ScrollOfEnchantment;
 import com.zrp200.rkpd2.items.weapon.Weapon;
+import com.zrp200.rkpd2.journal.Catalog;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.scenes.PixelScene;
@@ -60,8 +62,11 @@ public class StoneOfAugmentation extends InventoryStone {
 		weapon.augment = augment;
 		useAnimation();
 		ScrollOfUpgrade.upgrade(curUser);
-		curItem.detach( curUser.belongings.backpack );
-		
+		if (!anonymous) {
+			curItem.detach(curUser.belongings.backpack);
+			Catalog.countUse(getClass());
+			Talent.onRunestoneUsed(curUser, curUser.pos, getClass());
+		}
 	}
 	
 	public void apply( Armor armor, Armor.Augment augment ) {
@@ -69,7 +74,11 @@ public class StoneOfAugmentation extends InventoryStone {
 		armor.augment = augment;
 		useAnimation();
 		ScrollOfUpgrade.upgrade(curUser);
-		curItem.detach( curUser.belongings.backpack );
+		if (!anonymous) {
+			curItem.detach(curUser.belongings.backpack);
+			Catalog.countUse(getClass());
+			Talent.onRunestoneUsed(curUser, curUser.pos, getClass());
+		}
 	}
 	
 	@Override
@@ -79,7 +88,7 @@ public class StoneOfAugmentation extends InventoryStone {
 
 	@Override
 	public int energyVal() {
-		return 4 * quantity;
+		return 5 * quantity;
 	}
 	
 	public class WndAugment extends Window {
@@ -142,7 +151,7 @@ public class StoneOfAugmentation extends InventoryStone {
 				@Override
 				protected void onClick() {
 					hide();
-					StoneOfAugmentation.this.collect();
+					if (!anonymous) StoneOfAugmentation.this.collect();
 				}
 			};
 			btnCancel.setRect( MARGIN, pos + MARGIN, BUTTON_WIDTH, BUTTON_HEIGHT );
@@ -153,7 +162,7 @@ public class StoneOfAugmentation extends InventoryStone {
 		
 		@Override
 		public void onBackPressed() {
-			StoneOfAugmentation.this.collect();
+			if (!anonymous) StoneOfAugmentation.this.collect();
 			super.onBackPressed();
 		}
 	}

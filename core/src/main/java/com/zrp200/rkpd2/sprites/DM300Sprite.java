@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.mobs.DM300;
 import com.zrp200.rkpd2.effects.MagicMissile;
+import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.effects.particles.BlastParticle;
 import com.zrp200.rkpd2.effects.particles.SparkParticle;
 import com.zrp200.rkpd2.scenes.PixelScene;
@@ -87,7 +88,7 @@ public class DM300Sprite extends MobSprite {
 		super.zap( cell );
 
 		MagicMissile.boltFromChar( parent,
-				MagicMissile.TOXIC_VENT,
+				MagicMissile.SPECK + Speck.TOXIC,
 				this,
 				cell,
 				new Callback() {

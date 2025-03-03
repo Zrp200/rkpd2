@@ -21,7 +21,7 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
-import static com.zrp200.rkpd2.Dungeon.hero;
+import static com.zrp200.rkpd2.Dungeon.*;
 
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -44,9 +44,10 @@ public class RevealedArea extends FlavourBuff{
 
 	public int pos, depth, branch;
 	@SuppressWarnings("unused") public RevealedArea(){}
-	public RevealedArea(int pos, int depth) {
+	public RevealedArea(int pos) {
 		this.pos = pos;
-		this.depth = depth;
+		this.depth = Dungeon.depth;
+		this.branch = Dungeon.branch;
 		spend( duration() );
 		Talent.Cooldown.affectHero(Talent.SeerShotCooldown.class);
 	}

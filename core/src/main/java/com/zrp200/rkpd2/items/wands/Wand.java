@@ -27,6 +27,7 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Barrier;
+import com.zrp200.rkpd2.actors.buffs.Blindness;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Degrade;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
@@ -41,6 +42,9 @@ import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.mage.WildMagic;
+import com.zrp200.rkpd2.actors.hero.spells.DivineSense;
+import com.zrp200.rkpd2.actors.hero.spells.GuidingLight;
+import com.zrp200.rkpd2.effects.Flare;
 import com.zrp200.rkpd2.effects.FloatingText;
 import com.zrp200.rkpd2.effects.MagicMissile;
 import com.zrp200.rkpd2.items.Item;
@@ -49,6 +53,8 @@ import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.bags.MagicalHolster;
 import com.zrp200.rkpd2.items.rings.RingOfEnergy;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRecharging;
+import com.zrp200.rkpd2.items.trinkets.ShardOfOblivion;
+import com.zrp200.rkpd2.items.trinkets.WondrousResin;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.mechanics.Ballistica;
@@ -123,7 +129,11 @@ public abstract class Wand extends Item {
 
 	@Override
 	public int targetingPos(Hero user, int dst) {
-		return new Ballistica( user.pos, dst, collisionProperties ).collisionPos;
+		if (cursed && cursedKnown){
+			return new Ballistica(user.pos, dst, Ballistica.MAGIC_BOLT).collisionPos;
+		} else {
+			return new Ballistica(user.pos, dst, collisionProperties).collisionPos;
+		}
 	}
 
 	public abstract void onZap(Ballistica attack);
@@ -229,6 +239,27 @@ public abstract class Wand extends Item {
 
 		SoulMark.process(target,wandLevel,chargesUsed,delay);
 		if (Dungeon.hero.hasTalent(Talent.DEADLY_FOLLOWUP)) Buff.prolong(Dungeon.hero, Talent.DeadlyFollowupTracker.class, 5f).object = target.id();
+		if (Dungeon.hero.subClass == HeroSubClass.PRIEST && target.buff(GuidingLight.Illuminated.class) != null) {
+			target.buff(GuidingLight.Illuminated.class).detach();
+			target.damage(Dungeon.hero.lvl, GuidingLight.INSTANCE);
+		}
+
+		if (target.alignment != Char.Alignment.ALLY
+				&& Dungeon.hero.heroClass != HeroClass.CLERIC
+				&& Dungeon.hero.hasTalent(Talent.SEARING_LIGHT)
+				&& Dungeon.hero.buff(Talent.SearingLightCooldown.class) == null){
+			Buff.affect(target, GuidingLight.Illuminated.class);
+			Buff.affect(Dungeon.hero, Talent.SearingLightCooldown.class, 20f);
+		}
+
+		if (target.alignment != Char.Alignment.ALLY
+				&& Dungeon.hero.heroClass != HeroClass.CLERIC
+				&& Dungeon.hero.hasTalent(Talent.SUNRAY)){
+			// 15/25% chance
+			if (Random.Int(20) < 1 + 2*Dungeon.hero.pointsInTalent(Talent.SUNRAY)){
+				Buff.prolong(target, Blindness.class, 4f);
+			}
+		}
 	}
 
 	@Override
@@ -258,6 +289,14 @@ public abstract class Wand extends Item {
 		
 		return this;
 	}
+
+	public void setIDReady(){
+		usesLeftToID = -1;
+	}
+
+	public boolean readyToIdentify(){
+		return !isIdentified() && usesLeftToID <= 0;
+	}
 	
 	public void onHeroGainExp( float levelPercent, Hero hero ){
 		levelPercent *= Talent.itemIDSpeedFactor(hero, this);
@@ -269,7 +308,7 @@ public abstract class Wand extends Item {
 
 	@Override
 	public String info() {
-		String desc = desc();
+		String desc = super.info();
 
 		desc += "\n\n" + statsDesc();
 
@@ -285,7 +324,7 @@ public abstract class Wand extends Item {
 			desc += "\n\n" + Messages.get(Wand.class, "not_cursed");
 		}
 
-		if (Dungeon.hero.subClass.is(HeroSubClass.BATTLEMAGE)){
+		if (Dungeon.hero != null && Dungeon.hero.subClass.is(HeroSubClass.BATTLEMAGE)){
 			desc += "\n\n" + Messages.get(this, "bmage_desc", Messages.titleCase(Dungeon.hero.subClass.title()));
 		}
 
@@ -294,6 +333,18 @@ public abstract class Wand extends Item {
 
 	public String statsDesc(){
 		return Messages.get(this, "stats_desc");
+	}
+
+	public String upgradeStat1(int level){
+		return null;
+	}
+
+	public String upgradeStat2(int level){
+		return null;
+	}
+
+	public String upgradeStat3(int level){
+		return null;
 	}
 	
 	@Override
@@ -411,7 +462,7 @@ public abstract class Wand extends Item {
 		curCharges = Math.min( curCharges, maxCharges );
 	}
 	
-	protected int initialCharges() {
+	public int initialCharges() {
 		return 2;
 	}
 
@@ -436,19 +487,29 @@ public abstract class Wand extends Item {
 		particle.radiateXY(0.5f);
 	}
 
-	protected void wandUsed() {
+	public void wandUsed() {
 		if (!isIdentified()) {
 			float uses = Math.min(availableUsesToID, Talent.itemIDSpeedFactor(Dungeon.hero, this));
 			availableUsesToID -= uses;
 			usesLeftToID -= uses;
 			if (usesLeftToID <= 0 || Dungeon.hero.pointsInTalent(Talent.SCHOLARS_INTUITION, Talent.ROYAL_INTUITION) == 2) {
-				identify();
-				GLog.p(Messages.get(Wand.class, "identify"));
-				Badges.validateItemLevelAquired(this);
+				if (ShardOfOblivion.passiveIDDisabled()) {
+					if (usesLeftToID > -1){
+						GLog.p(Messages.get(ShardOfOblivion.class, "identify_ready"), name());
+					}
+					setIDReady();
+				} else {
+					identify();
+					GLog.p(Messages.get(Wand.class, "identify"));
+					Badges.validateItemLevelAquired(this);
+				}
 			} else if (!levelKnown && Dungeon.hero.hasTalent(Talent.SCHOLARS_INTUITION)) {
 				levelKnown = true;
 				updateQuickslot();
 				Badges.validateItemLevelAquired(this);
+			}
+			if (ShardOfOblivion.passiveIDDisabled()) {
+				Buff.prolong(curUser, ShardOfOblivion.WandUseTracker.class, 50f);
 			}
 		}
 
@@ -487,6 +548,32 @@ public abstract class Wand extends Item {
 				&& !Dungeon.hero.belongings.contains(this)){
 			Buff.prolong(Dungeon.hero, Talent.EmpoweredStrikeTracker.class, 10f);
 		}
+
+		if (Dungeon.hero.hasTalent(Talent.LINGERING_MAGIC, Talent.KINGS_WISDOM)
+				&& charger != null && charger.target == Dungeon.hero){
+
+			Buff.prolong(Dungeon.hero, Talent.LingeringMagicTracker.class, 5f);
+		}
+
+		if (Dungeon.hero.heroClass != HeroClass.CLERIC
+				&& Dungeon.hero.hasTalent(Talent.DIVINE_SENSE)){
+			Buff.prolong(Dungeon.hero, DivineSense.DivineSenseTracker.class, Dungeon.hero.cooldown()+1);
+		}
+
+		// 10/20/30%
+		if (Dungeon.hero.heroClass != HeroClass.CLERIC
+				&& Dungeon.hero.hasTalent(Talent.CLEANSE)
+				&& Random.Int(10) < Dungeon.hero.pointsInTalent(Talent.CLEANSE)){
+			boolean removed = false;
+			for (Buff b : Dungeon.hero.buffs()) {
+				if (b.type == Buff.buffType.NEGATIVE) {
+					b.detach();
+					removed = true;
+				}
+			}
+			if (removed) new Flare( 6, 32 ).color(0xFF4CD2, true).show( Dungeon.hero.sprite, 2f );
+		}
+
 		Invisibility.dispel();
 		updateQuickslot();
 
@@ -728,9 +815,23 @@ public abstract class Wand extends Item {
 						curWand.fx(shot, new Callback() {
 							public void call() {
 								curWand.onZap(shot);
-								curWand.wandUsed();
+								if (Random.Float() < WondrousResin.extraCurseEffectChance()){
+									WondrousResin.forcePositive = true;
+									CursedWand.cursedZap(curWand,
+											curUser,
+											new Ballistica(curUser.pos, target, Ballistica.MAGIC_BOLT), new Callback() {
+												@Override
+												public void call() {
+													WondrousResin.forcePositive = false;
+													curWand.wandUsed();
+												}
+											});
+								} else {
+									curWand.wandUsed();
+								}
 							}
 						});
+
 					}
 					curWand.cursedKnown = true;
 					
@@ -819,17 +920,17 @@ public abstract class Wand extends Item {
 
 		public void gainCharge(float charge, boolean overcharge){
 			int maxCharges = Wand.this.maxCharges;
-			if(overcharge) maxCharges += Math.ceil(charge);
-			int cap = Math.max(curCharges,maxCharges); // this allows stacking of overcharging
-			if (curCharges < cap) {
+			if(overcharge) maxCharges += (int) Math.ceil(charge);
+			maxCharges = Math.max(curCharges,maxCharges);  // this allows stacking of overcharging
+			if (curCharges < maxCharges) {
 				partialCharge += charge;
 				while (partialCharge >= 1f) {
 					curCharges++;
 					partialCharge--;
 				}
-				if(curCharges >= cap) {
-					curCharges = cap;
+				if (curCharges >= maxCharges){
 					partialCharge = 0;
+					curCharges = maxCharges;
 				}
 				updateQuickslot();
 			}

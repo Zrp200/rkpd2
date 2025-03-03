@@ -76,6 +76,9 @@ public class WndHeroInfo extends WndTabbed {
 			case DUELIST:
 				tabIcon = new ItemSprite(ItemSpriteSheet.RAPIER, null);
 				break;
+			case CLERIC:
+				tabIcon = new ItemSprite(ItemSpriteSheet.ARTIFACT_TOME, null);
+				break;
 			case RAT_KING:
 				tabIcon = new ItemSprite(ItemSpriteSheet.ARMOR_RAT_KING); // placeholder
 		}
@@ -196,7 +199,7 @@ public class WndHeroInfo extends WndTabbed {
 					break;
 				case HUNTRESS:
 					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.SPIRIT_BOW),
-							new Image(Assets.Environment.TILES_SEWERS, 32, 64, 16, 16),
+							Icons.GRASS.get(),
 							new HeroIcon(HeroSubClass.SNIPER),
 							new ItemSprite(ItemSpriteSheet.ARTIFACT_TALISMAN),
 							new ItemSprite(ItemSpriteSheet.GLOVES),
@@ -206,6 +209,12 @@ public class WndHeroInfo extends WndTabbed {
 					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.RAPIER),
 							new ItemSprite(ItemSpriteSheet.WAR_HAMMER),
 							new ItemSprite(ItemSpriteSheet.THROWING_SPIKE),
+							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
+					break;
+				case CLERIC:
+					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.ARTIFACT_TOME),
+							Icons.TALENT.get(),
+							new ItemSprite(ItemSpriteSheet.CUDGEL),
 							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
 					break;
 				case RAT_KING:
@@ -238,6 +247,7 @@ public class WndHeroInfo extends WndTabbed {
 				}
 				icons[i].x = (20-icons[i].width())/2;
 				icons[i].y = info[i].top() + (info[i].height() - icons[i].height())/2;
+				PixelScene.align(icons[i]);
 
 				pos = info[i].bottom() + 4*MARGIN;
 			}

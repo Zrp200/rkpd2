@@ -23,51 +23,63 @@ package com.zrp200.rkpd2.items.scrolls.exotic;
 
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.Recipe;
-import com.zrp200.rkpd2.items.scrolls.*;
-import com.zrp200.rkpd2.items.stones.Runestone;
+import com.zrp200.rkpd2.items.scrolls.Scroll;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfIdentify;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfLullaby;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfMagicMapping;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfMirrorImage;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfRage;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfRecharging;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfRemoveCurse;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfRetribution;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfTeleportation;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfTerror;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfTransmutation;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfUpgrade;
 import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 public abstract class ExoticScroll extends Scroll {
 	
 	
-	public static final HashMap<Class<?extends Scroll>, Class<?extends ExoticScroll>> regToExo = new HashMap<>();
-	public static final HashMap<Class<?extends ExoticScroll>, Class<?extends Scroll>> exoToReg = new HashMap<>();
+	public static final LinkedHashMap<Class<?extends Scroll>, Class<?extends ExoticScroll>> regToExo = new LinkedHashMap<>();
+	public static final LinkedHashMap<Class<?extends ExoticScroll>, Class<?extends Scroll>> exoToReg = new LinkedHashMap<>();
 	static{
-		regToExo.put(ScrollOfIdentify.class, ScrollOfDivination.class);
-		exoToReg.put(ScrollOfDivination.class, ScrollOfIdentify.class);
-		
 		regToExo.put(ScrollOfUpgrade.class, ScrollOfEnchantment.class);
 		exoToReg.put(ScrollOfEnchantment.class, ScrollOfUpgrade.class);
 
+        regToExo.put(ScrollOfIdentify.class, ScrollOfDivination.class);
+		exoToReg.put(ScrollOfDivination.class, ScrollOfIdentify.class);
+
 		regToExo.put(ScrollOfRemoveCurse.class, ScrollOfAntiMagic.class);
 		exoToReg.put(ScrollOfAntiMagic.class, ScrollOfRemoveCurse.class);
-		
-		regToExo.put(ScrollOfLullaby.class, ScrollOfSirensSong.class);
-		exoToReg.put(ScrollOfSirensSong.class, ScrollOfLullaby.class);
-		
-		regToExo.put(ScrollOfRage.class, ScrollOfChallenge.class);
-		exoToReg.put(ScrollOfChallenge.class, ScrollOfRage.class);
-		
-		regToExo.put(ScrollOfTerror.class, ScrollOfDread.class);
-		exoToReg.put(ScrollOfDread.class, ScrollOfTerror.class);
-		
+
+		regToExo.put(ScrollOfMirrorImage.class, ScrollOfPrismaticImage.class);
+		exoToReg.put(ScrollOfPrismaticImage.class, ScrollOfMirrorImage.class);
+
 		regToExo.put(ScrollOfRecharging.class, ScrollOfMysticalEnergy.class);
 		exoToReg.put(ScrollOfMysticalEnergy.class, ScrollOfRecharging.class);
-		
-		regToExo.put(ScrollOfMagicMapping.class, ScrollOfForesight.class);
-		exoToReg.put(ScrollOfForesight.class, ScrollOfMagicMapping.class);
-		
+
 		regToExo.put(ScrollOfTeleportation.class, ScrollOfPassage.class);
 		exoToReg.put(ScrollOfPassage.class, ScrollOfTeleportation.class);
-		
+
+		regToExo.put(ScrollOfLullaby.class, ScrollOfSirensSong.class);
+		exoToReg.put(ScrollOfSirensSong.class, ScrollOfLullaby.class);
+
+		regToExo.put(ScrollOfMagicMapping.class, ScrollOfForesight.class);
+		exoToReg.put(ScrollOfForesight.class, ScrollOfMagicMapping.class);
+
+		regToExo.put(ScrollOfRage.class, ScrollOfChallenge.class);
+		exoToReg.put(ScrollOfChallenge.class, ScrollOfRage.class);
+
 		regToExo.put(ScrollOfRetribution.class, ScrollOfPsionicBlast.class);
 		exoToReg.put(ScrollOfPsionicBlast.class, ScrollOfRetribution.class);
 		
-		regToExo.put(ScrollOfMirrorImage.class, ScrollOfPrismaticImage.class);
-		exoToReg.put(ScrollOfPrismaticImage.class, ScrollOfMirrorImage.class);
+		regToExo.put(ScrollOfTerror.class, ScrollOfDread.class);
+		exoToReg.put(ScrollOfDread.class, ScrollOfTerror.class);
 		
 		regToExo.put(ScrollOfTransmutation.class, ScrollOfMetamorphosis.class);
 		exoToReg.put(ScrollOfMetamorphosis.class, ScrollOfTransmutation.class);

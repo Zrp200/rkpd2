@@ -28,6 +28,7 @@ import com.zrp200.rkpd2.SPDAction;
 import com.zrp200.rkpd2.SPDSettings;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.journal.Document;
+import com.zrp200.rkpd2.levels.Level;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.scenes.PixelScene;
@@ -36,6 +37,7 @@ import com.zrp200.rkpd2.windows.WndGame;
 import com.zrp200.rkpd2.windows.WndJournal;
 import com.zrp200.rkpd2.windows.WndKeyBindings;
 import com.zrp200.rkpd2.windows.WndStory;
+import com.zrp200.rkpd2.windows.WndTitledMessage;
 import com.watabou.input.GameAction;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Game;
@@ -84,23 +86,24 @@ public class MenuPane extends Component {
 		depthButton = new Button(){
 			@Override
 			protected String hoverText() {
-				switch (Dungeon.level.feeling) {
-					case CHASM:     return Messages.get(GameScene.class, "chasm");
-					case WATER:     return Messages.get(GameScene.class, "water");
-					case GRASS:     return Messages.get(GameScene.class, "grass");
-					case DARK:      return Messages.get(GameScene.class, "dark");
-					case LARGE:     return Messages.get(GameScene.class, "large");
-					case TRAPS:     return Messages.get(GameScene.class, "traps");
-					case SECRETS:   return Messages.get(GameScene.class, "secrets");
+				if (Dungeon.level.feeling != Level.Feeling.NONE){
+					return Dungeon.level.feeling.desc();
+				} else {
+					return null;
 				}
-				return null;
 			}
 
 			@Override
 			protected void onClick() {
 				super.onClick();
-				//just open journal for now, maybe have it open landmarks after expanding that page?
-				GameScene.show( new WndJournal() );
+
+				if (Dungeon.level.feeling == Level.Feeling.NONE){
+					GameScene.show(new WndJournal());
+				} else {
+					GameScene.show(new WndTitledMessage(Icons.getLarge(Dungeon.level.feeling),
+							Messages.titleCase(Dungeon.level.feeling.title()),
+							Dungeon.level.feeling.desc()));
+				}
 			}
 		};
 		add(depthButton);
@@ -234,7 +237,7 @@ public class MenuPane extends Component {
 			bg = new Image( Assets.Interfaces.MENU_BTN, 2, 2, 13, 11 );
 			add( bg );
 
-			journalIcon = new Image( Assets.Interfaces.MENU_BTN, 31, 0, 11, 7);
+			journalIcon = new Image( Assets.Interfaces.MENU_BTN, 31, 0, 11, 6);
 			add( journalIcon );
 
 			keyIcon = new KeyDisplay();
@@ -308,9 +311,15 @@ public class MenuPane extends Component {
 			keyIcon.am = journalIcon.am = 1;
 			if (flashingPage != null){
 				if (flashingDoc == Document.ALCHEMY_GUIDE){
-					WndJournal.last_index = 1;
+					WndJournal.last_index = 2;
 					GameScene.show( new WndJournal() );
 				} else if (flashingDoc.pageNames().contains(flashingPage)){
+					if (flashingDoc == Document.ADVENTURERS_GUIDE){
+						WndJournal.last_index = 1;
+					} else if (flashingDoc.isLoreDoc()){
+						WndJournal.last_index = 3;
+						WndJournal.CatalogTab.currentItemIdx = 3;
+					}
 					GameScene.show( new WndStory( flashingDoc.pageSprite(flashingPage),
 							flashingDoc.pageTitle(flashingPage),
 							flashingDoc.pageBody(flashingPage) ){

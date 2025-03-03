@@ -21,6 +21,9 @@
 
 package com.zrp200.rkpd2.actors.hero.abilities.rogue;
 
+import static com.watabou.utils.Reflection.newInstance;
+import static com.zrp200.rkpd2.Dungeon.hero;
+
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
@@ -56,9 +59,6 @@ import com.watabou.noosa.TextureFilm;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
-
-import static com.watabou.utils.Reflection.newInstance;
-import static com.zrp200.rkpd2.Dungeon.hero;
 
 public class SmokeBomb extends ArmorAbility {
 
@@ -198,7 +198,9 @@ public class SmokeBomb extends ArmorAbility {
 			alignment = Alignment.ALLY;
 
 			// TODO isn't it kinda weird that the two variants have the same HP?
-			HP = HT = 20*hero.pointsInTalent(false,Talent.BODY_REPLACEMENT, Talent.SMOKE_AND_MIRRORS);
+			HT = 20;
+			if (hero != null) HT *= hero.pointsInTalent(false,Talent.BODY_REPLACEMENT, Talent.SMOKE_AND_MIRRORS);
+			HP = HT;
 		}
 
 		protected Talent talent = Talent.BODY_REPLACEMENT;

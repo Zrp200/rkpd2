@@ -57,7 +57,7 @@ public class Necromancer extends Mob {
 		EXP = 7;
 		maxLvl = 14;
 		
-		loot = new PotionOfHealing();
+		loot = PotionOfHealing.class;
 		lootChance = 0.2f; //see lootChance()
 		
 		properties.add(Property.UNDEAD);
@@ -81,7 +81,15 @@ public class Necromancer extends Mob {
 		}
 		return super.act();
 	}
-
+@Override
+	public void aggro(Char ch) {
+		super.aggro(ch);
+		if (mySkeleton != null && mySkeleton.isAlive()
+				&& Dungeon.level.mobs.contains(mySkeleton)
+				&& mySkeleton.alignment == alignment){
+			mySkeleton.aggro(ch);
+		}
+	}
 	@Override
 	public int drRoll() {
 		return super.drRoll() + Random.NormalIntRange(0, 5);
@@ -108,7 +116,7 @@ public class Necromancer extends Mob {
 			}
 		}
 		
-		if (mySkeleton != null && mySkeleton.isAlive()){
+		if (mySkeleton != null && mySkeleton.isAlive() && mySkeleton.alignment == alignment){
 			mySkeleton.die(null);
 		}
 
@@ -237,11 +245,10 @@ public class Necromancer extends Mob {
 		Dungeon.level.occupyCell( mySkeleton );
 		((NecromancerSprite)sprite).finishSummoning();
 
-		for (Buff b : buffs(AllyBuff.class)){
-			Buff.affect(mySkeleton, b.getClass());
-		}
-		for (Buff b : buffs(ChampionEnemy.class)){
-			Buff.affect( mySkeleton, b.getClass());
+		for (Buff b : buffs()){
+			if (b.revivePersists) {
+				Buff.affect(mySkeleton, b.getClass());
+			}
 		}
 	}
 public static class SummoningBlockDamage{}
@@ -280,8 +287,10 @@ if (enemySeen){
 				
 				summoningPos = -1;
 
-				//we can summon around blocking terrain, but not through it
-				PathFinder.buildDistanceMap(pos, BArray.not(Dungeon.level.solid, null), Dungeon.level.distance(pos, enemy.pos)+3);
+				//we can summon around blocking terrain, but not through it, except unlocked doors
+				boolean[] passable = BArray.not(Dungeon.level.solid, null);
+				BArray.or(Dungeon.level.passable, passable, passable);
+				PathFinder.buildDistanceMap(pos, passable, Dungeon.level.distance(pos, enemy.pos)+3);
 
 				for (int c : PathFinder.NEIGHBOURS8){
 					if (Actor.findChar(enemy.pos+c) == null
@@ -298,7 +307,11 @@ if (enemySeen){
 					
 					summoning = true;
 					sprite.zap( summoningPos );
-					
+
+					if (Dungeon.level.heroFOV[pos] || Dungeon.level.heroFOV[summoningPos]){
+						Dungeon.hero.interrupt();
+					}
+
 					spend( firstSummon ? TICK : 2*TICK );
 				} else {
 					//wait for a turn

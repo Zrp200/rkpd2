@@ -33,8 +33,11 @@ public class BattleAxe extends Mace {
 
 		tier = 4;
 		ACC = 1.24f; //24% boost to accuracy
+
+		//20 base, down from 25
+		//scaling unchanged
+
+		//+(5+1.5*lvl) damage, roughly +40% base dmg, +50% scaling
 	}
 
-	//20 base, down from 25
-	//scaling unchanged
 }

@@ -56,10 +56,52 @@ public class ShatteredPixelDungeon extends Game {
 
 	public static final int v2_0_2 = 700;
 	public static final int v2_3_0 = V2_0_0;
+
+    public static final int v3_0_0 = 831;
 	
 
 	public ShatteredPixelDungeon( PlatformSupport platform ) {
 		super( sceneClass == null ? WelcomeScene.class : sceneClass, platform );
+
+		//pre-v2.5.2
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.items.bombs.FlashBangBomb.class,
+				"com.zrp200.rkpd2.items.bombs.ShockBomb" );
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.items.bombs.SmokeBomb.class,
+				"com.zrp200.rkpd2.items.bombs.Flashbang" );
+
+		//pre-v2.5.0
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.actors.mobs.MobSpawner.class,
+				"com.zrp200.rkpd2.levels.Level$Respawner" );
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.actors.buffs.Invulnerability.class,
+				"com.zrp200.rkpd2.actors.buffs.AnkhInvulnerability" );
+
+		//pre-v2.4.0
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.items.potions.brews.UnstableBrew.class,
+				"com.zrp200.rkpd2.items.potions.AlchemicalCatalyst" );
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.items.spells.UnstableSpell.class,
+				"com.zrp200.rkpd2.items.spells.ArcaneCatalyst" );
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.items.potions.elixirs.ElixirOfFeatherFall.class,
+				"com.zrp200.rkpd2.items.spells.FeatherFall" );
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.items.potions.elixirs.ElixirOfFeatherFall.FeatherBuff.class,
+				"com.zrp200.rkpd2.items.spells.FeatherFall$FeatherBuff" );
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.items.potions.brews.AquaBrew.class,
+				"com.zrp200.rkpd2.items.spells.AquaBlast" );
+
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.levels.rooms.standard.entrance.EntranceRoom.class,
+				"com.zrp200.rkpd2.levels.rooms.standard.EntranceRoom" );
+		com.watabou.utils.Bundle.addAlias(
+				com.zrp200.rkpd2.levels.rooms.standard.exit.ExitRoom.class,
+				"com.zrp200.rkpd2.levels.rooms.standard.ExitRoom" );
 
 		//pre-v2.3.0
 		addAlias(

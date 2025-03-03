@@ -193,17 +193,18 @@ public class Pickaxe extends MeleeWeapon {
 		return Messages.get(this, "prompt");
 	}
 
-	private static class Pierce extends MeleeAbility {
+	private class Pierce extends MeleeAbility {
 		@Override
-		public float dmgMulti(Char enemy) {
-			float multi = super.dmgMulti(enemy);
+		protected void beforeAbilityUsed(Hero hero, Char enemy) {
 			if (Char.hasProp(enemy, Char.Property.INORGANIC)
 					|| enemy instanceof Swarm
 					|| enemy instanceof Bee
 					|| enemy instanceof Crab
 					|| enemy instanceof Spinner
-					|| enemy instanceof Scorpio) multi *= 2;
-			return multi;
+					|| enemy instanceof Scorpio) {
+				//+(8+2*lvl) damage, equivalent to +100% damage
+				dmgBoost = augment.damageFactor(8 + 2*buffedLvl());
+			}
 		}
 
 		@Override
@@ -213,6 +214,17 @@ public class Pickaxe extends MeleeWeapon {
 	} @Override
 	protected MeleeAbility duelistAbility() {
 		return new Pierce();
+	}
+
+	@Override
+	public String abilityInfo() {
+		int dmgBoost = 8 + 2*buffedLvl();
+		return Messages.get(this, "ability_desc", augment.damageFactor(min()+dmgBoost), augment.damageFactor(max()+dmgBoost));
+	}
+
+	public String upgradeAbilityStat(int level){
+		int dmgBoost = 8 + 2*level;
+		return augment.damageFactor(min(level)+dmgBoost) + "-" + augment.damageFactor(max(level)+dmgBoost);
 	}
 
 	private static final String BLOODSTAINED = "bloodStained";

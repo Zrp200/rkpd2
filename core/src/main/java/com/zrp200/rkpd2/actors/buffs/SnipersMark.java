@@ -3,11 +3,7 @@
  * Copyright (C) 2012-2015 Oleg Dolya
  *
  * Shattered Pixel Dungeon
-<<<<<<< HEAD:core/src/main/java/com/zrp200/rkpd2/actors/buffs/SnipersMark.java
- * Copyright (C) 2014-2022 Evan Debenham
-=======
  * Copyright (C) 2014-2024 Evan Debenham
->>>>>>> shpd/master:core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/buffs/SnipersMark.java
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,12 +54,14 @@ import static com.zrp200.rkpd2.Dungeon.hero;
 
 public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
-	protected int object;
+	public int object = 0;
 	public int level = 0;
+	public float percentDmgBonus = 0;
 
-	public void set(int object, int level) {
+	public void set(int object, int level, float percentDmgBonus) {
 		this.object = object;
 		this.level = level;
+		this.percentDmgBonus = percentDmgBonus;
 	}
 
 	public static void remove(Char ch) {
@@ -71,7 +69,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		SnipersMark mark = findByID( id = ch.id() );
 		if(mark == null) return;
 		mark.detach();
-		FreeTarget.apply(id, mark.level);
+		FreeTarget.apply(id, mark.level, mark.percentDmgBonus);
 	}
 
 	private static void ensureSpace() {
@@ -84,7 +82,8 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		if( size < maxObjects() ) return;
 
 		// tries to remove the 'least valuable' mark.
-		Arrays.sort(marks, (a, b) -> a.level != b.level ? Integer.compare(a.level, b.level) // try to preserve higher level stuff.
+		Arrays.sort(marks, (a, b) -> Math.abs(a.percentDmgBonus - b.percentDmgBonus) > 0.01 ? Float.compare(a.percentDmgBonus, b.percentDmgBonus) // try to preserve higher damage.
+				: a.level != b.level ? Integer.compare(a.level, b.level)
 				: a instanceof FreeTarget != b instanceof FreeTarget ? a instanceof FreeTarget ? 1 : -1 // free > standard
 				: Float.compare( a.cooldown(), b.cooldown() ) // older < newer
 		);
@@ -100,23 +99,24 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
 	// TODO should I just sync all buffs together?!
 
-	public static void add(Char ch, int level) {
+	public static void add(Char ch, int level, float percentDmgBonus) {
 		addTime(level);
 
 		int id; SnipersMark existing = findByID( id = ch.id() );
 		if(existing != null) {
 			existing.level = level = Math.max(existing.level, level);
+			existing.percentDmgBonus = percentDmgBonus = Math.max(existing.percentDmgBonus, percentDmgBonus);
 		}
 		if( !ch.isAlive() ) {
 			if(existing != null) existing.detach();
-			FreeTarget.apply(id, level);
+			FreeTarget.apply(id, level, percentDmgBonus);
 		}
 		else if(existing != null) {
 			ActionIndicator.setAction(existing);
 		}
 		else {
 			ensureSpace();
-			Buff.append( hero, SnipersMark.class, duration(level) ).set(id, level);
+			Buff.append( hero, SnipersMark.class, duration(level) ).set(id, level, percentDmgBonus);
 		}
 	}
 
@@ -124,6 +124,8 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	private static final String OBJECTS	  = "objects";
 	private static final String LEVEL     = "level",
 			LEVELS    = LEVEL+"s";
+	private static final String BONUS    = "bonus",
+		BONUS_ARRAY = BONUS + "array";
 
 	public static final float DURATION = 4f;
 
@@ -166,7 +168,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	public void storeInBundle( Bundle bundle ) {
 		super.storeInBundle( bundle );
 		bundle.put( OBJECT, object );
-		bundle.put( LEVEL, level );
+		bundle.put( BONUS, percentDmgBonus );
 	}
 
 	@Override
@@ -174,6 +176,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		super.restoreFromBundle( bundle );
 
 		level = bundle.getInt(LEVEL);
+		percentDmgBonus = bundle.getFloat(BONUS);
 
 		if(this instanceof FreeTarget) return;
 
@@ -196,6 +199,12 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 				level = levels[0];
 			}
 			else Arrays.fill(levels = new int[objects.length], level);
+			float[] bonusArray;
+			if (bundle.contains(BONUS_ARRAY)) {
+				bonusArray = bundle.getFloatArray(BONUS_ARRAY);
+			} else {
+				Arrays.fill(bonusArray = new float[objects.length], percentDmgBonus);
+			}
 
 			object = objects[0];
 
@@ -203,6 +212,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 				SnipersMark mark = Buff.append(Char.restoring, SnipersMark.class, cooldown());
 				mark.object = objects[i];
 				mark.level = levels[i];
+				mark.percentDmgBonus = bonusArray[i];
 			}
 		}
 		else {
@@ -298,6 +308,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		final LinkedList<SnipersMark> queue = new LinkedList( hero.buffs(SnipersMark.class) );
 		{
 			Collections.sort(queue, (a,b) -> {
+				// fixme does not take percent damage bonus into account
 				// free-targets go after standard marks, since they have to choose their targets
 				if(a instanceof FreeTarget != b instanceof FreeTarget) return a instanceof FreeTarget ? 1 : -1;
 				int level = Integer.compare(a.level, b.level);
@@ -379,9 +390,9 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	public static class FreeTarget extends SnipersMark {
 
 		// converts a standard mark into a free-targeted mark.
-		public static void apply(int id, int level) {
+		public static void apply(int id, int level, float percentDamageBonus) {
 			if(!hero.hasTalent(Talent.MULTISHOT)) return;
-			Buff.append( hero, FreeTarget.class, duration(level) ).set(id, level);
+			Buff.append( hero, FreeTarget.class, duration(level) ).set(id, level, percentDamageBonus);
 		}
 
 		// only difference is we don't care about object at all. it just exists.
@@ -470,9 +481,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		arrow.sniperSpecial = true; // :D
 
 		int cell = QuickSlotButton.autoAim(ch, arrow);
-
-		int points = hero.shiftedPoints(Talent.SHARED_UPGRADES, Talent.RK_SNIPER);
-		arrow.sniperSpecialBonusDamage = level*points/10f;
+		arrow.sniperSpecialBonusDamage = percentDmgBonus;
 
 		Buff.detach(hero, Preparation.class); // nope!
 

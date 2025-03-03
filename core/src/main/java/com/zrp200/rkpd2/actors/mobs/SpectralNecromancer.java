@@ -25,9 +25,7 @@ import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.buffs.AllyBuff;
 import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.ChampionEnemy;
 import com.zrp200.rkpd2.effects.Pushing;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfRemoveCurse;
 import com.zrp200.rkpd2.messages.Messages;
@@ -75,7 +73,7 @@ public class SpectralNecromancer extends Necromancer {
 	public void die(Object cause) {
 		for (int ID : wraithIDs){
 			Actor a = Actor.findById(ID);
-			if (a instanceof Wraith){
+			if (a instanceof Wraith && ((Wraith) a).alignment == alignment){
 				((Wraith) a).die(null);
 			}
 		}
@@ -152,15 +150,18 @@ public class SpectralNecromancer extends Necromancer {
 		summoning = firstSummon = false;
 
 		Wraith wraith = Wraith.spawnAt(summoningPos, Wraith.class);
-		wraith.adjustStats(0);
+		if (wraith == null){
+			spend(TICK);
+			return;
+		}
+		wraith.adjustStats(4);
 		Dungeon.level.occupyCell( wraith );
 		((SpectralNecromancerSprite)sprite).finishSummoning();
 
-		for (Buff b : buffs(AllyBuff.class)){
-			Buff.affect( wraith, b.getClass());
-		}
-		for (Buff b : buffs(ChampionEnemy.class)){
-			Buff.affect( wraith, b.getClass());
+		for (Buff b : buffs()){
+			if (b.revivePersists) {
+				Buff.affect(wraith, b.getClass());
+			}
 		}
 		wraithIDs.add(wraith.id());
 	}

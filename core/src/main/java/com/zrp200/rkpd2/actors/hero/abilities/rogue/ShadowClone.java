@@ -37,12 +37,14 @@ import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
 import com.zrp200.rkpd2.actors.hero.abilities.huntress.SpiritHawk;
 import com.zrp200.rkpd2.actors.mobs.npcs.DirectableAlly;
 import com.zrp200.rkpd2.effects.particles.SmokeParticle;
+import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.armor.ClassArmor;
 import com.zrp200.rkpd2.items.armor.glyphs.AntiMagic;
 import com.zrp200.rkpd2.items.armor.glyphs.Brimstone;
 import com.zrp200.rkpd2.levels.CityLevel;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.sprites.HeroSprite;
 import com.zrp200.rkpd2.sprites.MobSprite;
 import com.zrp200.rkpd2.ui.HeroIcon;
 import com.watabou.utils.BArray;
@@ -245,14 +247,12 @@ public class ShadowClone extends ArmorAbility {
 		}
 
 		@Override
-		public boolean isImmune(Class effect) {
-			if (effect == Burning.class
-					&& Random.Int(4) < Dungeon.hero.pointsInTalent(Talent.CLONED_ARMOR)
-					&& Dungeon.hero.belongings.armor() != null
-					&& Dungeon.hero.belongings.armor().hasGlyph(Brimstone.class, this)){
-				return true;
+		public int glyphLevel(Class<? extends Armor.Glyph> cls) {
+			if (Dungeon.hero != null && Random.Int(4) < Dungeon.hero.pointsInTalent(Talent.CLONED_ARMOR)){
+				return Math.max(super.glyphLevel(cls), Dungeon.hero.glyphLevel(cls));
+			} else {
+				return super.glyphLevel(cls);
 			}
-			return super.isImmune(effect);
 		}
 
 		@Override
@@ -264,21 +264,6 @@ public class ShadowClone extends ArmorAbility {
 			} else {
 				return damage;
 			}
-		}
-
-		@Override
-		public void damage(int dmg, Object src) {
-
-			//TODO improve this when I have proper damage source logic
-			if (Random.Int(4) < Dungeon.hero.pointsInTalent(Talent.CLONED_ARMOR)
-					&& Dungeon.hero.belongings.armor() != null
-					&& Dungeon.hero.belongings.armor().hasGlyph(AntiMagic.class, this)
-					&& AntiMagic.RESISTS.contains(src.getClass())){
-				dmg -= AntiMagic.drRoll(Dungeon.hero, Dungeon.hero.belongings.armor().buffedLvl());
-				dmg = Math.max(dmg, 0);
-			}
-
-			super.damage(dmg, src);
 		}
 
 		@Override
@@ -379,12 +364,31 @@ public class ShadowClone extends ArmorAbility {
 		public ShadowSprite() {
 			super();
 
-			texture( hero.heroClass.spritesheet() );
-			copyAnimations(hero.sprite);
+            if (hero != null) {
+                texture( hero.heroClass.spritesheet() );
+                copyAnimations(hero.sprite);
 
-			die.frames( idle.frames[0] );
-			die.delay = 1/20f;
+                die.frames( idle.frames[0] );
+                die.delay = 1/20f;
+            } else {
+				// for journal entry
 
+                texture( HeroClass.ROGUE.spritesheet() );
+
+                TextureFilm film = new TextureFilm( HeroSprite.defaultTiers(), 6, 12, 15 );
+
+                idle = new Animation( 1, true );
+                idle.frames( film, 0, 0, 0, 1, 0, 0, 1, 1 );
+
+                run = new Animation( 20, true );
+                run.frames( film, 2, 3, 4, 5, 6, 7 );
+
+                die = new Animation( 20, false );
+                die.frames( film, 0 );
+
+                attack = new Animation( 15, false );
+                attack.frames( film, 13, 14, 15, 0 );
+            }
 			idle();
 			resetColor();
 		}

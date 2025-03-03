@@ -28,6 +28,7 @@ public class RingOfEvasion extends Ring {
 
 	{
 		icon = ItemSpriteSheet.Icons.RING_EVASION;
+		buffClass = Evasion.class;
 	}
 
 	@Override
@@ -35,6 +36,12 @@ public class RingOfEvasion extends Ring {
 		return 1.125f;
 	}
 
+
+	public String upgradeStat1(int level){
+		if (cursed && cursedKnown) level = Math.min(-1, level-3);
+		return formatBonus(level + 1) + "%";
+	}
+	
 	@Override
 	protected RingBuff buff( ) {
 		return new Evasion();

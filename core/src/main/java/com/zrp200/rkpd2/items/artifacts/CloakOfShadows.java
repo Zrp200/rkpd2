@@ -35,15 +35,16 @@ import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.rings.RingOfEnergy;
+import com.zrp200.rkpd2.journal.Catalog;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.utils.GLog;
-import com.zrp200.rkpd2.utils.SafeCast;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
+import com.zrp200.rkpd2.utils.SafeCast;
 
 import java.util.ArrayList;
 
@@ -188,16 +189,20 @@ public class CloakOfShadows extends Artifact {
 					Talent.RK_FREERUNNER, LC_FACTOR_RK);
 			if(target.heroClass == HeroClass.ROGUE) amount *= ROGUE_BOOST;
 			partialCharge += 0.25f*amount;
-			if (partialCharge >= 1){
-				partialCharge--;
+			while (partialCharge >= 1f) {
 				charge++;
-				updateQuickslot();
+				partialCharge--;
 			}
+			if (charge >= chargeCap){
+				partialCharge = 0;
+				charge = chargeCap;
+			}
+			updateQuickslot();
 		}
 	}
 
-	public void overCharge(int amount){
-		charge = Math.min(charge+amount, chargeCap+amount);
+	public void directCharge(int amount){
+		charge = Math.min(charge+amount, chargeCap);
 		updateQuickslot();
 	}
 	
@@ -249,7 +254,7 @@ public class CloakOfShadows extends Artifact {
 					partialCharge += chargeToGain;
 				}
 
-				if (partialCharge >= 1) {
+				while (partialCharge >= 1) {
 					charge++;
 					partialCharge -= 1;
 					if (charge == chargeCap){
@@ -350,6 +355,7 @@ public class CloakOfShadows extends Artifact {
 					int expPerLevel = 50;
 					if (exp >= (level() + 1) * expPerLevel && level() < levelCap) {
 						upgrade();
+						Catalog.countUse(CloakOfShadows.class);
 						exp -= level() * expPerLevel;
 						GLog.p(Messages.get(this, "levelup"));
 						

@@ -24,6 +24,11 @@ package com.zrp200.rkpd2.items.scrolls;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.effects.Identification;
 import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.armor.Armor;
+import com.zrp200.rkpd2.items.rings.Ring;
+import com.zrp200.rkpd2.items.trinkets.ShardOfOblivion;
+import com.zrp200.rkpd2.items.wands.Wand;
+import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
@@ -45,10 +50,33 @@ public class ScrollOfIdentify extends InventoryScroll {
 	protected void onItemSelected( Item item ) {
 		
 		curUser.sprite.parent.add( new Identification( curUser.sprite.center().offset( 0, -16 ) ) );
-		
+
+		IDItem(item);
+	}
+
+	public static void IDItem( Item item ){
+		if (ShardOfOblivion.passiveIDDisabled()) {
+			if (item instanceof Weapon){
+				((Weapon) item).setIDReady();
+				GLog.p(Messages.get(ShardOfOblivion.class, "identify_ready"), item.name());
+				return;
+			} else if (item instanceof Armor){
+				((Armor) item).setIDReady();
+				GLog.p(Messages.get(ShardOfOblivion.class, "identify_ready"), item.name());
+				return;
+			} else if (item instanceof Ring){
+				((Ring) item).setIDReady();
+				GLog.p(Messages.get(ShardOfOblivion.class, "identify_ready"), item.name());
+				return;
+			} else if (item instanceof Wand){
+				((Wand) item).setIDReady();
+				GLog.p(Messages.get(ShardOfOblivion.class, "identify_ready"), item.name());
+				return;
+			}
+		}
+
 		item.identify();
-		GLog.i( Messages.get(this, "it_is", item.title()) );
-		
+		GLog.i(Messages.get(ScrollOfIdentify.class, "it_is", item.title()));
 		Badges.validateItemLevelAquired( item );
 	}
 	

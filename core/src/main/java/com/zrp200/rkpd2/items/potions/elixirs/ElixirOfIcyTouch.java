@@ -25,7 +25,6 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.FrostImbue;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.effects.particles.SnowParticle;
-import com.zrp200.rkpd2.items.potions.AlchemicalCatalyst;
 import com.zrp200.rkpd2.items.potions.exotic.PotionOfSnapFreeze;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
@@ -42,22 +41,11 @@ public class ElixirOfIcyTouch extends Elixir {
 		hero.sprite.emitter().burst(SnowParticle.FACTORY, 5);
 	}
 	
-	@Override
-	protected int splashColor() {
-		return 0xFF18C3E6;
-	}
-	
-	@Override
-	public int value() {
-		//prices of ingredients
-		return quantity * (50 + 40);
-	}
-	
 	public static class Recipe extends com.zrp200.rkpd2.items.Recipe.SimpleRecipe {
 		
 		{
-			inputs =  new Class[]{PotionOfSnapFreeze.class, AlchemicalCatalyst.class};
-			inQuantity = new int[]{1, 1};
+			inputs =  new Class[]{PotionOfSnapFreeze.class};
+			inQuantity = new int[]{1};
 			
 			cost = 6;
 			

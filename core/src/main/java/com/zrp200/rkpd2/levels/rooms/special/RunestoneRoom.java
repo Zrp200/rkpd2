@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.keys.IronKey;
 import com.zrp200.rkpd2.items.stones.Runestone;
+import com.zrp200.rkpd2.items.trinkets.TrinketCatalyst;
 import com.zrp200.rkpd2.levels.Level;
 import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.levels.painters.Painter;
@@ -64,10 +65,14 @@ public class RunestoneRoom extends SpecialRoom {
 	}
 	
 	private static Item prize( Level level ) {
-		
-		Item prize = level.findPrizeItem( Runestone.class );
-		if (prize == null)
-			prize = Generator.random( Generator.Category.STONE );
+
+		Item prize = level.findPrizeItem( TrinketCatalyst.class );
+		if (prize == null){
+			prize = level.findPrizeItem( Runestone.class );
+			if (prize == null) {
+				prize = Generator.random( Generator.Category.STONE );
+			}
+		}
 		
 		return prize;
 	}

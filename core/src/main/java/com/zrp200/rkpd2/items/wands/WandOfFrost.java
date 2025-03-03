@@ -111,6 +111,11 @@ public class WandOfFrost extends DamageWand {
 	}
 
 	@Override
+	public String upgradeStat2(int level) {
+		return Integer.toString(2 + level);
+	}
+
+	@Override
 	public void fx(Ballistica bolt, Callback callback) {
 		MagicMissile.boltFromChar(curUser.sprite.parent,
 				MagicMissile.FROST,

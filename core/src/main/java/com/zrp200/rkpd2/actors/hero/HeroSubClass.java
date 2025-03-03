@@ -21,15 +21,6 @@
 
 package com.zrp200.rkpd2.actors.hero;
 
-import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.scenes.GameScene;
-import com.zrp200.rkpd2.Dungeon;
-import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
-import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.scenes.GameScene;
-import com.zrp200.rkpd2.ui.HeroIcon;
-import com.watabou.noosa.Game;
-import com.watabou.noosa.Image;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.wands.Wand;
@@ -37,6 +28,9 @@ import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.items.weapon.melee.MagesStaff;
 import com.zrp200.rkpd2.items.weapon.missiles.MissileWeapon;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.ui.HeroIcon;
+import com.watabou.noosa.Game;
 
 public enum HeroSubClass {
 
@@ -75,6 +69,9 @@ public enum HeroSubClass {
 
 	CHAMPION(HeroIcon.CHAMPION),
 	MONK(HeroIcon.MONK),
+
+	PRIEST(HeroIcon.PRIEST),
+	PALADIN(HeroIcon.PALADIN),
 
 	KING(HeroIcon.KING);
 

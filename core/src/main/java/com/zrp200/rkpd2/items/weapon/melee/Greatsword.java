@@ -31,4 +31,5 @@ public class Greatsword extends Sword {
 		tier = 5;
 	}
 
+	//+(7+lvl) damage, roughly +40% base dmg, +30% scaling
 }

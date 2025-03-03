@@ -43,8 +43,13 @@ import com.zrp200.rkpd2.ui.changelist.v0_2_X_Changes;
 import com.zrp200.rkpd2.ui.changelist.v0_3_X_Changes;
 import com.zrp200.rkpd2.ui.changelist.v0_4_X_Changes;
 import com.zrp200.rkpd2.ui.changelist.v0_5_X_Changes;
+import com.zrp200.rkpd2.ui.changelist.v0_6_X_Changes;
+import com.zrp200.rkpd2.ui.changelist.v0_7_X_Changes;
+import com.zrp200.rkpd2.ui.changelist.v0_8_X_Changes;
+import com.zrp200.rkpd2.ui.changelist.v0_9_X_Changes;
 import com.zrp200.rkpd2.ui.changelist.v1_X_Changes;
 import com.zrp200.rkpd2.ui.changelist.v2_X_Changes;
+import com.zrp200.rkpd2.ui.changelist.v3_X_Changes;
 import com.zrp200.rkpd2.windows.IconTitle;
 import com.watabou.noosa.Camera;
 import com.watabou.noosa.Image;
@@ -78,10 +83,10 @@ public class ChangesScene extends PixelScene {
 		int w = Camera.main.width;
 		int h = Camera.main.height;
 
-		RenderedTextBlock title = PixelScene.renderTextBlock( Messages.get(this, "title"), 9 );
-		title.hardlight(Window.TITLE_COLOR);
+		IconTitle title = new IconTitle(Icons.CHANGES.get(), Messages.get(this, "title"));
+		title.setSize(200, 0);
 		title.setPos(
-				(w - title.width()) / 2f,
+				(w - title.reqWidth()) / 2f,
 				(20 - title.height()) / 2f
 		);
 		align(title);
@@ -96,15 +101,15 @@ public class ChangesScene extends PixelScene {
 		int pw = 135 + panel.marginLeft() + panel.marginRight() - 2;
 		int ph = h - 36;
 
-		if (h >= PixelScene.MIN_HEIGHT_FULL && w >= PixelScene.MIN_WIDTH_FULL) {
+		if (h >= PixelScene.MIN_HEIGHT_FULL && w >= 300) {
 			panel.size( pw, ph );
 			panel.x = (w - pw) / 2f - pw/2 - 1;
-			panel.y = title.bottom() + 5;
+			panel.y = 20;
 
 			rightPanel = Chrome.get(Chrome.Type.TOAST);
 			rightPanel.size( pw, ph );
 			rightPanel.x = (w - pw) / 2f + pw/2 + 1;
-			rightPanel.y = title.bottom() + 5;
+			rightPanel.y = 20;
 			add(rightPanel);
 // todo why doesn't this work?!
 //			rightScroll = new ScrollPane(new Component());
@@ -133,7 +138,7 @@ public class ChangesScene extends PixelScene {
 		} else {
 			panel.size( pw, ph );
 			panel.x = (w - pw) / 2f;
-			panel.y = title.bottom() + 5;
+			panel.y = 20;
 		}
 		align( panel );
 		add( panel );
@@ -151,6 +156,7 @@ public class ChangesScene extends PixelScene {
 				RKPD2Changes.values()[changesSelected].addAllChanges(changeInfos);
 				break;
 			case 2:
+                v3_X_Changes.addAllChanges(changeInfos);
 				v2_X_Changes.addAllChanges(changeInfos);
 				break;
 			case 3:

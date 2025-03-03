@@ -21,12 +21,12 @@
 
 package com.zrp200.rkpd2.windows;
 
-import com.watabou.noosa.Image;
-import com.watabou.noosa.ui.Component;
 import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
 import com.zrp200.rkpd2.ui.ScrollPane;
 import com.zrp200.rkpd2.ui.Window;
+import com.watabou.noosa.Image;
+import com.watabou.noosa.ui.Component;
 
 public class WndTitledMessage extends Window {
 
@@ -66,11 +66,12 @@ public class WndTitledMessage extends Window {
 		add(titlebar);
 
 		RenderedTextBlock text = PixelScene.renderTextBlock(6);
+		if (!useHighlighting()) text.setHightlighting(false);
 		text.text(message, width);
 		text.setPos(titlebar.left(), titlebar.bottom() + 2 * GAP);
 
 		while (PixelScene.landscape()
-				&& text.bottom() > (PixelScene.MIN_HEIGHT_L - 10)
+				&& text.bottom() > targetHeight()
 				&& width < maxWidth) {
 			width += 20;
 			titlebar.setRect(0, 0, width, 0);
@@ -103,6 +104,14 @@ public class WndTitledMessage extends Window {
 	// this only works ONCE currently.
 	public final void addToBottom(Component c) {
 		addToBottom(c, GAP);
+	}
+
+	protected boolean useHighlighting(){
+		return true;
+	}
+
+	protected float targetHeight() {
+		return PixelScene.MIN_HEIGHT_L - 10;
 	}
 
 	public final void addToBottom(Component c, int gap) {

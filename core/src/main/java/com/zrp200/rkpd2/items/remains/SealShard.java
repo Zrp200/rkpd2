@@ -25,8 +25,6 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.actors.buffs.Barrier;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.effects.FloatingText;
-import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.watabou.noosa.audio.Sample;
 
@@ -38,7 +36,7 @@ public class SealShard extends RemainsItem {
 
 	@Override
 	protected void doEffect(Hero hero) {
-		Buff.affect(hero, Barrier.class).incShield(hero.HT/10, true);
+		Buff.affect(hero, Barrier.class).incShield(Math.round(hero.HT/5f), true);
 		Sample.INSTANCE.play(Assets.Sounds.UNLOCK);
 	}
 

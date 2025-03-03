@@ -28,11 +28,17 @@ public class RingOfFuror extends Ring {
 
 	{
 		icon = ItemSpriteSheet.Icons.RING_FUROR;
+		buffClass = Furor.class;
 	}
 
 	@Override
 	protected float multiplier() {
 		return MULTIPLIER;
+	}
+
+	public String upgradeStat1(int level){
+		if (cursed && cursedKnown) level = Math.min(-1, level-3);
+		return formatBonus(level + 1) + "%";
 	}
 
 	@Override

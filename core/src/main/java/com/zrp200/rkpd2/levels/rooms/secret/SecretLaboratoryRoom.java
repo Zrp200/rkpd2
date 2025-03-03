@@ -36,6 +36,8 @@ import com.zrp200.rkpd2.items.potions.PotionOfMindVision;
 import com.zrp200.rkpd2.items.potions.PotionOfParalyticGas;
 import com.zrp200.rkpd2.items.potions.PotionOfPurity;
 import com.zrp200.rkpd2.items.potions.PotionOfToxicGas;
+import com.zrp200.rkpd2.items.potions.exotic.ExoticPotion;
+import com.zrp200.rkpd2.items.trinkets.ExoticCrystals;
 import com.zrp200.rkpd2.levels.Level;
 import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.levels.painters.Painter;
@@ -78,12 +80,12 @@ public class SecretLaboratoryRoom extends SecretRoom {
 		do {
 			pos = level.pointToCell(random());
 		} while (level.map[pos] != Terrain.EMPTY_SP || level.heaps.get( pos ) != null);
-		level.drop( new EnergyCrystal().random(), pos );
+		level.drop( new EnergyCrystal().quantity(Random.IntRange(3, 5)), pos );
 
 		do {
 			pos = level.pointToCell(random());
 		} while (level.map[pos] != Terrain.EMPTY_SP || level.heaps.get( pos ) != null);
-		level.drop( new EnergyCrystal().random(), pos );
+		level.drop( new EnergyCrystal().quantity(Random.IntRange(3, 5)), pos );
 
 		int n = Random.IntRange( 2, 3 );
 		HashMap<Class<? extends Potion>, Float> chances = new HashMap<>(potionChances);
@@ -94,6 +96,13 @@ public class SecretLaboratoryRoom extends SecretRoom {
 			
 			Class<?extends Potion> potionCls = Random.chances(chances);
 			chances.put(potionCls, 0f);
+
+			if (ExoticPotion.regToExo.containsKey(potionCls)){
+				if (Random.Float() < ExoticCrystals.consumableExoticChance()){
+					potionCls = ExoticPotion.regToExo.get(potionCls);
+				}
+			}
+
 			level.drop( Reflection.newInstance(potionCls), pos );
 		}
 		

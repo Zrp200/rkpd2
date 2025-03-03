@@ -136,6 +136,16 @@ public class GnollGeomancer extends Mob {
 	}
 
 	@Override
+	public boolean add(Buff buff) {
+		//immune to buffs and debuff (except its own buffs) while sleeping
+		if (state == SLEEPING && !(buff instanceof RockArmor || buff instanceof DelayedRockFall)){
+			return false;
+		} else {
+			return super.add(buff);
+		}
+	}
+
+	@Override
 	public int damageRoll() {
 		return Random.NormalIntRange( 3, 6 );
 	}
@@ -806,7 +816,9 @@ public class GnollGeomancer extends Mob {
 
 		@Override
 		public void affectCell(int cell) {
-			if (Dungeon.level.map[cell] != Terrain.EMPTY_SP && Random.Int(3) == 0) {
+			if (Dungeon.level.map[cell] != Terrain.EMPTY_SP
+					&& !Dungeon.level.adjacent(cell, Dungeon.level.entrance())
+					&& Random.Int(3) == 0) {
 				Level.set(cell, Terrain.MINE_BOULDER);
 				GameScene.updateMap(cell);
 			}

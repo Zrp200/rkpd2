@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Challenges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.effects.FloatingText;
+import com.zrp200.rkpd2.items.trinkets.SaltCube;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.BuffIndicator;
@@ -56,8 +57,9 @@ public class WellFed extends Buff {
 				((Hero) target).resting = false;
 			}
 		}
-		
-		spend(TICK);
+
+		//salt cube does slow this buff down, but doesn't lessen the bonus health
+		spend(TICK / SaltCube.hungerGainMultiplier());
 		return true;
 	}
 	
@@ -69,6 +71,10 @@ public class WellFed extends Buff {
 			//150 turns if on diet is enabled
 			left /= 3;
 		}
+	}
+
+	public void extend( float duration ) {
+		left += duration;
 	}
 	
 	@Override
@@ -83,12 +89,14 @@ public class WellFed extends Buff {
 
 	@Override
 	public String iconTextDisplay() {
-		return Integer.toString(left);
+		int visualLeft = (int)(left / SaltCube.hungerGainMultiplier());
+		return Integer.toString(visualLeft+1);
 	}
 	
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", left + 1);
+		int visualLeft = (int)(left / SaltCube.hungerGainMultiplier());
+		return Messages.get(this, "desc", visualLeft + 1);
 	}
 	
 	private static final String LEFT = "left";

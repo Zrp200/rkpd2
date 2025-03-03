@@ -21,11 +21,11 @@
 
 package com.zrp200.rkpd2.items.weapon.melee;
 
-import com.watabou.utils.BArray;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
@@ -70,9 +70,24 @@ public class Rapier extends MeleeWeapon {
 
 	@Override
 	protected void duelistAbility(Hero hero, Integer target) {
-		//+(3+lvl) damage, equivalent to +67% damage, but more consistent
-		int dmgBoost = augment.damageFactor(3 + level());
+		//+(5+1.5*lvl) damage, roughly +111% base damage, +100% scaling
+		int dmgBoost =  augment.damageFactor(5 + Math.round(1.5f*buffedLvl()));
 		lungeAbility(hero, target, 1, dmgBoost, this);
+	}
+
+	@Override
+	public String abilityInfo() {
+		int dmgBoost = levelKnown ? 5 + Math.round(1.5f*buffedLvl()) : 5;
+		if (levelKnown){
+			return Messages.get(this, "ability_desc", augment.damageFactor(min()+dmgBoost), augment.damageFactor(max()+dmgBoost));
+		} else {
+			return Messages.get(this, "typical_ability_desc", min(0)+dmgBoost, max(0)+dmgBoost);
+		}
+	}
+
+	public String upgradeAbilityStat(int level){
+		int dmgBoost = 5 + Math.round(1.5f*level);
+		return augment.damageFactor(min(level)+dmgBoost) + "-" + augment.damageFactor(max(level)+dmgBoost);
 	}
 
 	public static void lungeAbility(Hero hero, Integer target, float dmgMulti, int dmgBoost, MeleeWeapon wep){
@@ -102,7 +117,7 @@ public class Rapier extends MeleeWeapon {
 
 		if (hero.rooted || actualDistance > maxDistance
 				|| actualDistance-(maxDistance -1) > wep.reachFactor(hero)){
-			GLog.w(Messages.get(wep, "ability_bad_position"));
+			GLog.w(Messages.get(wep, "ability_target_range"));
 			if (hero.rooted) PixelScene.shake( 1, 1f );
 			return;
 		}
@@ -137,7 +152,7 @@ public class Rapier extends MeleeWeapon {
 		if (lungeCell == -1) lungeCell = lungeCell2;
 
 		if (lungeCell == -1){
-			GLog.w(Messages.get(wep, "ability_bad_position"));
+			GLog.w(Messages.get(wep, "ability_target_range"));
 			return;
 		}
 
@@ -175,10 +190,16 @@ public class Rapier extends MeleeWeapon {
 						}
 					});
 				} else {
-					wep.beforeAbilityUsed(hero, null);
+					//spends charge but otherwise does not count as an ability use
+					Charger charger = Buff.affect(hero, Charger.class);
+					charger.partialCharge -= 1;
+					while (charger.partialCharge < 0 && charger.charges > 0) {
+						charger.charges--;
+						charger.partialCharge++;
+					}
+					updateQuickslot();
 					GLog.w(Messages.get(Rapier.class, "ability_no_target"));
 					hero.spendAndNext(1/hero.speed());
-					wep.afterAbilityUsed(hero);
 				}
 			}
 		});
