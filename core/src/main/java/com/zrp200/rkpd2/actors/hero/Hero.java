@@ -1246,7 +1246,7 @@ public class Hero extends Char {
 							if (gold.doPickUp( Dungeon.hero )) {
 								DarkGold existing = Dungeon.hero.belongings.getItem(DarkGold.class);
 								if (existing != null && existing.quantity()%5 == 0){
-									if (existing.quantity() >= 40) {
+									if (existing.quantity() >= Blacksmith.Quest.MAX_GOLD) {
 										GLog.p(Messages.get(DarkGold.class, "you_now_have", existing.quantity()));
 									} else {
 										GLog.i(Messages.get(DarkGold.class, "you_now_have", existing.quantity()));

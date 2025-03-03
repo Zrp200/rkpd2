@@ -1072,7 +1072,7 @@ public enum Talent {
 				// suppress message if reran during talent upgrading, because it's bound to be confusing
 				if (!upgrading) {
 					// delegate to proper message instead of creating my own
-					GLog.w(Messages.get(item, item.visiblyCursed() ? item instanceof Wand ? "curse_discover" : "cursed" : "not_cursed"));
+					GLog.w(Messages.get(item, item.visiblyCursed() ? item instanceof Wand ? "curse_discover" : item instanceof Ring ? "cursed_known" : "cursed" : "not_cursed"));
 				}
 			}
 			if (hero.sprite.emitter() != null) hero.sprite.emitter().burst(
