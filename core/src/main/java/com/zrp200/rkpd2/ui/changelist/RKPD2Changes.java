@@ -136,6 +136,24 @@ public enum RKPD2Changes {
                             "Rat King sometimes healing beyond his max hp when eating."
                     ))
             ),
+            new ChangeInfo("v2.0.8", false, TITLE_COLOR,
+                    misc(
+                            list("Iron Will can now be metamorphed.")
+                                    + "\n_Omniability:_" + list(
+                                    "Fixed bugs preventing rolled feint, challenge, elemental strike, nature's power, and wild magic from benefitting from talents",
+                                    "Heroic Leap, Challenge, and Death mark can now be optionally used one extra time directly after use if the corresponding talents are chosen"
+                            )
+                    ),
+                    bugFixes(""
+                            + "_Caused by v2.0.0_:"
+                            + list(
+                                "Blacksmith quest not indicating when it is done",
+                                "crashes whenever a shocking elemental attempts to use its ranged attack",
+                                "!!!NO TEXT FOUND!!! when thief's intuition reveals a ring is cursed"
+                            ) + "\n_Existed Prior:_" + list(
+                                    "Chaotic incorrectly being laballed as an enchantment."
+                            )
+                    )),
             new ChangeInfo("v2.0.7", false, TITLE_COLOR,
                     new ChangeButton(MONASTIC_MIGHT, "Monastic Might",
                             "Finally added a 6th monk talent: Strongman. *coughing* I mean \"_Monastic Might_\"." +
