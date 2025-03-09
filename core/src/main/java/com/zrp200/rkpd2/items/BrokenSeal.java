@@ -223,7 +223,10 @@ public class BrokenSeal extends Item {
 		@Override
 		public synchronized boolean act() {
 			if (Regeneration.regenOn() && shielding() < maxShield()) {
-				partialShield += 1/(RECHARGE_RATE * (1 - ((Hero)target).shiftedPoints(Talent.IRON_WILL)/(float)maxShield())); // this adjusts the seal recharge rate.
+				partialShield += 1/(RECHARGE_RATE * (1 - Math.min(
+						((Hero)target).shiftedPoints(Talent.IRON_WILL),
+						// prevents dividing by 0 and guarantees it takes at least 30 turns to fully recharge in case of metamorph
+						maxShield() - 1) /(float)maxShield()));
 			}
 			
 			while (partialShield >= 1){
