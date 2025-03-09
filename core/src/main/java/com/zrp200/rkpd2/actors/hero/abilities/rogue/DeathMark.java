@@ -154,8 +154,13 @@ public class DeathMark extends ArmorAbility {
 		return new Talent[]{Talent.FEAR_THE_REAPER, Talent.DEATHLY_DURABILITY, Talent.DOUBLE_MARK, Talent.HEROIC_ENERGY};
 	}
 
-	@Override public boolean isTracked() {
+	@Override public boolean isTracked(Hero hero) {
 		return Actor.containsClass(DeathMarkTracker.class);
+	}
+
+	@Override
+	public boolean isActive(Hero hero) {
+		return hero.buff(DoubleMarkTracker.class) != null;
 	}
 
 	public static class DeathMarkTracker extends FlavourBuff {

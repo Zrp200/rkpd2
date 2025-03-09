@@ -182,7 +182,7 @@ public class SmokeBomb extends ArmorAbility {
 	}
 
 	@Override
-	public boolean isTracked() {
+	public boolean isTracked(Hero hero) {
 		// keeps summon stats consistent.
 		return Actor.containsClass(NinjaLog.class);
 	}

@@ -21,6 +21,8 @@
 
 package com.zrp200.rkpd2.actors.hero.abilities.duelist;
 
+import static com.zrp200.rkpd2.actors.hero.abilities.rat_king.OmniAbility.markAbilityUsed;
+
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
@@ -45,6 +47,7 @@ import com.zrp200.rkpd2.actors.buffs.Roots;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
+import com.zrp200.rkpd2.actors.hero.abilities.rat_king.OmniAbility;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.FloatingText;
@@ -154,7 +157,7 @@ public class ElementalStrike extends ArmorAbility {
 			return;
 		}
 
-		armor.useCharge(hero, this);
+		armor.useCharge(hero, this, false);
 
 		Ballistica aim = new Ballistica(hero.pos, target, Ballistica.WONT_STOP);
 
@@ -219,6 +222,7 @@ public class ElementalStrike extends ArmorAbility {
 
 				Invisibility.dispel();
 				hero.spendAndNext(hero.attackDelay());
+				markAbilityUsed(ElementalStrike.this);
 			}
 		});
 

@@ -249,7 +249,6 @@ public class Challenge extends ArmorAbility {
 
 		@Override
 		public void detach() {
-			super.detach();
 			if (target != Dungeon.hero){
 				if (!target.isAlive() || target.alignment == Dungeon.hero.alignment){
 					Sample.INSTANCE.play(Assets.Sounds.BOSS);
@@ -291,6 +290,7 @@ public class Challenge extends ArmorAbility {
 					}
 				}
 			}
+			super.detach();
 		}
 
 		@Override
@@ -314,6 +314,16 @@ public class Challenge extends ArmorAbility {
 			left = bundle.getInt(LEFT);
 			takenDmg = bundle.getInt(TAKEN_DMG);
 		}
+	}
+
+	@Override
+	public boolean isTracked(Hero hero) {
+		return Actor.containsClass(DuelParticipant.class);
+	}
+
+	@Override
+	public boolean isActive(Hero hero) {
+		return hero.buff(EliminationMatchTracker.class) != null;
 	}
 
 	public static class SpectatorFreeze extends FlavourBuff {
