@@ -448,7 +448,8 @@ public class MeleeWeapon extends Weapon {
 				}
 			}
 		} else {
-			info += "\n\n" + Messages.get(MeleeWeapon.class, "stats_unknown", tier, min(hero.getBonus(this)), max(hero.getBonus(this)), STRReq(0));
+			int lvl = hero != null ? hero.getBonus(this) : 0;
+			info += "\n\n" + Messages.get(MeleeWeapon.class, "stats_unknown", tier, min(lvl), max(lvl), STRReq(0));
 			if (hero != null && STRReq(0) > hero.STR()) {
 				info += " " + Messages.get(MeleeWeapon.class, "probably_too_heavy");
 			}
