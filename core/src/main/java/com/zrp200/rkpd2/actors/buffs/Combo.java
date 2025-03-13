@@ -21,6 +21,8 @@
 
 package com.zrp200.rkpd2.actors.buffs;
 
+import static com.zrp200.rkpd2.Dungeon.hero;
+
 import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
@@ -61,20 +63,20 @@ public class Combo extends Buff implements ActionIndicator.Action {
 	{
 		type = buffType.POSITIVE;
 	}
-	
+
 	private int count = 0;
 	private float comboTime = 0f;
 	private float initialComboTime = baseComboTime();
 
 	private static float baseComboTime() {
-		return 5f+(Dungeon.hero != null ? Dungeon.hero.pointsInTalent(Talent.SKILL) : 0);
+		return 5f+(hero != null ? hero.pointsInTalent(Talent.SKILL) : 0);
 	}
 
 	@Override
 	public int icon() {
 		return BuffIndicator.COMBO;
 	}
-	
+
 	@Override
 	public void tintIcon(Image icon) {
 		ComboMove move = getHighestMove();
@@ -94,10 +96,10 @@ public class Combo extends Buff implements ActionIndicator.Action {
 	public String iconTextDisplay() {
 		return Integer.toString((int)comboTime);
 	}
-	
+
 	public void hit( Char enemy ) {
 
-		if(Dungeon.hero.pointsInTalent(Talent.SKILL) == 3 && Random.Int(3) == 0) count++;
+		if(hero.pointsInTalent(Talent.SKILL) == 3 && Random.Int(3) == 0) count++;
 		comboTime = baseComboTime();
 
 		if (!enemy.isAlive() || (enemy.buff(Corruption.class) != null && enemy.HP == enemy.HT)){
@@ -117,7 +119,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 			Badges.validateMasteryCombo( count );
 
 			GLog.p( Messages.get(this, "combo", count) );
-			
+
 		}
 
 		BuffIndicator.refreshHero(); //refresh the buff visually on-hit
@@ -246,38 +248,25 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		}
 
 		public String desc(int count){
+            int leapDistance = count / (hero.hasTalent(Talent.ENHANCED_COMBO) ? 2 : 3);
+            Object[] args = {leapDistance, null};
+            boolean empowered = leapDistance > 0;
 			switch (this){
-				case CLOBBER: default:
-					if (count >= 7 && Dungeon.hero.pointsInTalent(Talent.ENHANCED_COMBO) >= 1){
-						return Messages.get(this, name() + ".empower_desc");
-					} else {
-						return Messages.get(this, name() + ".desc");
-					}
+				case CLOBBER:
+                    empowered = (count >= 7 && hero.pointsInTalent(Talent.RK_GLADIATOR) >= 1)
+                            || count >= 4 && hero.pointsInTalent(Talent.ENHANCED_COMBO) >= 1;
+                    break;
 				case SLAM:
-					if (count >= 3 && Dungeon.hero.pointsInTalent(Talent.ENHANCED_COMBO) >= 3){
-						return Messages.get(this, name() + ".empower_desc", count/3, count*20);
-					} else {
-						return Messages.get(this, name() + ".desc", count*20);
-					}
+                    args[empowered ? 1 : 0] = count * 20;
+                    break;
 				case PARRY:
-					if (count >= 9 && Dungeon.hero.pointsInTalent(Talent.ENHANCED_COMBO) >= 2){
-						return Messages.get(this, name() + ".empower_desc");
-					} else {
-						return Messages.get(this, name() + ".desc");
-					}
+                    empowered = hero.pointsInTalent(Talent.ENHANCED_COMBO) >= 2 || count >= 9 && hero.pointsInTalent(Talent.RK_GLADIATOR) >= 2;
+                    break;
 				case CRUSH:
-					if (count >= 3 && Dungeon.hero.pointsInTalent(Talent.ENHANCED_COMBO) >= 3){
-						return Messages.get(this, name() + ".empower_desc", count/3, count*25);
-					} else {
-						return Messages.get(this,  name() + ".desc", count*25);
-					}
-				case FURY:
-					if (count >= 3 && Dungeon.hero.pointsInTalent(Talent.ENHANCED_COMBO) >= 3){
-						return Messages.get(this, name() + ".empower_desc", count/3);
-					} else {
-						return Messages.get(this,  name() + ".desc");
-					}
+                    args[empowered ? 1 : 0] = count * 25;
+                    break;
 			}
+            return Messages.get(this, name() + (empowered ? ".empower_desc" : ".desc"), args);
 		}
 
 	}
@@ -312,7 +301,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 			Invisibility.dispel();
 			Buff.affect(target, ParryTracker.class, Actor.TICK);
 			((Hero)target).spendAndNext(Actor.TICK);
-			Dungeon.hero.busy();
+			hero.busy();
 		} else {
 			moveBeingUsed = move;
 			GameScene.selectCell(new Selector());
