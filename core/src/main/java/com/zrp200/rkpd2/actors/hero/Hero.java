@@ -2076,7 +2076,7 @@ public class Hero extends Char {
 			this.exp -= maxExp();
 
 			if (buff(Talent.WandPreservationCounter.class) != null
-				&& pointsInTalent(Talent.WAND_PRESERVATION) == 2){
+				&& shiftedPoints(Talent.WAND_PRESERVATION, Talent.POWER_WITHIN) > 1){
 				buff(Talent.WandPreservationCounter.class).detach();
 			}
 

@@ -243,21 +243,23 @@ public class MagesStaff extends MeleeWeapon {
 
 		int oldStaffcharges = this.wand != null ? this.wand.curCharges : 0;
 
-		if (owner == hero && hero.hasTalent(Talent.WAND_PRESERVATION)){
-			Talent.WandPreservationCounter counter = Buff.affect(hero, Talent.WandPreservationCounter.class);
-			if (counter.count() == 0){
+		if (owner == hero && hero.canHaveTalent(Talent.WAND_PRESERVATION) || hero.hasTalent(Talent.POWER_WITHIN)) preserving: {
+
+			if (hero.pointsInTalent(Talent.WAND_PRESERVATION) < 2) {
+				Talent.WandPreservationCounter counter = Buff.affect(hero, Talent.WandPreservationCounter.class);
+				if (counter.count() > 0) break preserving;
 				counter.countUp(1);
-				this.wand.level(0);
-				if (!this.wand.collect()) {
-					level.drop(this.wand, owner.pos);
-				}
-				else {
-					GameScene.pickUp( this, owner.pos );
-					Sample.INSTANCE.play( Assets.Sounds.ITEM );
-				}
-				GLog.newLine();
-				GLog.p(Messages.get(this, "preserved"));
 			}
+			this.wand.level(0);
+			if (!this.wand.collect()) {
+				level.drop(this.wand, owner.pos);
+			}
+			else {
+				GameScene.pickUp( this, owner.pos );
+				Sample.INSTANCE.play( Assets.Sounds.ITEM );
+			}
+			GLog.newLine();
+			GLog.p(Messages.get(this, "preserved"));
 		}
 
 		this.wand = null;
@@ -476,8 +478,8 @@ public class MagesStaff extends MeleeWeapon {
 					}
 
 					String bodyText = Messages.get(MagesStaff.class, "imbue_desc", newLevel);
-					if (hero.hasTalent(Talent.WAND_PRESERVATION, Talent.POWER_WITHIN)
-						&& hero.buff(Talent.WandPreservationCounter.class) == null){
+					int points = hero.shiftedPoints(Talent.WAND_PRESERVATION, Talent.POWER_WITHIN);
+					if (points == 3 || points > 0 && hero.buff(Talent.WandPreservationCounter.class) == null){
 						bodyText += "\n\n" + Messages.get(MagesStaff.class, "imbue_talent");
 					} else {
 						bodyText += "\n\n" + Messages.get(MagesStaff.class, "imbue_lost");

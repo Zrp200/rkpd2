@@ -22,6 +22,7 @@
 package com.zrp200.rkpd2.actors.hero;
 
 import static com.zrp200.rkpd2.Dungeon.hero;
+import static com.zrp200.rkpd2.Dungeon.version;
 
 import static java.lang.Math.max;
 
