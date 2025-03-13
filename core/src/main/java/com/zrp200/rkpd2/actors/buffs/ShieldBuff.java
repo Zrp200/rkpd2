@@ -30,6 +30,8 @@ import com.zrp200.rkpd2.ui.BuffIndicator;
 public abstract class ShieldBuff extends Buff {
 	
 	private int shielding;
+
+	protected boolean detachesAtZero = true;
 	
 	@Override
 	public boolean attachTo(Char target) {
@@ -103,7 +105,7 @@ public abstract class ShieldBuff extends Buff {
 			dmg -= shielding;
 			shielding = 0;
 		}
-		if (shielding == 0){
+		if (shielding <= 0 && detachesAtZero){
 			detach();
 		}
 		if (target != null) target.needsShieldUpdate = true;

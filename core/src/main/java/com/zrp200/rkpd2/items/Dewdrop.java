@@ -82,26 +82,33 @@ public class Dewdrop extends Item {
 
 	public static boolean consumeDew(int quantity, Hero hero, boolean force){
 		//20 drops for a full heal
-		float rawHeal = hero.HT * 0.05f * quantity;
-		int shield = Random.round(rawHeal * hero.pointsInTalent(Talent.SHIELDING_DEW)/4f); // I have a random rounding obsession I guess.
-		int heal = Math.round(rawHeal);
-		int effect = Math.min( hero.HT - hero.HP, heal );
+		float rawEffect = hero.HT * 0.05f * quantity;
+		int shield = Random.round(rawEffect * hero.pointsInTalent(Talent.SHIELDING_DEW)/4f); // I have a random rounding obsession I guess.
+		int effect = Math.round(rawEffect);
+		int heal = Math.min( hero.HT - hero.HP, effect );
 		if (hero.hasTalent(Talent.SHIELDING_DEW,Talent.RK_WARDEN)){
-			shield += heal - effect;
+
+            //When vial is present, this allocates exactly as much of the effect as is needed
+            // to get to 100% HP, and the rest is then given as shielding (without the vial boost)
+            if (quantity > 1 && heal < effect && VialOfBlood.delayBurstHealing()){
+                heal = Math.round(heal/VialOfBlood.totalHealMultiplier());
+            }
+			shield += effect - heal;
 			int maxShield = Math.round(hero.HT *0.2f*hero.pointsInTalent(Talent.SHIELDING_DEW,Talent.RK_WARDEN));
 			int curShield = 0;
 			if (hero.buff(Barrier.class) != null) curShield = hero.buff(Barrier.class).shielding();
 			shield = Math.min(shield, maxShield-curShield);
 		}
-		if (effect > 0 || shield > 0) {
-			if (effect > 0 && quantity > 1 && VialOfBlood.delayBurstHealing()){
+
+		if (heal > 0 || shield > 0) {
+			if (heal > 0 && quantity > 1 && VialOfBlood.delayBurstHealing()){
 				Healing healing = Buff.affect(hero, Healing.class);
-				healing.setHeal(effect, 0, VialOfBlood.maxHealPerTurn());
+				healing.setHeal(heal, 0, VialOfBlood.maxHealPerTurn());
 				healing.applyVialEffect();
 			} else {
-				hero.HP += effect;
-				if (effect > 0) {
-					hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(effect), FloatingText.HEALING);
+				hero.HP += heal;
+				if (heal > 0) {
+					hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(heal), FloatingText.HEALING);
 				}
 			}
 

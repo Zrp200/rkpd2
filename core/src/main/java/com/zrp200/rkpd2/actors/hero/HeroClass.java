@@ -21,6 +21,20 @@
 
 package com.zrp200.rkpd2.actors.hero;
 
+import static com.zrp200.rkpd2.actors.hero.HeroSubClass.ASSASSIN;
+import static com.zrp200.rkpd2.actors.hero.HeroSubClass.BATTLEMAGE;
+import static com.zrp200.rkpd2.actors.hero.HeroSubClass.BERSERKER;
+import static com.zrp200.rkpd2.actors.hero.HeroSubClass.CHAMPION;
+import static com.zrp200.rkpd2.actors.hero.HeroSubClass.FREERUNNER;
+import static com.zrp200.rkpd2.actors.hero.HeroSubClass.GLADIATOR;
+import static com.zrp200.rkpd2.actors.hero.HeroSubClass.KING;
+import static com.zrp200.rkpd2.actors.hero.HeroSubClass.MONK;
+import static com.zrp200.rkpd2.actors.hero.HeroSubClass.PALADIN;
+import static com.zrp200.rkpd2.actors.hero.HeroSubClass.PRIEST;
+import static com.zrp200.rkpd2.actors.hero.HeroSubClass.SNIPER;
+import static com.zrp200.rkpd2.actors.hero.HeroSubClass.WARDEN;
+import static com.zrp200.rkpd2.actors.hero.HeroSubClass.WARLOCK;
+
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Challenges;
@@ -29,13 +43,26 @@ import com.zrp200.rkpd2.QuickSlot;
 import com.zrp200.rkpd2.SPDSettings;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
 import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
-import com.zrp200.rkpd2.actors.hero.abilities.cleric.*;
-import com.zrp200.rkpd2.actors.hero.abilities.duelist.*;
-import com.zrp200.rkpd2.actors.hero.abilities.huntress.*;
-import com.zrp200.rkpd2.actors.hero.abilities.mage.*;
-import com.zrp200.rkpd2.actors.hero.abilities.rat_king.*;
-import com.zrp200.rkpd2.actors.hero.abilities.rogue.*;
-import com.zrp200.rkpd2.actors.hero.abilities.warrior.*;
+import com.zrp200.rkpd2.actors.hero.abilities.cleric.AscendedForm;
+import com.zrp200.rkpd2.actors.hero.abilities.cleric.PowerOfMany;
+import com.zrp200.rkpd2.actors.hero.abilities.cleric.Trinity;
+import com.zrp200.rkpd2.actors.hero.abilities.duelist.Challenge;
+import com.zrp200.rkpd2.actors.hero.abilities.duelist.ElementalStrike;
+import com.zrp200.rkpd2.actors.hero.abilities.duelist.Feint;
+import com.zrp200.rkpd2.actors.hero.abilities.huntress.NaturesPower;
+import com.zrp200.rkpd2.actors.hero.abilities.huntress.SpectralBlades;
+import com.zrp200.rkpd2.actors.hero.abilities.huntress.SpiritHawk;
+import com.zrp200.rkpd2.actors.hero.abilities.mage.ElementalBlast;
+import com.zrp200.rkpd2.actors.hero.abilities.mage.WarpBeacon;
+import com.zrp200.rkpd2.actors.hero.abilities.mage.WildMagic;
+import com.zrp200.rkpd2.actors.hero.abilities.rat_king.OmniAbility;
+import com.zrp200.rkpd2.actors.hero.abilities.rat_king.Wrath;
+import com.zrp200.rkpd2.actors.hero.abilities.rogue.DeathMark;
+import com.zrp200.rkpd2.actors.hero.abilities.rogue.ShadowClone;
+import com.zrp200.rkpd2.actors.hero.abilities.rogue.SmokeBomb;
+import com.zrp200.rkpd2.actors.hero.abilities.warrior.Endure;
+import com.zrp200.rkpd2.actors.hero.abilities.warrior.HeroicLeap;
+import com.zrp200.rkpd2.actors.hero.abilities.warrior.Shockwave;
 import com.zrp200.rkpd2.items.BrokenSeal;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.Waterskin;
@@ -76,8 +103,6 @@ import com.zrp200.rkpd2.items.weapon.missiles.ThrowingStone;
 import com.zrp200.rkpd2.journal.Catalog;
 import com.zrp200.rkpd2.messages.Messages;
 import com.watabou.utils.DeviceCompat;
-
-import static com.zrp200.rkpd2.actors.hero.HeroSubClass.*;
 
 import java.util.Locale;
 
@@ -357,7 +382,7 @@ public enum HeroClass {
 				return Assets.Sprites.HUNTRESS;
 			case DUELIST:
 				return Assets.Sprites.DUELIST;
-			case CLERIC: //TODO CLERIC finish sprite sheet
+			case CLERIC:
 				return Assets.Sprites.CLERIC;
 			case RAT_KING:
 				return Assets.Sprites.RAT_KING_HERO;

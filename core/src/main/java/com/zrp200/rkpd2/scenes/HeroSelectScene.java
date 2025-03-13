@@ -48,6 +48,8 @@ import com.zrp200.rkpd2.windows.WndKeyBindings;
 import com.zrp200.rkpd2.windows.WndMessage;
 import com.zrp200.rkpd2.windows.WndOptions;
 import com.zrp200.rkpd2.windows.WndTextInput;
+import com.zrp200.rkpd2.windows.WndTitledMessage;
+import com.zrp200.rkpd2.windows.WndVictoryCongrats;
 import com.watabou.gltextures.TextureCache;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.Camera;
@@ -61,8 +63,6 @@ import com.watabou.noosa.ui.Component;
 import com.watabou.utils.DeviceCompat;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.PointF;
-import com.zrp200.rkpd2.windows.WndTitledMessage;
-import com.zrp200.rkpd2.windows.WndVictoryCongrats;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -716,9 +716,9 @@ public class HeroSelectScene extends PixelScene {
 								if (diff <= 0) {
 									long time = Game.realTime - (Game.realTime % DAY);
 
-									//earliest possible daily for v2.2.X is Oct 05 2023
-									//which is 19,635 days after Jan 1 1970
-									time = Math.max(time, 19_635 * DAY);
+									//earliest possible daily for v3.0.1 is Mar 01 2025
+									//which is 20,148 days days after Jan 1 1970
+									time = Math.max(time, 20_148 * DAY);
 
 									SPDSettings.lastDaily(time);
 									Dungeon.dailyReplay = false;

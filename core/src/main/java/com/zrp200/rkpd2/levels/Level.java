@@ -67,7 +67,6 @@ import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.Stylus;
-import com.zrp200.rkpd2.items.Torch;
 import com.zrp200.rkpd2.items.artifacts.TalismanOfForesight;
 import com.zrp200.rkpd2.items.artifacts.TimekeepersHourglass;
 import com.zrp200.rkpd2.items.bombs.Bomb;
@@ -361,8 +360,8 @@ public abstract class Level implements Bundlable {
 
 		version = bundle.getInt( VERSION );
 		
-		//saves from before v1.2.3 are not supported
-		if (version < ShatteredPixelDungeon.v1_2_3){
+		//saves from before v2.3.2 are not supported
+		if (version < ShatteredPixelDungeon.v2_3_2){
 			throw new RuntimeException("old save");
 		}
 

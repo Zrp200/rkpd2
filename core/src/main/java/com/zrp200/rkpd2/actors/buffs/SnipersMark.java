@@ -307,7 +307,7 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 
 		final LinkedList<SnipersMark> queue = new LinkedList( hero.buffs(SnipersMark.class) );
 		{
-			Collections.sort(queue, (a,b) -> {
+			Collections.sort(queue, (a, b) -> {
 				// fixme does not take percent damage bonus into account
 				// free-targets go after standard marks, since they have to choose their targets
 				if(a instanceof FreeTarget != b instanceof FreeTarget) return a instanceof FreeTarget ? 1 : -1;

@@ -22,11 +22,9 @@
 package com.zrp200.rkpd2.actors.hero;
 
 import static com.zrp200.rkpd2.Dungeon.hero;
-import static com.zrp200.rkpd2.Dungeon.version;
 
 import static java.lang.Math.max;
 
-import com.watabou.utils.Reflection;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.GamesInProgress;
@@ -57,10 +55,12 @@ import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
 import com.zrp200.rkpd2.actors.hero.spells.DivineSense;
 import com.zrp200.rkpd2.actors.hero.spells.RecallInscription;
 import com.zrp200.rkpd2.actors.mobs.Mob;
+import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.Flare;
 import com.zrp200.rkpd2.effects.FloatingText;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.effects.SpellSprite;
+import com.zrp200.rkpd2.effects.particles.LeafParticle;
 import com.zrp200.rkpd2.items.BrokenSeal;
 import com.zrp200.rkpd2.items.EquipableItem;
 import com.zrp200.rkpd2.items.Item;
@@ -92,13 +92,14 @@ import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.ActionIndicator;
 import com.zrp200.rkpd2.ui.BuffIndicator;
+import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.GameMath;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
-import com.zrp200.rkpd2.utils.GLog;
+import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1166,7 +1167,9 @@ public enum Talent {
 					removed = true;
 				}
 			}
-			if (removed) new Flare( 6, 32 ).color(0xFF4CD2, true).show( Dungeon.hero.sprite, 2f );
+			if (removed && Dungeon.hero.sprite != null) {
+				new Flare( 6, 32 ).color(0xFF4CD2, true).show( Dungeon.hero.sprite, 2f );
+			}
 		}
 	}
 
@@ -1586,25 +1589,11 @@ public enum Talent {
 		//v2.4.0
 		removedTalents.add("TEST_SUBJECT");
 		removedTalents.add("TESTED_HYPOTHESIS");
-		//v2.2.0
-		removedTalents.add("EMPOWERING_SCROLLS");
 	}
 	private static final HashMap<String, String> renamedTalents = new HashMap();
 	static {
 		//v2.4.0
 		renamedTalents.put("SECONDARY_CHARGE",          "VARIED_CHARGE");
-		//v2.2.0
-		renamedTalents.put("RESTORED_WILLPOWER",        "LIQUID_WILLPOWER");
-		renamedTalents.put("ENERGIZING_UPGRADE",        "INSCRIBED_POWER");
-		renamedTalents.put("MYSTICAL_UPGRADE",          "INSCRIBED_STEALTH");
-		renamedTalents.put("RESTORED_NATURE",           "LIQUID_NATURE");
-		renamedTalents.put("RESTORED_AGILITY",          "LIQUID_AGILITY");
-		//v2.1.0
-		renamedTalents.put("LIGHTWEIGHT_CHARGE",        "PRECISE_ASSAULT");
-		//v2.0.0 BETA
-		renamedTalents.put("LIGHTLY_ARMED",             "UNENCUMBERED_SPIRIT");
-		//v2.0.0
-		renamedTalents.put("ARMSMASTERS_INTUITION",     "VETERANS_INTUITION");
 	};
 
 	public static void restoreTalentsFromBundle( Bundle bundle, Hero hero ){

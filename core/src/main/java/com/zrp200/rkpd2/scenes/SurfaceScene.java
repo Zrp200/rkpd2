@@ -22,7 +22,6 @@
 package com.zrp200.rkpd2.scenes;
 
 import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.abilities.Ratmogrify;
@@ -421,7 +420,7 @@ public class SurfaceScene extends PixelScene {
 			}
 			else {
 				texture(Assets.Sprites.AVATARS);
-				//TODO CLERIC victory spriteframe( new TextureFilm( texture, WIDTH, HEIGHT ).get( cl.ordinal() ) );
+				frame( new TextureFilm( texture, WIDTH, HEIGHT ).get( cl.ordinal() ) );
 			}
 		}
 	}
