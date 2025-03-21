@@ -226,6 +226,10 @@ public enum Music {
 	}
 
 	private boolean paused = false;
+
+	public synchronized boolean paused(){
+		return paused;
+	}
 	
 	public synchronized void pause() {
 		paused = true;

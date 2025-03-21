@@ -21,7 +21,6 @@
 
 package com.zrp200.rkpd2.actors.hero;
 
-import com.watabou.utils.BArray;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Bones;
@@ -34,7 +33,37 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.blobs.Blob;
 import com.zrp200.rkpd2.actors.blobs.SacrificialFire;
-import com.zrp200.rkpd2.actors.buffs.*;
+import com.zrp200.rkpd2.actors.buffs.AdrenalineSurge;
+import com.zrp200.rkpd2.actors.buffs.ArtifactRecharge;
+import com.zrp200.rkpd2.actors.buffs.AscensionChallenge;
+import com.zrp200.rkpd2.actors.buffs.Awareness;
+import com.zrp200.rkpd2.actors.buffs.Barkskin;
+import com.zrp200.rkpd2.actors.buffs.Barrier;
+import com.zrp200.rkpd2.actors.buffs.Berserk;
+import com.zrp200.rkpd2.actors.buffs.Bless;
+import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.Charm;
+import com.zrp200.rkpd2.actors.buffs.Combo;
+import com.zrp200.rkpd2.actors.buffs.Drowsy;
+import com.zrp200.rkpd2.actors.buffs.Foresight;
+import com.zrp200.rkpd2.actors.buffs.GreaterHaste;
+import com.zrp200.rkpd2.actors.buffs.HeroDisguise;
+import com.zrp200.rkpd2.actors.buffs.HoldFast;
+import com.zrp200.rkpd2.actors.buffs.Hunger;
+import com.zrp200.rkpd2.actors.buffs.Invisibility;
+import com.zrp200.rkpd2.actors.buffs.Invulnerability;
+import com.zrp200.rkpd2.actors.buffs.Levitation;
+import com.zrp200.rkpd2.actors.buffs.LostInventory;
+import com.zrp200.rkpd2.actors.buffs.MindVision;
+import com.zrp200.rkpd2.actors.buffs.Momentum;
+import com.zrp200.rkpd2.actors.buffs.MonkEnergy;
+import com.zrp200.rkpd2.actors.buffs.Paralysis;
+import com.zrp200.rkpd2.actors.buffs.PhysicalEmpower;
+import com.zrp200.rkpd2.actors.buffs.Recharging;
+import com.zrp200.rkpd2.actors.buffs.Regeneration;
+import com.zrp200.rkpd2.actors.buffs.SnipersMark;
+import com.zrp200.rkpd2.actors.buffs.TimeStasis;
+import com.zrp200.rkpd2.actors.buffs.Vertigo;
 import com.zrp200.rkpd2.actors.hero.abilities.ArmorAbility;
 import com.zrp200.rkpd2.actors.hero.abilities.cleric.AscendedForm;
 import com.zrp200.rkpd2.actors.hero.abilities.duelist.Challenge;
@@ -54,6 +83,7 @@ import com.zrp200.rkpd2.actors.mobs.Snake;
 import com.zrp200.rkpd2.actors.mobs.npcs.Blacksmith;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.CheckedCell;
+import com.zrp200.rkpd2.effects.FloatingText;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.effects.SpellSprite;
 import com.zrp200.rkpd2.effects.Splash;
@@ -80,7 +110,10 @@ import com.zrp200.rkpd2.items.artifacts.TalismanOfForesight;
 import com.zrp200.rkpd2.items.artifacts.TimekeepersHourglass;
 import com.zrp200.rkpd2.items.bags.MagicalHolster;
 import com.zrp200.rkpd2.items.journal.Guidebook;
-import com.zrp200.rkpd2.items.keys.*;
+import com.zrp200.rkpd2.items.keys.CrystalKey;
+import com.zrp200.rkpd2.items.keys.GoldenKey;
+import com.zrp200.rkpd2.items.keys.IronKey;
+import com.zrp200.rkpd2.items.keys.Key;
 import com.zrp200.rkpd2.items.keys.SkeletonKey;
 import com.zrp200.rkpd2.items.potions.Potion;
 import com.zrp200.rkpd2.items.potions.PotionOfExperience;
@@ -145,6 +178,7 @@ import com.zrp200.rkpd2.windows.WndTradeItem;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.tweeners.Delayer;
+import com.watabou.utils.BArray;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.GameMath;
@@ -1656,38 +1690,48 @@ public class Hero extends Char {
 			GLog.w( Messages.get(this, "pain_resist") );
 		}
 
+		//temporarily assign to a float to avoid rounding a bunch
+		float damage = dmg;
+
 		Endure.EndureTracker endure = buff(Endure.EndureTracker.class);
 		if (!(src instanceof Char)){
 			//reduce damage here if it isn't coming from a character (if it is we already reduced it)
 			if (endure != null){
-				dmg = Math.round(endure.adjustDamageTaken(dmg));
+				damage = endure.adjustDamageTaken(dmg);
 			}
 			//the same also applies to challenge scroll damage reduction
 			if (buff(ScrollOfChallenge.ChallengeArena.class) != null){
-				dmg *= 0.67f;
+				damage *= 0.67f;
 			}
 			//and to monk meditate damage reduction
 			if (buff(MonkEnergy.MonkAbility.Meditate.MeditateResistance.class) != null){
-				dmg *= 0.2f;
+				damage *= 0.2f;
 			}
 		}
 
+		//unused, could be removed
 		CapeOfThorns.Thorns thorns = buff( CapeOfThorns.Thorns.class );
 		if (thorns != null) {
-			dmg = thorns.proc(dmg, (src instanceof Char ? (Char)src : null),  this);
+			damage = thorns.proc((int)damage, (src instanceof Char ? (Char)src : null),  this);
 		}
+
+
 		/*// berserker gets rage from all sources. all hail viscosity!
 		// TODO change for 0.9.2?
 		if(!(src instanceof Char) && subClass == HeroSubClass.BERSERKER) {
 			Buff.affect(this, Berserk.class).damage(dmg);
 		}*/
-		dmg = (int)Math.ceil(dmg * RingOfTenacity.damageMultiplier( this ));
 
 		if (buff(Talent.WarriorFoodImmunity.class) != null){
 			int points = pointsInTalent(Talent.IRON_STOMACH,Talent.ROYAL_MEAL);
-			if (points == 1)    dmg = Math.round(dmg*0.25f);
-			if (points == 2)  	dmg = Math.round(dmg*0.00f);
+			if (points == 1)    damage /= 4f;
+			if (points == 2)  	damage = 0;
 		}
+
+		dmg = Math.round(damage);
+
+		//we ceil this one to avoid letting the player easily take 0 dmg from tenacity early
+		dmg = (int)Math.ceil(dmg * RingOfTenacity.damageMultiplier( this ));
 
 		int preHP = HP + shielding();
 		if (src instanceof Hunger) preHP -= shielding();
