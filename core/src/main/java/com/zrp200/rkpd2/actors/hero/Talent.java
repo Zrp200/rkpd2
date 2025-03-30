@@ -904,7 +904,7 @@ public enum Talent {
 			//5/8 turns of recharging.
 			int points = hero.pointsInTalent(ENERGIZING_MEAL_I,ROYAL_MEAL);
 			int duration = 2 + 3*points;
-			if(hero.hasTalent(ENERGIZING_MEAL_I)) Buff.affect( hero, Recharging.class, duration);
+			if(hero.hasTalent(ENERGIZING_MEAL_I)) Buff.append( hero, Recharging.class, duration);
 			if(hero.hasTalent(ROYAL_MEAL)) Buff.prolong(hero, Recharging.class, duration);
 			charge = true;
 		}
@@ -916,24 +916,31 @@ public enum Talent {
 		if(charge) ScrollOfRecharging.charge(hero);
 
 		hero.byTalent( (talent, points) -> {
-			//3/5 turns of recharging
-			int duration = 1 + 2*points;
-			ArtifactRecharge buff = Buff.affect( hero, ArtifactRecharge.class);
-			boolean newBuff = true;
-			if(talent == MYSTICAL_MEAL) {
-				// current behavior 'corrupts' the existing buff if you use a horn of plenty
-				// but this is preferable to the alternative...
-				buff.extend((float)Math.ceil(duration*1.5)); // 5-8 turns of recharge!!!
+			if (talent == MYSTICAL_MEAL) points++;
+			if (points == 0) return;
+			//3/5/8 turns of recharging
+			int duration = (int)Math.ceil(2.5 * points);
+			ArtifactRecharge buff;
+			if (talent == MYSTICAL_MEAL) buff = Buff.append(hero, ArtifactRecharge.class);
+			else {
+				buff = null;
+				for (ArtifactRecharge existing : hero.buffs(ArtifactRecharge.class)) {
+					if (buff == null || (
+							// attempt to select one that matches the horn of plenty setting if possible, otherwise the one that's best boosted.
+							buff.ignoreHornOfPlenty == existing.ignoreHornOfPlenty ?
+									existing.left() < buff.left()
+									: buff.ignoreHornOfPlenty != foodSource instanceof HornOfPlenty
+					)) buff = existing;
+				}
+				if (buff == null) buff = Buff.affect(hero, ArtifactRecharge.class);
 			}
-			else if(buff.left() < duration){
+			if (buff.left() < duration) {
 				buff.set(duration);
-			} else {
-				newBuff = false;
+				buff.ignoreHornOfPlenty = buff.ignoreHornOfPlenty || foodSource instanceof HornOfPlenty;
 			}
-			buff.ignoreHornOfPlenty = buff.ignoreHornOfPlenty || newBuff && foodSource instanceof HornOfPlenty;
 			ScrollOfRecharging.charge( hero );
 			SpellSprite.show(hero, SpellSprite.CHARGE, 0, 1, 1);
-		}, ROYAL_MEAL, MYSTICAL_MEAL );
+		}, true, MYSTICAL_MEAL, ROYAL_MEAL); // royal meal acts second to make it largely redundant with mystical meal
 
 		// 4.5/6 tiles -> 3/5 turns
 		hero.byTalent( (talent, points) -> Buff.affect(hero, Adrenaline.class, 2+2*points),
@@ -970,23 +977,25 @@ public enum Talent {
 				}
 			}
 		}
-		if (hero.hasTalent(ENLIGHTENING_MEAL)){
-			if (hero.heroClass == HeroClass.CLERIC) {
-				HolyTome tome = hero.belongings.getItem(HolyTome.class);
-				if (tome != null) {
-					tome.directCharge( 0.5f * (1+hero.pointsInTalent(ENLIGHTENING_MEAL)));
-					ScrollOfRecharging.charge(hero);
-				}
-			} else {
-				//2/3 turns of recharging
-				ArtifactRecharge buff = Buff.affect( hero, ArtifactRecharge.class);
-				if (buff.left() < 1 + (hero.pointsInTalent(ENLIGHTENING_MEAL))){
-					Buff.affect( hero, ArtifactRecharge.class).set(1 + (hero.pointsInTalent(ENLIGHTENING_MEAL))).ignoreHornOfPlenty = foodSource instanceof HornOfPlenty;
-				}
-				Buff.prolong( hero, Recharging.class, 1 + (hero.pointsInTalent(ENLIGHTENING_MEAL)) );
-				ScrollOfRecharging.charge( hero );
-				SpellSprite.show(hero, SpellSprite.CHARGE);
+		enlighteningMeal: {
+			int points = hero.shiftedPoints(ENLIGHTENING_MEAL);
+			if (points == 0) break enlighteningMeal;
+
+			HolyTome tome = hero.belongings.getItem(HolyTome.class);
+			if (tome != null) {
+				// 1 / 1.5 / 2
+				tome.directCharge( 0.5f * (1+points) );
 			}
+			// cleric gets the recharging too.
+
+			//2/3/5 turns of recharging
+			int duration = Math.max(points - 1, 1) + points;
+			Buff.append( hero, ArtifactRecharge.class )
+					.set(duration)
+					.ignoreHornOfPlenty = foodSource instanceof HornOfPlenty;
+			Buff.append( hero, Recharging.class, duration );
+			ScrollOfRecharging.charge( hero );
+			SpellSprite.show(hero, SpellSprite.CHARGE);
 		}
 	}
 
