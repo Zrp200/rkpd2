@@ -26,8 +26,10 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.MagicImmune;
 import com.zrp200.rkpd2.actors.buffs.Regeneration;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.spells.ClericSpell;
+import com.zrp200.rkpd2.actors.hero.spells.SpellEmpower;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.rings.RingOfEnergy;
@@ -40,6 +42,7 @@ import com.zrp200.rkpd2.ui.ActionIndicator;
 import com.zrp200.rkpd2.ui.HeroIcon;
 import com.zrp200.rkpd2.ui.QuickSlotButton;
 import com.zrp200.rkpd2.utils.GLog;
+import com.zrp200.rkpd2.utils.SafeCast;
 import com.zrp200.rkpd2.windows.WndClericSpells;
 import com.watabou.utils.Bundle;
 
@@ -56,6 +59,12 @@ public class HolyTome extends Artifact {
 		charge = Math.min(level()+3, 10);
 		partialCharge = 0;
 		chargeCap = Math.min(level()+3, 10);
+
+		if (Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.CLERIC) {
+			charge *= 2;
+			chargeCap *= 2;
+			partialCharge *= 2;
+		}
 
 		defaultAction = AC_CAST;
 
@@ -198,7 +207,9 @@ public class HolyTome extends Artifact {
 
 	@Override
 	public Item upgrade() {
-		chargeCap = Math.min(chargeCap + 1, 10);
+		super.upgrade();
+		chargeCap = Math.min(level() + 3, 10);
+		if (Dungeon.hero.heroClass == HeroClass.CLERIC) chargeCap *= 2;
 		return super.upgrade();
 	}
 
@@ -330,6 +341,12 @@ public class HolyTome extends Artifact {
 		@Override
 		public int indicatorColor() {
 			return 0x002157;
+		}
+
+		@Override
+		public boolean usable() {
+			Hero hero = Dungeon.hero;
+			return !cursed && (hero == null || canCast(hero, quickSpell));
 		}
 
 		@Override
