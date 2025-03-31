@@ -1733,9 +1733,14 @@ public class Hero extends Char {
 		}*/
 
 		if (buff(Talent.WarriorFoodImmunity.class) != null){
-			int points = pointsInTalent(Talent.IRON_STOMACH,Talent.ROYAL_MEAL);
-			if (points == 1)    damage /= 4f;
-			if (points == 2)  	damage = 0;
+			final float[] tempD = {damage};
+			byTalent((talent, points) -> {
+				// it stacks, for what it's worth anyway
+				if (talent == Talent.IRON_STOMACH) points++;
+				if (points == 1) tempD[0] /= 4;
+				if (points == 2) tempD[0] = 0;
+			}, true, Talent.IRON_STOMACH,Talent.ROYAL_MEAL);
+			damage = tempD[0];
 		}
 
 		dmg = Math.round(damage);

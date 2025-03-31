@@ -679,13 +679,14 @@ public class Item implements Bundlable {
 							curUser = user;
 							Item.this.detach(user.belongings.backpack).onThrow(cell);
 							user.spend(delay);
-							if (curUser.hasTalent(Talent.IMPROVISED_PROJECTILES,Talent.KINGS_VISION)
-									&& !(Item.this instanceof MissileWeapon)
-									&& curUser.buff(Talent.ImprovisedProjectileCooldown.class) == null){
+							int improvisedProjectiles = curUser.shiftedPoints2(Talent.IMPROVISED_PROJECTILES, Talent.KINGS_VISION);
+							if (improvisedProjectiles > 0
+								&& !(Item.this instanceof MissileWeapon)
+									&& curUser.buff(Talent.ImprovisedProjectileCooldown.class) == null) {
 								Char ch = Actor.findChar(cell);
 								if (ch != null && ch.alignment != curUser.alignment){
 									Sample.INSTANCE.play(Assets.Sounds.HIT);
-									Buff.affect(ch, Blindness.class, 1f + curUser.pointsInTalent(Talent.IMPROVISED_PROJECTILES,Talent.KINGS_VISION));
+									Buff.affect(ch, Blindness.class, 1f + improvisedProjectiles);
 									Talent.Cooldown.affectHero(Talent.ImprovisedProjectileCooldown.class);
 								}
 							}

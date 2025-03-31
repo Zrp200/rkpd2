@@ -43,6 +43,7 @@ import com.zrp200.rkpd2.actors.buffs.GreaterHaste;
 import com.zrp200.rkpd2.actors.buffs.Haste;
 import com.zrp200.rkpd2.actors.buffs.Hunger;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
+import com.zrp200.rkpd2.actors.buffs.Invulnerability;
 import com.zrp200.rkpd2.actors.buffs.PhysicalEmpower;
 import com.zrp200.rkpd2.actors.buffs.Preparation;
 import com.zrp200.rkpd2.actors.buffs.Recharging;
@@ -281,7 +282,7 @@ public enum Talent {
 
 	// TODO is splitting up t2s arbitrarily really a good idea?
 	public static class ImprovisedProjectileCooldown extends Cooldown {
-		public float duration() { return hero.hasTalent(IMPROVISED_PROJECTILES) ? 15 : 50; }
+		public float duration() { return hero.hasTalent(IMPROVISED_PROJECTILES) ? 25 : 50; }
 		public int icon() { return BuffIndicator.TIME; }
 		public void tintIcon(Image icon) { icon.hardlight(0.15f, 0.2f, 0.5f); }
 	};
@@ -874,24 +875,28 @@ public enum Talent {
 	public static class NatureBerriesDropped extends CounterBuff{{revivePersists = true;}};
 
 	public static void onFoodEaten( Hero hero, float foodVal, Item foodSource ){
-        // fixme implement unique hearty meal effect
-		if (hero.hasTalent(HEARTY_MEAL, ROYAL_PRIVILEGE)){
-			//3/5 HP healed, when hero is below 30% health
-			if (hero.HP/(float)hero.HT <= 0.3f) {
-				int healing = 1 + 2 * hero.pointsInTalent(HEARTY_MEAL, ROYAL_PRIVILEGE);
+		//3/5 HP healed, when hero is below 30% health
+		if (hero.HP / (float) hero.HT <= 0.3f) {
+			int healing = Math.max(
+					3 * hero.shiftedPoints(HEARTY_MEAL),
+					(int) Math.ceil(2.5f * hero.pointsInTalent(ROYAL_PRIVILEGE))
+			);
+			if (healing > 0) {
 				hero.HP = Math.min(hero.HP + healing, hero.HT);
 				hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(healing), FloatingText.HEALING);
 			}
 		}
-		if (hero.hasTalent(IRON_STOMACH,ROYAL_MEAL)){
-			if (hero.cooldown() > 0) {
-				if (hero.hasTalent(IRON_STOMACH)) {
-					Buff.prolong(hero, WarriorFoodImmunity.class, hero.cooldown()+1);
-				} else {
+
+		switch (hero.shiftedPoints(IRON_STOMACH, ROYAL_MEAL)) {
+			case 3:
+				Buff.prolong(hero, Invulnerability.class, hero.cooldown() + 1);
+				break;
+			case 1:
+			case 2:
+				if (hero.cooldown() > 0) {
 					Buff.affect(hero, WarriorFoodImmunity.class, hero.cooldown());
 				}
-
-			}
+				break;
 		}
 		boolean charge = false;
 		if (hero.hasTalent(ROYAL_PRIVILEGE)){ // SHPD empowering meal talent
@@ -1274,10 +1279,13 @@ public enum Talent {
 
 	public static int onAttackProc( Hero hero, Char enemy, int dmg ){
 
-		if (hero.hasTalent(Talent.PROVOKED_ANGER, Talent.KINGS_WISDOM)
-			&& hero.buff(ProvokedAngerTracker.class) != null){
-			dmg += 1 + hero.pointsInTalent(Talent.PROVOKED_ANGER);
-			hero.buff(ProvokedAngerTracker.class).detach();
+		if (hero.hasTalent(Talent.PROVOKED_ANGER, Talent.KINGS_WISDOM)) {
+			ProvokedAngerTracker provokedAnger = hero.buff(ProvokedAngerTracker.class);
+			if (provokedAnger != null) {
+				dmg += 1 + Math.max(1, hero.pointsInTalent(false, Talent.PROVOKED_ANGER, KINGS_WISDOM));
+				if (--provokedAnger.left <= 0) provokedAnger.detach();
+			}
+
 		}
 
         int points = hero.pointsInTalent(Talent.LINGERING_MAGIC, KINGS_WISDOM);
@@ -1340,11 +1348,24 @@ public enum Talent {
 		return dmg;
 	}
 
-	public static class ProvokedAngerTracker extends FlavourBuff{
+	public static class ProvokedAngerTracker extends FlavourBuff {
 		{ type = Buff.buffType.POSITIVE; }
+		public int left = 1;
 		public int icon() { return BuffIndicator.WEAPON; }
 		public void tintIcon(Image icon) { icon.hardlight(1.43f, 1.43f, 1.43f); }
 		public float iconFadePercent() { return Math.max(0, 1f - (visualcooldown() / 5)); }
+		private final String LEFT = "left";
+
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put(LEFT, left);
+		}
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			left = Math.max(1, bundle.getInt(LEFT));
+		}
 	}
 	public static class LingeringMagicTracker extends FlavourBuff{
 		{ type = Buff.buffType.POSITIVE; }

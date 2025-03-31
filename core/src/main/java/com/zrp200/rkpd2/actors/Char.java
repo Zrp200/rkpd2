@@ -965,7 +965,8 @@ public abstract class Char extends Actor {
 
 		if (HP > 0 && shielded > 0 && shielding() == 0){
 			if (this instanceof Hero && ((Hero) this).hasTalent(Talent.PROVOKED_ANGER, Talent.KINGS_WISDOM)){
-				Buff.affect(this, Talent.ProvokedAngerTracker.class, 5f);
+				Buff.affect(this, Talent.ProvokedAngerTracker.class, 5f)
+						.left = 1 + ((Hero) this).pointsInTalent(Talent.PROVOKED_ANGER);
 			}
 		}
 
