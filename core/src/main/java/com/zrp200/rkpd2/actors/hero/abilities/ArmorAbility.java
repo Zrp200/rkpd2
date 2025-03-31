@@ -74,22 +74,9 @@ public abstract class ArmorAbility implements Bundlable {
 		float chargeUse = baseChargeUse;
 		// we only want Heroic Energy to apply if it's supposed to apply; because it's so generally distributed
 		if (hasTalent(Talent.HEROIC_ENERGY) && hero.hasTalent(Talent.HEROIC_ENERGY)){
-			// shpd reduced charge use by 12%/23%/32%/40%
-			// rkpd2 reduced charge use by 16/30/40/50%
-			switch (hero.pointsInTalent(Talent.HEROIC_ENERGY)){
-				case 1:
-					chargeUse *= 0.84f/*0.88f*/;
-					break;
-				case 2:
-					chargeUse *= 0.3f;/*0.77f*/;
-					break;
-				case 3:
-					chargeUse *= 0.4f/*0.68f*/;
-					break;
-				case 4:
-					chargeUse *= 0.5f/*0.6f*/;
-					break;
-			}
+			// roughly double as effective as shattered heroic energy
+			// 20/35/48/58/66%
+			chargeUse *= Math.round(Math.pow(.8036, hero.shiftedPoints(Talent.HEROIC_ENERGY)) * 100)/100f;
 		}
 		return chargeUse;
 	}
