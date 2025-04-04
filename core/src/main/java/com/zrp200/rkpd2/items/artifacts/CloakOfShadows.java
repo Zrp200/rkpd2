@@ -21,6 +21,8 @@
 
 package com.zrp200.rkpd2.items.artifacts;
 
+import static com.zrp200.rkpd2.Dungeon.hero;
+
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
@@ -60,13 +62,17 @@ public class CloakOfShadows extends Artifact {
 		partialCharge = 0;
 		chargeCap = Math.min(level()+3, 10);
 
+		{
+			if (hero != null && hero.heroClass == HeroClass.ROGUE) {
+				doubleCharges();
+			}
+		}
+
 		defaultAction = AC_STEALTH;
 
 		unique = true;
 		bones = false;
 	}
-
-	public static final float ROGUE_BOOST = 1.5f;
 
 	public static final String AC_STEALTH = "STEALTH";
 
@@ -177,7 +183,7 @@ public class CloakOfShadows extends Artifact {
 		return new cloakStealth();
 	}
 
-	public static final float LC_FACTOR =.2f, LC_FACTOR_RK =0.75f/3f;
+	public static final float LC_FACTOR =0.25f, LC_FACTOR_RK =LC_FACTOR;
 	@Override
 	public void charge(Hero target, float amount) {
 		if (cursed || target.buff(MagicImmune.class) != null) return;
@@ -187,7 +193,6 @@ public class CloakOfShadows extends Artifact {
 			if (!isEquipped(target)) amount *= target.byTalent(
 					Talent.LIGHT_CLOAK, LC_FACTOR,
 					Talent.RK_FREERUNNER, LC_FACTOR_RK);
-			if(target.heroClass == HeroClass.ROGUE) amount *= ROGUE_BOOST;
 			partialCharge += 0.25f*amount;
 			while (partialCharge >= 1f) {
 				charge++;
@@ -209,6 +214,7 @@ public class CloakOfShadows extends Artifact {
 	@Override
 	public Item upgrade() {
 		chargeCap = Math.min(chargeCap + 1, 10);
+		if (hero.heroClass == HeroClass.ROGUE) chargeCap *= 2;
 		return super.upgrade();
 	}
 
@@ -230,6 +236,14 @@ public class CloakOfShadows extends Artifact {
 		}
 	}
 
+	// used for loading pre-3.0.0 saves
+	public void doubleCharges() {
+		partialCharge *= 2;
+		charge = 2 * charge + (int)partialCharge;
+		partialCharge %= 1;
+		chargeCap *= 2;
+	}
+
 	@Override
 	public int value() {
 		return 0;
@@ -243,11 +257,10 @@ public class CloakOfShadows extends Artifact {
 					float missing = (chargeCap - charge);
 					if (level() > 7) missing += 5*(level() - 7)/3f;
 					float turnsToCharge = (45 - missing);
-					if(((Hero)target).heroClass == HeroClass.ROGUE) turnsToCharge /= ROGUE_BOOST;
 					turnsToCharge /= RingOfEnergy.artifactChargeMultiplier(target);
 					float chargeToGain = (1f / turnsToCharge);
-					if (!isEquipped(Dungeon.hero)){
-						chargeToGain *= Dungeon.hero.byTalent(
+					if (!isEquipped(hero)){
+						chargeToGain *= hero.byTalent(
 								Talent.LIGHT_CLOAK, LC_FACTOR,
 								Talent.RK_FREERUNNER, LC_FACTOR_RK);
 					}

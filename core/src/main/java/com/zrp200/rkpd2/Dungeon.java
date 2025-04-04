@@ -33,6 +33,7 @@ import com.zrp200.rkpd2.actors.buffs.MindVision;
 import com.zrp200.rkpd2.actors.buffs.RevealedArea;
 import com.zrp200.rkpd2.actors.buffs.Terror;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.cleric.PowerOfMany;
 import com.zrp200.rkpd2.actors.hero.abilities.huntress.SpiritHawk;
@@ -47,6 +48,7 @@ import com.zrp200.rkpd2.items.Amulet;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Heap;
 import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
 import com.zrp200.rkpd2.items.artifacts.TalismanOfForesight;
 import com.zrp200.rkpd2.items.potions.Potion;
 import com.zrp200.rkpd2.items.rings.Ring;
@@ -814,6 +816,12 @@ public class Dungeon {
 
 		Statistics.restoreFromBundle( bundle );
 		Generator.restoreFromBundle( bundle );
+
+		if (version < ShatteredPixelDungeon.v3_0_0 && hero.heroClass == HeroClass.ROGUE) {
+			for (CloakOfShadows s : hero.belongings.getAllItems(CloakOfShadows.class)) {
+				s.doubleCharges();
+			}
+		}
 
 	}
 	
