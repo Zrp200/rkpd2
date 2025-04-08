@@ -443,6 +443,16 @@ public class Hero extends Char {
 	public int shiftedPoints( Talent shifted, Talent standard ) {
 		return Math.max(shiftedPoints(shifted), pointsInTalent(standard));
 	}
+
+	/** shifts [shifted[ so that +0 is +1, +1 is +2 +2 is +4, +3 is +6**/
+	public int shiftedPoints2( Talent shifted ) {
+		return hasTalent(shifted) ? 2 * pointsInTalent(shifted) : canHaveTalent(shifted) ? 1 : 0;
+	}
+	/** shifts [shifted[ so that +0 is +1, +1 is +2 +2 is +4, +3 is +6**/
+	public int shiftedPoints2( Talent shifted, Talent standard ) {
+		return Math.max(shiftedPoints2(shifted), pointsInTalent(standard));
+	}
+
 	/** gives a free +1 when the heroclass matches [cls] */
 	public int pointsInTalentWithInnate( HeroClass cls, Talent... talents) {
 		int points = pointsInTalent(talents);
