@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.watabou.noosa.Image;
+import com.zrp200.rkpd2.utils.SafeCast;
 
 public class Adrenaline extends FlavourBuff {
 	
@@ -44,7 +45,8 @@ public class Adrenaline extends FlavourBuff {
 
 	@Override
 	public float iconFadePercent() {
-		float duration = target instanceof Hero ? 2+2*((Hero)target).pointsInTalent(Talent.INVIGORATING_MEAL) : DURATION;
+		float duration = target instanceof Hero ? 2+2*((Hero)target).pointsInTalent(false, Talent.INVIGORATING_MEAL, Talent.LETHAL_HASTE)
+				: DURATION;
 		return Math.max(0, (duration - visualcooldown()) / duration);
 	}
 	

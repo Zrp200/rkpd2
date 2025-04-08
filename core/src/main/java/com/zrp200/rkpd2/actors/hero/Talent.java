@@ -555,27 +555,21 @@ public enum Talent {
 	};
 	public static class LethalHasteCooldown extends Cooldown {
 		public static void applyLethalHaste(Hero hero, boolean viaAbility) {
-			if (!hero.hasTalent(LETHAL_HASTE)) return;
-			if (viaAbility) {
-				// using it as intended removes the cooldown.
-				// You'll always be able to use it at least once in a chain. Very balanced I know.
-				detach(hero, LethalHasteCooldown.class);
-			} else {
+			int points = hero.shiftedPoints(LETHAL_HASTE);
+			if (points == 0) return;
+			boolean hasTalent = points > 1;
+			if (hasTalent) points--;
+			int duration = 2 + 2 * points;
+			if (hasTalent) Buff.prolong(hero, Adrenaline.class, duration); // :D
+			if (!hero.heroClass.is(HeroClass.DUELIST)) {
 				if (hero.buff(LethalHasteCooldown.class) != null) return;
-				affectHero(LethalHasteCooldown.class);
-			}
-			// todo shift
-			int duration = 2 * 2 + hero.pointsInTalent(LETHAL_HASTE);
+				Cooldown.affectHero(LethalHasteCooldown.class);
+			} else if (!viaAbility) return;
 			Buff.affect(hero, GreaterHaste.class).set(duration);
-			Buff.prolong(hero, Adrenaline.class, duration); // :D
-
 		}
 		public int icon() { return BuffIndicator.TIME; }
 		public void tintIcon(Image icon) { icon.hardlight(0.35f, 0f, 0.7f); }
-		@Override
-		public float duration() {
-			return hero.heroClass == HeroClass.DUELIST ? 100 : 50;
-		}
+		@Override public float duration() { return 50; }
 	};
 	public static class SwiftEquipCooldown extends FlavourBuff{
 		public boolean secondUse;
