@@ -30,6 +30,7 @@ import com.zrp200.rkpd2.actors.buffs.Momentum;
 import com.zrp200.rkpd2.actors.buffs.MonkEnergy;
 import com.zrp200.rkpd2.actors.buffs.Preparation;
 import com.zrp200.rkpd2.actors.buffs.SnipersMark;
+import com.zrp200.rkpd2.items.artifacts.HolyTome;
 import com.zrp200.rkpd2.items.weapon.melee.MeleeWeapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.PixelScene;
@@ -191,7 +192,9 @@ public class ActionIndicator extends Tag {
 			Momentum.class,
 			MonkEnergy.class,
 			Berserk.class,
-			MeleeWeapon.Charger.class};
+			MeleeWeapon.Charger.class,
+			HolyTome.TomeRecharge.class
+	};
 	private static boolean findAction(boolean cycle) {
 		if(Dungeon.hero == null) return false;
 		if(action == null) cycle = false;

@@ -29,7 +29,6 @@ import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.spells.ClericSpell;
-import com.zrp200.rkpd2.actors.hero.spells.SpellEmpower;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.rings.RingOfEnergy;
@@ -42,7 +41,6 @@ import com.zrp200.rkpd2.ui.ActionIndicator;
 import com.zrp200.rkpd2.ui.HeroIcon;
 import com.zrp200.rkpd2.ui.QuickSlotButton;
 import com.zrp200.rkpd2.utils.GLog;
-import com.zrp200.rkpd2.utils.SafeCast;
 import com.zrp200.rkpd2.windows.WndClericSpells;
 import com.watabou.utils.Bundle;
 
@@ -152,7 +150,7 @@ public class HolyTome extends Artifact {
 	}
 
 	public boolean canCast( Hero hero, ClericSpell spell ){
-		return (isEquipped(hero) || (Dungeon.hero.hasTalent(Talent.LIGHT_READING) && hero.belongings.contains(this)))
+		return spell != null && (isEquipped(hero) || (Dungeon.hero.hasTalent(Talent.LIGHT_READING) && hero.belongings.contains(this)))
 				&& hero.buff(MagicImmune.class) == null
 				&& charge >= spell.chargeUse(hero)
 				&& spell.canCast(hero);
@@ -324,6 +322,9 @@ public class HolyTome extends Artifact {
 			updateQuickslot();
 
 			spend( TICK );
+			if (ActionIndicator.action != this) {
+				ActionIndicator.setAction(this);
+			}
 
 			return true;
 		}
