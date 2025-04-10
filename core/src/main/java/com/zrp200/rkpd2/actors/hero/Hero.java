@@ -695,7 +695,12 @@ public class Hero extends Char {
 		Combo.ParryTracker parry = buff(Combo.ParryTracker.class);
 		if (parry != null){
 			parry.parried = true;
-			if (buff(Combo.class).getComboCount() < 9 && !hasTalent(Talent.ENHANCED_COMBO) || pointsInTalent(Talent.ENHANCED_COMBO,Talent.RK_GLADIATOR) < 2){
+			int enhancedCombo = pointsInTalent(Talent.ENHANCED_COMBO);
+			int req = pointsInTalent(Talent.RK_GLADIATOR) >= 2 ? 9 :
+					// 12 / 9 / 6
+					enhancedCombo > 0 ? 12 - 3 * (enhancedCombo - 1) :
+							-1;
+			if (req == -1 && buff(Combo.class).getComboCount() < req){
 				parry.detach();
 			}
 			return Messages.get(Monk.class, "parried");
