@@ -29,6 +29,7 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Barrier;
 import com.zrp200.rkpd2.actors.buffs.Blindness;
 import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.Combo;
 import com.zrp200.rkpd2.actors.buffs.Degrade;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.buffs.MagicImmune;
@@ -242,6 +243,20 @@ public abstract class Wand extends Item {
 		if (Dungeon.hero.subClass == HeroSubClass.PRIEST && target.buff(GuidingLight.Illuminated.class) != null) {
 			target.buff(GuidingLight.Illuminated.class).detach();
 			target.damage(Dungeon.hero.lvl, GuidingLight.INSTANCE);
+		}
+
+		if (target.alignment == Char.Alignment.ENEMY) everythingIsAWeapon: {
+			int points = Dungeon.hero.pointsInTalent(Talent.EVERYTHING_IS_A_WEAPON);
+			if (points == 0) break everythingIsAWeapon;
+			if (Random.Int(Talent.EVERYTHING_IS_A_WEAPON.maxPoints()) < points) {
+				// delayed to catch the target being dead
+				Actor.add(() -> Buff.affect(Dungeon.hero, Combo.class).hit(target));
+			} else {
+				Combo combo = Dungeon.hero.buff(Combo.class);
+				if (combo != null) {
+					combo.resetTime();
+				}
+			}
 		}
 
 		if (target.alignment != Char.Alignment.ALLY

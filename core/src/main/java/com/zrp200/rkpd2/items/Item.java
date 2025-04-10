@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.items;
 
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
@@ -29,6 +30,7 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Blindness;
 import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.Combo;
 import com.zrp200.rkpd2.actors.buffs.Degrade;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -679,17 +681,36 @@ public class Item implements Bundlable {
 							curUser = user;
 							Item.this.detach(user.belongings.backpack).onThrow(cell);
 							user.spend(delay);
-							int improvisedProjectiles = curUser.shiftedPoints2(Talent.IMPROVISED_PROJECTILES, Talent.KINGS_VISION);
-							if (improvisedProjectiles > 0
-								&& !(Item.this instanceof MissileWeapon)
-									&& curUser.buff(Talent.ImprovisedProjectileCooldown.class) == null) {
-								Char ch = Actor.findChar(cell);
-								if (ch != null && ch.alignment != curUser.alignment){
-									Sample.INSTANCE.play(Assets.Sounds.HIT);
+							Char ch = Actor.findChar(cell);
+							if (ch != null) {
+								float playHitIntensity = 0;
+								int improvisedProjectiles = curUser.shiftedPoints2(Talent.IMPROVISED_PROJECTILES, Talent.KINGS_VISION);
+								if (ch.alignment != curUser.alignment && improvisedProjectiles > 0
+										&& !(Item.this instanceof MissileWeapon)
+										&& curUser.buff(Talent.ImprovisedProjectileCooldown.class) == null) {
+									playHitIntensity = 1;
 									Buff.affect(ch, Blindness.class, 1f + improvisedProjectiles);
 									Talent.Cooldown.affectHero(Talent.ImprovisedProjectileCooldown.class);
 								}
+								if (ch.alignment == Char.Alignment.ENEMY) everythingIsAWeapon: {
+									int points = curUser.pointsInTalent(Talent.EVERYTHING_IS_A_WEAPON);
+									if (points == 0) break everythingIsAWeapon;
+									if (Random.Int(3) < points) {
+										playHitIntensity = 1;
+										Buff.affect(curUser, Combo.class).hit(ch);
+									} else {
+										Combo combo = curUser.buff(Combo.class);
+										if (combo != null) {
+											combo.resetTime();
+											playHitIntensity = 0.5f;
+										}
+									}
+								}
+								if (playHitIntensity > 0) {
+									Sample.INSTANCE.play(Assets.Sounds.HIT, playHitIntensity);
+								}
 							}
+
 							if(!forceSkipDelay) user.next();
 						}
 					});

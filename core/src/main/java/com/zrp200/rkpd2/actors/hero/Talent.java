@@ -118,9 +118,9 @@ public enum Talent {
 	HOLD_FAST(9, 3), STRONGMAN(10, 3),
 	//Berserker T3
 	// yes, yes, I kept both talents and then swapped their icons... deal with it. Why does the one that protects you from death have a + next to it?
-	ENDLESS_RAGE(11, 3), DEATHLESS_FURY(29, 3), BERSERKING_STAMINA(12, 3), ENRAGED_CATALYST(13, 3), ONE_MAN_ARMY(30,3),
+	ENDLESS_RAGE(11, 3), DEATHLESS_FURY(28, 3), BERSERKING_STAMINA(12, 3), ENRAGED_CATALYST(13, 3), ONE_MAN_ARMY(29,3),
 	//Gladiator T3
-	CLEAVE(14, 3), LETHAL_DEFENSE(15, 3), ENHANCED_COMBO(16, 3), SKILL(31,3),
+	CLEAVE(14, 3), LETHAL_DEFENSE(15, 3), ENHANCED_COMBO(16, 3), SKILL(30, 3), EVERYTHING_IS_A_WEAPON(31, 3),
 	//Heroic Leap T4
 	BODY_SLAM(17, 4), IMPACT_WAVE(18, 4), DOUBLE_JUMP(19, 4),
 	//Shockwave T4
@@ -1520,7 +1520,7 @@ public enum Talent {
 				Collections.addAll(tierTalents, ENDLESS_RAGE, DEATHLESS_FURY, ENRAGED_CATALYST, BERSERKING_STAMINA, ONE_MAN_ARMY);
 				break;
 			case GLADIATOR:
-				Collections.addAll(tierTalents, CLEAVE, LETHAL_DEFENSE, ENHANCED_COMBO, SKILL);
+				Collections.addAll(tierTalents, CLEAVE, LETHAL_DEFENSE, ENHANCED_COMBO, SKILL, EVERYTHING_IS_A_WEAPON);
 				break;
 			case BATTLEMAGE:
 				Collections.addAll(tierTalents, EMPOWERED_STRIKE, MYSTICAL_CHARGE, EXCESS_CHARGE, SORCERY);

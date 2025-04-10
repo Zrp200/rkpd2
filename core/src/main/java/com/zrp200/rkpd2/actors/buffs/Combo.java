@@ -97,6 +97,13 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		return Integer.toString((int)comboTime);
 	}
 
+	public void resetTime(float time) {
+		comboTime = Math.max(time, comboTime);
+	}
+	public void resetTime() {
+		resetTime(baseComboTime());
+	}
+
 	public void hit( Char enemy ) {
 
 		if(hero.pointsInTalent(Talent.SKILL) == 3 && Random.Int(3) == 0) count++;
