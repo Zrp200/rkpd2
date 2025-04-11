@@ -27,6 +27,7 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.RevealedArea;
+import com.zrp200.rkpd2.actors.buffs.SnipersMark;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -62,7 +63,9 @@ import com.watabou.utils.Reflection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -256,7 +259,13 @@ public class SpiritBow extends Weapon {
 		return this;
 	}
 
-	public SpiritArrow knockArrow(){
+	public SpiritArrow knockArrow(Collection<Char> sniperSpecialTargets){
+		SpiritArrow arrow = knockArrow();
+		arrow.sniperSpecial = true;
+		arrow.sniperSpecialTargets = sniperSpecialTargets;
+		return arrow;
+	}
+	public SpiritArrow knockArrow() {
 		return new SpiritArrow();
 	}
 
@@ -269,7 +278,8 @@ public class SpiritBow extends Weapon {
 			hitSound = Assets.Sounds.HIT_ARROW;
 		}
 
-		public boolean sniperSpecial = false;
+		private boolean sniperSpecial = false;
+		private Collection<Char> sniperSpecialTargets;
 		public float sniperSpecialBonusDamage = 0f;
 
 		@Override
@@ -283,6 +293,24 @@ public class SpiritBow extends Weapon {
 			} else {
 				return super.emitter();
 			}
+		}
+
+		@Override
+		public int throwPos(Hero user, int dst) {
+			int throwPos = super.throwPos(user, dst);
+			if (sniperSpecial && throwPos != dst) {
+				Char ch = Actor.findChar(throwPos);
+				if (ch != null && sniperSpecialTargets.contains(ch)) {
+					try {
+						// remove character and try again
+						ch.pos = -1;
+						return throwPos(user, dst);
+					} finally {
+						ch.pos = throwPos;
+					}
+				}
+			}
+			return throwPos;
 		}
 
 		@Override
