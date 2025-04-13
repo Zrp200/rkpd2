@@ -37,6 +37,7 @@ import com.zrp200.rkpd2.actors.buffs.Blindness;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Burning;
 import com.zrp200.rkpd2.actors.buffs.ChampionEnemy;
+import com.zrp200.rkpd2.actors.buffs.Cooldown;
 import com.zrp200.rkpd2.actors.buffs.LockedFloor;
 import com.zrp200.rkpd2.actors.buffs.MagicalSight;
 import com.zrp200.rkpd2.actors.buffs.MindVision;
@@ -1151,7 +1152,7 @@ public abstract class Level implements Bundlable {
 					Talent.RejuvenatingStepsFurrow.record();
 				}
 				GameScene.updateMap(ch.pos);
-				Talent.Cooldown.affectHero(Talent.RejuvenatingStepsCooldown.class);
+				Cooldown.affectHero(Talent.RejuvenatingStepsCooldown.class);
 			}
 
 			if (pit[ch.pos]){

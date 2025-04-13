@@ -49,7 +49,7 @@ public class RevealedArea extends FlavourBuff{
 		this.depth = Dungeon.depth;
 		this.branch = Dungeon.branch;
 		spend( duration() );
-		Talent.Cooldown.affectHero(Talent.SeerShotCooldown.class);
+		Cooldown.affectHero(Talent.SeerShotCooldown.class);
 	}
 
 	@Override

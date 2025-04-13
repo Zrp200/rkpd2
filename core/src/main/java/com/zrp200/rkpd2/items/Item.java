@@ -31,6 +31,7 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Blindness;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Combo;
+import com.zrp200.rkpd2.actors.buffs.Cooldown;
 import com.zrp200.rkpd2.actors.buffs.Degrade;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -658,7 +659,7 @@ public class Item implements Bundlable {
 											Talent.IMPROVISED_PROJECTILES, 1.5f,
 											Talent.KINGS_VISION, 1.0f);
 									Buff.affect(ch, Blindness.class, Math.round(duration));
-									Talent.Cooldown.affectHero(Talent.ImprovisedProjectileCooldown.class);
+									Cooldown.affectHero(Talent.ImprovisedProjectileCooldown.class);
 								}
 							}
 							if(!forceSkipDelay) {
@@ -690,7 +691,7 @@ public class Item implements Bundlable {
 										&& curUser.buff(Talent.ImprovisedProjectileCooldown.class) == null) {
 									playHitIntensity = 1;
 									Buff.affect(ch, Blindness.class, 1f + improvisedProjectiles);
-									Talent.Cooldown.affectHero(Talent.ImprovisedProjectileCooldown.class);
+									Cooldown.affectHero(Talent.ImprovisedProjectileCooldown.class);
 								}
 								if (ch.alignment == Char.Alignment.ENEMY) everythingIsAWeapon: {
 									int points = curUser.pointsInTalent(Talent.EVERYTHING_IS_A_WEAPON);

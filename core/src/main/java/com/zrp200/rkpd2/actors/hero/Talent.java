@@ -36,6 +36,7 @@ import com.zrp200.rkpd2.actors.buffs.AllyBuff;
 import com.zrp200.rkpd2.actors.buffs.ArtifactRecharge;
 import com.zrp200.rkpd2.actors.buffs.Barrier;
 import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.Cooldown;
 import com.zrp200.rkpd2.actors.buffs.CounterBuff;
 import com.zrp200.rkpd2.actors.buffs.EnhancedRings;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
@@ -267,18 +268,6 @@ public enum Talent {
 	AFTERSHOCK(RK_MONK.icon+10,4), RAT_BLAST(AFTERSHOCK.icon+1,4), SMOKE_AND_MIRRORS(AFTERSHOCK.icon+2,4), SEA_OF_BLADES(AFTERSHOCK.icon+3,4);
 
 	protected String[] aliases = new String[0];
-
-	public static abstract class Cooldown extends FlavourBuff {
-		public static <T extends Cooldown> void affectHero(Class<T> cls) {
-			if(cls == Cooldown.class) return;
-			T buff = Buff.affect(hero, cls);
-			buff.spend( buff.duration() );
-		}
-		public abstract float duration();
-		public float iconFadePercent() { return GameMath.gate(0, visualcooldown() / duration(),1); }
-		public String toString() { return Messages.get(this, "name"); }
-		public String desc() { return Messages.get(this, "desc", dispTurns(visualcooldown())); }
-	}
 
 	// TODO is splitting up t2s arbitrarily really a good idea?
 	public static class ImprovisedProjectileCooldown extends Cooldown {
