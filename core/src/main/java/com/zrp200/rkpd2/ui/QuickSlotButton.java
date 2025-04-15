@@ -28,6 +28,7 @@ import com.zrp200.rkpd2.SPDSettings;
 import com.zrp200.rkpd2.Statistics;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.Waterskin;
 import com.zrp200.rkpd2.messages.Messages;
@@ -343,13 +344,17 @@ public class QuickSlotButton extends Button {
 
 	}
 
+	public interface Aimable {
+		int targetingPos(Hero hero, int pos);
+	}
+
 	public static int autoAim(Char target){
 		//will use generic projectile logic if no item is specified
 		return autoAim(target, new Item());
 	}
 
 	//FIXME: this is currently very expensive, should either optimize ballistica or this, or both
-	public static int autoAim(Char target, Item item){
+	public static int autoAim(Char target, Aimable item){
 
 		//first try to directly target
 		if (item.targetingPos(Dungeon.hero, target.pos) == target.pos) {
