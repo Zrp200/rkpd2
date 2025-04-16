@@ -1198,6 +1198,9 @@ public abstract class Char extends Actor {
 		}
 		return null;
 	}
+	public synchronized <T extends Buff> T virtualBuff( Class<T> c) {
+		return buff(c, false);
+	}
 
 	public synchronized boolean isCharmedBy( Char ch ) {
 		int chID = ch.id();
