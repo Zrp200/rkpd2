@@ -81,6 +81,29 @@ public class HallowedGround extends TargetedClericSpell {
 		return super.canCast(hero) && hero.hasTalent(Talent.HALLOWED_GROUND);
 	}
 
+	private static boolean multicast = false;
+
+	@Override
+	public void onCast(HolyTome tome, Hero hero) {
+		if (SpellEmpower.isActive()) {
+			try {
+				for (Char ch : Actor.chars()) {
+					if (Dungeon.level.heroFOV[ch.pos]) {
+						if (!multicast) {
+							GLog.p(Messages.get(SpellEmpower.class, "affect_all"));
+							multicast = true;
+						}
+						onTargetSelected(tome, hero, ch.pos);
+					}
+				}
+			} finally {
+				multicast = false;
+			}
+		} else {
+			super.onCast(tome, hero);
+		}
+	}
+
 	@Override
 	protected void onTargetSelected(HolyTome tome, Hero hero, Integer target) {
 
@@ -126,6 +149,8 @@ public class HallowedGround extends TargetedClericSpell {
 		for (Char ch : affected){
 			affectChar(ch);
 		}
+
+		if (multicast && Actor.findChar(target) != hero) return;
 
 		//5 casts per hero level before furrowing
 		Buff.affect(hero, HallowedFurrowTracker.class).countUp(1);

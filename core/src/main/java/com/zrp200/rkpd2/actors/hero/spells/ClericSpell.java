@@ -45,6 +45,10 @@ public abstract class ClericSpell {
 		return 1;
 	}
 
+	public boolean ignoreChargeUse() {
+		return SpellEmpower.isActive();
+	}
+
 	public boolean canCast( Hero hero ){
 		return true;
 	}
@@ -58,11 +62,15 @@ public abstract class ClericSpell {
 	}
 
 	public String desc(){
-		return Messages.get(this, "desc") + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+		return Messages.get(this, "desc", getDescArgs()) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+	}
+
+	protected Object[] getDescArgs() {
+		return new Object[0];
 	}
 
 	public boolean usesTargeting(){
-		return false;
+		return targetingFlags() != -1;
 	}
 
 	public int targetingFlags(){
@@ -158,6 +166,9 @@ public abstract class ClericSpell {
 			if (cleric.hasTalent(Talent.MNEMONIC_PRAYER)){
 				spells.add(MnemonicPrayer.INSTANCE);
 			}
+			if (cleric.hasTalent(Talent.DIVINE_ADVENT)) {
+				spells.add(SpellEmpower.DivineAdvent.INSTANCE);
+			}
 
 			if (cleric.hasTalent(Talent.LAY_ON_HANDS)){
 				spells.add(LayOnHands.INSTANCE);
@@ -167,6 +178,9 @@ public abstract class ClericSpell {
 			}
 			if (cleric.hasTalent(Talent.WALL_OF_LIGHT)){
 				spells.add(WallOfLight.INSTANCE);
+			}
+			if (cleric.hasTalent(Talent.LIMIT_BREAK)) {
+				spells.add(SpellEmpower.LimitBreak.INSTANCE);
 			}
 
 		} else if (tier == 4){
@@ -222,10 +236,12 @@ public abstract class ClericSpell {
 		spells.add(Smite.INSTANCE);
 		spells.add(LayOnHands.INSTANCE);
 		spells.add(AuraOfProtection.INSTANCE);
+		spells.add(SpellEmpower.DivineAdvent.INSTANCE);
 		spells.add(WallOfLight.INSTANCE);
 		spells.add(HolyLance.INSTANCE);
 		spells.add(HallowedGround.INSTANCE);
 		spells.add(MnemonicPrayer.INSTANCE);
+		spells.add(SpellEmpower.DivineAdvent.INSTANCE);
 		spells.add(DivineIntervention.INSTANCE);
 		spells.add(Judgement.INSTANCE);
 		spells.add(Flash.INSTANCE);

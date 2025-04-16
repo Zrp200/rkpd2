@@ -27,8 +27,9 @@ import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.ui.QuickSlotButton;
 
-public abstract class TargetedClericSpell extends ClericSpell {
+public abstract class TargetedClericSpell extends ClericSpell implements QuickSlotButton.Aimable {
 
 	@Override
 	public void onCast(HolyTome tome, Hero hero ){
@@ -47,7 +48,12 @@ public abstract class TargetedClericSpell extends ClericSpell {
 
 	@Override
 	public int targetingFlags(){
-		return Ballistica.MAGIC_BOLT;
+		return SpellEmpower.isActive() ? Ballistica.STOP_TARGET : Ballistica.MAGIC_BOLT;
+	}
+
+	@Override
+	public int targetingPos(Hero hero, int pos) {
+		return new Ballistica(hero.pos, pos, targetingFlags()).collisionPos;
 	}
 
 	protected String targetingPrompt(){

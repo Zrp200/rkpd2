@@ -21,21 +21,20 @@
 
 package com.zrp200.rkpd2.actors.hero.spells;
 
+import static com.zrp200.rkpd2.Dungeon.level;
+
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
-import com.zrp200.rkpd2.actors.buffs.Barrier;
 import com.zrp200.rkpd2.actors.buffs.Bless;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.cleric.PowerOfMany;
 import com.zrp200.rkpd2.effects.Flare;
-import com.zrp200.rkpd2.effects.FloatingText;
 import com.zrp200.rkpd2.items.artifacts.HolyTome;
 import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.HeroIcon;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.audio.Sample;
@@ -66,59 +65,57 @@ public class BlessSpell extends TargetedClericSpell {
 		}
 
 		Char ch = Actor.findChar(target);
-		if (ch == null || !Dungeon.level.heroFOV[target]){
+		if (ch == null || !level.heroFOV[target]){
 			GLog.w(Messages.get(this, "no_target"));
 			return;
 		}
 
 		Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 
-		affectChar(hero, ch);
-
-		if (ch == hero){
+		boolean empowered = SpellEmpower.isActive();
+		if (ch == hero || empowered) {
 			hero.busy();
 			hero.sprite.operate(ch.pos);
-			hero.spend( 1f );
+			if (ch == hero) {
+				if (empowered) {
+					GLog.p(Messages.get(SpellEmpower.class, "instant"));
+				} else {
+					hero.spend( 1f );
+				}
+
+				Char ally = PowerOfMany.getPoweredAlly();
+				if (ally != null && ally.buff(LifeLinkSpell.LifeLinkSpellBuff.class) != null) {
+					affectChar(hero, ch, 1);
+				}
+			} else {
+				GLog.p(Messages.get(SpellEmpower.class, "all_allies"));
+				int factor = 1;
+				for (Char m : level.mobs) {
+					if (m.buff(LifeLinkSpell.LifeLinkSpellBuff.class) != null) {
+						affectChar(hero, m, level.heroFOV[m.pos] ? factor = 2 : 1);
+					} else if (m == ch || level.heroFOV[m.pos] && m.alignment == hero.alignment) {
+						affectChar(hero, m, 1);
+					}
+				}
+				affectChar(hero, hero, factor);
+				hero.spend( 1f );
+			}
 		} else {
 			hero.sprite.zap(ch.pos);
 			hero.spendAndNext( 1f );
 		}
 
-		Char ally = PowerOfMany.getPoweredAlly();
-		if (ally != null && ally.buff(LifeLinkSpell.LifeLinkSpellBuff.class) != null){
-			if (ch == hero){
-				affectChar(hero, ally); //if cast on hero, duplicate to ally
-			} else if (ally == ch) {
-				affectChar(hero, hero); //if cast on ally, duplicate to hero
-			}
-		}
-
 		onSpellCast(tome, hero);
 	}
 
-	private void affectChar(Hero hero, Char ch){
+	private void affectChar(Hero hero, Char ch, int factor){
 		new Flare(6, 32).color(0xFFFF00, true).show(ch.sprite, 2f);
 		if (ch == hero){
-			Buff.prolong(ch, Bless.class, 2f + 4*hero.pointsInTalent(Talent.BLESS));
-			Buff.affect(ch, Barrier.class).setShield(5 + 5*hero.pointsInTalent(Talent.BLESS));
+			Buff.prolong(ch, Bless.class, factor*(2f + 4*hero.pointsInTalent(Talent.BLESS)));
 		} else {
-			Buff.prolong(ch, Bless.class, 5f + 5*hero.pointsInTalent(Talent.BLESS));
-			int totalHeal = 5 + 5*hero.pointsInTalent(Talent.BLESS);
-			if (ch.HT - ch.HP < totalHeal){
-				int barrier = totalHeal - (ch.HT - ch.HP);
-				barrier = Math.max(barrier, 0);
-				if (ch.HP != ch.HT) {
-					ch.HP = ch.HT;
-					ch.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(totalHeal - barrier), FloatingText.HEALING);
-				}
-				if (barrier > 0) {
-					Buff.affect(ch, Barrier.class).setShield(barrier);
-				}
-			} else {
-				ch.HP = ch.HP + totalHeal;
-				ch.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(totalHeal), FloatingText.HEALING );
-			}
+			Buff.prolong(ch, Bless.class, factor*(5f + 5*hero.pointsInTalent(Talent.BLESS)));
 		}
+		LayOnHands.affectChar(hero, ch, factor * (5 + 5 * hero.pointsInTalent(Talent.BLESS)), 1);
 	}
 
 	public String desc(){

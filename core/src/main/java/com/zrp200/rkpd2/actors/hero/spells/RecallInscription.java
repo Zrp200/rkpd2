@@ -45,6 +45,7 @@ import com.zrp200.rkpd2.ui.HeroIcon;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Reflection;
+import com.zrp200.rkpd2.utils.GLog;
 
 public class RecallInscription extends ClericSpell {
 
@@ -56,18 +57,19 @@ public class RecallInscription extends ClericSpell {
 	}
 
 	@Override
-	public String desc() {
-		return Messages.get(this, "desc", UsedItemTracker.duration() + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero)));
+	protected Object[] getDescArgs() {
+		return new Object[]{UsedItemTracker.duration()};
 	}
 
 	@Override
 	public void onCast(HolyTome tome, Hero hero) {
 
-		if (hero.buff(UsedItemTracker.class) == null){
+		UsedItemTracker usedItem = hero.buff(UsedItemTracker.class);
+		if (usedItem == null){
 			return;
 		}
 
-		Item item = Reflection.newInstance(hero.buff(UsedItemTracker.class).item);
+		Item item = Reflection.newInstance(usedItem.item);
 
 		item.setCurrent(hero);
 
@@ -94,8 +96,11 @@ public class RecallInscription extends ClericSpell {
 		}
 
 		onSpellCast(tome, hero);
-		if (hero.buff(UsedItemTracker.class) != null){
-			hero.buff(UsedItemTracker.class).detach();
+		usedItem.detach();
+		if (SpellEmpower.isActive()) {
+			usedItem.attachTo(hero);
+			usedItem.postpone(UsedItemTracker.duration());
+			GLog.p(Messages.get(this, "preserved"));
 		}
 
 	}

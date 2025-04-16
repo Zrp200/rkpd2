@@ -36,6 +36,7 @@ import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.HeroIcon;
 import com.watabou.noosa.audio.Sample;
+import com.zrp200.rkpd2.utils.GLog;
 
 public class DivineIntervention extends ClericSpell {
 
@@ -72,7 +73,12 @@ public class DivineIntervention extends ClericSpell {
 			}
 		}
 
-		hero.spendAndNext( 1f );
+		if (SpellEmpower.isActive()) {
+			GLog.p(Messages.get(SpellEmpower.class, "instant"));
+		} else {
+			hero.spend( 1f );
+		}
+		hero.next();
 		onSpellCast(tome, hero);
 
 		//we apply buffs here so that the 5 charge cost and shield boost do not stack

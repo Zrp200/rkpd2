@@ -57,9 +57,33 @@ public class LayOnHands extends TargetedClericSpell {
 		return -1; //auto-targeting behaviour is often wrong, so we don't use it
 	}
 
+	private static boolean multicast = false;
+
 	@Override
 	public boolean canCast(Hero hero) {
 		return super.canCast(hero) && hero.hasTalent(Talent.LAY_ON_HANDS);
+	}
+
+	@Override
+	public void onCast(HolyTome tome, Hero hero) {
+		if (SpellEmpower.isActive()) {
+			try {
+				// it's literally better bless, minus the heal of course.
+				for (Char ch : Dungeon.level.mobs) {
+					if (ch.alignment == Char.Alignment.ALLY && Dungeon.level.heroFOV[ch.pos]) {
+						multicast = true;
+						onTargetSelected(tome, hero, ch.pos);
+					}
+				}
+				if (multicast) {
+					GLog.p(Messages.get(SpellEmpower.class, "all_allies"));
+				}
+			} finally {
+				multicast = false;
+			}
+			onTargetSelected(tome, hero, hero.pos);
+		}
+		super.onCast(tome, hero);
 	}
 
 	@Override
@@ -68,7 +92,7 @@ public class LayOnHands extends TargetedClericSpell {
 			return;
 		}
 
-		if (Dungeon.level.distance(hero.pos, target) > 1){
+		if (!multicast && Dungeon.level.distance(hero.pos, target) > 1){
 			GLog.w(Messages.get(this, "invalid_target"));
 			return;
 		}
@@ -79,17 +103,20 @@ public class LayOnHands extends TargetedClericSpell {
 			return;
 		}
 
-		Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
+		if (!multicast) Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 
 		affectChar(hero, ch);
 
-		if (ch == hero){
-			hero.sprite.operate(ch.pos);
-			hero.next();
-		} else {
-			hero.sprite.zap(ch.pos);
-			hero.next();
+		if (!multicast) {
+			if (ch == hero){
+				hero.sprite.operate(ch.pos);
+				hero.next();
+			} else {
+				hero.sprite.zap(ch.pos);
+				hero.next();
+			}
 		}
+
 
 		Char ally = PowerOfMany.getPoweredAlly();
 		if (ally != null && ally.buff(LifeLinkSpell.LifeLinkSpellBuff.class) != null){
@@ -100,23 +127,26 @@ public class LayOnHands extends TargetedClericSpell {
 			}
 		}
 
-		onSpellCast(tome, hero);
+		if (!multicast) onSpellCast(tome, hero);
 
 	}
 
-	private void affectChar(Hero hero, Char ch){
+	private void affectChar(Hero hero, Char ch) {
+		affectChar(hero, ch, 5 + 5*hero.pointsInTalent(Talent.LAY_ON_HANDS), 3);
+	}
+
+	public static void affectChar(Hero hero, Char ch, int totalHeal, int stacks){
 		Barrier barrier = Buff.affect(ch, Barrier.class);
-		int totalHeal = 5 + 5*hero.pointsInTalent(Talent.LAY_ON_HANDS);
 		int totalBarrier = 0;
 		if (ch == hero){
 			totalBarrier = totalHeal;
-			totalBarrier = Math.min(3*totalHeal - barrier.shielding(), totalBarrier);
+			totalBarrier = Math.min(stacks*totalHeal - barrier.shielding(), totalBarrier);
 			totalBarrier = Math.max(0, totalBarrier);
 			Buff.affect(ch, Barrier.class).incShield(totalBarrier);
 		} else {
 			if (ch.HT - ch.HP < totalHeal){
 				totalBarrier = totalHeal - (ch.HT - ch.HP);
-				totalBarrier = Math.min(3*totalHeal - barrier.shielding(), totalBarrier);
+				totalBarrier = Math.min(stacks*totalHeal - barrier.shielding(), totalBarrier);
 				totalBarrier = Math.max(0, totalBarrier);
 				if (ch.HP != ch.HT) {
 					ch.HP = ch.HT;

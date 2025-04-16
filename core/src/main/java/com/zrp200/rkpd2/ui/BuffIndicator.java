@@ -133,6 +133,8 @@ public class BuffIndicator extends Component {
 	public static final int ILLUMINATED = 81;
 	public static final int TRINITY_FORM= 82;
 	public static final int MANY_POWER  = 83;
+	public static final int LIMIT_BREAK = 84;
+	public static final int DIVINE_ADVENT=85;
 
 	public static final int SIZE_SMALL  = 7;
 	public static final int SIZE_LARGE  = 16;

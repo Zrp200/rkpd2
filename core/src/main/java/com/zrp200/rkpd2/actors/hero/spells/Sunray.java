@@ -60,9 +60,29 @@ public class Sunray extends TargetedClericSpell {
 		return Messages.get(this, "desc", min, max, dur) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
 	}
 
+	private boolean multicast = false;
+
 	@Override
 	public boolean canCast(Hero hero) {
 		return super.canCast(hero) && hero.hasTalent(Talent.SUNRAY);
+	}
+
+	@Override
+	public void onCast(HolyTome tome, Hero hero) {
+		if (SpellEmpower.isActive()) {
+			try {
+				for (Char m : Dungeon.level.mobs) {
+					if (m.alignment == Char.Alignment.ENEMY && Dungeon.level.heroFOV[m.pos]) {
+						int pos = QuickSlotButton.autoAim(m, this);
+						if (pos != -1) onTargetSelected(tome, hero, m.pos);
+						multicast = true;
+					}
+				}
+			} finally {
+				multicast = false;
+			}
+		}
+		super.onCast(tome, hero);
 	}
 
 	@Override
@@ -85,8 +105,10 @@ public class Sunray extends TargetedClericSpell {
 		}
 
 		hero.busy();
-		Sample.INSTANCE.play( Assets.Sounds.RAY );
-		hero.sprite.zap(target);
+		if (!multicast) {
+			Sample.INSTANCE.play( Assets.Sounds.RAY );
+			hero.sprite.zap(target);
+		}
 
 		hero.sprite.parent.add(
 				new Beam.SunRay(hero.sprite.center(), DungeonTilemap.raisedTileCenterToWorld(aim.collisionPos)));
@@ -109,7 +131,7 @@ public class Sunray extends TargetedClericSpell {
 				}
 			}
 
-			if (ch.isAlive()) {
+			if (ch.isAlive()) for (int i = 0; i < (SpellEmpower.isActive() ? 2 : 1); i++){
 				if (ch.buff(Blindness.class) != null && ch.buff(SunRayRecentlyBlindedTracker.class) != null) {
 					Buff.prolong(ch, Paralysis.class, 2f + 2f*hero.pointsInTalent(Talent.SUNRAY));
 					ch.buff(SunRayRecentlyBlindedTracker.class).detach();
@@ -120,6 +142,7 @@ public class Sunray extends TargetedClericSpell {
 				}
 			}
 		}
+		if (multicast) return;
 
 		hero.spend( 1f );
 		hero.next();

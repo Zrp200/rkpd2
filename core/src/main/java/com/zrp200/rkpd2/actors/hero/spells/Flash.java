@@ -75,7 +75,13 @@ public class Flash extends TargetedClericSpell {
 		}
 
 		if (ScrollOfTeleportation.teleportToLocation(hero, target)){
-			hero.spendAndNext( 1f );
+			hero.busy();
+			if (SpellEmpower.isActive()) {
+				GLog.p(Messages.get(SpellEmpower.class, "instant"));
+			} else {
+				hero.spend( 1f );
+			}
+			hero.next();
 			onSpellCast(tome, hero);
 			hero.buff(AscendedForm.AscendBuff.class).flashCasts++;
 		}

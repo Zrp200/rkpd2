@@ -29,6 +29,7 @@ import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.spells.ClericSpell;
+import com.zrp200.rkpd2.actors.hero.spells.SpellEmpower;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.rings.RingOfEnergy;
@@ -41,6 +42,7 @@ import com.zrp200.rkpd2.ui.ActionIndicator;
 import com.zrp200.rkpd2.ui.HeroIcon;
 import com.zrp200.rkpd2.ui.QuickSlotButton;
 import com.zrp200.rkpd2.utils.GLog;
+import com.zrp200.rkpd2.utils.SafeCast;
 import com.zrp200.rkpd2.windows.WndClericSpells;
 import com.watabou.utils.Bundle;
 
@@ -58,16 +60,24 @@ public class HolyTome extends Artifact {
 		partialCharge = 0;
 		chargeCap = Math.min(level()+3, 10);
 
-		if (Dungeon.hero != null && Dungeon.hero.heroClass == HeroClass.CLERIC) {
-			charge *= 2;
-			chargeCap *= 2;
-			partialCharge *= 2;
+		{
+			Hero hero = Dungeon.hero;
+			if (hero == null) hero = SafeCast.cast(Char.restoring, Hero.class);
+			if (hero != null && hero.heroClass == HeroClass.CLERIC) {
+				charge *= 2;
+				chargeCap *= 2;
+				partialCharge *= 2;
+			}
 		}
 
 		defaultAction = AC_CAST;
 
 		unique = true;
 		bones = false;
+	}
+
+	public int getCharges() {
+		return charge;
 	}
 
 	public static final String AC_CAST = "CAST";
@@ -108,7 +118,7 @@ public class HolyTome extends Artifact {
 
 	@Override
 	public int targetingPos(Hero user, int dst) {
-		if (targetingSpell == null || targetingSpell.targetingFlags() == -1) {
+		if (targetingSpell == null || !targetingSpell.usesTargeting()) {
 			return super.targetingPos(user, dst);
 		} else {
 			return new Ballistica( user.pos, dst, targetingSpell.targetingFlags() ).collisionPos;
@@ -150,13 +160,14 @@ public class HolyTome extends Artifact {
 	}
 
 	public boolean canCast( Hero hero, ClericSpell spell ){
-		return spell != null && (isEquipped(hero) || (Dungeon.hero.hasTalent(Talent.LIGHT_READING) && hero.belongings.contains(this)))
+		return spell != null && (isEquipped(hero) || (hero.hasTalent(Talent.LIGHT_READING) && hero.belongings.contains(this)))
 				&& hero.buff(MagicImmune.class) == null
-				&& charge >= spell.chargeUse(hero)
+				&& (spell.ignoreChargeUse() || charge >= spell.chargeUse(hero))
 				&& spell.canCast(hero);
 	}
 
 	public void spendCharge( float chargesSpent ){
+		SpellEmpower.useCharge(partialCharge + charge, chargesSpent);
 		partialCharge -= chargesSpent;
 		while (partialCharge < 0){
 			charge--;
@@ -207,8 +218,10 @@ public class HolyTome extends Artifact {
 	public Item upgrade() {
 		super.upgrade();
 		chargeCap = Math.min(level() + 3, 10);
-		if (Dungeon.hero.heroClass == HeroClass.CLERIC) chargeCap *= 2;
-		return super.upgrade();
+		Hero hero = Dungeon.hero;
+		if (hero == null) hero = SafeCast.cast(Char.restoring, Hero.class);
+		if (hero != null && hero.heroClass == HeroClass.CLERIC) chargeCap *= 2;
+		return this;
 	}
 
 	@Override
@@ -298,7 +311,7 @@ public class HolyTome extends Artifact {
 				if (Regeneration.regenOn()) {
 					float missing = (chargeCap - charge);
 					if (level() > 7) missing += 5*(level() - 7)/3f;
-					float turnsToCharge = (45 - missing);
+					float turnsToCharge = Math.max(0, 45 - missing);
 					turnsToCharge /= RingOfEnergy.artifactChargeMultiplier(target);
 					float chargeToGain = (1f / turnsToCharge);
 					if (!isEquipped(Dungeon.hero)){
@@ -376,7 +389,7 @@ public class HolyTome extends Artifact {
 			} else {
 				quickSpell.onCast(HolyTome.this, Dungeon.hero);
 
-				if (quickSpell.targetingFlags() != -1 && Dungeon.quickslot.contains(HolyTome.this)){
+				if (quickSpell.usesTargeting() && Dungeon.quickslot.contains(HolyTome.this)){
 					targetingSpell = quickSpell;
 					QuickSlotButton.useTargeting(Dungeon.quickslot.getSlot(HolyTome.this));
 				}

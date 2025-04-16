@@ -31,6 +31,7 @@ import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.effects.MagicMissile;
+import com.zrp200.rkpd2.effects.particles.ShadowParticle;
 import com.zrp200.rkpd2.items.artifacts.HolyTome;
 import com.zrp200.rkpd2.items.wands.Wand;
 import com.zrp200.rkpd2.mechanics.Ballistica;
@@ -52,6 +53,25 @@ public class GuidingLight extends TargetedClericSpell {
 	@Override
 	public int icon() {
 		return HeroIcon.GUIDING_LIGHT;
+	}
+
+	private boolean multicast = false;
+
+	public void onCast(HolyTome tome, Hero hero) {
+		if (SpellEmpower.isActive()) {
+			try {
+				for (Char m : Dungeon.level.mobs) {
+					if (m.alignment == Char.Alignment.ENEMY && Dungeon.level.heroFOV[m.pos]) {
+						int pos = QuickSlotButton.autoAim(m, this);
+						if (pos != -1) onTargetSelected(tome, hero, m.pos);
+						multicast = true;
+					}
+				}
+			} finally {
+				multicast = false;
+			}
+		}
+		super.onCast(tome, hero);
 	}
 
 	@Override
@@ -82,9 +102,14 @@ public class GuidingLight extends TargetedClericSpell {
 
 				Char ch = Actor.findChar( aim.collisionPos );
 				if (ch != null) {
-					ch.damage(Random.NormalIntRange(2, 6), GuidingLight.this);
+					int damageBoost = SpellEmpower.isActive() && ch.buff(Illuminated.class) != null ? hero.lvl : 0;
+					ch.damage(Random.NormalIntRange(2, 6) + damageBoost, GuidingLight.this);
 					Sample.INSTANCE.play(Assets.Sounds.HIT_MAGIC, 1, Random.Float(0.87f, 1.15f));
 					ch.sprite.burst(0xFFFFFF44, 3);
+					if (damageBoost > 0) {
+						ch.sprite.emitter().start( ShadowParticle.UP, 0.05f, 10);
+						Sample.INSTANCE.play(Assets.Sounds.BURNING);
+					}
 					if (ch.isAlive()){
 						Buff.affect(ch, Illuminated.class);
 						Buff.affect(ch, WasIlluminatedTracker.class);
@@ -92,6 +117,8 @@ public class GuidingLight extends TargetedClericSpell {
 				} else {
 					Dungeon.level.pressCell(aim.collisionPos);
 				}
+
+				if (multicast) return;
 
 				hero.spend( 1f );
 				hero.next();

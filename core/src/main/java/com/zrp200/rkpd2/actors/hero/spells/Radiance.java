@@ -32,9 +32,11 @@ import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.mobs.Mob;
 import com.zrp200.rkpd2.items.artifacts.HolyTome;
+import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.ui.HeroIcon;
 import com.watabou.noosa.audio.Sample;
+import com.zrp200.rkpd2.utils.GLog;
 
 public class Radiance extends ClericSpell {
 
@@ -65,8 +67,17 @@ public class Radiance extends ClericSpell {
 			Buff.prolong(hero, Light.class, Dungeon.isChallenged(Challenges.DARKNESS) ? 20 : 100);
 		}
 
+		if (SpellEmpower.isActive()) {
+			// note: is this really a good idea?
+			GLog.p(Messages.get(this, "empowered"));
+		}
+
 		for (Mob mob : Dungeon.level.mobs.toArray( new Mob[0] )) {
 			if (mob.alignment != Char.Alignment.ALLY && Dungeon.level.heroFOV[mob.pos]) {
+				if (SpellEmpower.isActive()) {
+					// trigger illuminated effect for free
+					mob.damage(hero.lvl, GuidingLight.INSTANCE);
+				}
 				Buff.affect(mob, GuidingLight.Illuminated.class);
 				Buff.affect(mob, GuidingLight.WasIlluminatedTracker.class);
 				Buff.affect(mob, Paralysis.class, 3f);

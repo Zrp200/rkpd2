@@ -21,6 +21,9 @@
 
 package com.zrp200.rkpd2.actors.hero.spells;
 
+import static com.zrp200.rkpd2.Dungeon.hero;
+import static com.zrp200.rkpd2.Dungeon.level;
+
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
@@ -59,9 +62,9 @@ public class HolyLance extends TargetedClericSpell {
 
 	@Override
 	public String desc() {
-		int min = 15 + 15*Dungeon.hero.pointsInTalent(Talent.HOLY_LANCE);
-		int max = Math.round(27.5f + 27.5f*Dungeon.hero.pointsInTalent(Talent.HOLY_LANCE));
-		return Messages.get(this, "desc", min, max) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+		int min = 15 + 15* hero.pointsInTalent(Talent.HOLY_LANCE);
+		int max = Math.round(27.5f + 27.5f* hero.pointsInTalent(Talent.HOLY_LANCE));
+		return Messages.get(this, "desc", min, max) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(hero));
 	}
 
 	@Override
@@ -78,7 +81,30 @@ public class HolyLance extends TargetedClericSpell {
 
 	@Override
 	public int targetingFlags() {
-		return Ballistica.PROJECTILE;
+		return SpellEmpower.isActive() ? Ballistica.STOP_TARGET | Ballistica.STOP_SOLID : Ballistica.PROJECTILE;
+	}
+
+	private static boolean multicast = false;
+
+	@Override
+	public void onCast(HolyTome tome, Hero hero) {
+		if (SpellEmpower.isActive()) {
+			try {
+				for (Char ch : level.mobs) {
+					if (level.heroFOV[ch.pos] && ch.alignment == Char.Alignment.ENEMY) {
+						int aim = QuickSlotButton.autoAim(ch, this);
+						if (aim == ch.pos) {
+							onTargetSelected(tome, hero, ch.pos);
+							multicast = true;
+						}
+					}
+				}
+			} finally {
+				multicast = false;
+			}
+
+		}
+		super.onCast(tome, hero);
 	}
 
 	@Override
@@ -87,15 +113,15 @@ public class HolyLance extends TargetedClericSpell {
 			return;
 		}
 
-		Ballistica aim = new Ballistica(hero.pos, target, targetingFlags());
+		int collisionPos = targetingPos(hero, target);
 
-		if (Actor.findChar( aim.collisionPos ) == hero){
+		if (Actor.findChar( collisionPos ) == hero){
 			GLog.i( Messages.get(Wand.class, "self_target") );
 			return;
 		}
 
-		if (Actor.findChar(aim.collisionPos) != null) {
-			QuickSlotButton.target(Actor.findChar(aim.collisionPos));
+		if (Actor.findChar(collisionPos) != null) {
+			QuickSlotButton.target(Actor.findChar(collisionPos));
 		} else {
 			QuickSlotButton.target(Actor.findChar(target));
 		}
@@ -105,7 +131,7 @@ public class HolyLance extends TargetedClericSpell {
 
 		Sample.INSTANCE.play(Assets.Sounds.ZAP);
 
-		Char enemy = Actor.findChar(aim.collisionPos);
+		Char enemy = Actor.findChar(collisionPos);
 		if (enemy != null) {
 			((MissileSprite) hero.sprite.parent.recycle(MissileSprite.class)).
 					reset(hero.sprite,
@@ -114,8 +140,8 @@ public class HolyLance extends TargetedClericSpell {
 							new Callback() {
 								@Override
 								public void call() {
-									int min = 15 + 15*Dungeon.hero.pointsInTalent(Talent.HOLY_LANCE);
-									int max = Math.round(27.5f + 27.5f*Dungeon.hero.pointsInTalent(Talent.HOLY_LANCE));
+									int min = 15 + 15* Dungeon.hero.pointsInTalent(Talent.HOLY_LANCE);
+									int max = Math.round(27.5f + 27.5f* Dungeon.hero.pointsInTalent(Talent.HOLY_LANCE));
 									if (Char.hasProp(enemy, Char.Property.UNDEAD) || Char.hasProp(enemy, Char.Property.DEMONIC)){
 										min = max;
 									}
@@ -124,9 +150,7 @@ public class HolyLance extends TargetedClericSpell {
 									Sample.INSTANCE.play( Assets.Sounds.HIT_STAB, 1, Random.Float(0.8f, 1f) );
 
 									enemy.sprite.burst(0xFFFFFFFF, 10);
-									hero.spendAndNext(1f);
-									onSpellCast(tome, hero);
-									FlavourBuff.affect(hero, LanceCooldown.class, 50f);
+									hero.next();
 								}
 							});
 		} else {
@@ -138,12 +162,15 @@ public class HolyLance extends TargetedClericSpell {
 								@Override
 								public void call() {
 									Splash.at(target, 0xFFFFFFFF, 10);
-									Dungeon.level.pressCell(aim.collisionPos);
-									hero.spendAndNext(1f);
-									onSpellCast(tome, hero);
-									FlavourBuff.affect(hero, LanceCooldown.class, 50f);
+									Dungeon.level.pressCell(collisionPos);
+									hero.next();
 								}
 							});
+		}
+		if (!multicast) {
+			hero.spend(1f);
+			onSpellCast(tome, hero);
+			FlavourBuff.affect(hero, LanceCooldown.class, 50f);
 		}
 
 	}

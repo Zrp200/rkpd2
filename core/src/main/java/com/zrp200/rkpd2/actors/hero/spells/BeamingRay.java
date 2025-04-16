@@ -169,7 +169,12 @@ public class BeamingRay extends TargetedClericSpell {
 			FlavourBuff.prolong(ally, BeamingRayBoost.class, BeamingRayBoost.DURATION);
 		}
 
-		hero.spendAndNext(Actor.TICK);
+		if (SpellEmpower.isActive()) {
+			GLog.p(Messages.get(SpellEmpower.class, "instant"));
+			hero.next();
+		} else {
+			hero.spendAndNext(Actor.TICK);
+		}
 		Dungeon.observe();
 		GameScene.updateFog();
 

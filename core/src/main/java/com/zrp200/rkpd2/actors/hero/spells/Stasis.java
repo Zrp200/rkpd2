@@ -44,6 +44,7 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
+import com.zrp200.rkpd2.utils.GLog;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -112,7 +113,14 @@ public class Stasis extends ClericSpell {
 			hero.buff(LifeLink.class).detach();
 		}
 
-		hero.spendAndNext(Actor.TICK);
+		if (SpellEmpower.isActive()) {
+			// cast instantly
+			GLog.p(Messages.get(SpellEmpower.class, "instant"));
+			hero.next();
+		} else {
+			hero.spendAndNext(Actor.TICK);
+		}
+
 		Dungeon.observe();
 		GameScene.updateFog();
 

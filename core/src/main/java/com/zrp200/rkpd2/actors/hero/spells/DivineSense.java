@@ -36,6 +36,7 @@ import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.ui.HeroIcon;
 import com.watabou.noosa.audio.Sample;
+import com.zrp200.rkpd2.utils.GLog;
 
 public class DivineSense extends ClericSpell {
 
@@ -63,7 +64,11 @@ public class DivineSense extends ClericSpell {
 
 		Sample.INSTANCE.play(Assets.Sounds.READ);
 
-		hero.spend( 1f );
+		if (SpellEmpower.isActive()) {
+			GLog.p(Messages.get(SpellEmpower.class, "instant"));
+		} else {
+			hero.spend( 1f );
+		}
 		hero.busy();
 		SpellSprite.show(hero, SpellSprite.VISION);
 		hero.sprite.operate(hero.pos);

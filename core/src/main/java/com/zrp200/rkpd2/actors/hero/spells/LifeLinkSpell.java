@@ -36,6 +36,7 @@ import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.tiles.DungeonTilemap;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.ui.HeroIcon;
+import com.zrp200.rkpd2.utils.GLog;
 
 public class LifeLinkSpell extends ClericSpell {
 
@@ -91,7 +92,12 @@ public class LifeLinkSpell extends ClericSpell {
 			ally.buff(LifeLinkSpellBuff.class).clearTime();
 		}
 
-		hero.spendAndNext(Actor.TICK);
+		if (SpellEmpower.isActive()) {
+			GLog.p(Messages.get(SpellEmpower.class, "instant"));
+			hero.next();
+		} else {
+			hero.spendAndNext(Actor.TICK);
+		}
 
 		onSpellCast(tome, hero);
 

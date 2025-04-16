@@ -82,8 +82,37 @@ public class MnemonicPrayer extends TargetedClericSpell {
 		return super.canCast(hero) && hero.hasTalent(Talent.MNEMONIC_PRAYER);
 	}
 
+	private static boolean multiCast = false;
+	private static boolean multiCastedDebuff = false;
+
 	@Override
-	@SuppressWarnings("unchecked")
+	public boolean usesTargeting() {
+		return !SpellEmpower.isActive();
+	}
+
+	@Override
+	public void onCast(HolyTome tome, Hero hero) {
+		if (SpellEmpower.isActive()) {
+			// cast on all valid targets
+			multiCastedDebuff = false;
+			multiCast = true;
+			try {
+				for (Char ch : Dungeon.level.mobs) {
+					if (Dungeon.level.heroFOV[ch.pos]) {
+						onTargetSelected(tome, hero, ch.pos);
+					}
+				}
+			} finally {
+				multiCast = multiCastedDebuff = false;
+			}
+			onTargetSelected(tome, hero, hero.pos);
+		} else {
+			super.onCast(tome, hero);
+		}
+	}
+
+
+	@Override
 	protected void onTargetSelected(HolyTome tome, Hero hero, Integer target) {
 
 		if (target == null){
@@ -99,16 +128,19 @@ public class MnemonicPrayer extends TargetedClericSpell {
 		QuickSlotButton.target(ch);
 
 		float extension = 2 + hero.pointsInTalent(Talent.MNEMONIC_PRAYER);
-		affectChar(ch, extension);
 
 		Char ally = PowerOfMany.getPoweredAlly();
 		if (ally != null && ally.buff(LifeLinkSpell.LifeLinkSpellBuff.class) != null){
 			if (ch == hero){
+				if (multiCast) extension *= 2; // double cast
 				affectChar(ally, extension); //if cast on hero, duplicate to ally
 			} else if (ch == ally){
 				affectChar(hero, extension); //if cast on ally, duplicate to hero
 			}
 		}
+		affectChar(ch, extension);
+
+		if (multiCast) return;
 
 		if (ch == hero){
 			hero.busy();
@@ -125,10 +157,8 @@ public class MnemonicPrayer extends TargetedClericSpell {
 	}
 
 	private void affectChar( Char ch, float extension ){
+		boolean affected = !multiCast;
 		if (ch.alignment == Char.Alignment.ALLY){
-
-			Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);
-			ch.sprite.emitter().start(Speck.factory(Speck.UP), 0.15f, 4);
 
 			for (Buff b : ch.buffs()){
 				if (b.type != Buff.buffType.POSITIVE || b.mnemonicExtended || b.icon() == BuffIndicator.NONE){
@@ -137,6 +167,7 @@ public class MnemonicPrayer extends TargetedClericSpell {
 
 				//does not boost buffs from armor abilities or T4 spells
 				if (b instanceof AscendedForm.AscendBuff
+						|| b instanceof SpellEmpower.Buff
 						|| b instanceof BodyForm.BodyFormBuff || b instanceof SpiritForm.SpiritFormBuff
 						|| b instanceof PowerOfMany.PowerBuff || b instanceof BeamingRay.BeamingRayBoost || b instanceof LifeLink || b instanceof LifeLinkSpell.LifeLinkSpellBuff){
 					continue;
@@ -159,15 +190,15 @@ public class MnemonicPrayer extends TargetedClericSpell {
 				else if (b instanceof Kinetic.ConservedDamage)  ((Kinetic.ConservedDamage) b).delay(extension);
 				else if (b instanceof Sungrass.Health)          ((Sungrass.Health) b).boost((int) extension);
 
-				b.mnemonicExtended = true;
+				b.mnemonicExtended = affected = true;
 
 			}
-
+			if (affected) {
+				// empowered plays sound on the hero's self-target
+				if (!multiCast) Sample.INSTANCE.play(Assets.Sounds.CHARGEUP);
+				ch.sprite.emitter().start(Speck.factory(Speck.UP), 0.15f, 4);
+			}
 		} else {
-
-			Sample.INSTANCE.play(Assets.Sounds.DEBUFF);
-			ch.sprite.emitter().start(Speck.factory(Speck.DOWN), 0.15f, 4);
-
 			for (Buff b : ch.buffs()){
 				if (b instanceof GuidingLight.WasIlluminatedTracker){
 					Buff.affect(ch, GuidingLight.Illuminated.class);
@@ -188,8 +219,15 @@ public class MnemonicPrayer extends TargetedClericSpell {
 				else if (b instanceof Poison)       ((Poison) b).extend( extension );
 				else if (b instanceof Viscosity.DeferedDamage)  ((Viscosity.DeferedDamage) b).extend( extension );
 
-				b.mnemonicExtended = true;
+				b.mnemonicExtended = affected = true;
 
+			}
+			if (affected) {
+				if (!multiCast || !multiCastedDebuff) {
+					multiCastedDebuff = multiCast;
+					Sample.INSTANCE.play(Assets.Sounds.DEBUFF);
+				}
+				ch.sprite.emitter().start(Speck.factory(Speck.DOWN), 0.15f, 4);
 			}
 
 		}

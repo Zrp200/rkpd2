@@ -7,10 +7,10 @@ import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.messages.Messages;
 
 public abstract class Cooldown extends FlavourBuff {
-    public static <T extends Cooldown> void affectHero(Class<T> cls) {
-        if (cls == Cooldown.class) return;
+    public static <T extends Cooldown> T affectHero(Class<T> cls) {
         T buff = Buff.affect(hero, cls);
         buff.spend(buff.duration());
+        return buff;
     }
 
     public abstract float duration();

@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.cleric.AscendedForm;
@@ -35,6 +36,7 @@ import com.zrp200.rkpd2.ui.HeroIcon;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
+import com.zrp200.rkpd2.utils.GLog;
 
 public class Judgement extends ClericSpell {
 
@@ -69,10 +71,25 @@ public class Judgement extends ClericSpell {
 				int damageBase = 5 + 5*hero.pointsInTalent(Talent.JUDGEMENT);
 				damageBase += 5*hero.buff(AscendedForm.AscendBuff.class).spellCasts;
 
+				boolean empowered = SpellEmpower.isActive();
+				boolean affected = false;
+
 				for (Char ch : Actor.chars()){
 					if (ch.alignment != hero.alignment && Dungeon.level.heroFOV[ch.pos]){
-						ch.damage( Random.NormalIntRange(damageBase, 2*damageBase), Judgement.this);
+						affected = true;
+						int damage = Random.NormalIntRange(damageBase, 2*damageBase);
+						if (empowered) {
+							Buff.affect(ch, GuidingLight.Illuminated.class);
+							Buff.affect(ch, GuidingLight.WasIlluminatedTracker.class);
+							damage += hero.lvl;
+							// vfx?
+						}
+						ch.damage( damage, Judgement.this);
 					}
+				}
+
+				if (affected && empowered) {
+					GLog.p(Messages.get(Radiance.class, "empowered"));
 				}
 
 				hero.spendAndNext( 1f );
