@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.actors.hero.abilities.cleric;
 
+import com.watabou.noosa.ui.Component;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.Statistics;
@@ -113,6 +114,8 @@ public class Trinity extends ArmorAbility {
 
 			int top = height;
 
+			ArrayList<Component> toAdd = new ArrayList<>();
+
 			if (bodyForm != null){
 				RedButton btnBody = null;
 				if (bodyForm instanceof Weapon.Enchantment){
@@ -188,7 +191,7 @@ public class Trinity extends ArmorAbility {
 				btnBody.multiline = true;
 				btnBody.setSize(width, 100); //for text layout
 				btnBody.setRect(0, top + 2, width, btnBody.reqHeight());
-				add(btnBody);
+				toAdd.add(btnBody);
 				top = (int)btnBody.bottom();
 
 				btnBody.enable(Dungeon.hero.buff(MagicImmune.class) == null && armor.charge >= trinityChargeUsePerEffect(bodyForm.getClass()));
@@ -217,7 +220,7 @@ public class Trinity extends ArmorAbility {
 				btnMind.multiline = true;
 				btnMind.setSize(width, 100); //for text layout
 				btnMind.setRect(0, top + 2, width, btnMind.reqHeight());
-				add(btnMind);
+				toAdd.add(btnMind);
 				top = (int)btnMind.bottom();
 
 				btnMind.enable(armor.charge >= trinityChargeUsePerEffect(mindForm.getClass()));
@@ -264,12 +267,13 @@ public class Trinity extends ArmorAbility {
 				btnSpirit.multiline = true;
 				btnSpirit.setSize(width, 100); //for text layout
 				btnSpirit.setRect(0, top + 2, width, btnSpirit.reqHeight());
-				add(btnSpirit);
+				toAdd.add(btnSpirit);
 				top = (int)btnSpirit.bottom();
 
 				btnSpirit.enable(Dungeon.hero.buff(MagicImmune.class) == null && armor.charge >= trinityChargeUsePerEffect(spiritForm.getClass()));
 			}
 
+			addToBottom(toAdd.toArray(new Component[0]));
 			resize(width, top);
 
 		}
