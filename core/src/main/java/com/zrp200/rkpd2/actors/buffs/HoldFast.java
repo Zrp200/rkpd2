@@ -68,18 +68,17 @@ public class HoldFast extends Buff {
 		icon.hardlight(1.9f, 2.4f, 3.25f);
 	}
 
+	// 1-2 / 2-4 / 3-6 / 4-8
 	public static int armorMin() {
-        // todo buff
-		return hero.pointsInTalent(Talent.HOLD_FAST, Talent.RK_BERSERKER);
+		return hero.shiftedPoints(Talent.HOLD_FAST, Talent.RK_BERSERKER);
 	}
     public static int armorMax() {
-        // todo buff
-        return 2 * hero.pointsInTalent(Talent.HOLD_FAST, Talent.RK_BERSERKER);
+        return 2 * hero.shiftedPoints(Talent.HOLD_FAST, Talent.RK_BERSERKER);
     }
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", armorMin(), armorMax());
+		return Messages.get(this, "desc", hero.subClass.title(), armorMin(), armorMax());
 	}
 
 	private static final String POS = "pos";
