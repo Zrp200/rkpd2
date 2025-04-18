@@ -180,9 +180,16 @@ public boolean isSimilar( Item item ) {
 	public int throwPos(Hero user, int dst) {
 
 		boolean projecting = hasEnchant(Projecting.class, user);
-		if (!projecting && Random.Int(3) < user.pointsInTalent(Talent.RK_SNIPER)
-				|| user.hasTalent(Talent.SHARED_ENCHANTMENT) && Random.Int(4) <= user.pointsInTalent(Talent.SHARED_ENCHANTMENT)) {
-			if (this instanceof Dart && ((Dart) this).crossbowHasEnchant(Dungeon.hero) && !user.hasTalent(Talent.SHARED_ENCHANTMENT)){ // how DARE evan crush huntress synergies???
+		float projectingFactor = 0;
+		if (!(this instanceof SpiritBow.SpiritArrow) && user.hasTalent(Talent.SHARED_ENCHANTMENT)) {
+			// this implementation allows projecting to stack with projecting properly
+			SpiritBow bow = user.belongings.getItem(SpiritBow.class);
+			if (bow != null && bow.hasEnchant(Projecting.class, user)) {
+				projectingFactor = user.pointsInTalent(Talent.SHARED_ENCHANTMENT)/3f;
+			}
+		}
+		else if (!projecting && Random.Int(3) < user.pointsInTalent(Talent.RK_SNIPER)) {
+			if (this instanceof Dart && ((Dart) this).crossbowHasEnchant(Dungeon.hero)){
 				//do nothing
 			} else {
 				SpiritBow bow = Dungeon.hero.belongings.getItem(SpiritBow.class);
@@ -204,9 +211,10 @@ public boolean isSimilar( Item item ) {
 		}
 		if (ignoreTracker) tracker.detach();
 		int throwPos;
-		if (projecting
+		if (projecting) projectingFactor++;
+		if (projectingFactor > 0
 				&& (Dungeon.level.passable[dst] || Dungeon.level.avoid[dst] || Actor.findChar(dst) != null)
-				&& Dungeon.level.distance(user.pos, dst) <= Math.round(4 * Enchantment.genericProcChanceMultiplier(user))){
+				&& Dungeon.level.distance(user.pos, dst) <= Math.round(4 * projectingFactor * Enchantment.genericProcChanceMultiplier(user))){
 			throwPos = dst;
 		} else {
 			throwPos = super.throwPos(user, dst);
@@ -281,14 +289,28 @@ public boolean isSimilar( Item item ) {
 
 		RunicBlade.RunicSlashTracker tracker = Dungeon.hero.buff(RunicBlade.RunicSlashTracker.class);
 		if (tracker != null) tracker.detach(); // don't use it for built in effects
-		if (attacker == Dungeon.hero && Random.Int(3) < Dungeon.hero.pointsInTalent(Talent.RK_SNIPER)
-				|| Dungeon.hero.hasTalent(Talent.SHARED_ENCHANTMENT) && Random.Int(4) <= Dungeon.hero.pointsInTalent(Talent.SHARED_ENCHANTMENT)){
-			if (this instanceof Dart && ((Dart) this).crossbowHasEnchant(Dungeon.hero) && !Dungeon.hero.hasTalent(Talent.SHARED_ENCHANTMENT)){ // HUNTRESS MUST BE BUFFED
- 				//do nothing
-			} else {
-				SpiritBow bow = Dungeon.hero.belongings.getItem(SpiritBow.class);
-				if (bow != null && bow.enchantment != null && Dungeon.hero.buff(MagicImmune.class) == null) {
-					damage = bow.enchantment.proc(this, attacker, defender, damage);
+		if (attacker instanceof Hero) {
+			// separate shared enchantment logic purely in the interest of sniper buffs
+			Hero hero = (Hero) attacker;
+			if (hero.hasTalent(Talent.SHARED_ENCHANTMENT)) {
+				// proc bow enchantment at 0.5x / 1x / 1.5x power
+				SpiritBow bow = hero.belongings.getItem(SpiritBow.class);
+				if (bow.hasEnchant(Weapon.Enchantment.class, hero)) {
+					procChanceMultiplier = 0.5f * hero.pointsInTalent(Talent.SHARED_ENCHANTMENT);
+					try {
+						damage = bow.enchantment.proc(this, attacker, defender, damage);
+					} finally {
+						procChanceMultiplier = 0;
+					}
+				}
+			} else if (Random.Int(3) < hero.pointsInTalent(Talent.RK_SNIPER)) {
+				if (this instanceof Dart && ((Dart) this).crossbowHasEnchant(hero)) {
+					//do nothing
+				} else {
+					SpiritBow bow = hero.belongings.getItem(SpiritBow.class);
+					if (bow != null && bow.enchantment != null && hero.buff(MagicImmune.class) == null) {
+						damage = bow.enchantment.proc(this, attacker, defender, damage);
+					}
 				}
 			}
 		}

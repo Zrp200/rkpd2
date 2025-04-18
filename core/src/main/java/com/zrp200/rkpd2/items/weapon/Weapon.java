@@ -512,7 +512,8 @@ abstract public class Weapon extends KindOfWeapon {
 				&& owner.buff(BodyForm.BodyFormBuff.class).enchant().getClass().equals(type)){
 			return true;
 		} else {
-			return enchantment.getClass() == type;
+			// idk why evan's so anti-oop
+			return type.isInstance(enchantment);
 		}
 	}
 	
@@ -536,6 +537,7 @@ abstract public class Weapon extends KindOfWeapon {
 			return enchantment != null && (cursedKnown || !enchantment.curse()) ? enchantment.glowing() : null;
 		}
 	}
+	public static float procChanceMultiplier = 0;
 
 	public static abstract class Enchantment implements Bundlable {
 
@@ -566,6 +568,7 @@ abstract public class Weapon extends KindOfWeapon {
 
 		public static float genericProcChanceMultiplier( Char attacker, boolean applyArcana ){
 			float multi = 1;
+			if (procChanceMultiplier != 0) multi *= procChanceMultiplier;
 			if(applyArcana) multi *= RingOfArcana.enchantPowerMultiplier(attacker);
 			Berserk rage = attacker.buff(Berserk.class);
 			if (rage != null) {
