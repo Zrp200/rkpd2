@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.ShatteredPixelDungeon;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.Enchanting;
 import com.zrp200.rkpd2.items.Item;
@@ -56,7 +57,7 @@ public class RecallInscription extends ClericSpell {
 
 	@Override
 	public String desc() {
-		return Messages.get(this, "desc", Dungeon.hero.pointsInTalent(Talent.RECALL_INSCRIPTION) == 2 ? 300 : 10) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+		return Messages.get(this, "desc", UsedItemTracker.duration() + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero)));
 	}
 
 	@Override
@@ -139,6 +140,10 @@ public class RecallInscription extends ClericSpell {
 			type = buffType.POSITIVE;
 		}
 
+		public static void track(Hero hero, Class<?extends Item> item) {
+			prolong(hero, UsedItemTracker.class, duration()).item = item;
+		}
+
 		public Class<?extends Item> item;
 
 		@Override
@@ -146,9 +151,15 @@ public class RecallInscription extends ClericSpell {
 			return BuffIndicator.GLYPH_RECALL;
 		}
 
+		public static float duration() {
+			float duration = Dungeon.hero.pointsInTalent(Talent.RECALL_INSCRIPTION) == 2 ? 300 : 10;
+			if (Dungeon.hero.heroClass == HeroClass.CLERIC) duration *= 2;
+			return duration;
+		}
+
 		@Override
 		public float iconFadePercent() {
-			float duration = Dungeon.hero.pointsInTalent(Talent.RECALL_INSCRIPTION) == 2 ? 300 : 10;
+			float duration = duration();
 			return Math.max(0, (duration - visualcooldown()) / duration);
 		}
 

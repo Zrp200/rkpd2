@@ -1111,10 +1111,10 @@ public enum Talent {
 		}
         if (hero.hasTalent(RECALL_INSCRIPTION) && Scroll.class.isAssignableFrom(cls) && cls != ScrollOfUpgrade.class){
             if (hero.heroClass == HeroClass.CLERIC){
-                Buff.prolong(hero, RecallInscription.UsedItemTracker.class, hero.pointsInTalent(RECALL_INSCRIPTION) == 2 ? 300 : 10).item = cls;
+                RecallInscription.UsedItemTracker.track(hero, cls);
             } else {
-                // 10/15%
-                if (Random.Int(20) < 1 + hero.pointsInTalent(RECALL_INSCRIPTION)){
+                // 20/30% (double shattered)
+                if (Random.Int(20/2) < 1 + hero.pointsInTalent(RECALL_INSCRIPTION)){
                     Reflection.newInstance(cls).collect();
                     GLog.p("refunded!");
                 }
@@ -1125,15 +1125,15 @@ public enum Talent {
     public static void onRunestoneUsed( Hero hero, int pos, Class<?extends Item> cls ){
         if (hero.hasTalent(RECALL_INSCRIPTION) && Runestone.class.isAssignableFrom(cls)){
             if (hero.heroClass == HeroClass.CLERIC){
-                Buff.prolong(hero, RecallInscription.UsedItemTracker.class, hero.pointsInTalent(RECALL_INSCRIPTION) == 2 ? 300 : 10).item = cls;
+                RecallInscription.UsedItemTracker.track(hero, cls);
             } else {
 
                 //don't trigger on 1st intuition use
                 if (cls.equals(StoneOfIntuition.class) && hero.buff(StoneOfIntuition.IntuitionUseTracker.class) != null){
                     return;
                 }
-                // 10/15%
-                if (Random.Int(20) < 1 + hero.pointsInTalent(RECALL_INSCRIPTION)){
+                // 20/30% (double shattered)
+                if (Random.Int(20/2) < 1 + hero.pointsInTalent(RECALL_INSCRIPTION)){
                     Reflection.newInstance(cls).collect();
                     GLog.p("refunded!");
                 }

@@ -190,8 +190,7 @@ public class HallowedGround extends TargetedClericSpell {
 						int c = Dungeon.level.map[cell];
 						if (c == Terrain.GRASS && Dungeon.level.plants.get(c) == null) {
 							if (Random.Int(chance) == 0) {
-								if (!Regeneration.regenOn()
-										|| (Dungeon.hero.buff(HallowedFurrowTracker.class) != null && Dungeon.hero.buff(HallowedFurrowTracker.class).count() > 5)){
+								if (isStale()){
 									Level.set(cell, Terrain.FURROWED_GRASS);
 								} else {
 									Level.set(cell, Terrain.HIGH_GRASS);
@@ -235,7 +234,7 @@ public class HallowedGround extends TargetedClericSpell {
 
 		private void affectChar( Char ch ){
 			if (ch.alignment == Char.Alignment.ALLY){
-				if (ch == Dungeon.hero || ch.HP == ch.HT){
+				if (ch.HP == ch.HT || ch == Dungeon.hero && isStale()){
 					Buff.affect(ch, Barrier.class).incShield(1);
 				} else {
 					ch.HP++;
@@ -256,6 +255,12 @@ public class HallowedGround extends TargetedClericSpell {
 		public String tileDesc() {
 			return Messages.get(this, "desc");
 		}
+	}
+
+	private static boolean isStale() {
+		return !Regeneration.regenOn() ||
+				Dungeon.hero.buff(HallowedFurrowTracker.class) != null
+				&& Dungeon.hero.buff(HallowedFurrowTracker.class).count() > 5;
 	}
 
 	public static class HallowedFurrowTracker extends CounterBuff{{revivePersists = true;}}
