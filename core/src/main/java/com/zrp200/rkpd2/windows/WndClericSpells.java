@@ -55,6 +55,8 @@ public class WndClericSpells extends Window {
 
 	public static int BTN_SIZE = 20;
 
+	private static final int SPELLS_PER_ROW = 5;
+
 	public WndClericSpells(HolyTome tome, Hero cleric, boolean info){
 
 		IconTitle title;
@@ -111,10 +113,20 @@ public class WndClericSpells extends Window {
 				spellBtns.add(spellBtn);
 			}
 
-			int left = 2 + (WIDTH - spellBtns.size() * (BTN_SIZE + 4)) / 2;
+			int left = 0;
+
+			boolean firstRow = true;
+			int leftThisRow = 1;
+			int remaining = spellBtns.size();
 			for (IconButton btn : spellBtns) {
+				if (--leftThisRow == 0) {
+					// don't bother splitting them up, just put the new one below
+					remaining -= leftThisRow = Math.min(SPELLS_PER_ROW, remaining);
+					left = 2 + (WIDTH - leftThisRow * (BTN_SIZE + 4)) / 2;
+					if (firstRow) firstRow = false; else top += BTN_SIZE + 2;
+				}
 				btn.setRect(left, top, BTN_SIZE, BTN_SIZE);
-				left += btn.width() + 4;
+				left += BTN_SIZE + 4;
 			}
 
 		}
