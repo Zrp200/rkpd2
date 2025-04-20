@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.scenes;
 
+import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Chrome;
 import com.zrp200.rkpd2.ShatteredPixelDungeon;
 import com.zrp200.rkpd2.messages.Languages;
@@ -78,9 +79,9 @@ public class SupporterScene extends PixelScene {
 			@Override
 			protected void onClick() {
 				super.onClick();
-				String link = "https://www.patreon.com/ShatteredPixel";
+				String link = "https://www.buymeacoffee.com/zrp200";
 				//tracking codes, so that the website knows where this pageview came from
-				link += "?utm_source=shatteredpd";
+				link += "?utm_source=rkpd2";
 				link += "&utm_medium=supporter_page";
 				link += "&utm_campaign=ingame_link";
 				ShatteredPixelDungeon.platform.openURI(link);
@@ -120,18 +121,15 @@ public class SupporterScene extends PixelScene {
 			bg = Chrome.get(Chrome.Type.GREY_BUTTON_TR);
 			add(bg);
 
+			// sorry evan lol
+
 			String message = Messages.get(SupporterScene.class, "intro");
-			message += "\n\n" + Messages.get(SupporterScene.class, "patreon_msg");
-			if (Messages.lang() != Languages.ENGLISH) {
-				message += "\n" + Messages.get(SupporterScene.class, "patreon_english");
-			}
-			message += "\n\n- Evan";
+			message += "\n\n" + Messages.get(SupporterScene.class, "support_msg");
 
 			text = PixelScene.renderTextBlock(message, 6);
 			add(text);
 
-			icon = Icons.get(Icons.SHPX);
-			add(icon);
+			add(icon = new Image(Assets.Interfaces.ZRP200));
 
 		}
 
@@ -144,7 +142,7 @@ public class SupporterScene extends PixelScene {
 			text.setPos(x + bg.marginLeft(), y + bg.marginTop() + 1);
 
 			icon.y = text.bottom() - icon.height() + 4;
-			icon.x = x + 25;
+			icon.x = x + 30;
 
 			height = (text.bottom() + 3) - y;
 

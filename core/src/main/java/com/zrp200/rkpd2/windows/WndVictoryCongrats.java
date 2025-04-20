@@ -27,6 +27,7 @@ import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.scenes.SupporterScene;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
+import com.zrp200.rkpd2.sprites.RatKingSprite;
 import com.zrp200.rkpd2.ui.Icons;
 import com.zrp200.rkpd2.ui.RedButton;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
@@ -49,6 +50,23 @@ public class WndVictoryCongrats extends Window {
 		add( text );
 
 		height = (int)text.bottom() + 6;
+
+		Image ratKing = new RatKingSprite();
+		ratKing.y = height;
+		ratKing.x = (16 - ratKing.width());
+		PixelScene.align(ratKing);
+		add(ratKing);
+
+		RenderedTextBlock ratKingTxt = PixelScene.renderTextBlock(Messages.get(this, "ratking"), 6);
+		ratKingTxt.maxWidth(width - 16);
+		ratKingTxt.setPos(16, height);
+
+		if (ratKingTxt.height() > ratKing.height()){
+			ratKing.y += (ratKingTxt.height() - ratKing.height())/2f;
+			PixelScene.align(ratKing);
+		}
+
+		height += (int)Math.max(ratKingTxt.height(), ratKing.height()) + 6;
 
 		Image chalImg = Icons.CHALLENGE_COLOR.get();
 		chalImg.y = height;

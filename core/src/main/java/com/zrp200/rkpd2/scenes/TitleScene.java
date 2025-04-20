@@ -144,7 +144,7 @@ public class TitleScene extends PixelScene {
 		add(btnPlay);
 
 		StyledButton btnSupport = new SupportButton(GREY_TR, Messages.get(this, "support"));
-		//add(btnSupport);
+		add(btnSupport);
 
 		StyledButton btnRankings = new StyledButton(GREY_TR,Messages.get(this, "rankings")){
 			@Override
@@ -195,21 +195,22 @@ public class TitleScene extends PixelScene {
 		if (landscape()) {
 			btnPlay.setRect(btnAreaLeft, topRegion+GAP, buttonAreaWidth, BTN_HEIGHT);
 			align(btnPlay);
-            btnRankings.setRect(btnPlay.left(), btnPlay.bottom()+ GAP, buttonAreaWidth/2f-1, BTN_HEIGHT);
+			btnRankings.setRect(btnPlay.left(), btnPlay.bottom()+ GAP, (float) (Math.floor(buttonAreaWidth/2f)-1), BTN_HEIGHT);
             btnBadges.setRect(btnRankings.right()+2, btnRankings.top(), btnRankings.width(), BTN_HEIGHT);
             btnSettings.setRect(btnRankings.left(), btnRankings.bottom() + GAP, (float) (Math.floor(buttonAreaWidth/3f)-1), BTN_HEIGHT);
             btnChanges.setRect(btnSettings.right()+2, btnSettings.top(), btnSettings.width(), BTN_HEIGHT);
             btnAbout.setRect(btnChanges.right()+2, btnSettings.top(), btnSettings.width(), BTN_HEIGHT);
+			btnSupport.setRect(btnAreaLeft, btnSettings.bottom() + GAP, btnPlay.width(), BTN_HEIGHT);
 		} else {
 			btnPlay.setRect(btnAreaLeft, topRegion+GAP, buttonAreaWidth, BTN_HEIGHT);
 			align(btnPlay);
-			//btnSupport.setRect(btnPlay.left(), btnPlay.bottom()+ GAP, btnPlay.width(), BTN_HEIGHT);
 			btnRankings.setRect(btnPlay.left(), btnPlay.bottom()+ GAP, (btnPlay.width()/2)-1, BTN_HEIGHT);
 			btnBadges.setRect(btnRankings.right()+2, btnRankings.top(), btnRankings.width(), BTN_HEIGHT);
 			//btnNews.setRect(btnRankings.left(), btnRankings.bottom()+ GAP, btnRankings.width(), BTN_HEIGHT);
 			btnAbout.setRect(btnRankings.left(), btnRankings.bottom() + GAP, btnRankings.width(), BTN_HEIGHT);
 			btnSettings.setRect(btnAbout.right()+2, btnAbout.top(), btnRankings.width(), BTN_HEIGHT);
 			btnChanges.setRect(btnAreaLeft, btnSettings.bottom() + GAP, buttonAreaWidth, BTN_HEIGHT);
+			btnSupport.setRect(btnAreaLeft, btnChanges.bottom()+ GAP, btnPlay.width(), BTN_HEIGHT);
 		}
 
 		BitmapText version = new BitmapText( "v" + Game.version, pixelFont);
