@@ -52,6 +52,11 @@ public abstract class SpellEmpower extends ClericSpell {
         );
     }
 
+    public static float left() {
+        Buff buff = hero.virtualBuff(Buff.class);
+        return buff != null ? buff.left() : 0;
+    }
+
     protected Talent talent;
 
     @Override
@@ -215,6 +220,10 @@ public abstract class SpellEmpower extends ClericSpell {
             type = buffType.POSITIVE;
         }
 
+        public float left() {
+            return limit() - count();
+        }
+
         @Override
         public abstract int icon();
 
@@ -227,7 +236,7 @@ public abstract class SpellEmpower extends ClericSpell {
 
         @Override
         public String iconTextDisplay() {
-            return String.valueOf((int)(limit() - count()));
+            return String.valueOf((int)left());
         }
 
         @Override
@@ -241,7 +250,7 @@ public abstract class SpellEmpower extends ClericSpell {
 
         @Override
         public void tintIcon(Image icon) {
-            icon.tint(0x808080);
+            icon.tint(0x80808080);
         }
     }
 }

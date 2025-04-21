@@ -175,8 +175,8 @@ abstract public class Weapon extends KindOfWeapon {
 			}
 
 			if (attacker instanceof Hero && isEquipped((Hero) attacker) &&
-					attacker.buff(Smite.SmiteTracker.class) != null && !becameAlly){
-				defender.damage(Smite.bonusDmg((Hero) attacker, defender), Smite.INSTANCE);
+					attacker.virtualBuff(Smite.SmiteTracker.class) != null && !becameAlly){
+				defender.damage(attacker.virtualBuff(Smite.SmiteTracker.class).bonusDmg((Hero) attacker, defender), Smite.INSTANCE);
 			}
 		}
 		
@@ -583,8 +583,9 @@ abstract public class Weapon extends KindOfWeapon {
 				//attacker.buff(RunicBlade.RunicSlashTracker.class).detach();
 			}
 
-			if (attacker.buff(Smite.SmiteTracker.class) != null){
-				multi += 3f;
+
+			if (attacker.virtualBuff(Smite.SmiteTracker.class) != null){
+				multi += attacker.virtualBuff(Smite.SmiteTracker.class).enchMulti();
 			}
 
 			if (attacker.buff(ElementalStrike.DirectedPowerTracker.class) != null){

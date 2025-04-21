@@ -349,6 +349,7 @@ public class Hero extends Char {
 		HTBoost = bundle.getInt(HTBOOST);
 
 		super.restoreFromBundle( bundle );
+		restoring = this;
 
 		heroClass = bundle.getEnum( CLASS, HeroClass.class );
 		subClass = bundle.getEnum( SUBCLASS, HeroSubClass.class );
@@ -361,6 +362,8 @@ public class Hero extends Char {
 		STR = bundle.getInt( STRENGTH );
 
 		belongings.restoreFromBundle( bundle );
+
+		restoring = null;
 	}
 	
 	public static void preview( GamesInProgress.Info info, Bundle bundle ) {
@@ -1604,8 +1607,9 @@ public class Hero extends Char {
 					int dmg = subClass == HeroSubClass.PALADIN ? 6 : 2;
 					enemy.damage(Math.round(dmg * Weapon.Enchantment.genericProcChanceMultiplier(this)), HolyWeapon.INSTANCE);
 				}
-				if (buff(Smite.SmiteTracker.class) != null) {
-					enemy.damage(Smite.bonusDmg(this, enemy), Smite.INSTANCE);
+				Smite.SmiteTracker smiteTracker = virtualBuff(Smite.SmiteTracker.class);
+				if (smiteTracker != null) {
+					enemy.damage(smiteTracker.bonusDmg(this, enemy), Smite.INSTANCE);
 				}
 			}
 		}

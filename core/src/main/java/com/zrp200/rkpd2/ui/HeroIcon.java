@@ -105,7 +105,8 @@ public class HeroIcon extends Image {
 	public static final int STASIS          = 66;
 	public static final int
 			LIMIT_BREAK		= 67,
-			DIVINE_ADVENT 	= 68;
+			DIVINE_ADVENT 	= 68,
+			OMNISMITE		= 69;
 
 	//all cleric spells have a separate icon with no background for the action indicator
 	public static final int SPELL_ACTION_OFFSET      = 32;
