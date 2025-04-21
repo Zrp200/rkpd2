@@ -127,7 +127,7 @@ public class MnemonicPrayer extends TargetedClericSpell {
 
 		QuickSlotButton.target(ch);
 
-		float extension = 2 + hero.pointsInTalent(Talent.MNEMONIC_PRAYER);
+		float extension = 2 * (1 + hero.pointsInTalent(Talent.MNEMONIC_PRAYER));
 
 		Char ally = PowerOfMany.getPoweredAlly();
 		if (ally != null && ally.buff(LifeLinkSpell.LifeLinkSpellBuff.class) != null){
@@ -145,11 +145,12 @@ public class MnemonicPrayer extends TargetedClericSpell {
 		if (ch == hero){
 			hero.busy();
 			hero.sprite.operate(ch.pos);
-			hero.spend( 1f );
+//			hero.spend( 1f );
 			BuffIndicator.refreshHero();
 		} else {
 			hero.sprite.zap(ch.pos);
-			hero.spendAndNext( 1f );
+			hero.next();
+			hero./*spendAndNext( 1f )*/next();
 		}
 
 		onSpellCast(tome, hero);
