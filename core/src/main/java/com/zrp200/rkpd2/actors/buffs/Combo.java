@@ -33,7 +33,6 @@ import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.mobs.DwarfKing;
-import com.zrp200.rkpd2.effects.FloatingText;
 import com.zrp200.rkpd2.items.BrokenSeal;
 import com.zrp200.rkpd2.items.wands.WandOfBlastWave;
 import com.zrp200.rkpd2.mechanics.Ballistica;
@@ -538,28 +537,10 @@ public class Combo extends Buff implements ActionIndicator.Action {
 
 		private HashMap<Char, Integer> targets = new HashMap<>();
 		protected boolean isValidTarget(Char enemy) {
-			if (enemy != null
-					&& enemy.alignment != Char.Alignment.ALLY
-					&& enemy != target
-					&& Dungeon.level.heroFOV[enemy.pos]
-					&& !target.isCharmedBy(enemy)) {
-				int leapDistance = getLeapDistance();
-				if (target.canAttack(enemy)) {
-					targets.put(enemy, target.pos); // no need to generate a ballistica.
-					return true;
-				} else if (!target.rooted && leapDistance > 0
-						&& Dungeon.level.distance(target.pos, enemy.pos) <= leapDistance) {
-					Ballistica b = new Ballistica(target.pos, enemy.pos, Ballistica.PROJECTILE);
-					if(b.collisionPos == enemy.pos) {
-						int leapPos = b.path.get(b.dist-1);
-						if(Dungeon.level.passable[leapPos] || target.flying && Dungeon.level.avoid[leapPos]) {
-							targets.put(enemy, leapPos);
-							return true;
-						}
-					}
-				}
-			}
-			return false;
+			int pos = Leap.findLeapPos(target, enemy, getLeapDistance());
+			if (pos < 0) return false;
+			targets.put(enemy, pos);
+			return true;
 		}
 
 		@Override
@@ -573,7 +554,38 @@ public class Combo extends Buff implements ActionIndicator.Action {
 
 		@Override
 		protected void action(Char enemy) {
-			int leapPos = targets.get(enemy);
+			Leap.execute((Hero) target, enemy, targets.get(enemy), () -> doAttack(enemy));
+		}
+
+		@Override
+		public String prompt() {
+			return Messages.get(Combo.class, "prompt");
+		}
+	}
+	public interface Leap extends Callback {
+		static int findLeapPos(Char target, Char enemy, int leapDistance) {
+			if (enemy != null
+					&& enemy.alignment != Char.Alignment.ALLY
+					&& enemy != target
+					&& Dungeon.level.heroFOV[enemy.pos]
+					&& !target.isCharmedBy(enemy)) {
+				if (target.canAttack(enemy)) {
+					return target.pos;
+				} else if (!target.rooted && leapDistance > 0
+						&& Dungeon.level.distance(target.pos, enemy.pos) <= leapDistance) {
+					Ballistica b = new Ballistica(target.pos, enemy.pos, Ballistica.PROJECTILE);
+					if(b.collisionPos == enemy.pos) {
+						int leapPos = b.path.get(b.dist-1);
+						if(Dungeon.level.passable[leapPos] || target.flying && Dungeon.level.avoid[leapPos]) {
+							return leapPos;
+						}
+					}
+				}
+			}
+			return -1;
+		}
+
+		static void execute(Hero target, Char enemy, int leapPos, Leap doAttack) {
 			((Hero)target).busy();
 			if(leapPos != target.pos) {
 				target.sprite.jump(target.pos, leapPos, () -> {
@@ -581,16 +593,11 @@ public class Combo extends Buff implements ActionIndicator.Action {
 					Dungeon.level.occupyCell(target);
 					Dungeon.observe();
 					GameScene.updateFog();
-					target.sprite.attack(enemy.pos, () -> doAttack(enemy));
+					target.sprite.attack(enemy.pos, doAttack);
 				});
 			} else {
-				target.sprite.attack(enemy.pos, ()->doAttack(enemy));
+				target.sprite.attack(enemy.pos, doAttack);
 			}
-		}
-
-		@Override
-		public String prompt() {
-			return Messages.get(Combo.class, "prompt");
 		}
 	}
 }
