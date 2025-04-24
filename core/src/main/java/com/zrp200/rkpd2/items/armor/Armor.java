@@ -488,9 +488,7 @@ public class Armor extends EquipableItem {
 					damage = trinityGlyph.proc( this, attacker, defender, damage );
 				}
 				//so that this effect procs for allies using this armor via aura of protection
-				if (defender.alignment == Dungeon.hero.alignment
-						&& Dungeon.hero.buff(AuraOfProtection.AuraBuff.class) != null
-						&& (Dungeon.level.distance(defender.pos, Dungeon.hero.pos) <= 2 || defender.buff(LifeLinkSpell.LifeLinkSpellBuff.class) != null)
+				if (AuraOfProtection.isActiveFor(defender)
 						&& Dungeon.hero.buff(HolyWard.HolyArmBuff.class) != null) {
 					int blocking = Dungeon.hero.subClass == HeroSubClass.PALADIN ? 3 : 1;
 					damage -= Math.round(blocking * Glyph.genericProcChanceMultiplier(defender));
@@ -792,9 +790,7 @@ public class Armor extends EquipableItem {
 			Berserk berserk = defender.buff(Berserk.class);
 			if(berserk != null) multi *= berserk.enchantFactor(multi, true);
 
-			if (Dungeon.hero.alignment == defender.alignment
-					&& Dungeon.hero.buff(AuraOfProtection.AuraBuff.class) != null
-					&& (Dungeon.level.distance(defender.pos, Dungeon.hero.pos) <= 2 || defender.buff(LifeLinkSpell.LifeLinkSpellBuff.class) != null)){
+			if (AuraOfProtection.isActiveFor(defender)){
 				multi += 0.25f + 0.25f*Dungeon.hero.pointsInTalent(Talent.AURA_OF_PROTECTION);
 			}
 

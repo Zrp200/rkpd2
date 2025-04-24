@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.actors.hero.spells;
 
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.hero.Hero;
@@ -108,6 +109,14 @@ public class AuraOfProtection extends ClericSpell {
 			return Math.max(0, (DURATION - visualcooldown()) / DURATION);
 		}
 
+	}
+
+	public static boolean isActiveFor(Char ch) {
+		return ch.alignment == Dungeon.hero.alignment
+				&& Dungeon.hero.buff(AuraOfProtection.AuraBuff.class) != null
+				&& (Dungeon.level.distance(ch.pos, Dungeon.hero.pos) <= 2
+						|| ch.buff(LifeLinkSpell.LifeLinkSpellBuff.class) != null
+		);
 	}
 
 }
