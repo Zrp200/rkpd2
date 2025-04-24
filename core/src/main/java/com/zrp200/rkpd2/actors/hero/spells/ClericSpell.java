@@ -54,15 +54,24 @@ public abstract class ClericSpell {
 	}
 
 	public String name(){
-		return Messages.get(this, "name");
+		return checkEmpowerMsg("name");
 	}
 
 	public String shortDesc(){
-		return Messages.get(this, "short_desc") + " " + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+		return checkEmpowerMsg("short_desc") + " " + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+	}
+
+	public final String checkEmpowerMsg(String key, Object... args) {
+		String res = Messages.NO_TEXT_FOUND;
+		if (SpellEmpower.isActive()) {
+			res = Messages.get(this, key + "_empower", args);
+		}
+        //noinspection StringEquality
+        return res == Messages.NO_TEXT_FOUND ? Messages.get(this, key, args) : res;
 	}
 
 	public String desc(){
-		return Messages.get(this, "desc", getDescArgs()) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+		return checkEmpowerMsg("desc", getDescArgs())+ "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
 	}
 
 	protected Object[] getDescArgs() {
