@@ -21,6 +21,8 @@
 
 package com.zrp200.rkpd2.items.weapon;
 
+import static com.zrp200.rkpd2.Dungeon.hero;
+
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.Statistics;
@@ -147,7 +149,7 @@ abstract public class Weapon extends KindOfWeapon {
 			if (attacker instanceof Hero && isEquipped((Hero) attacker)
 					&& attacker.buff(HolyWeapon.HolyWepBuff.class) != null){
 				if (enchantment != null &&
-						(((Hero) attacker).subClass == HeroSubClass.PALADIN || hasCurseEnchant())){
+						(attacker.buff(HolyWeapon.HolyWepBuff.Empowered.class) != null || ((Hero) attacker).subClass == HeroSubClass.PALADIN || hasCurseEnchant())){
 					damage = enchantment.proc(this, attacker, defender, damage);
 					if (defender.alignment == Char.Alignment.ALLY && !wasAlly){
 						becameAlly = true;
@@ -157,20 +159,24 @@ abstract public class Weapon extends KindOfWeapon {
 					damage = trinityEnchant.proc(this, attacker, defender, damage);
 				}
 				if (defender.isAlive() && !becameAlly) {
-					int dmg = ((Hero) attacker).subClass == HeroSubClass.PALADIN ? 6 : 2;
-					defender.damage(Math.round(dmg * Enchantment.genericProcChanceMultiplier(attacker)), HolyWeapon.INSTANCE);
+					HolyWeapon.proc(attacker, defender);
 				}
 
 			} else {
 				if (enchantment != null
-				&& (Random.Float() < Talent.SpiritBladesTracker.getProcModifier())) {
-			damage = enchantment.proc( this, attacker, defender, damage );if (defender.alignment == Char.Alignment.ALLY && !wasAlly) {
+						&& (Random.Float() < Talent.SpiritBladesTracker.getProcModifier())) {
+					damage = enchantment.proc(this, attacker, defender, damage);
+					if (defender.alignment == Char.Alignment.ALLY && !wasAlly) {
 						becameAlly = true;
 					}
 				}
 
 				if (defender.isAlive() && !becameAlly && trinityEnchant != null){
 					damage = trinityEnchant.proc(this, attacker, defender, damage);
+				}
+
+				if (defender.isAlive() && !becameAlly && Dungeon.hero.buff(HolyWeapon.HolyWepBuff.Empowered.class) != null) {
+					HolyWeapon.proc(attacker, defender);
 				}
 			}
 
@@ -530,8 +536,9 @@ abstract public class Weapon extends KindOfWeapon {
 
 	@Override
 	public ItemSprite.Glowing glowing() {
-		if (isEquipped(Dungeon.hero) && !hasCurseEnchant() && Dungeon.hero.buff(HolyWeapon.HolyWepBuff.class) != null
-				&& (Dungeon.hero.subClass != HeroSubClass.PALADIN || enchantment == null)){
+		// fixme should probably cause thrown weapons to glow
+		if (isEquipped(Dungeon.hero) && !hasCurseEnchant() && (enchantment == null ? hero.virtualBuff(HolyWeapon.HolyWepBuff.class) != null
+				: hero.buff(HolyWeapon.HolyWepBuff.class) != null && hero.subClass != HeroSubClass.PALADIN)){
 			return HOLY;
 		} else {
 			return enchantment != null && (cursedKnown || !enchantment.curse()) ? enchantment.glowing() : null;

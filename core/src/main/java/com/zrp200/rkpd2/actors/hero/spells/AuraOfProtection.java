@@ -22,17 +22,14 @@
 package com.zrp200.rkpd2.actors.hero.spells;
 
 import com.watabou.noosa.Image;
-import com.watabou.utils.Reflection;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.artifacts.HolyTome;
-import com.zrp200.rkpd2.items.spells.Spell;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.ui.HeroIcon;
@@ -87,7 +84,7 @@ public class AuraOfProtection extends ClericSpell {
 			// add regular buff
 			AuraBuff b = new AuraBuff();
 			duration += b.getDuration();
-			if (existing == null) existing = b;
+			if (existing == null) (existing = b).attachTo(hero);
 		}
 		existing.spend(duration);
 
@@ -101,11 +98,16 @@ public class AuraOfProtection extends ClericSpell {
 
 	}
 
-	public static class AuraBuff extends FlavourBuff {
+	// made it extendable
+	public static class AuraBuff extends PaladinSpellExtendable {
 
+		@Override
 		protected float getDuration() {
 			return 20;
 		}
+
+		@Override
+		ClericSpell getSourceSpell() { return INSTANCE; }
 
 		private Emitter particles;
 
@@ -120,7 +122,9 @@ public class AuraOfProtection extends ClericSpell {
 
 		@Override
 		public String desc() {
-			return Messages.get(this, "desc", Messages.get(this, "empower"), dispTurns());
+			return Messages.get(this, "desc", Messages.get(this, "empower")) +
+					"\n\n" + getExtendableMessage() +
+					"\n\n" + Messages.get(this, "turns", dispTurns());
 		}
 
 		protected int getSpeckType() {
@@ -137,11 +141,6 @@ public class AuraOfProtection extends ClericSpell {
 			} else if (!on && particles != null){
 				particles.on = false;
 			}
-		}
-
-		@Override
-		public float iconFadePercent() {
-			return Math.max(0, (getDuration() - visualcooldown()) / getDuration());
 		}
 
 	}
@@ -165,9 +164,7 @@ public class AuraOfProtection extends ClericSpell {
 		}
 
 		@Override
-		protected float getDuration() {
-			return 50f;
-		}
+		public float getDuration() { return 50f; }
 
 	}
 

@@ -21,15 +21,19 @@
 
 package com.zrp200.rkpd2.actors.hero.spells;
 
+import static com.zrp200.rkpd2.Dungeon.hero;
+
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.effects.Enchanting;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.artifacts.HolyTome;
+import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.ui.HeroIcon;
@@ -52,7 +56,24 @@ public class HolyWeapon extends ClericSpell {
 	@Override
 	public void onCast(HolyTome tome, Hero hero) {
 
-		Buff.affect(hero, HolyWepBuff.class, 50f);
+		HolyWepBuff buff = hero.virtualBuff(HolyWepBuff.class);
+		float duration;
+		if (SpellEmpower.isActive()) {
+			float additionalDuration = 0;
+			if (buff != null && !(buff instanceof HolyWepBuff.Empowered)) {
+				additionalDuration = buff.cooldown();
+				buff.detach();
+			}
+
+			buff = Buff.affect(hero, HolyWepBuff.Empowered.class);
+			duration = buff.getDuration() + additionalDuration;
+		} else {
+			// extends by the regular duration
+			HolyWepBuff newBuff = new HolyWepBuff();
+			duration = newBuff.getDuration();
+			if (buff == null) (buff = newBuff).attachTo(hero);
+		}
+		buff.spend(duration);
 		Item.updateQuickslot();
 
 		Sample.INSTANCE.play(Assets.Sounds.READ);
@@ -67,16 +88,31 @@ public class HolyWeapon extends ClericSpell {
 
 	@Override
 	public String desc(){
-		String desc = Messages.get(this, "desc");
-		if (Dungeon.hero.subClass == HeroSubClass.PALADIN){
-			desc += "\n\n" + Messages.get(this, "desc_paladin");
+		String desc = checkEmpowerMsg("desc");
+		if (hero.subClass == HeroSubClass.PALADIN){
+			desc += "\n\n" + checkEmpowerMsg("desc_paladin");
 		}
-		return desc + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+		return desc + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(hero));
 	}
 
-	public static class HolyWepBuff extends FlavourBuff {
+	public static void proc(Char attacker, Char defender) {
+		// todo probably should give allied attacks and thrown weapons different numbers.
+		float effectiveness = Weapon.Enchantment.genericProcChanceMultiplier(hero);
+		if (hero.heroClass == HeroClass.CLERIC) effectiveness *= 1.5f;
+		if (hero.subClass.is(HeroSubClass.PALADIN)) effectiveness *= 3;
+		else if (hero.buff(HolyWepBuff.Empowered.class) != null) effectiveness *= 2;
+		defender.damage(Math.round(2 * effectiveness), HolyWeapon.INSTANCE);
+		// added effect for fun
+		defender.sprite.burst(0xFFFFFFFF, Random.round(effectiveness / 1.5f));
+	}
 
-		public static final float DURATION	= 50f;
+	public static class HolyWepBuff extends PaladinSpellExtendable {
+
+		@Override
+		public float getDuration() { return 50; }
+
+		@Override
+		public ClericSpell getSourceSpell() { return INSTANCE; }
 
 		{
 			type = buffType.POSITIVE;
@@ -88,17 +124,14 @@ public class HolyWeapon extends ClericSpell {
 		}
 
 		@Override
-		public float iconFadePercent() {
-			return Math.max(0, (DURATION - visualcooldown()) / DURATION);
-		}
-
-		@Override
 		public String desc() {
-			if (Dungeon.hero.subClass == HeroSubClass.PALADIN){
-				return Messages.get(this, "desc_paladin", dispTurns());
+			String desc;
+			if (hero.subClass == HeroSubClass.PALADIN) {
+				desc = Messages.get(this, "desc_paladin") + "\n\n" + getExtendableMessage();
 			} else {
-				return Messages.get(this, "desc", dispTurns());
+				desc = Messages.get(this, "desc");
 			}
+			return desc + "\n\n" + Messages.get(this, "turns", dispTurns());
 		}
 
 		@Override
@@ -107,12 +140,9 @@ public class HolyWeapon extends ClericSpell {
 			Item.updateQuickslot();
 		}
 
-		public void extend(float extension){
-			if (cooldown()+extension <= 2*DURATION){
-				spend(extension);
-			} else {
-				postpone(2*DURATION);
-			}
+		public static class Empowered extends HolyWepBuff {
+			@Override
+			public float getDuration() { return super.getDuration() * 2; }
 		}
 	}
 

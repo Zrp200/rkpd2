@@ -21,10 +21,12 @@
 
 package com.zrp200.rkpd2.actors.hero.spells;
 
+import com.watabou.utils.GameMath;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Barrier;
 import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
@@ -103,19 +105,10 @@ public abstract class ClericSpell {
 		}
 		tome.spendCharge(chargeUse(hero));
 		Talent.onArtifactUsed(hero);
-		if (hero.subClass == HeroSubClass.PALADIN){
-			if (this != HolyWeapon.INSTANCE && hero.buff(HolyWeapon.HolyWepBuff.class) != null){
-				hero.buff(HolyWeapon.HolyWepBuff.class).extend(10*chargeUse(hero));
-			}
-			if (this != HolyWard.INSTANCE && hero.buff(HolyWard.HolyArmBuff.class) != null){
-				hero.buff(HolyWard.HolyArmBuff.class).extend(10*chargeUse(hero));
-			}
-			if (this != AuraOfProtection.INSTANCE) {
-				AuraOfProtection.AuraBuff buff = hero.virtualBuff(AuraOfProtection.AuraBuff.class);
-				if (buff != null) {
-					buff.postpone(Math.min(
-							chargeUse(hero) * buff.getDuration() / 5,
-							2 * buff.getDuration()));
+		if (hero.subClass.is(HeroSubClass.PALADIN)) {
+			for (PaladinSpellExtendable buff : hero.buffs(PaladinSpellExtendable.class)) {
+				if (this != buff.getSourceSpell()) {
+					buff.extend( buff.getTurnsPerCharge() * chargeUse(hero));
 				}
 			}
 		}
@@ -124,6 +117,31 @@ public abstract class ClericSpell {
 			hero.buff(AscendedForm.AscendBuff.class).spellCasts++;
 			hero.buff(AscendedForm.AscendBuff.class).incShield((int)(10*chargeUse(hero)));
 		}
+	}
+
+	public static abstract class PaladinSpellExtendable extends FlavourBuff {
+		abstract ClericSpell getSourceSpell();
+
+		abstract protected float getDuration();
+
+		public float getMaxDuration() {
+			// rkpd2 doubles the maximum extend duration
+			return getDuration() * 4;
+		}
+		public float getTurnsPerCharge() { return getDuration() / 5f; }
+
+		public void extend(float extension) {
+			postpone(Math.min(getMaxDuration(), cooldown() + extension));
+		}
+
+		public String getExtendableMessage() {
+			return Messages.get(this, "extendable", name(), Math.round(getTurnsPerCharge()));
+		}
+
+		public float iconFadePercent() {
+			return 1 - GameMath.gate(0, visualcooldown() / getDuration(), 1);
+		}
+
 	}
 
 	public static ArrayList<ClericSpell> getSpellList(Hero cleric, int tier){

@@ -21,14 +21,18 @@
 
 package com.zrp200.rkpd2.actors.hero.spells;
 
+import static com.zrp200.rkpd2.Dungeon.hero;
+
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.effects.Enchanting;
 import com.zrp200.rkpd2.items.Item;
+import com.zrp200.rkpd2.items.armor.Armor;
 import com.zrp200.rkpd2.items.artifacts.HolyTome;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
@@ -47,7 +51,23 @@ public class HolyWard extends ClericSpell {
 	@Override
 	public void onCast(HolyTome tome, Hero hero) {
 
-		Buff.affect(hero, HolyArmBuff.class, 50f);
+		HolyArmBuff buff = hero.virtualBuff(HolyArmBuff.class);
+		float duration;
+		if (SpellEmpower.isActive()) {
+			float additionalDuration = 0;
+			if (buff != null && !(buff instanceof HolyArmBuff.Empowered)) {
+				additionalDuration = buff.cooldown();
+				buff.detach();
+			}
+			buff = Buff.affect(hero, HolyArmBuff.Empowered.class);
+			duration = buff.getDuration() + additionalDuration;
+		} else {
+			// extends by the regular duration
+			HolyArmBuff newBuff = new HolyArmBuff();
+			duration = newBuff.getDuration();
+			if (buff == null) (buff = newBuff).attachTo(hero);
+		}
+		buff.spend(duration);
 		Item.updateQuickslot();
 
 		Sample.INSTANCE.play(Assets.Sounds.READ);
@@ -62,16 +82,18 @@ public class HolyWard extends ClericSpell {
 
 	@Override
 	public String desc(){
-		String desc = Messages.get(this, "desc");
-		if (Dungeon.hero.subClass == HeroSubClass.PALADIN){
+		String desc = checkEmpowerMsg("desc");
+		if (hero.subClass == HeroSubClass.PALADIN){
 			desc += "\n\n" + Messages.get(this, "desc_paladin");
 		}
-		return desc + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+		return desc + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(hero));
 	}
 
-	public static class HolyArmBuff extends FlavourBuff {
+	public static class HolyArmBuff extends PaladinSpellExtendable {
 
-		public static final float DURATION	= 50f;
+		public float getDuration() { return 50; }
+
+		public ClericSpell getSourceSpell() { return INSTANCE; }
 
 		{
 			type = buffType.POSITIVE;
@@ -83,17 +105,14 @@ public class HolyWard extends ClericSpell {
 		}
 
 		@Override
-		public float iconFadePercent() {
-			return Math.max(0, (DURATION - visualcooldown()) / DURATION);
-		}
-
-		@Override
 		public String desc() {
-			if (Dungeon.hero.subClass == HeroSubClass.PALADIN){
-				return Messages.get(this, "desc_paladin", dispTurns());
+			String desc;
+			if (hero.subClass == HeroSubClass.PALADIN) {
+				desc = Messages.get(this, "desc_paladin") + "\n\n" + getExtendableMessage();
 			} else {
-				return Messages.get(this, "desc", dispTurns());
+				desc = Messages.get(this, "desc");
 			}
+			return desc + "\n\n" + Messages.get(this, "turns", dispTurns());
 		}
 
 		@Override
@@ -102,13 +121,26 @@ public class HolyWard extends ClericSpell {
 			Item.updateQuickslot();
 		}
 
-		public void extend(float extension){
-			if (cooldown()+extension <= 2*DURATION){
-				spend(extension);
-			} else {
-				postpone(2*DURATION);
+		public static class Empowered extends HolyArmBuff {
+			@Override
+			public float getDuration() {
+				return super.getDuration() * 2;
 			}
 		}
+	}
+
+	public static int proc(Char defender) {
+		HolyArmBuff buff = hero.virtualBuff(HolyArmBuff.class);
+		if (buff == null || !(
+				defender == hero
+						|| buff instanceof HolyArmBuff.Empowered
+						|| AuraOfProtection.isActiveFor(defender)
+		)) return 0;
+		float effectiveness = Armor.Glyph.genericProcChanceMultiplier(defender);
+		if (hero.heroClass == HeroClass.CLERIC) 		effectiveness *= 1.5f;
+		if (hero.subClass.is(HeroSubClass.PALADIN)) 	effectiveness *= 3;
+		else if (buff instanceof HolyArmBuff.Empowered) effectiveness *= 2;
+		return Random.round(2 * effectiveness);
 	}
 
 }

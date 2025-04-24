@@ -89,6 +89,8 @@ import com.zrp200.rkpd2.actors.hero.abilities.warrior.Endure;
 import com.zrp200.rkpd2.actors.hero.spells.AuraOfProtection;
 import com.zrp200.rkpd2.actors.hero.spells.BeamingRay;
 import com.zrp200.rkpd2.actors.hero.spells.GuidingLight;
+import com.zrp200.rkpd2.actors.hero.spells.HolyWard;
+import com.zrp200.rkpd2.actors.hero.spells.HolyWeapon;
 import com.zrp200.rkpd2.actors.hero.spells.LifeLinkSpell;
 import com.zrp200.rkpd2.actors.hero.spells.ShieldOfLight;
 import com.zrp200.rkpd2.actors.mobs.Brute;
@@ -727,19 +729,24 @@ public abstract class Char extends Actor {
 			buff.onAttackProc( enemy );
 		}
 
-		if(alignment == Alignment.ALLY && hero.hasTalent(Talent.WARLOCKS_TOUCH)) {
-			// warlock+allies can soul mark by simply attacking via warlock's touch.
-
-			float shift=.05f, scaling=.1f;
-			// 15/25/35 for melee and spirit bow, 20/35/50 for thrown weapons. Not sure if this is a good gimmick or if I'm forcing a synergy here.
-			if(this == hero && hero.belongings.thrownWeapon != null && !(hero.belongings.thrownWeapon instanceof SpiritBow.SpiritArrow) ) {
-				// thrown weapons have a slight boost.
-				scaling *= 1.5f;
+		if(alignment == Alignment.ALLY) {
+			if (this != hero && hero.buff(HolyWeapon.HolyWepBuff.Empowered.class) != null) {
+				HolyWeapon.proc(this, enemy);
 			}
-			SoulMark.process(enemy,
-					-4, // 10 - 4 = 6 turns
-					shift + scaling*hero.pointsInTalent(Talent.WARLOCKS_TOUCH),
-					true, false);
+			if (hero.hasTalent(Talent.WARLOCKS_TOUCH)) {
+				// warlock+allies can soul mark by simply attacking via warlock's touch.
+
+				float shift=.05f, scaling=.1f;
+				// 15/25/35 for melee and spirit bow, 20/35/50 for thrown weapons. Not sure if this is a good gimmick or if I'm forcing a synergy here.
+				if(this == hero && hero.belongings.thrownWeapon != null && !(hero.belongings.thrownWeapon instanceof SpiritBow.SpiritArrow) ) {
+					// thrown weapons have a slight boost.
+					scaling *= 1.5f;
+				}
+				SoulMark.process(enemy,
+						-4, // 10 - 4 = 6 turns
+						shift + scaling*hero.pointsInTalent(Talent.WARLOCKS_TOUCH),
+						true, false);
+			}
 		}
 
 		return damage;
@@ -892,7 +899,10 @@ public abstract class Char extends Actor {
 
         //TODO improve this when I have proper damage source logic
         if (AntiMagic.RESISTS.contains(src.getClass())){
-            dmg -= AntiMagic.drRoll(this, glyphLevel(AntiMagic.class));
+			dmg -= AntiMagic.drRoll(this, glyphLevel(AntiMagic.class));
+			if (alignment == Alignment.ALLY && Dungeon.hero.buff(HolyWard.HolyArmBuff.Empowered.class) != null) {
+				dmg -= HolyWard.proc(this);
+			}
             if (buff(ArcaneArmor.class) != null) {
                 dmg -= Random.NormalIntRange(0, buff(ArcaneArmor.class).level());
             }

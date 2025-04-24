@@ -468,32 +468,18 @@ public class Armor extends EquipableItem {
 				}
 			}
 
-			if (defender instanceof Hero && isEquipped((Hero) defender)
-					&& defender.buff(HolyWard.HolyArmBuff.class) != null){
-				if (glyph != null &&
-						(((Hero) defender).subClass == HeroSubClass.PALADIN || hasCurseGlyph())){
-					damage = glyph.proc( this, attacker, defender, damage );
-				}
-				if (trinityGlyph != null){
-					damage = trinityGlyph.proc( this, attacker, defender, damage );
-				}
-				int blocking = ((Hero) defender).subClass == HeroSubClass.PALADIN ? 3 : 1;
-				damage -= Math.round(blocking * Glyph.genericProcChanceMultiplier(defender));
-
-			} else {
-				if (glyph != null) {
-					damage = glyph.proc(this, attacker, defender, damage);
-				}
-				if (trinityGlyph != null){
-					damage = trinityGlyph.proc( this, attacker, defender, damage );
-				}
-				//so that this effect procs for allies using this armor via aura of protection
-				if (AuraOfProtection.isActiveFor(defender)
-						&& Dungeon.hero.buff(HolyWard.HolyArmBuff.class) != null) {
-					int blocking = Dungeon.hero.subClass == HeroSubClass.PALADIN ? 3 : 1;
-					damage -= Math.round(blocking * Glyph.genericProcChanceMultiplier(defender));
-				}
+            if (glyph != null && !(
+					defender instanceof Hero && isEquipped((Hero) defender)
+							// this excludes empowered
+							&& defender.buff(HolyWard.HolyArmBuff.class) != null
+							&& !(((Hero) defender).subClass.is(HeroSubClass.PALADIN) || hasCurseGlyph()))
+			) {
+				damage = glyph.proc(this, attacker, defender, damage);
 			}
+            if (trinityGlyph != null){
+                damage = trinityGlyph.proc( this, attacker, defender, damage );
+            }
+            damage -= HolyWard.proc(defender);
 			damage = Math.max(damage, 0);
 		}
 		

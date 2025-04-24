@@ -468,8 +468,9 @@ public class MeleeWeapon extends Weapon {
 			case NONE:
 		}
 
-		if (isEquipped(hero) && !hasCurseEnchant() && hero.buff(HolyWeapon.HolyWepBuff.class) != null
-				&& (hero.subClass != HeroSubClass.PALADIN || enchantment == null)){
+		if (isEquipped(hero) && !hasCurseEnchant() && (
+				enchantment == null ? hero.virtualBuff(HolyWeapon.HolyWepBuff.class) != null
+						: hero.buff(HolyWeapon.HolyWepBuff.class) != null && hero.subClass != HeroSubClass.PALADIN)){
 			info += "\n\n" + Messages.capitalize(Messages.get(Weapon.class, "enchanted", Messages.get(HolyWeapon.class, "ench_name", Messages.get(Enchantment.class, "enchant"))));
 			info += " " + Messages.get(HolyWeapon.class, "ench_desc");
 		} else if (enchantment != null && (cursedKnown || !enchantment.curse())){

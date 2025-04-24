@@ -1604,8 +1604,7 @@ public class Hero extends Char {
 			}
 			if (!wasEnemy || enemy.alignment == Alignment.ENEMY) {
 				if (buff(HolyWeapon.HolyWepBuff.class) != null) {
-					int dmg = subClass == HeroSubClass.PALADIN ? 6 : 2;
-					enemy.damage(Math.round(dmg * Weapon.Enchantment.genericProcChanceMultiplier(this)), HolyWeapon.INSTANCE);
+					HolyWeapon.proc(this, enemy);
 				}
 				Smite.SmiteTracker smiteTracker = virtualBuff(Smite.SmiteTracker.class);
 				if (smiteTracker != null) {
@@ -1664,10 +1663,7 @@ public class Hero extends Char {
 				&& buff(BodyForm.BodyFormBuff.class).glyph() != null){
 				damage = buff(BodyForm.BodyFormBuff.class).glyph().proc(new ClothArmor(), enemy, this, damage);
 			}
-			if (buff(HolyWard.HolyArmBuff.class) != null){
-				int blocking = subClass == HeroSubClass.PALADIN ? 3 : 1;
-				damage -= Math.round(blocking * Armor.Glyph.genericProcChanceMultiplier(enemy));
-			}
+			damage -= HolyWard.proc(this);
 		}
 
 		WandOfLivingEarth.RockArmor rockArmor = buff(WandOfLivingEarth.RockArmor.class);
