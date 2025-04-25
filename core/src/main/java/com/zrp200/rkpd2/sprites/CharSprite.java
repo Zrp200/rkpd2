@@ -264,7 +264,7 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 	// set is used to emulate current behavior vs the delayed behavior.
 	// note that doing this also overrides auto-ending so you might want to deal with that.
 	public void doAfterAnim(Callback callback) { doAfterAnim(callback,false); }
-	protected void doAfterAnim(Callback callback, boolean set) {
+	protected synchronized void doAfterAnim(Callback callback, boolean set) {
 		if(animCallback != null) { // which means something is playing
 			Callback curCallback = animCallback;
 			animCallback = () -> { // this allows me to effectively stack callbacks while keeping sequence of events intact.
@@ -276,32 +276,32 @@ public class CharSprite extends MovieClip implements Tweener.Listener, MovieClip
 		else callback.call(); // this is the public behavior.
 	}
 
-	public synchronized void attack( int cell ) {
+	public void attack( int cell ) {
 		turnTo( ch.pos, cell );
 		play( attack );
 	}
 	
-	public final synchronized void attack( int cell, Callback callback ) {
+	public final void attack( int cell, Callback callback ) {
 		doAfterAnim(callback,true);
 		attack(cell);
 	}
 	
-	public synchronized void operate( int cell ) {
+	public void operate( int cell ) {
 		turnTo( ch.pos, cell );
 		play( operate );
 	}
 	
-	public final synchronized void operate( int cell, Callback callback ) {
+	public final void operate( int cell, Callback callback ) {
 		doAfterAnim(callback,true);
 		operate(cell);
 	}
 	
-	public synchronized void zap( int cell ) {
+	public void zap( int cell ) {
 		turnTo( ch.pos, cell );
 		play( zap );
 	}
 
-	public final synchronized void zap( int cell, Callback callback ) {
+	public final void zap( int cell, Callback callback ) {
 		doAfterAnim(callback,true);
 		zap( cell );
 	}
