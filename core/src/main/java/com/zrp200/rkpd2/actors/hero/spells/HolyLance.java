@@ -38,6 +38,7 @@ import com.zrp200.rkpd2.items.artifacts.HolyTome;
 import com.zrp200.rkpd2.items.wands.Wand;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.sprites.MissileSprite;
@@ -50,6 +51,8 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
+
+import java.util.ArrayList;
 
 public class HolyLance extends TargetedClericSpell {
 
@@ -64,7 +67,7 @@ public class HolyLance extends TargetedClericSpell {
 	public String desc() {
 		int min = 15 + 15* hero.pointsInTalent(Talent.HOLY_LANCE);
 		int max = Math.round(27.5f + 27.5f* hero.pointsInTalent(Talent.HOLY_LANCE));
-		return Messages.get(this, "desc", min, max) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(hero));
+		return Messages.get(this, "desc", min, max) + "\n\n" + checkEmpowerMsg("cooldown") + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(hero));
 	}
 
 	@Override
@@ -76,7 +79,7 @@ public class HolyLance extends TargetedClericSpell {
 
 	@Override
 	public float chargeUse(Hero hero) {
-		return 4;
+		return targets > 0 ? 0 : SpellEmpower.isActive() ? 2 * (1 + deferredCasts) : 4;
 	}
 
 	@Override
@@ -84,25 +87,29 @@ public class HolyLance extends TargetedClericSpell {
 		return SpellEmpower.isActive() ? Ballistica.STOP_TARGET | Ballistica.STOP_SOLID : Ballistica.PROJECTILE;
 	}
 
-	private static boolean multicast = false;
+	private int targets, deferredCasts;
 
 	@Override
 	public void onCast(HolyTome tome, Hero hero) {
 		if (SpellEmpower.isActive()) {
-			try {
-				for (Char ch : level.mobs) {
-					if (level.heroFOV[ch.pos] && ch.alignment == Char.Alignment.ENEMY) {
-						int aim = QuickSlotButton.autoAim(ch, this);
-						if (aim == ch.pos) {
-							onTargetSelected(tome, hero, ch.pos);
-							multicast = true;
-						}
+			ArrayList<Integer> targets = new ArrayList<>();
+			for (Char ch : level.mobs) {
+				if (level.heroFOV[ch.pos] && ch.alignment == Char.Alignment.ENEMY) {
+					int aim = QuickSlotButton.autoAim(ch, this);
+					if (aim == ch.pos) {
+						targets.add(aim);
 					}
 				}
-			} finally {
-				multicast = false;
 			}
-
+			this.targets = targets.size();
+			deferredCasts = 0;
+			if (this.targets > 0) {
+				hero.sprite.showStatus(CharSprite.POSITIVE, name());
+				for (int target : targets) {
+					onTargetSelected(tome, hero, target);
+				}
+				return;
+			}
 		}
 		super.onCast(tome, hero);
 	}
@@ -126,7 +133,7 @@ public class HolyLance extends TargetedClericSpell {
 			QuickSlotButton.target(Actor.findChar(target));
 		}
 
-		hero.sprite.zap( target );
+		hero.sprite.zap(target);
 		hero.busy();
 
 		Sample.INSTANCE.play(Assets.Sounds.ZAP);
@@ -150,7 +157,7 @@ public class HolyLance extends TargetedClericSpell {
 									Sample.INSTANCE.play( Assets.Sounds.HIT_STAB, 1, Random.Float(0.8f, 1f) );
 
 									enemy.sprite.burst(0xFFFFFFFF, 10);
-									hero.next();
+									onSpellCast(tome, hero);
 								}
 							});
 		} else {
@@ -163,14 +170,22 @@ public class HolyLance extends TargetedClericSpell {
 								public void call() {
 									Splash.at(target, 0xFFFFFFFF, 10);
 									Dungeon.level.pressCell(collisionPos);
-									hero.next();
+									onSpellCast(tome, hero);
 								}
 							});
 		}
-		if (!multicast) {
-			hero.spend(1f);
-			onSpellCast(tome, hero);
+	}
+
+	@Override
+	public synchronized void onSpellCast(HolyTome tome, Hero hero) {
+		--targets;
+		super.onSpellCast(tome, hero);
+		if (targets <= 0) {
+			deferredCasts = 0;
+			hero.spendAndNext(1f);
 			FlavourBuff.affect(hero, LanceCooldown.class, 50f);
+		} else {
+			deferredCasts++;
 		}
 
 	}
