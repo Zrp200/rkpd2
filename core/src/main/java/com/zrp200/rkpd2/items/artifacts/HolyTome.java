@@ -37,6 +37,7 @@ import com.zrp200.rkpd2.journal.Catalog;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.ActionIndicator;
 import com.zrp200.rkpd2.ui.HeroIcon;
@@ -74,6 +75,11 @@ public class HolyTome extends Artifact {
 
 		unique = true;
 		bones = false;
+	}
+
+	@Override
+	public ItemSprite.Glowing glowing() {
+		return SpellEmpower.isActive() ? new ItemSprite.Glowing(0xFFFF00) : super.glowing();
 	}
 
 	public int getCharges() {
