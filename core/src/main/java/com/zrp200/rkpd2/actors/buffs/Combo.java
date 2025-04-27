@@ -27,6 +27,7 @@ import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
+import com.zrp200.rkpd2.QuickSlot;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.hero.Hero;
@@ -46,6 +47,7 @@ import com.zrp200.rkpd2.ui.AttackIndicator;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.ui.HeroIcon;
 import com.watabou.utils.BArray;
+import com.zrp200.rkpd2.ui.QuickSlotButton;
 import com.zrp200.rkpd2.utils.GLog;
 import com.zrp200.rkpd2.windows.WndCombo;
 import com.watabou.noosa.BitmapText;
@@ -56,6 +58,7 @@ import com.watabou.utils.Bundle;
 import com.watabou.utils.Callback;
 import com.watabou.utils.PathFinder;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Combo extends Buff implements ActionIndicator.Action {
@@ -571,15 +574,37 @@ public class Combo extends Buff implements ActionIndicator.Action {
 					&& !target.isCharmedBy(enemy)) {
 				if (target.canAttack(enemy)) {
 					return target.pos;
-				} else if (!target.rooted && leapDistance > 0
-						&& Dungeon.level.distance(target.pos, enemy.pos) <= leapDistance) {
-					Ballistica b = new Ballistica(target.pos, enemy.pos, Ballistica.PROJECTILE);
-					if(b.collisionPos == enemy.pos) {
-						int leapPos = b.path.get(b.dist-1);
-						if(Dungeon.level.passable[leapPos] || target.flying && Dungeon.level.avoid[leapPos]) {
-							return leapPos;
-						}
-					}
+				} else if (!target.rooted && leapDistance > 0) {
+					// friendlier version of combo leap that doesn't require actually colliding with the target
+					// as a note, shattered would force the final position to be adjacent to the target
+					// this behavior isn't retained by this implementation
+
+					// fixme really this should not be using auto-aim but its own custom logic,
+					//  as it is attempting to auto-aim to an illegal position (the enemy pos),
+					//  which means that some tiles may be passed over when the hero has increased attack range.
+					//  instead, it should attempt to target the leap tile directly.
+
+					int to = QuickSlotButton.autoAim(enemy);
+
+					Ballistica b = new Ballistica(target.pos, to == -1 ? enemy.pos : to, Ballistica.PROJECTILE);
+
+					int leapPos;
+                    do {
+                        leapPos = b.path.get(--b.dist);
+                        if (b.dist == 0) return -1;
+                    } while (
+                            !Dungeon.level.passable[leapPos] ||
+									(!target.flying && Dungeon.level.avoid[leapPos]) ||
+									// ballistica's dist isn't a good measure of distance, so it needs to be checked per tile
+									Dungeon.level.distance(target.pos, leapPos) > leapDistance
+					);
+                    int initialPos = target.pos;
+                    try {
+                        target.pos = leapPos;
+                        if (target.canAttack(enemy)) return leapPos;
+                    } finally {
+                        target.pos = initialPos;
+                    }
 				}
 			}
 			return -1;
