@@ -53,6 +53,7 @@ import com.zrp200.rkpd2.actors.hero.abilities.duelist.Feint;
 import com.zrp200.rkpd2.actors.hero.abilities.rogue.ShadowClone;
 import com.zrp200.rkpd2.actors.hero.spells.ClericSpell;
 import com.zrp200.rkpd2.actors.hero.spells.GuidingLight;
+import com.zrp200.rkpd2.actors.hero.spells.ShieldOfLight;
 import com.zrp200.rkpd2.actors.hero.spells.Stasis;
 import com.zrp200.rkpd2.actors.mobs.npcs.DirectableAlly;
 import com.zrp200.rkpd2.effects.CellEmitter;
@@ -678,6 +679,10 @@ public abstract class Mob extends Char {
 			} else {
 				return 0;
 			}
+		}
+
+		if (ShieldOfLight.DivineShield.tryActivate(this, enemy)) {
+			return INFINITE_EVASION;
 		}
 
 		if ( !surprisedBy(enemy)

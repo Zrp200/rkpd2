@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Cripple;
 import com.zrp200.rkpd2.actors.buffs.Light;
+import com.zrp200.rkpd2.actors.hero.spells.ShieldOfLight;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.potions.Potion;
@@ -102,6 +103,23 @@ public class Scorpio extends Mob {
 				|| fieldOfView.length != Dungeon.level.length() || fieldOfView[ch.pos]) {
 			super.aggro(ch);
 		}
+	}
+
+	@Override
+	public void onAttackComplete() {
+		// reflect logic
+		if (ShieldOfLight.DivineShield.tryUse(enemy, this, () ->
+				((ScorpioSprite) sprite).shot.shoot(enemy.sprite, pos, () -> {
+					Char enemy = this.enemy;
+					this.enemy = this;
+					super.onAttackComplete();
+					this.enemy = enemy;
+				})
+		)) {
+			next();
+			return;
+		}
+		super.onAttackComplete();
 	}
 
 	@Override

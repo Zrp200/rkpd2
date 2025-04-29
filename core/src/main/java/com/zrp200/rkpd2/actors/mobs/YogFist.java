@@ -42,6 +42,7 @@ import com.zrp200.rkpd2.actors.buffs.LockedFloor;
 import com.zrp200.rkpd2.actors.buffs.Ooze;
 import com.zrp200.rkpd2.actors.buffs.Roots;
 import com.zrp200.rkpd2.actors.buffs.Sleep;
+import com.zrp200.rkpd2.actors.hero.spells.ShieldOfLight;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.FloatingText;
 import com.zrp200.rkpd2.effects.Speck;
@@ -170,8 +171,15 @@ public abstract class YogFist extends Mob {
 
 	protected abstract void zap();
 
-	public void onZapComplete(){
-		zap();
+	public void onZapComplete() {
+		if (!ShieldOfLight.DivineShield.tryUse(enemy, this, () -> ((FistSprite) sprite).onZap(enemy.sprite, pos, () -> {
+            Char enemy = this.enemy;
+            this.enemy = this;
+            zap();
+            this.enemy = enemy;
+        }))) {
+			zap();
+		}
 		next();
 	}
 

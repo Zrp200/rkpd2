@@ -75,6 +75,7 @@ import com.zrp200.rkpd2.actors.hero.spells.BodyForm;
 import com.zrp200.rkpd2.actors.hero.spells.HallowedGround;
 import com.zrp200.rkpd2.actors.hero.spells.HolyWard;
 import com.zrp200.rkpd2.actors.hero.spells.HolyWeapon;
+import com.zrp200.rkpd2.actors.hero.spells.ShieldOfLight;
 import com.zrp200.rkpd2.actors.hero.spells.Smite;
 import com.zrp200.rkpd2.actors.mobs.Mimic;
 import com.zrp200.rkpd2.actors.mobs.Mob;
@@ -662,7 +663,9 @@ public class Hero extends Char {
 			return INFINITE_EVASION;
 		}
 
-		if (buff(RoundShield.GuardTracker.class) != null){
+		if (buff(RoundShield.GuardTracker.class) != null
+				|| ShieldOfLight.DivineShield.tryActivate(this, enemy)
+		){
 			return INFINITE_EVASION;
 		}
 

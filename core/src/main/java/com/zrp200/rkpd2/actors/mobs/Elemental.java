@@ -34,6 +34,7 @@ import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Burning;
 import com.zrp200.rkpd2.actors.buffs.Chill;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
+import com.zrp200.rkpd2.actors.hero.spells.ShieldOfLight;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.Lightning;
 import com.zrp200.rkpd2.effects.Splash;
@@ -151,10 +152,14 @@ public abstract class Elemental extends Mob {
 				sprite.zap( enemy.pos );
 				return false;
 			} else {
-				zap();
+				zapOrReflect();
 				return true;
 			}
 		}
+	}
+
+	protected boolean isZapVisible() {
+		return sprite != null && (sprite.visible || enemy.sprite.visible);
 	}
 	
 	@Override
@@ -164,6 +169,31 @@ public abstract class Elemental extends Mob {
 		
 		return damage;
 	}
+
+	protected boolean isReflectable() {
+		return false;
+	}
+
+	private void reflectZap() {
+		Char enemy = this.enemy;
+		this.enemy = this;
+		zap();
+		this.enemy = enemy;
+	}
+
+	protected void zapOrReflect() {
+        if (isReflectable() && ShieldOfLight.DivineShield.tryUse(enemy, this, () -> {
+            if (isZapVisible()) {
+                ((ElementalSprite) sprite).doZap(enemy.sprite, pos, this::reflectZap);
+            } else {
+                reflectZap();
+            }
+        })) {
+			Invisibility.dispel(this);
+			return;
+		}
+        zap();
+    }
 	
 	protected void zap() {
 		spend( 1f );
@@ -182,7 +212,7 @@ public abstract class Elemental extends Mob {
 	}
 	
 	public void onZapComplete() {
-		zap();
+		zapOrReflect();
 		next();
 	}
 	
@@ -300,7 +330,12 @@ public abstract class Elemental extends Mob {
 			}
 		}
 
-		protected boolean doAttack( Char enemy ) {
+		@Override
+		protected void zapOrReflect() {
+			zap(); // no reflecting
+		}
+
+		protected boolean doAttack(Char enemy ) {
 
 			if (rangedCooldown > 0) {
 

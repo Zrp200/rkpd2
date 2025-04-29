@@ -706,7 +706,8 @@ public abstract class Char extends Actor {
 	}
 	
 	public String defenseVerb() {
-		return Messages.get(this, "def_verb");
+		return ShieldOfLight.DivineShield.tryUse(this) ? Messages.get(ShieldOfLight.DivineShield.class, "def_verb") :
+				Messages.get(this, "def_verb");
 	}
 	
 	public int drRoll() {

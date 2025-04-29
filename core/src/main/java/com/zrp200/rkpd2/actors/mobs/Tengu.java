@@ -41,6 +41,7 @@ import com.zrp200.rkpd2.actors.buffs.Roots;
 import com.zrp200.rkpd2.actors.buffs.Terror;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
+import com.zrp200.rkpd2.actors.hero.spells.ShieldOfLight;
 import com.zrp200.rkpd2.effects.BlobEmitter;
 import com.zrp200.rkpd2.effects.CellEmitter;
 import com.zrp200.rkpd2.effects.FloatingText;
@@ -237,7 +238,29 @@ public class Tengu extends Mob {
 	public boolean canAttack( Char enemy ) {
 		return new Ballistica( pos, enemy.pos, Ballistica.PROJECTILE).collisionPos == enemy.pos;
 	}
-	
+
+	@Override
+	public void onAttackComplete() {
+		Char enemy = this.enemy;
+		if (!Dungeon.level.adjacent(pos, enemy.pos) &&
+				ShieldOfLight.DivineShield.tryUse(enemy, this, () ->
+						sprite.parent.recycle(MissileSprite.class)
+								.reset(
+										enemy.sprite,
+										pos,
+										new TenguSprite.TenguShuriken(),
+										() -> {
+											this.enemy = this;
+											super.onAttackComplete();
+											this.enemy = enemy;
+										})
+				)) {
+			next();
+			return;
+		}
+		super.onAttackComplete();
+	}
+
 	private void jump() {
 		
 		//in case tengu hasn't had a chance to act yet

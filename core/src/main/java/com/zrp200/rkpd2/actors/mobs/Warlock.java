@@ -29,6 +29,7 @@ import com.zrp200.rkpd2.actors.buffs.AscensionChallenge;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Degrade;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
+import com.zrp200.rkpd2.actors.hero.spells.ShieldOfLight;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.potions.PotionOfHealing;
@@ -91,7 +92,7 @@ public class Warlock extends Mob implements Callback {
 			
 		} else {
 			
-			if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
+			if (isZapVisible(enemy)) {
 				sprite.zap( enemy.pos );
 				return false;
 			} else {
@@ -103,8 +104,27 @@ public class Warlock extends Mob implements Callback {
 	
 	//used so resistances can differentiate between melee and magical attacks
 	public static class DarkBolt{}
+
+	protected boolean isZapVisible(Char enemy) {
+		return sprite != null && (sprite.visible || enemy.sprite.visible);
+	}
+
+	private void reflectZap() {
+		Char enemy = this.enemy;
+		this.enemy = this;
+		zap();
+		this.enemy = enemy;
+	}
 	
 	protected void zap() {
+
+		if (ShieldOfLight.DivineShield.tryUse(enemy, this, () -> {
+			if (isZapVisible(enemy)) WarlockSprite.zap(enemy.sprite, pos, this::reflectZap);
+			else reflectZap();
+		})) {
+			return;
+		}
+
 		spend( TIME_TO_ZAP );
 
 		Invisibility.dispel(this);

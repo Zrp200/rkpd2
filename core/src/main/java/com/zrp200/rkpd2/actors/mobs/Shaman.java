@@ -31,6 +31,7 @@ import com.zrp200.rkpd2.actors.buffs.Hex;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
 import com.zrp200.rkpd2.actors.buffs.Vulnerable;
 import com.zrp200.rkpd2.actors.buffs.Weakness;
+import com.zrp200.rkpd2.actors.hero.spells.ShieldOfLight;
 import com.zrp200.rkpd2.items.Generator;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.mechanics.Ballistica;
@@ -96,25 +97,42 @@ public abstract class Shaman extends Mob {
 			
 			return super.doAttack( enemy );
 			
+		} else if (isZapVisible()) {
+			sprite.zap( enemy.pos );
+			return false;
 		} else {
-			
-			if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
-				sprite.zap( enemy.pos );
-				return false;
-			} else {
-				zap();
-				return true;
-			}
+			zap();
+			return true;
 		}
+	}
+
+	boolean isZapVisible() {
+		return sprite != null && (sprite.visible || enemy.sprite.visible);
 	}
 	
 	//used so resistances can differentiate between melee and magical attacks
 	public static class EarthenBolt{}
+
+	private void processReflect() {
+		Char enemy = this.enemy;
+		this.enemy = this;
+		zap();
+		this.enemy = enemy;
+	}
 	
 	private void zap() {
+		Invisibility.dispel(this);
+
+		if (ShieldOfLight.DivineShield.tryUse(enemy, this, () -> {
+			if (isZapVisible()) {
+				((ShamanSprite) sprite).onZap(enemy.sprite, pos, this::processReflect);
+			} else {
+				processReflect();
+			}
+		})) return;
+
 		spend( 1f );
 
-		Invisibility.dispel(this);
 		Char enemy = this.enemy;
 		if (hit( this, enemy, true )) {
 			

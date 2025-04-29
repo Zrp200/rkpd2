@@ -25,6 +25,7 @@ import com.zrp200.rkpd2.Badges;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Invisibility;
+import com.zrp200.rkpd2.actors.hero.spells.ShieldOfLight;
 import com.zrp200.rkpd2.levels.Terrain;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
@@ -102,7 +103,6 @@ public class CrystalWisp extends Mob{
 			return super.doAttack( enemy );
 
 		} else {
-
 			if (sprite != null && (sprite.visible || enemy.sprite.visible)) {
 				sprite.zap( enemy.pos );
 				return false;
@@ -123,6 +123,19 @@ public class CrystalWisp extends Mob{
 	public static class LightBeam {}
 
 	private void zap() {
+		if (ShieldOfLight.DivineShield.tryUse(enemy, this, () -> {
+			if (enemy.sprite != null && (sprite.visible || enemy.sprite.visible)) {
+				((CrystalWispSprite) sprite).onZap(enemy.sprite, pos);
+			}
+			Char enemy = this.enemy;
+			this.enemy = this;
+			zap();
+			this.enemy = enemy;
+		})) {
+			return;
+		}
+
+
 		spend( 1f );
 
 		Invisibility.dispel(this);

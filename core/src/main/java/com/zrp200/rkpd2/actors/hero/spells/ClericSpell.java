@@ -153,13 +153,9 @@ public abstract class ClericSpell {
 			spells.add(HolyWeapon.INSTANCE);
 			spells.add(HolyWard.INSTANCE);
 
-			if (cleric.hasTalent(Talent.HOLY_INTUITION)) {
-				spells.add(HolyIntuition.INSTANCE);
-			}
-
-			if (cleric.hasTalent(Talent.SHIELD_OF_LIGHT)) {
-				spells.add(ShieldOfLight.INSTANCE);
-			}
+			for (ClericSpell spell : new ClericSpell[]{
+					HolyIntuition.INSTANCE, ShieldOfLight.INSTANCE
+			}) if (spell.canCast(cleric)) spells.add(spell);
 
 		} else if (tier == 2) {
 
