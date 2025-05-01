@@ -85,6 +85,13 @@ public class MnemonicPrayer extends TargetedClericSpell {
 	private static boolean multiCast = false;
 	private static boolean multiCastedDebuff = false;
 
+	private int targets = 0;
+
+	@Override
+	public float chargeUse(Hero hero) {
+		return targets > 0 ? (1+targets)/2f : super.chargeUse(hero);
+	}
+
 	@Override
 	public boolean usesTargeting() {
 		return !SpellEmpower.isActive();
@@ -97,8 +104,10 @@ public class MnemonicPrayer extends TargetedClericSpell {
 			multiCastedDebuff = false;
 			multiCast = true;
 			try {
+				targets = 0;
 				for (Char ch : Dungeon.level.mobs) {
 					if (Dungeon.level.heroFOV[ch.pos]) {
+						targets++;
 						onTargetSelected(tome, hero, ch.pos);
 					}
 				}
@@ -106,6 +115,7 @@ public class MnemonicPrayer extends TargetedClericSpell {
 				multiCast = multiCastedDebuff = false;
 			}
 			onTargetSelected(tome, hero, hero.pos);
+			targets = 0;
 		} else {
 			super.onCast(tome, hero);
 		}
@@ -168,7 +178,6 @@ public class MnemonicPrayer extends TargetedClericSpell {
 
 				//does not boost buffs from armor abilities or T4 spells
 				if (b instanceof AscendedForm.AscendBuff
-						|| b instanceof SpellEmpower.Buff
 						|| b instanceof BodyForm.BodyFormBuff || b instanceof SpiritForm.SpiritFormBuff
 						|| b instanceof PowerOfMany.PowerBuff || b instanceof BeamingRay.BeamingRayBoost || b instanceof LifeLink || b instanceof LifeLinkSpell.LifeLinkSpellBuff){
 					continue;
@@ -190,6 +199,7 @@ public class MnemonicPrayer extends TargetedClericSpell {
 				else if (b instanceof ShieldBuff)               ((ShieldBuff) b).delay(extension);
 				else if (b instanceof Kinetic.ConservedDamage)  ((Kinetic.ConservedDamage) b).delay(extension);
 				else if (b instanceof Sungrass.Health)          ((Sungrass.Health) b).boost((int) extension);
+				else if (b instanceof SpellEmpower.Buff)		((SpellEmpower.Buff)b).countDown(extension / SpellEmpower.Buff.TURNS_PER_CHARGE);
 
 				b.mnemonicExtended = affected = true;
 

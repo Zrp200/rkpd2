@@ -32,9 +32,8 @@ public abstract class SpellEmpower extends ClericSpell {
             if (excess > tracked) tracked = excess;
             detach = excess >= 0;
         }
-        if (tracker != null) tracker.countUp(tracked);
+        if (tracker != null && tracked >= 1) tracker.countUp(tracked);
         if (detach) {
-            empower.applyCooldown();
             empower.detach();
         }
     }
@@ -123,7 +122,7 @@ public abstract class SpellEmpower extends ClericSpell {
             public int icon() { return BuffIndicator.DIVINE_ADVENT; }
 
             @Override
-            public void applyCooldown() {
+            protected void onRemove() {
                 Cooldown.affectHero(Cooldown.class);
             }
         }
@@ -180,7 +179,7 @@ public abstract class SpellEmpower extends ClericSpell {
             public int icon() { return BuffIndicator.LIMIT_BREAK; }
 
             @Override
-            public void applyCooldown() {
+            protected void onRemove() {
                 Cooldown.affectHero(Cooldown.class).spend(-100 * (1 - hpFactor));
             }
 
@@ -220,6 +219,21 @@ public abstract class SpellEmpower extends ClericSpell {
             type = buffType.POSITIVE;
         }
 
+        public static final float TURNS_PER_CHARGE = 15;
+
+        @Override
+        public boolean act() {
+            spend(TICK);
+            countUp(1/TURNS_PER_CHARGE); // doesn't last forever
+            if (left() < 0) detach();
+
+            return true;
+        }
+
+        private int turnsUntilCost() {
+            return (int)Math.floor((1 - (count() % 1)) / TURNS_PER_CHARGE);
+        }
+
         public float left() {
             return limit() - count();
         }
@@ -227,7 +241,8 @@ public abstract class SpellEmpower extends ClericSpell {
         @Override
         public abstract int icon();
 
-        public abstract void applyCooldown();
+        @Override
+        protected abstract void onRemove();
 
         @Override
         public float iconFadePercent() {
@@ -236,12 +251,12 @@ public abstract class SpellEmpower extends ClericSpell {
 
         @Override
         public String iconTextDisplay() {
-            return String.valueOf((int)left());
+            return String.valueOf(Math.ceil(left()));
         }
 
         @Override
         public String desc() {
-            return Messages.get(this, "desc", Messages.get(this, "overspend"), iconTextDisplay());
+            return Messages.get(this, "desc", Messages.get(this, "overspend"), iconTextDisplay(), Messages.get(this, "turns", turnsUntilCost()));
         }
     }
 
