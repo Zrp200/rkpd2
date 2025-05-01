@@ -16,6 +16,10 @@ import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.ui.HeroIcon;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public abstract class SpellEmpower extends ClericSpell {
 
     public static void useCharge(float initialCharges, float charge) {
@@ -64,8 +68,10 @@ public abstract class SpellEmpower extends ClericSpell {
     }
 
     @Override
-    protected Object[] getDescArgs() {
-        return new Object[]{(int)SpellEmpower.limit()};
+    protected List<Object> getDescArgs() {
+        return Collections.singletonList(
+                (int)SpellEmpower.limit()
+        );
     }
 
     @Override
@@ -157,11 +163,10 @@ public abstract class SpellEmpower extends ClericSpell {
         }
 
         @Override
-        protected Object[] getDescArgs() {
-            Object[] descArgs = super.getDescArgs(), res = new Object[descArgs.length + 1];
-            System.arraycopy(descArgs, 0, res, 0, descArgs.length);
-            res[descArgs.length] = Math.round(new Cooldown().duration() - 100 * (1 - hpFactor(hero)));
-            return res;
+        protected List<Object> getDescArgs() {
+            List<Object> args = new ArrayList(super.getDescArgs());
+            args.add(Math.round(new Cooldown().duration() - 100 * (1 - hpFactor(hero))));
+            return args;
         }
 
         @Override

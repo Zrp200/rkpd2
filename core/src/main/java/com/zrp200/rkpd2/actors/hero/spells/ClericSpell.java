@@ -38,6 +38,8 @@ import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.HeroIcon;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public abstract class ClericSpell {
 
@@ -73,11 +75,11 @@ public abstract class ClericSpell {
 	}
 
 	public String desc(){
-		return checkEmpowerMsg("desc", getDescArgs())+ "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+		return checkEmpowerMsg("desc", getDescArgs().toArray())+ "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
 	}
 
-	protected Object[] getDescArgs() {
-		return new Object[0];
+    protected List<Object> getDescArgs() {
+		return Collections.emptyList();
 	}
 
 	public boolean usesTargeting(){

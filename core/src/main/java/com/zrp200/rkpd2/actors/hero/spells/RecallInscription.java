@@ -47,6 +47,9 @@ import com.watabou.utils.Callback;
 import com.watabou.utils.Reflection;
 import com.zrp200.rkpd2.utils.GLog;
 
+import java.util.Collections;
+import java.util.List;
+
 public class RecallInscription extends ClericSpell {
 
 	public static RecallInscription INSTANCE = new RecallInscription();
@@ -57,8 +60,8 @@ public class RecallInscription extends ClericSpell {
 	}
 
 	@Override
-	protected Object[] getDescArgs() {
-		return new Object[]{UsedItemTracker.duration()};
+	protected List<Object> getDescArgs() {
+		return Collections.singletonList(UsedItemTracker.duration());
 	}
 
 	@Override
