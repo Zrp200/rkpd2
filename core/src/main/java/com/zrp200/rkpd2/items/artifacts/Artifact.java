@@ -285,7 +285,7 @@ public class Artifact extends KindofMisc {
 	private static final String EXP = "exp";
 	private static final String CHARGE = "charge";
 	private static final String PARTIALCHARGE = "partialcharge";
-	protected static final String CHARGECAP = "chargecap";
+	private static final String CHARGECAP = "chargecap";
 
 	@Override
 	public void storeInBundle( Bundle bundle ) {
