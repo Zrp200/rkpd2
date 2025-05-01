@@ -33,6 +33,7 @@ import com.zrp200.rkpd2.actors.buffs.Combo;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.artifacts.HolyTome;
 import com.zrp200.rkpd2.items.weapon.Weapon;
 import com.zrp200.rkpd2.mechanics.Ballistica;
@@ -109,12 +110,13 @@ public class Smite extends TargetedClericSpell {
 
 		//we apply here because of projecting
 		SmiteTracker tracker = Buff.affect(hero, SmiteTracker.class);
-		if (hero.isCharmedBy(enemy) || !level.heroFOV[target] || !hero.canAttack(enemy)) {
+		int leapPos = Combo.Leap.findLeapPos(hero, enemy, hero.pointsInTalent(Talent.TRIAGE));
+		if (leapPos == -1) {
 			GLog.w(Messages.get(this, "invalid_enemy"));
 			tracker.detach();
 			return;
 		}
-		hero.sprite.attack(enemy.pos, () -> {
+		Combo.Leap.execute(hero, enemy, leapPos, () -> {
 			doSmite(tome, hero, enemy, 1);
 			tracker.detach();
 			hero.spendAndNext(hero.attackDelay());
@@ -204,7 +206,7 @@ public class Smite extends TargetedClericSpell {
 		@Override
 		public void onCast(HolyTome tome, Hero hero) {
 			Buff.affect(hero, OmniSmiteTracker.class);
-			int range = (int)SpellEmpower.left();
+			int range = Math.max(hero.pointsInTalent(Talent.TRIAGE), (int)SpellEmpower.left());
 			try {
 				HashMap<Char, Integer> validTargets = new HashMap<>();
 				int minDist = Integer.MAX_VALUE;

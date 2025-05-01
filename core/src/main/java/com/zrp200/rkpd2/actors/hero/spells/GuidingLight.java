@@ -30,6 +30,7 @@ import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
+import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.MagicMissile;
 import com.zrp200.rkpd2.effects.particles.ShadowParticle;
 import com.zrp200.rkpd2.items.artifacts.HolyTome;
@@ -170,6 +171,21 @@ public class GuidingLight extends TargetedClericSpell {
 
 		{
 			type = buffType.NEGATIVE;
+		}
+
+		public static void proc(Char target) {
+			if (Dungeon.hero.subClass == HeroSubClass.PRIEST && target.buff(Illuminated.class) != null) {
+				target.buff(Illuminated.class).detach();
+				target.damage(Dungeon.hero.lvl, INSTANCE);
+			}
+			checkReapply(target);
+		}
+		public static void checkReapply(Char target) {
+			if (Dungeon.hero.hasTalent(Talent.ENDURING_LIGHT) && target.buff(WasIlluminatedTracker.class) != null) {
+				if (Random.Int(3) < Dungeon.hero.pointsInTalent(Talent.ENDURING_LIGHT)) {
+					Buff.affect(target, Illuminated.class);
+				}
+			}
 		}
 
 		@Override

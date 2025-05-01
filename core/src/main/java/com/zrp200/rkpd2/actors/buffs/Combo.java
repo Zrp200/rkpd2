@@ -549,10 +549,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		@Override
 		protected void onInvalid(int cell) {
 			if(cell == -1) return;
-			if(target.rooted) {
-				PixelScene.shake( 1, 1f );
-			}
-			GLog.w(Messages.get(Combo.class, "bad_target"));
+			Leap.onInvalid();
 		}
 
 		@Override
@@ -566,38 +563,50 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		}
 	}
 	public interface Leap extends Callback {
+
+		static int findLeapPos(Char target, int dest, int leapDistance) {
+			return findLeapPos(target, new Char() {{pos = dest;}}, leapDistance, false);
+		}
+
 		static int findLeapPos(Char target, Char enemy, int leapDistance) {
 			if (enemy != null
 					&& enemy.alignment != Char.Alignment.ALLY
 					&& enemy != target
 					&& Dungeon.level.heroFOV[enemy.pos]
 					&& !target.isCharmedBy(enemy)) {
-				if (target.canAttack(enemy)) {
-					return target.pos;
-				} else if (!target.rooted && leapDistance > 0) {
-					// friendlier version of combo leap that doesn't require actually colliding with the target
-					// as a note, shattered would force the final position to be adjacent to the target
-					// this behavior isn't retained by this implementation
+				return findLeapPos(target, enemy, leapDistance, true);
+			}
+			return -1;
+		}
 
-					// fixme really this should not be using auto-aim but its own custom logic,
-					//  as it is attempting to auto-aim to an illegal position (the enemy pos),
-					//  which means that some tiles may be passed over when the hero has increased attack range.
-					//  instead, it should attempt to target the leap tile directly.
+		static int findLeapPos(Char target, Char enemy, int leapDistance, boolean willAttack) {
+			if (willAttack ? target.canAttack(enemy) : Dungeon.level.adjacent(target.pos, enemy.pos)) {
+				return target.pos;
+			} else if (!target.rooted && leapDistance > 0) {
+				// friendlier version of combo leap that doesn't require actually colliding with the target
+				// as a note, shattered would force the final position to be adjacent to the target
+				// this behavior isn't retained by this implementation
 
-					int to = QuickSlotButton.autoAim(enemy);
+				// fixme really this should not be using auto-aim but its own custom logic,
+				//  as it is attempting to auto-aim to an illegal position (the enemy pos),
+				//  which means that some tiles may be passed over when the hero has increased attack range.
+				//  instead, it should attempt to target the leap tile directly.
 
-					Ballistica b = new Ballistica(target.pos, to == -1 ? enemy.pos : to, Ballistica.PROJECTILE);
+				int to = QuickSlotButton.autoAim(enemy);
 
-					int leapPos;
-                    do {
-                        leapPos = b.path.get(--b.dist);
-                        if (b.dist == 0) return -1;
-                    } while (
-                            !Dungeon.level.passable[leapPos] ||
-									(!target.flying && Dungeon.level.avoid[leapPos]) ||
-									// ballistica's dist isn't a good measure of distance, so it needs to be checked per tile
-									Dungeon.level.distance(target.pos, leapPos) > leapDistance
-					);
+                Ballistica b = new Ballistica(target.pos, to == -1 ? enemy.pos : to, Ballistica.PROJECTILE);
+
+                int leapPos;
+                do {
+                    leapPos = b.path.get(--b.dist);
+                    if (b.dist == 0) return -1;
+                } while (
+                        !Dungeon.level.passable[leapPos] ||
+                                (!target.flying && Dungeon.level.avoid[leapPos]) ||
+                                // ballistica's dist isn't a good measure of distance, so it needs to be checked per tile
+                                Dungeon.level.distance(target.pos, leapPos) > leapDistance
+                );
+                if (willAttack) {
                     int initialPos = target.pos;
                     try {
                         target.pos = leapPos;
@@ -605,12 +614,14 @@ public class Combo extends Buff implements ActionIndicator.Action {
                     } finally {
                         target.pos = initialPos;
                     }
-				}
+                } else if (Dungeon.level.adjacent(leapPos, enemy.pos)) {
+                    return leapPos;
+                }
 			}
 			return -1;
 		}
 
-		static void execute(Hero target, Char enemy, int leapPos, Leap doAttack) {
+		static void execute(Hero target, int leapPos, Leap onLeapComplete) {
 			((Hero)target).busy();
 			if(leapPos != target.pos) {
 				target.sprite.jump(target.pos, leapPos, () -> {
@@ -618,11 +629,21 @@ public class Combo extends Buff implements ActionIndicator.Action {
 					Dungeon.level.occupyCell(target);
 					Dungeon.observe();
 					GameScene.updateFog();
-					target.sprite.attack(enemy.pos, doAttack);
+					onLeapComplete.call();
 				});
 			} else {
-				target.sprite.attack(enemy.pos, doAttack);
+				onLeapComplete.call();
 			}
+		}
+		static void execute(Hero target, Char enemy, int leapPos, Leap doAttack) {
+			execute(target, leapPos, () -> target.sprite.attack(enemy.pos, doAttack));
+		}
+
+		static void onInvalid() {
+			if (hero.rooted) {
+				PixelScene.shake(1, 1);
+			}
+			GLog.w(Messages.get(Combo.class, "bad_target"));
 		}
 	}
 }

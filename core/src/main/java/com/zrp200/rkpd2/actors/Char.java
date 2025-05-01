@@ -441,6 +441,7 @@ public abstract class Char extends Actor {
 					enemy.damage(Dungeon.hero.lvl, GuidingLight.INSTANCE);
 				}
 			}
+			GuidingLight.Illuminated.checkReapply(enemy);
 
 			Berserk berserk = buff(Berserk.class);
 			if (berserk != null) dmg = berserk.damageFactor((int)dmg);

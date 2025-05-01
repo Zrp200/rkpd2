@@ -30,6 +30,7 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.blobs.Blob;
 import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.Combo;
 import com.zrp200.rkpd2.actors.buffs.Paralysis;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -45,6 +46,7 @@ import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
+import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.tiles.DungeonTilemap;
 import com.zrp200.rkpd2.ui.HeroIcon;
 import com.zrp200.rkpd2.ui.Icons;
@@ -304,6 +306,19 @@ public class WallOfLight extends TargetedClericSpell {
 			return;
 		}
 
+		int leapPos = hero.pos;
+		if (hero.hasTalent(Talent.TRIAGE)) {
+			leapPos = Combo.Leap.findLeapPos(hero, target, hero.pointsInTalent(Talent.TRIAGE));
+			if (leapPos == -1) {
+				Combo.Leap.onInvalid();
+				return;
+			}
+		}
+		boolean force = hero.pos != leapPos;
+		Combo.Leap.execute(hero, leapPos, () -> doCast(tome, hero, target, force));
+	}
+
+	private void doCast(HolyTome tome, Hero hero, int target, boolean force) {
 		int closest = hero.pos;
 		int closestIdx = -1;
 
@@ -379,7 +394,7 @@ public class WallOfLight extends TargetedClericSpell {
 		int knockBackDir = PathFinder.CIRCLE8[closestIdx];
 
 		//if all 3 tiles infront of Paladin are blocked, assume cast was in error and cancel
-		if (Dungeon.level.solid[closest]
+		if (!force && Dungeon.level.solid[closest]
 				&& Dungeon.level.solid[hero.pos + PathFinder.CIRCLE8[(closestIdx+1)%8]]
 				&& Dungeon.level.solid[hero.pos + PathFinder.CIRCLE8[(closestIdx+7)%8]]){
 			GLog.w(Messages.get(this, "invalid_target"));

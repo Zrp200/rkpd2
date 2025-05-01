@@ -46,7 +46,6 @@ import com.zrp200.rkpd2.actors.hero.abilities.mage.WildMagic;
 import com.zrp200.rkpd2.actors.hero.spells.DivineSense;
 import com.zrp200.rkpd2.actors.hero.spells.GuidingLight;
 import com.zrp200.rkpd2.effects.Flare;
-import com.zrp200.rkpd2.effects.FloatingText;
 import com.zrp200.rkpd2.effects.MagicMissile;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.artifacts.TalismanOfForesight;
@@ -62,7 +61,6 @@ import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.CellSelector;
 import com.zrp200.rkpd2.scenes.GameScene;
-import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.ui.QuickSlotButton;
@@ -240,10 +238,8 @@ public abstract class Wand extends Item {
 
 		SoulMark.process(target,wandLevel,chargesUsed,delay);
 		if (Dungeon.hero.hasTalent(Talent.DEADLY_FOLLOWUP)) Buff.prolong(Dungeon.hero, Talent.DeadlyFollowupTracker.class, 5f).object = target.id();
-		if (Dungeon.hero.subClass == HeroSubClass.PRIEST && target.buff(GuidingLight.Illuminated.class) != null) {
-			target.buff(GuidingLight.Illuminated.class).detach();
-			target.damage(Dungeon.hero.lvl, GuidingLight.INSTANCE);
-		}
+		GuidingLight.Illuminated.proc(target);
+
 
 		if (target.alignment == Char.Alignment.ENEMY) everythingIsAWeapon: {
 			int points = Dungeon.hero.pointsInTalent(Talent.EVERYTHING_IS_A_WEAPON);

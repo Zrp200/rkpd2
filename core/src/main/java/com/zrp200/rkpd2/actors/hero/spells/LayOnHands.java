@@ -27,12 +27,14 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Barrier;
 import com.zrp200.rkpd2.actors.buffs.Buff;
+import com.zrp200.rkpd2.actors.buffs.Combo;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.cleric.PowerOfMany;
 import com.zrp200.rkpd2.effects.FloatingText;
 import com.zrp200.rkpd2.items.artifacts.HolyTome;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.HeroIcon;
 import com.zrp200.rkpd2.utils.GLog;
@@ -93,6 +95,16 @@ public class LayOnHands extends TargetedClericSpell {
 		}
 
 		if (!multicast && Dungeon.level.distance(hero.pos, target) > 1){
+			if (hero.hasTalent(Talent.TRIAGE) && Actor.findChar(target) != null) {
+				int leapPos = Combo.Leap.findLeapPos(hero, target, hero.pointsInTalent(Talent.TRIAGE));
+				if (leapPos == -1) {
+					Combo.Leap.onInvalid();
+					return;
+				}
+				Combo.Leap.execute(hero, leapPos, () -> onTargetSelected(tome, hero, target));
+				return;
+			}
+
 			GLog.w(Messages.get(this, "invalid_target"));
 			return;
 		}
