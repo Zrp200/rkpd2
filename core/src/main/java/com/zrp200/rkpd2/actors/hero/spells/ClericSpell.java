@@ -161,21 +161,12 @@ public abstract class ClericSpell {
 
 		} else if (tier == 2) {
 
-			if (cleric.hasTalent(Talent.RECALL_INSCRIPTION)){
-				spells.add(RecallInscription.INSTANCE);
-			}
-
-			if (cleric.hasTalent(Talent.SUNRAY)){
-				spells.add(Sunray.INSTANCE);
-			}
-
-			if (cleric.hasTalent(Talent.DIVINE_SENSE)) {
-				spells.add(DivineSense.INSTANCE);
-			}
-
-			if (cleric.hasTalent(Talent.BLESS)){
-				spells.add(BlessSpell.INSTANCE);
-			}
+			for (ClericSpell spell : new ClericSpell[]{
+					RecallInscription.INSTANCE,
+					Sunray.INSTANCE,
+					DivineSense.INSTANCE,
+					BlessSpell.INSTANCE
+			}) if (spell.canCast(cleric)) spells.add(spell);
 
 		} else if (tier == 3){
 
