@@ -45,6 +45,7 @@ public abstract class EquipableItem extends Item {
 
 	{
 		bones = true;
+		cursedKnown = false;
 	}
 
 	@Override

@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.actors.hero.spells;
 
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.hero.Hero;
@@ -29,6 +30,9 @@ import com.zrp200.rkpd2.effects.Identification;
 import com.zrp200.rkpd2.items.EquipableItem;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.artifacts.HolyTome;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfIdentify;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfRemoveCurse;
+import com.zrp200.rkpd2.items.wands.CursedWand;
 import com.zrp200.rkpd2.items.wands.Wand;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.HeroIcon;
@@ -46,7 +50,7 @@ public class HolyIntuition extends InventoryClericSpell {
 
 	@Override
 	protected boolean usableOnItem(Item item) {
-		return (item instanceof EquipableItem || item instanceof Wand) && !item.isIdentified() && !item.cursedKnown;
+		return !item.isIdentified() || ScrollOfRemoveCurse.uncursable(item);
 	}
 
 	@Override
@@ -61,25 +65,48 @@ public class HolyIntuition extends InventoryClericSpell {
 
 	@Override
 	protected void onItemSelected(HolyTome tome, Hero hero, Item item) {
-		if (item == null){
+		if (item == null) {
 			return;
 		}
 
-		item.cursedKnown = true;
-
-		if (item.cursed){
-			GLog.w(Messages.get(this, "cursed"));
-		} else {
-			GLog.i(Messages.get(this, "uncursed"));
+		boolean cursedKnown = item.cursedKnown;
+		affectItem(hero, item, SpellEmpower.isActive() ? 1 : cursedKnown ? 3 : 4);
+		if (SpellEmpower.isActive() && usableOnItem(item)) {
+			affectItem(hero, item, cursedKnown ? 2 : 3);
 		}
 
+		onSpellCast(tome, hero);
+
+	}
+	private void affectItem(Hero hero, Item item, int chance) {
+		if (!item.cursed && Random.Int(chance) == 0) {
+			new ScrollOfIdentify().onItemSelected(item);
+		}
+		else if (ScrollOfRemoveCurse.uncursable(item) && Random.Int(chance) == 0) {
+			ScrollOfRemoveCurse.doEffect(hero, item);
+		} else if (!item.cursedKnown) {
+			if (item.cursed) {
+				GLog.w(Messages.get(this, "cursed"));
+			} else {
+				GLog.i(Messages.get(this, "uncursed"));
+			}
+
+			item.cursedKnown = true;
+			hero.sprite.parent.add( new Identification( hero.sprite.center().offset( 0, -16 ) ) );
+		} else if (!SpellEmpower.isActive()){
+			// Spell Empower always does something
+			GLog.w(Messages.get(CursedWand.class, "nothing"));
+		}
+	}
+
+	@Override
+	public void onSpellCast(HolyTome tome, Hero hero) {
 		hero.spend( 1f );
 		hero.busy();
 		hero.sprite.operate(hero.pos);
-		hero.sprite.parent.add( new Identification( hero.sprite.center().offset( 0, -16 ) ) );
 
 		Sample.INSTANCE.play( Assets.Sounds.READ );
-		onSpellCast(tome, hero);
+		super.onSpellCast(tome, hero);
 
 	}
 

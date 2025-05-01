@@ -75,6 +75,10 @@ import java.util.ArrayList;
 
 public abstract class Wand extends Item {
 
+	{
+		cursedKnown = false;
+	}
+
 	public static final String AC_ZAP	= "ZAP";
 
 	private static final float TIME_TO_ZAP	= 1f;

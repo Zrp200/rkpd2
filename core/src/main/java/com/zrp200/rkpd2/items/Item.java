@@ -88,7 +88,7 @@ public class Item implements Bundlable, QuickSlotButton.Aimable {
 	public boolean levelKnown = false;
 	
 	public boolean cursed;
-	public boolean cursedKnown;
+	public boolean cursedKnown = true;
 
 	public boolean collected; // if on-collect talents have already been checked; prevents exploits
 

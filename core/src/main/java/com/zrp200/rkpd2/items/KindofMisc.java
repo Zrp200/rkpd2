@@ -27,6 +27,7 @@ import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.artifacts.Artifact;
 import com.zrp200.rkpd2.items.rings.Ring;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfRemoveCurse;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.sprites.ItemSprite;
@@ -134,12 +135,11 @@ public abstract class KindofMisc extends EquipableItem {
 
 		} else {
 
-			// 15/25% chance
-			if (hero.heroClass != HeroClass.CLERIC && hero.hasTalent(Talent.HOLY_INTUITION)
-					&& cursed && !cursedKnown
-					&& Random.Int(20) < 1 + 2*hero.pointsInTalent(Talent.HOLY_INTUITION)){
-				cursedKnown = true;
-				GLog.p(Messages.get(this, "curse_detected"));
+			// 10/30/50% chance
+			if (hero.heroClass != HeroClass.CLERIC && hero.canHaveTalent(Talent.HOLY_INTUITION)
+					&& cursed
+					&& Random.Int(10) < 1 + 2*hero.pointsInTalent(Talent.HOLY_INTUITION)){
+				ScrollOfRemoveCurse.doEffect(hero, this);
 				return false;
 			}
 

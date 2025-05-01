@@ -98,19 +98,23 @@ public class ScrollOfRemoveCurse extends InventoryScroll {
 
 	@Override
 	protected void onItemSelected(Item item) {
+		doEffect(curUser, item);
+	}
+
+	public static void doEffect(Hero hero, Item item) {
 		new Flare( 6, 32 ).show( curUser.sprite, 2f );
 
-		boolean procced = uncurse( curUser, item );
+		boolean procced = uncurse( hero, item );
 
-		if (curUser.buff(Degrade.class) != null) {
+		if (hero.buff(Degrade.class) != null) {
 			Degrade.detach(curUser, Degrade.class);
 			procced = true;
 		}
 
 		if (procced) {
-			GLog.p( Messages.get(this, "cleansed") );
+			GLog.p( Messages.get(ScrollOfRemoveCurse.class, "cleansed") );
 		} else {
-			GLog.i( Messages.get(this, "not_cleansed") );
+			GLog.i( Messages.get(ScrollOfRemoveCurse.class, "not_cleansed") );
 		}
 	}
 

@@ -66,6 +66,7 @@ import com.zrp200.rkpd2.items.armor.glyphs.Thorns;
 import com.zrp200.rkpd2.items.armor.glyphs.Viscosity;
 import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.rings.RingOfArcana;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfRemoveCurse;
 import com.zrp200.rkpd2.items.scrolls.ScrollOfUpgrade;
 import com.zrp200.rkpd2.items.trinkets.ParchmentScrap;
 import com.zrp200.rkpd2.items.trinkets.ShardOfOblivion;
@@ -253,13 +254,11 @@ public class Armor extends EquipableItem {
 		
 		detach(hero.belongings.backpack);
 
-		// 15/25% chance
-		if (hero.heroClass != HeroClass.CLERIC && hero.hasTalent(Talent.HOLY_INTUITION)
-				&& cursed && !cursedKnown
-				&& Random.Int(20) < 1 + 2*hero.pointsInTalent(Talent.HOLY_INTUITION)){
-			cursedKnown = true;
-			GLog.p(Messages.get(this, "curse_detected"));
-			return false;
+		// 30/50% chance
+		if (hero.heroClass != HeroClass.CLERIC && hero.canHaveTalent(Talent.HOLY_INTUITION)
+				&& cursed
+				&& Random.Int(10) < 1 + 2*hero.pointsInTalent(Talent.HOLY_INTUITION)){
+			ScrollOfRemoveCurse.doEffect(hero, this);
 		}
 
 		if (hero.belongings.armor == null || hero.belongings.armor.doUnequip( hero, true, false )) {
