@@ -5,6 +5,7 @@ import static com.zrp200.rkpd2.Dungeon.hero;
 import com.watabou.noosa.Image;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.GameMath;
+import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Cooldown;
 import com.zrp200.rkpd2.actors.buffs.CounterBuff;
 import com.zrp200.rkpd2.actors.buffs.Recharging;
@@ -125,10 +126,17 @@ public abstract class SpellEmpower extends ClericSpell {
         public static class Buff extends SpellEmpower.Buff {
 
             @Override
+            public String desc() {
+                return super.desc() + "\n\n" + Messages.get(this, "cooldown", (int)Math.ceil(Cooldown.duration(target)));
+            }
+
+            @Override
             public int icon() { return BuffIndicator.DIVINE_ADVENT; }
 
             @Override
-            protected void onRemove() {
+            public void detach() {
+                super.detach();
+                // cooldown starts after finish
                 Cooldown.affectHero(Cooldown.class);
             }
         }
@@ -143,13 +151,28 @@ public abstract class SpellEmpower extends ClericSpell {
                 super.detach();
             }
 
-            public float duration() {
+            private static final float BASE_DURATION = 150, PENALTY = 25f;
+
+            public static float duration(Char target) {
                 Tracker tracker = target.buff(Tracker.class);
-                return 150 + 25 * (tracker != null ? tracker.count() : 0);
+                return BASE_DURATION + PENALTY * (tracker != null ? tracker.count() : 0);
             }
+
+            public float duration() { return duration(target); }
         }
 
-        public static class Tracker extends CounterBuff {};
+        public static class Tracker extends CounterBuff {
+            @Override
+            public boolean act() {
+                if (!SpellEmpower.isActive()) {
+                    diactivate();
+                } else {
+                    spend(TICK);
+                    countDown(Math.min(count(), 1/Cooldown.PENALTY));
+                }
+                return true;
+            }
+        };
     }
 
     public static class LimitBreak extends SpellEmpower {
@@ -165,18 +188,20 @@ public abstract class SpellEmpower extends ClericSpell {
         @Override
         protected List<Object> getDescArgs() {
             List<Object> args = new ArrayList(super.getDescArgs());
-            args.add(Math.round(new Cooldown().duration() - 100 * (1 - hpFactor(hero))));
+            args.add(heroAtCriticalHealth() ? 300 : 150);
             return args;
         }
 
         @Override
         protected void applyBuff(Hero hero) {
-            Buff.affect(hero, Buff.class).hpFactor = hpFactor(hero);
+            Buff.affect(hero, Buff.class);
+            Cooldown cd = Cooldown.affectHero(Cooldown.class);
+            if (heroAtCriticalHealth()) cd.spend(-150);
         }
 
         @Override
         public float chargeUse(Hero hero) {
-            return (float)Math.ceil(2 + 4 * hpFactor(hero));
+            return heroAtCriticalHealth() ? 2 : 4;
         }
 
         public static class Buff extends SpellEmpower.Buff {
@@ -184,38 +209,22 @@ public abstract class SpellEmpower extends ClericSpell {
             public int icon() { return BuffIndicator.LIMIT_BREAK; }
 
             @Override
-            protected void onRemove() {
-                Cooldown.affectHero(Cooldown.class).spend(-100 * (1 - hpFactor));
-            }
-
-            private float hpFactor;
-
-            private static final String LOW_HP="low hp";
-
-            @Override
-            public void storeInBundle(Bundle bundle) {
-                super.storeInBundle(bundle);
-                bundle.put(LOW_HP, hpFactor);
-            }
-
-            @Override
-            public void restoreFromBundle(Bundle bundle) {
-                super.restoreFromBundle(bundle);
-                hpFactor = bundle.getFloat(LOW_HP);
+            public String desc() {
+                return super.desc() + "\n" + Messages.get(this, "cooldown", target.buff(Cooldown.class).iconTextDisplay());
             }
         }
 
         public static class Cooldown extends SpellCooldown {
-            public int icon() { return BuffIndicator.LIMIT_BREAK; }
+            public int icon() {
+                return target.buff(Buff.class) != null ? BuffIndicator.NONE : BuffIndicator.LIMIT_BREAK;
+            }
             public float duration() {
-                return 400;
+                return 300;
             }
         }
 
-        private static float hpFactor(Hero hero) {
-            // normalized to give maximum reduction at 30% hp or lower
-            final float MIN = 0.3f;
-            return Math.max(0, (hero.HP / (float)hero.HT - MIN) / (1 - MIN));
+        private static boolean heroAtCriticalHealth() {
+            return hero.HP * 10 <= hero.HT * 3;
         }
     }
 
@@ -248,15 +257,12 @@ public abstract class SpellEmpower extends ClericSpell {
         public abstract int icon();
 
         @Override
-        protected abstract void onRemove();
-
-        @Override
         public void detach() {
             super.detach();
             if (!RecallInscription.INSTANCE.isVisible((Hero)target)) {
                 Buff.detach(target, RecallInscription.UsedItemTracker.class);
             }
-        }
+        };
 
         @Override
         public float iconFadePercent() {
