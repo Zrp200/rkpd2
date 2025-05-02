@@ -251,6 +251,14 @@ public abstract class SpellEmpower extends ClericSpell {
         protected abstract void onRemove();
 
         @Override
+        public void detach() {
+            super.detach();
+            if (!RecallInscription.INSTANCE.isVisible((Hero)target)) {
+                Buff.detach(target, RecallInscription.UsedItemTracker.class);
+            }
+        }
+
+        @Override
         public float iconFadePercent() {
             return GameMath.gate(0, count() / limit(), 1);
         }

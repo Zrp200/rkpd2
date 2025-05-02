@@ -136,10 +136,14 @@ public class RecallInscription extends ClericSpell {
 	}
 
 	@Override
+	public boolean isVisible(Hero hero) {
+		return hero.hasTalent(Talent.RECALL_INSCRIPTION) || SpellEmpower.isActive();
+	}
+
+	@Override
 	public boolean canCast(Hero hero) {
-		return super.canCast(hero)
-				&& hero.hasTalent(Talent.RECALL_INSCRIPTION)
-				&& hero.buff(UsedItemTracker.class) != null;
+		return isVisible(hero)
+				&& hero.virtualBuff(UsedItemTracker.class) != null;
 	}
 
 	public static class UsedItemTracker extends FlavourBuff {
@@ -160,7 +164,7 @@ public class RecallInscription extends ClericSpell {
 		}
 
 		public static float duration() {
-			float duration = Dungeon.hero.pointsInTalent(Talent.RECALL_INSCRIPTION) == 2 ? 300 : 10;
+			float duration = Dungeon.hero.pointsInTalent(Talent.RECALL_INSCRIPTION) == 1 ? 10 : 300;
 			if (Dungeon.hero.heroClass == HeroClass.CLERIC) duration *= 2;
 			return duration;
 		}

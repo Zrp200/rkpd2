@@ -53,6 +53,10 @@ public abstract class ClericSpell {
 		return SpellEmpower.isActive();
 	}
 
+	public boolean isVisible( Hero hero ) {
+		return canCast(hero);
+	}
+
 	public boolean canCast( Hero hero ){
 		return true;
 	}
@@ -165,7 +169,7 @@ public abstract class ClericSpell {
 
 			for (ClericSpell spell : new ClericSpell[]{
 					HolyIntuition.INSTANCE, ShieldOfLight.INSTANCE
-			}) if (spell.canCast(cleric)) spells.add(spell);
+			}) if (spell.isVisible(cleric)) spells.add(spell);
 
 		} else if (tier == 2) {
 
@@ -174,7 +178,7 @@ public abstract class ClericSpell {
 					Sunray.INSTANCE,
 					DivineSense.INSTANCE,
 					BlessSpell.INSTANCE
-			}) if (spell.canCast(cleric)) spells.add(spell);
+			}) if (spell.isVisible(cleric)) spells.add(spell);
 
 		} else if (tier == 3){
 

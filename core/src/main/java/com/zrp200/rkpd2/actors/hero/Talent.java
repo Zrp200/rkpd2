@@ -1107,7 +1107,7 @@ public enum Talent {
 			Buff.affect(hero, Invisibility.class, factor * (1 + 2*points));
 			Sample.INSTANCE.play( Assets.Sounds.MELD );
 		}
-        if (hero.hasTalent(RECALL_INSCRIPTION) && Scroll.class.isAssignableFrom(cls) && cls != ScrollOfUpgrade.class){
+        if (RecallInscription.INSTANCE.isVisible(hero) && Scroll.class.isAssignableFrom(cls) && cls != ScrollOfUpgrade.class){
             if (hero.heroClass == HeroClass.CLERIC){
                 RecallInscription.UsedItemTracker.track(hero, cls);
             } else {
@@ -1121,7 +1121,7 @@ public enum Talent {
 	}
 
     public static void onRunestoneUsed( Hero hero, int pos, Class<?extends Item> cls ){
-        if (hero.hasTalent(RECALL_INSCRIPTION) && Runestone.class.isAssignableFrom(cls)){
+        if (RecallInscription.INSTANCE.isVisible(hero) && Runestone.class.isAssignableFrom(cls)){
             if (hero.heroClass == HeroClass.CLERIC){
                 RecallInscription.UsedItemTracker.track(hero, cls);
             } else {
