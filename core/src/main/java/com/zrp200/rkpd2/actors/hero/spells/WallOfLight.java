@@ -56,6 +56,7 @@ import com.watabou.utils.PathFinder;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -74,15 +75,20 @@ public class WallOfLight extends TargetedClericSpell {
 	@Override
 	public String desc() {
 		if (SpellEmpower.isActive()) {
+			toPlace = 1;
 			try {
-				toPlace = 1;
-				return Messages.get(this, "desc_empower", chargeUse(Dungeon.hero));
+				return super.desc();
 			} finally {
 				toPlace = 0;
 			}
 
 		}
-		return Messages.get(this, "desc", 1 + 2*Dungeon.hero.pointsInTalent(Talent.WALL_OF_LIGHT)) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+		return super.desc();
+	}
+
+	@Override
+	protected List<Object> getDescArgs() {
+		return Collections.singletonList(1 + 2*Dungeon.hero.pointsInTalent(Talent.WALL_OF_LIGHT));
 	}
 
 	@Override

@@ -62,7 +62,7 @@ public abstract class ClericSpell {
 	}
 
 	public String shortDesc(){
-		return checkEmpowerMsg("short_desc") + " " + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+		return checkEmpowerMsg("short_desc") + " " + chargeUseDesc();
 	}
 
 	public final String checkEmpowerMsg(String key, Object... args) {
@@ -75,7 +75,15 @@ public abstract class ClericSpell {
 	}
 
 	public String desc(){
-		return checkEmpowerMsg("desc", getDescArgs().toArray())+ "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+		return checkEmpowerMsg("desc", getDescArgs().toArray()) + "\n\n" + chargeUseDesc();
+	}
+
+	protected String chargeUseDesc() {
+		float chargeUse = chargeUse(Dungeon.hero);
+		String chargeScale = checkEmpowerMsg("charge_cost_scale");
+        //noinspection StringEquality
+		chargeScale = chargeUse == 0 || chargeScale == Messages.NO_TEXT_FOUND ? "" : " " + chargeScale;
+		return checkEmpowerMsg("charge_cost", chargeUse > 0 && chargeUse < 1 ? String.valueOf(chargeUse) : String.valueOf((int)chargeUse)) + chargeScale;
 	}
 
     protected List<Object> getDescArgs() {

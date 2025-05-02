@@ -236,7 +236,8 @@ public abstract class SpellEmpower extends ClericSpell {
         }
 
         private int turnsUntilCost() {
-            return (int)Math.floor((1 - (count() % 1)) / TURNS_PER_CHARGE);
+            float prop = 1 - count() % 1;
+            return (int)Math.ceil(TURNS_PER_CHARGE * prop);
         }
 
         public float left() {
@@ -256,12 +257,12 @@ public abstract class SpellEmpower extends ClericSpell {
 
         @Override
         public String iconTextDisplay() {
-            return String.valueOf(Math.ceil(left()));
+            return String.valueOf((int)Math.ceil(left()));
         }
 
         @Override
         public String desc() {
-            return Messages.get(this, "desc", Messages.get(this, "overspend"), iconTextDisplay(), Messages.get(this, "turns", turnsUntilCost()));
+            return Messages.get(this, "desc", Messages.get(this, "overspend"), iconTextDisplay(), turnsUntilCost());
         }
     }
 
