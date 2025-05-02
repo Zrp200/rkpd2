@@ -21,6 +21,8 @@
 
 package com.zrp200.rkpd2.actors.hero.spells;
 
+import com.watabou.noosa.Image;
+import com.watabou.utils.Reflection;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
@@ -30,6 +32,7 @@ import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.Speck;
 import com.zrp200.rkpd2.items.artifacts.HolyTome;
+import com.zrp200.rkpd2.items.spells.Spell;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.BuffIndicator;
 import com.zrp200.rkpd2.ui.HeroIcon;
@@ -45,11 +48,16 @@ public class AuraOfProtection extends ClericSpell {
 		return HeroIcon.AURA_OF_PROTECTION;
 	}
 
+	public static float reduction() {
+		return 0.075f * (1 + Dungeon.hero.pointsInTalent(Talent.AURA_OF_PROTECTION));
+	}
+
 	@Override
 	public String desc() {
-		int dmgReduction = Math.round(7.5f + 7.5F*Dungeon.hero.pointsInTalent(Talent.AURA_OF_PROTECTION));
+		int dmgReduction = Math.round(reduction() * 100);
 		int glyphPow = 25 + 25*Dungeon.hero.pointsInTalent(Talent.AURA_OF_PROTECTION);
-		return Messages.get(this, "desc", dmgReduction, glyphPow) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+		int duration = (SpellEmpower.isActive() ? 50 : 20)/5;
+		return Messages.get(this, "desc", dmgReduction, glyphPow, duration) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
 	}
 
 	@Override
@@ -59,13 +67,29 @@ public class AuraOfProtection extends ClericSpell {
 
 	@Override
 	public boolean canCast(Hero hero) {
-		return super.canCast(hero) && hero.hasTalent(Talent.AURA_OF_PROTECTION);
+		return super.canCast(hero) && (SpellEmpower.isActive() || hero.hasTalent(Talent.AURA_OF_PROTECTION));
 	}
 
 	@Override
 	public void onCast(HolyTome tome, Hero hero) {
-
-		Buff.affect(hero,AuraBuff.class, AuraBuff.DURATION);
+		AuraBuff existing = hero.virtualBuff(AuraBuff.class);
+		float duration = 0;
+		if (SpellEmpower.isActive()) {
+			// add empowered buff
+			if (existing != null && !(existing instanceof RetributionBuff)) {
+				// overwrite existing buff
+				duration += existing.cooldown();
+				existing.detach();
+			}
+			existing = Buff.affect(hero, RetributionBuff.class);
+			duration += existing.getDuration();
+		} else {
+			// add regular buff
+			AuraBuff b = new AuraBuff();
+			duration += b.getDuration();
+			if (existing == null) existing = b;
+		}
+		existing.spend(duration);
 
 		Sample.INSTANCE.play(Assets.Sounds.READ);
 
@@ -79,7 +103,9 @@ public class AuraOfProtection extends ClericSpell {
 
 	public static class AuraBuff extends FlavourBuff {
 
-		public static float DURATION = 20f;
+		protected float getDuration() {
+			return 20;
+		}
 
 		private Emitter particles;
 
@@ -93,12 +119,21 @@ public class AuraOfProtection extends ClericSpell {
 		}
 
 		@Override
+		public String desc() {
+			return Messages.get(this, "desc", Messages.get(this, "empower"), dispTurns());
+		}
+
+		protected int getSpeckType() {
+			return Speck.LIGHT;
+		}
+
+		@Override
 		public void fx(boolean on) {
 			if (on && (particles == null || particles.parent == null)){
 				particles = target.sprite.emitter(); //emitter is much bigger than char so it needs to manage itself
 				particles.pos(target.sprite, -32, -32, 80, 80);
 				particles.fillTarget = false;
-				particles.pour(Speck.factory(Speck.LIGHT), 0.02f);
+				particles.pour(Speck.factory(getSpeckType()), 0.02f);
 			} else if (!on && particles != null){
 				particles.on = false;
 			}
@@ -106,14 +141,39 @@ public class AuraOfProtection extends ClericSpell {
 
 		@Override
 		public float iconFadePercent() {
-			return Math.max(0, (DURATION - visualcooldown()) / DURATION);
+			return Math.max(0, (getDuration() - visualcooldown()) / getDuration());
+		}
+
+	}
+
+	public static class RetributionBuff extends AuraBuff {
+		// fixme icon should probably be recolored or redone
+
+		@Override
+		public int icon() {
+			return BuffIndicator.THORNS;
+		}
+
+		@Override
+		public void tintIcon(Image icon) {
+			icon.tint(0x002157, 1/3f);
+		}
+
+		@Override
+		protected int getSpeckType() {
+			return Speck.RED_LIGHT;
+		}
+
+		@Override
+		protected float getDuration() {
+			return 50f;
 		}
 
 	}
 
 	public static boolean isActiveFor(Char ch) {
 		return ch.alignment == Dungeon.hero.alignment
-				&& Dungeon.hero.buff(AuraOfProtection.AuraBuff.class) != null
+				&& Dungeon.hero.virtualBuff(AuraBuff.class) != null
 				&& (Dungeon.level.distance(ch.pos, Dungeon.hero.pos) <= 2
 						|| ch.buff(LifeLinkSpell.LifeLinkSpellBuff.class) != null
 		);

@@ -110,6 +110,14 @@ public abstract class ClericSpell {
 			if (this != HolyWard.INSTANCE && hero.buff(HolyWard.HolyArmBuff.class) != null){
 				hero.buff(HolyWard.HolyArmBuff.class).extend(10*chargeUse(hero));
 			}
+			if (this != AuraOfProtection.INSTANCE) {
+				AuraOfProtection.AuraBuff buff = hero.virtualBuff(AuraOfProtection.AuraBuff.class);
+				if (buff != null) {
+					buff.postpone(Math.min(
+							chargeUse(hero) * buff.getDuration() / 5,
+							2 * buff.getDuration()));
+				}
+			}
 		}
 
 		if (hero.buff(AscendedForm.AscendBuff.class) != null){

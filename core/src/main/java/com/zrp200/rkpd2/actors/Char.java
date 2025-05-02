@@ -472,12 +472,16 @@ public abstract class Char extends Actor {
 				dmg = endure.adjustDamageTaken(dmg);
 			}
 
-			if (enemy.buff(ScrollOfChallenge.ChallengeArena.class) != null){
-				dmg *= 0.67f;
+			if (AuraOfProtection.isActiveFor(enemy)){
+				float reduction = dmg * AuraOfProtection.reduction();
+				if (reduction > 0 && Dungeon.hero.buff(AuraOfProtection.RetributionBuff.class) != null) {
+					damage(Random.round(Random.Float(1, 2) * reduction), AuraOfProtection.INSTANCE);
+				}
+				dmg -= reduction;
 			}
 
-			if (AuraOfProtection.isActiveFor(enemy)){
-				dmg *= 0.925f - 0.075f*Dungeon.hero.pointsInTalent(Talent.AURA_OF_PROTECTION);
+			if (enemy.buff(ScrollOfChallenge.ChallengeArena.class) != null){
+				dmg *= 0.67f;
 			}
 
 			if (enemy.buff(MonkEnergy.MonkAbility.Meditate.MeditateResistance.class) != null){
@@ -831,7 +835,7 @@ public abstract class Char extends Actor {
         //if dmg is from a character we already reduced it in defenseProc
         if (!(src instanceof Char)) {
             if (AuraOfProtection.isActiveFor(this)) {
-                damage *= 0.925f - 0.075f*Dungeon.hero.pointsInTalent(Talent.AURA_OF_PROTECTION);
+                damage *= 1 - AuraOfProtection.reduction();
             }
         }
 

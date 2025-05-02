@@ -31,6 +31,7 @@ import com.zrp200.rkpd2.actors.buffs.Weakness;
 import com.zrp200.rkpd2.actors.hero.abilities.duelist.ElementalStrike;
 import com.zrp200.rkpd2.actors.hero.abilities.mage.ElementalBlast;
 import com.zrp200.rkpd2.actors.hero.abilities.mage.WarpBeacon;
+import com.zrp200.rkpd2.actors.hero.spells.AuraOfProtection;
 import com.zrp200.rkpd2.actors.hero.spells.GuidingLight;
 import com.zrp200.rkpd2.actors.hero.spells.HolyLance;
 import com.zrp200.rkpd2.actors.hero.spells.HolyWeapon;
@@ -99,6 +100,7 @@ public class AntiMagic extends Armor.Glyph {
 		RESISTS.add( HolyLance.class );
 		RESISTS.add( Smite.class );
 		RESISTS.add( Judgement.class );
+		RESISTS.add( AuraOfProtection.class );
 
 		RESISTS.add( ElementalBlast.class );
 		RESISTS.add( CursedWand.class );
