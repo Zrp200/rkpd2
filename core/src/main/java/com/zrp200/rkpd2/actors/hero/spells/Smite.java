@@ -41,6 +41,7 @@ import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.scenes.GameScene;
 import com.zrp200.rkpd2.ui.AttackIndicator;
 import com.zrp200.rkpd2.ui.HeroIcon;
+import com.zrp200.rkpd2.ui.QuickSlotButton;
 import com.zrp200.rkpd2.ui.RedButton;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.audio.Sample;
@@ -268,6 +269,7 @@ public class Smite extends TargetedClericSpell {
 				@Override
 				protected void onClick() {
 					hide();
+					if (!smite.usesTargeting()) QuickSlotButton.cancel();
 					smite.onCast(tome, hero);
 				}
 			};
@@ -287,6 +289,13 @@ public class Smite extends TargetedClericSpell {
 			omniSmite.setY(smite.bottom() + GAP);
             addToBottom(smite, omniSmite);
         }
-    }
+
+		@Override
+		public void onBackPressed() {
+			super.onBackPressed();
+			QuickSlotButton.cancel();
+		}
+
+	}
 
 }
