@@ -59,11 +59,10 @@ public abstract class ShieldBuff extends Buff {
 	}
 
 	public void setShield( int shield, boolean force ) {
-		if (this.shielding <= shield || force) {
-			if (icon() != BuffIndicator.NONE) vfx(shield);
-			this.shielding = shield;
+		int difference = shield - this.shielding;
+		if (force || difference > 0) {
+			incShield(difference, icon() != BuffIndicator.NONE);
 		}
-		if (target != null) target.needsShieldUpdate = true;
 	}
 	final public void setShield( int shield ) {
 		setShield(shield, false);
