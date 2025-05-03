@@ -950,12 +950,12 @@ public enum Talent {
 				Buff.affect( hero, PhysicalEmpower.class).set(Math.round(hero.lvl / (4f - hero.pointsInTalent(FOCUSED_MEAL))), 1);
 			}
 		}
-		if (hero.hasTalent(SATIATED_SPELLS)){
-			if (hero.heroClass == HeroClass.CLERIC) {
+		if (hero.canHaveTalent(SATIATED_SPELLS)){
+			if (hero.heroClass.is(HeroClass.CLERIC)) {
 				Buff.affect(hero, SatiatedSpellsTracker.class);
 			} else {
-				//3/5 shielding, delayed up to 10 turns
-				int amount = 1 + 2*hero.pointsInTalent(SATIATED_SPELLS);
+				//2/4/6 shielding, delayed up to 10 turns
+				int amount = 2 * hero.shiftedPoints(SATIATED_SPELLS);
 				Barrier b = Buff.affect(hero, Barrier.class);
 				if (b.shielding() <= amount){
 					b.setShield(amount);

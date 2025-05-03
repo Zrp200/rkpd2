@@ -260,8 +260,8 @@ public abstract class Wand extends Item {
 		}
 
 		if (target.alignment != Char.Alignment.ALLY
-				&& Dungeon.hero.heroClass != HeroClass.CLERIC
-				&& Dungeon.hero.hasTalent(Talent.SEARING_LIGHT)
+				&& !Dungeon.hero.heroClass.is(HeroClass.CLERIC)
+				&& Dungeon.hero.canHaveTalent(Talent.SEARING_LIGHT)
 				&& Dungeon.hero.buff(Talent.SearingLightCooldown.class) == null){
 			Buff.affect(target, GuidingLight.Illuminated.class);
 			Buff.affect(Dungeon.hero, Talent.SearingLightCooldown.class, 20f);

@@ -99,7 +99,7 @@ public class ShieldOfLight extends TargetedClericSpell {
 			Buff.prolong(ch, DivineShield.class, DivineShield.duration() - 1).object = target.id();
 		} else {
 			//1 turn less as the casting is instant
-			Buff.prolong(ch, ShieldOfLightTracker.class, 3f).object = target.id();
+			Buff.prolong(ch, ShieldOfLightTracker.class, ShieldOfLightTracker.DURATION - 1).object = target.id();
 		}
 		ch.sprite.emitter().start(Speck.factory(Speck.LIGHT), 0.15f, 6);
 	}
@@ -121,7 +121,7 @@ public class ShieldOfLight extends TargetedClericSpell {
 
 		public int object = 0;
 
-		private static final float DURATION = 4;
+		private static final float DURATION = 8;
 
 		{
 			type = buffType.POSITIVE;
@@ -167,7 +167,7 @@ public class ShieldOfLight extends TargetedClericSpell {
 			return BuffIndicator.LIGHT_SHIELD;
 		}
 
-		private static final float TURNS_PER_PARRY = 3f;
+		private static final float TURNS_PER_PARRY = 4;
 
 		public static int parries() {
 			return 1 + Dungeon.hero.pointsInTalent(Talent.SHIELD_OF_LIGHT);

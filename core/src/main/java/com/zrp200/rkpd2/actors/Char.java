@@ -434,8 +434,8 @@ public abstract class Char extends Actor {
 
 			if (enemy.buff(GuidingLight.Illuminated.class) != null){
 				enemy.buff(GuidingLight.Illuminated.class).detach();
-				if (this == Dungeon.hero && Dungeon.hero.hasTalent(Talent.SEARING_LIGHT)){
-					dmg += 2 + 2*Dungeon.hero.pointsInTalent(Talent.SEARING_LIGHT);
+				if (this == Dungeon.hero){
+					dmg += 3*Dungeon.hero.shiftedPoints(Talent.SEARING_LIGHT) - 1;
 				}
 				if (this != Dungeon.hero && Dungeon.hero.subClass == HeroSubClass.PRIEST){
 					enemy.damage(Dungeon.hero.lvl, GuidingLight.INSTANCE);
@@ -767,11 +767,11 @@ public abstract class Char extends Actor {
 			damage -= Random.NormalIntRange(min, 2*min);
 			damage = Math.max(damage, 0);
 		} else if (this == Dungeon.hero
-				&& Dungeon.hero.heroClass != HeroClass.CLERIC
-				&& Dungeon.hero.hasTalent(Talent.SHIELD_OF_LIGHT)
+				&& !Dungeon.hero.heroClass.is(HeroClass.CLERIC)
+				&& Dungeon.hero.canHaveTalent(Talent.SHIELD_OF_LIGHT)
 				&& TargetHealthIndicator.instance.target() == enemy){
-			//33/50%
-			if (Random.Int(6) < 1+Dungeon.hero.pointsInTalent(Talent.SHIELD_OF_LIGHT)){
+			//25/50/100%
+			if (Random.Int(4) < Dungeon.hero.shiftedPoints2(Talent.SHIELD_OF_LIGHT)){
 				damage -= 1;
 			}
 		}

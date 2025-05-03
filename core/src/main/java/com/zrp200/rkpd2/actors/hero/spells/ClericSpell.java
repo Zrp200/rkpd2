@@ -108,8 +108,8 @@ public abstract class ClericSpell {
 
 	public void onSpellCast(HolyTome tome, Hero hero){
 		Invisibility.dispel();
-		if (hero.hasTalent(Talent.SATIATED_SPELLS) && hero.buff(Talent.SatiatedSpellsTracker.class) != null){
-			int amount = 1 + 2*hero.pointsInTalent(Talent.SATIATED_SPELLS);
+		if (hero.canHaveTalent(Talent.SATIATED_SPELLS) && hero.buff(Talent.SatiatedSpellsTracker.class) != null){
+			int amount = 3 * hero.shiftedPoints(Talent.SATIATED_SPELLS) - 1;
 			Buff.affect(hero, Barrier.class).setShield(amount);
 			Char ally = PowerOfMany.getPoweredAlly();
 			if (ally != null && ally.buff(LifeLinkSpell.LifeLinkSpellBuff.class) != null){
