@@ -21,6 +21,8 @@
 
 package com.zrp200.rkpd2.actors.hero.spells;
 
+import static com.zrp200.rkpd2.Dungeon.level;
+
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
@@ -47,6 +49,8 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 
+import java.util.ArrayList;
+
 public class GuidingLight extends TargetedClericSpell {
 
 	public static final GuidingLight INSTANCE = new GuidingLight();
@@ -56,20 +60,26 @@ public class GuidingLight extends TargetedClericSpell {
 		return HeroIcon.GUIDING_LIGHT;
 	}
 
-	private boolean multicast = false;
+	private int targets, deferredCasts;
 
+	@Override
 	public void onCast(HolyTome tome, Hero hero) {
 		if (SpellEmpower.isActive()) {
-			try {
-				for (Char m : Dungeon.level.mobs) {
-					if (m.alignment == Char.Alignment.ENEMY && Dungeon.level.heroFOV[m.pos]) {
-						int pos = QuickSlotButton.autoAim(m, this);
-						if (pos != -1) onTargetSelected(tome, hero, m.pos);
-						multicast = true;
+			ArrayList<Integer> targets = new ArrayList<>();
+			for (Char ch : level.mobs) {
+				if (level.heroFOV[ch.pos] && ch.alignment == Char.Alignment.ENEMY) {
+					int aim = QuickSlotButton.autoAim(ch, this);
+					if (aim == ch.pos) {
+						targets.add(aim);
 					}
 				}
-			} finally {
-				multicast = false;
+			}
+			this.targets = targets.size();
+			deferredCasts = 0;
+			if (this.targets > 0) {
+				hero.sprite.showStatus(CharSprite.POSITIVE, name());
+				for (int target : targets) onTargetSelected(tome, hero, target);
+				return;
 			}
 		}
 		super.onCast(tome, hero);
@@ -88,11 +98,14 @@ public class GuidingLight extends TargetedClericSpell {
 			return;
 		}
 
-		if (Actor.findChar(aim.collisionPos) != null) {
-			QuickSlotButton.target(Actor.findChar(aim.collisionPos));
-		} else {
-			QuickSlotButton.target(Actor.findChar(target));
+		if (!SpellEmpower.isActive()) {
+			if (Actor.findChar(aim.collisionPos) != null) {
+				QuickSlotButton.target(Actor.findChar(aim.collisionPos));
+			} else {
+				QuickSlotButton.target(Actor.findChar(target));
+			}
 		}
+
 
 		hero.busy();
 		Sample.INSTANCE.play( Assets.Sounds.ZAP );
@@ -114,23 +127,33 @@ public class GuidingLight extends TargetedClericSpell {
 					if (ch.isAlive()){
 						Buff.affect(ch, Illuminated.class);
 						Buff.affect(ch, WasIlluminatedTracker.class);
+
+						if (SpellEmpower.isActive() && targets == 1 && deferredCasts == 0) {
+							targets++;
+							onTargetSelected(tome, hero, target);
+						}
 					}
 				} else {
 					Dungeon.level.pressCell(aim.collisionPos);
 				}
 
-				if (multicast) return;
-
-				hero.spend( 1f );
-				hero.next();
-
 				onSpellCast(tome, hero);
-				if (hero.subClass.is(HeroSubClass.PRIEST) && hero.buff(GuidingLightPriestCooldown.class) == null) {
-					Cooldown.affectHero(GuidingLightPriestCooldown.class);
-				}
 
 			}
 		});
+	}
+
+	@Override
+	public synchronized void onSpellCast(HolyTome tome, Hero hero) {
+		--targets;
+		super.onSpellCast(tome, hero);
+		if (targets <= 0) {
+			deferredCasts = 0;
+			hero.spendAndNext(1f);
+			if (hero.subClass.is(HeroSubClass.PRIEST) && hero.buff(GuidingLightPriestCooldown.class) == null) {
+				Cooldown.affectHero(GuidingLightPriestCooldown.class);
+			}
+		}
 	}
 
 	@Override
@@ -139,7 +162,7 @@ public class GuidingLight extends TargetedClericSpell {
 			&& hero.buff(GuidingLightPriestCooldown.class) == null){
 			return 0;
 		} else {
-			return 1;
+			return targets > 0 ? 0 : SpellEmpower.isActive() ? 0.5f * (1 + deferredCasts) : 1;
 		}
 	}
 
@@ -148,7 +171,10 @@ public class GuidingLight extends TargetedClericSpell {
 		if (Dungeon.hero.subClass == HeroSubClass.PRIEST){
 			desc += "\n\n" + Messages.get(this, "desc_priest");
 		}
-		return desc + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+		if (SpellEmpower.isActive()) {
+			desc += "\n\n" + Messages.get("desc_empower");
+		}
+		return desc + "\n\n" + chargeUseDesc();
 	}
 
 	public static class GuidingLightPriestCooldown extends Cooldown {

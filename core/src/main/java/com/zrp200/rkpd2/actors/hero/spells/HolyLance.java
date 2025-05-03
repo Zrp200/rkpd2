@@ -127,11 +127,14 @@ public class HolyLance extends TargetedClericSpell {
 			return;
 		}
 
-		if (Actor.findChar(collisionPos) != null) {
-			QuickSlotButton.target(Actor.findChar(collisionPos));
-		} else {
-			QuickSlotButton.target(Actor.findChar(target));
+		if (!SpellEmpower.isActive()) {
+			if (Actor.findChar(collisionPos) != null) {
+				QuickSlotButton.target(Actor.findChar(collisionPos));
+			} else {
+				QuickSlotButton.target(Actor.findChar(target));
+			}
 		}
+
 
 		hero.sprite.zap(target);
 		hero.busy();
@@ -157,6 +160,12 @@ public class HolyLance extends TargetedClericSpell {
 									Sample.INSTANCE.play( Assets.Sounds.HIT_STAB, 1, Random.Float(0.8f, 1f) );
 
 									enemy.sprite.burst(0xFFFFFFFF, 10);
+
+									if (enemy.isAlive() && targets == 1 && deferredCasts == 0 && SpellEmpower.isActive()) {
+										// shoot again
+										targets++;
+										onTargetSelected(tome, hero, target);
+									}
 									onSpellCast(tome, hero);
 								}
 							});
