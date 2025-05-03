@@ -43,9 +43,6 @@ import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Random;
 
-import java.util.Arrays;
-import java.util.List;
-
 public class Sunray extends TargetedClericSpell {
 
 	public static final Sunray INSTANCE = new Sunray();
@@ -56,12 +53,16 @@ public class Sunray extends TargetedClericSpell {
 	}
 
 	@Override
-	protected List<Object> getDescArgs() {
+	public String desc() {
 		int points = Dungeon.hero.pointsInTalent(Talent.SUNRAY);
-		int min = 2 * (1 + points);
-		int max = 4 * (1 + points);
-		int dur = 2 * (1 + points);
-		return Arrays.asList(min, max, dur);
+		int min = 3 * (1 + points);
+		int max = 5 * (1 + points);
+		int dur = 3 * (1 + points);
+		String desc = Messages.get(this, "desc", min, max, dur);
+		if (SpellEmpower.isActive()) {
+			desc += "\n\n" + Messages.get(this, "multi_target");
+		}
+		return desc + "\n\n" + chargeUseDesc();
 	}
 
 	private int targets = 0;
@@ -79,10 +80,12 @@ public class Sunray extends TargetedClericSpell {
 	@Override
 	public void onCast(HolyTome tome, Hero hero) {
 		if (SpellEmpower.isActive()) {
+			Char lastTarget = null;
 			for (Char m : Dungeon.level.mobs) {
 				if (m.alignment == Char.Alignment.ENEMY && Dungeon.level.heroFOV[m.pos]) {
 					int pos = QuickSlotButton.autoAim(m, this);
 					if (pos != -1) {
+						lastTarget = m;
 						onTargetSelected(tome, hero, m.pos);
 					}
 				}
@@ -90,6 +93,10 @@ public class Sunray extends TargetedClericSpell {
 			if (targets == 0) {
 				GLog.w("No enemies in sight!");
 			} else {
+				// shoot single target twice
+				if (targets == 1 && lastTarget != null && lastTarget.isAlive()) {
+					onTargetSelected(tome, hero, lastTarget.pos);
+				}
 				onSpellCast(tome, hero);
 			}
 		}
@@ -109,17 +116,17 @@ public class Sunray extends TargetedClericSpell {
 			return;
 		}
 
-		if (Actor.findChar(aim.collisionPos) != null) {
-			QuickSlotButton.target(Actor.findChar(aim.collisionPos));
-		} else {
-			QuickSlotButton.target(Actor.findChar(target));
+		if (!SpellEmpower.isActive()) {
+			if (Actor.findChar(aim.collisionPos) != null) {
+				QuickSlotButton.target(Actor.findChar(aim.collisionPos));
+			} else {
+				QuickSlotButton.target(Actor.findChar(target));
+			}
 		}
 
 		targets++;
 		hero.busy();
-		if (targets == 1) {
-			Sample.INSTANCE.play(Assets.Sounds.RAY);
-		}
+		Sample.INSTANCE.play(Assets.Sounds.RAY);
 		hero.sprite.zap(target);
 
 		hero.sprite.parent.add(
@@ -129,27 +136,24 @@ public class Sunray extends TargetedClericSpell {
 		if (ch != null) {
 			ch.sprite.burst(0xFFFFFF44, 5);
 
+			int points = hero.pointsInTalent(Talent.SUNRAY);
+			int min = 3 * (1 + points);
+			int max = 5 * (1 + points);
+			int dur = 3 * (1 + points);
+
 			if (Char.hasProp(ch, Char.Property.UNDEAD) || Char.hasProp(ch, Char.Property.DEMONIC)){
-				if (hero.pointsInTalent(Talent.SUNRAY) == 2) {
-					ch.damage(12, Sunray.this);
-				} else {
-					ch.damage(8, Sunray.this);
-				}
+				ch.damage(max, Sunray.this);
 			} else {
-				if (hero.pointsInTalent(Talent.SUNRAY) == 2) {
-					ch.damage(Random.NormalIntRange(6, 12), Sunray.this);
-				} else {
-					ch.damage(Random.NormalIntRange(4, 8), Sunray.this);
-				}
+				ch.damage(Random.NormalIntRange(min, max), Sunray.this);
 			}
 
-			if (ch.isAlive()) for (int i = 0; i < (SpellEmpower.isActive() ? 2 : 1); i++){
+			if (ch.isAlive()) {
 				if (ch.buff(Blindness.class) != null && ch.buff(SunRayRecentlyBlindedTracker.class) != null) {
-					Buff.prolong(ch, Paralysis.class, 2f + 2f*hero.pointsInTalent(Talent.SUNRAY));
+					Buff.prolong(ch, Paralysis.class, dur);
 					ch.buff(SunRayRecentlyBlindedTracker.class).detach();
 				} else if (ch.buff(SunRayUsedTracker.class) == null) {
-					Buff.prolong(ch, Blindness.class, 2f + 2f*hero.pointsInTalent(Talent.SUNRAY));
-					Buff.prolong(ch, SunRayRecentlyBlindedTracker.class, 2f + 2f*hero.pointsInTalent(Talent.SUNRAY));
+					Buff.prolong(ch, Blindness.class, dur);
+					Buff.prolong(ch, SunRayRecentlyBlindedTracker.class, dur);
 					Buff.affect(ch, SunRayUsedTracker.class);
 				}
 			}
