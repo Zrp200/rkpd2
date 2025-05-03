@@ -26,7 +26,7 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
-import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
+import com.zrp200.rkpd2.actors.buffs.Cooldown;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
@@ -125,8 +125,8 @@ public class GuidingLight extends TargetedClericSpell {
 				hero.next();
 
 				onSpellCast(tome, hero);
-				if (hero.subClass == HeroSubClass.PRIEST && hero.buff(GuidingLightPriestCooldown.class) == null) {
-					Buff.prolong(hero, GuidingLightPriestCooldown.class, 100f);
+				if (hero.subClass.is(HeroSubClass.PRIEST) && hero.buff(GuidingLightPriestCooldown.class) == null) {
+					Cooldown.affectHero(GuidingLightPriestCooldown.class);
 				}
 
 			}
@@ -151,7 +151,7 @@ public class GuidingLight extends TargetedClericSpell {
 		return desc + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
 	}
 
-	public static class GuidingLightPriestCooldown extends FlavourBuff {
+	public static class GuidingLightPriestCooldown extends Cooldown {
 
 		@Override
 		public int icon() {
@@ -163,8 +163,10 @@ public class GuidingLight extends TargetedClericSpell {
 			icon.brightness(0.5f);
 		}
 
-		public float iconFadePercent() { return Math.max(0, visualcooldown() / 100); }
-
+		@Override
+		public float duration() {
+			return Dungeon.hero != null && Dungeon.hero.subClass == HeroSubClass.PRIEST ? 50 : 100;
+		}
 	}
 
 	public static class Illuminated extends Buff {
