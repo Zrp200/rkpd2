@@ -21,10 +21,13 @@
 
 package com.zrp200.rkpd2.actors.hero.spells;
 
+import com.watabou.utils.PathFinder;
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.Adrenaline;
 import com.zrp200.rkpd2.actors.buffs.Barrier;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Combo;
@@ -34,11 +37,13 @@ import com.zrp200.rkpd2.actors.hero.abilities.cleric.PowerOfMany;
 import com.zrp200.rkpd2.effects.FloatingText;
 import com.zrp200.rkpd2.items.artifacts.HolyTome;
 import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.scenes.PixelScene;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.HeroIcon;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.audio.Sample;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class LayOnHands extends TargetedClericSpell {
 
@@ -50,8 +55,9 @@ public class LayOnHands extends TargetedClericSpell {
 	}
 
 	@Override
-	public String desc() {
-		return Messages.get(this, "desc", 5 + 5*Dungeon.hero.pointsInTalent(Talent.LAY_ON_HANDS)) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+	protected List<Object> getDescArgs() {
+		int points = 1 + Dungeon.hero.pointsInTalent(Talent.LAY_ON_HANDS);
+		return Arrays.asList(5 * points, points);
 	}
 
 	@Override
@@ -59,33 +65,9 @@ public class LayOnHands extends TargetedClericSpell {
 		return -1; //auto-targeting behaviour is often wrong, so we don't use it
 	}
 
-	private static boolean multicast = false;
-
 	@Override
 	public boolean canCast(Hero hero) {
 		return super.canCast(hero) && hero.hasTalent(Talent.LAY_ON_HANDS);
-	}
-
-	@Override
-	public void onCast(HolyTome tome, Hero hero) {
-		if (SpellEmpower.isActive()) {
-			try {
-				// it's literally better bless, minus the heal of course.
-				for (Char ch : Dungeon.level.mobs) {
-					if (ch.alignment == Char.Alignment.ALLY && Dungeon.level.heroFOV[ch.pos]) {
-						multicast = true;
-						onTargetSelected(tome, hero, ch.pos);
-					}
-				}
-				if (multicast) {
-					GLog.p(Messages.get(SpellEmpower.class, "all_allies"));
-				}
-			} finally {
-				multicast = false;
-			}
-			onTargetSelected(tome, hero, hero.pos);
-		}
-		super.onCast(tome, hero);
 	}
 
 	@Override
@@ -94,7 +76,7 @@ public class LayOnHands extends TargetedClericSpell {
 			return;
 		}
 
-		if (!multicast && Dungeon.level.distance(hero.pos, target) > 1){
+		if (Dungeon.level.distance(hero.pos, target) > 1){
 			if (hero.hasTalent(Talent.TRIAGE) && Actor.findChar(target) != null) {
 				int leapPos = Combo.Leap.findLeapPos(hero, target, hero.pointsInTalent(Talent.TRIAGE));
 				if (leapPos == -1) {
@@ -115,18 +97,22 @@ public class LayOnHands extends TargetedClericSpell {
 			return;
 		}
 
-		if (!multicast) Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
+		Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 
 		affectChar(hero, ch);
-
-		if (!multicast) {
-			if (ch == hero){
-				hero.sprite.operate(ch.pos);
-				hero.next();
-			} else {
-				hero.sprite.zap(ch.pos);
-				hero.next();
+		if (SpellEmpower.isActive()) {
+			for (int i : PathFinder.NEIGHBOURS8) {
+				Char c = Actor.findChar(target+i);
+				if (c != null) affectChar(hero, ch);
 			}
+		}
+
+		if (ch == hero){
+			hero.sprite.operate(ch.pos);
+			hero.next();
+		} else {
+			hero.sprite.zap(ch.pos);
+			hero.next();
 		}
 
 
@@ -139,12 +125,15 @@ public class LayOnHands extends TargetedClericSpell {
 			}
 		}
 
-		if (!multicast) onSpellCast(tome, hero);
+		onSpellCast(tome, hero);
 
 	}
 
 	private void affectChar(Hero hero, Char ch) {
-		affectChar(hero, ch, 5 + 5*hero.pointsInTalent(Talent.LAY_ON_HANDS), 3);
+		affectChar(hero, ch, 5 + 5*hero.pointsInTalent(Talent.LAY_ON_HANDS), 6);
+		if (SpellEmpower.isActive()) {
+			Buff.affect(ch, Adrenaline.class, 1 + hero.pointsInTalent(Talent.LAY_ON_HANDS));
+		}
 	}
 
 	public static void affectChar(Hero hero, Char ch, int totalHeal, int stacks){
@@ -171,6 +160,12 @@ public class LayOnHands extends TargetedClericSpell {
 				ch.HP = ch.HP + totalHeal;
 				ch.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(totalHeal), FloatingText.HEALING );
 			}
+		}
+		if (SpellEmpower.isActive() || (stacks > 1 && Random.Int(6) == 0)) {
+			// 1 2 3 4 turns
+			float duration = totalHeal / 5f;
+			if (stacks > 1) duration--; // lay on hands needs one less duration
+			Buff.affect(ch, Adrenaline.class, duration);
 		}
 	}
 }

@@ -21,10 +21,10 @@
 
 package com.zrp200.rkpd2.actors.hero.spells;
 
+import static com.zrp200.rkpd2.Dungeon.hero;
 import static com.zrp200.rkpd2.Dungeon.level;
 
 import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Bless;
@@ -38,6 +38,9 @@ import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.ui.HeroIcon;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.audio.Sample;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class BlessSpell extends TargetedClericSpell {
 
@@ -59,6 +62,14 @@ public class BlessSpell extends TargetedClericSpell {
 	}
 
 	@Override
+	public void onCast(HolyTome tome, Hero hero) {
+		if (SpellEmpower.isActive()) {
+			onTargetSelected(tome, hero, hero.pos);
+		}
+		else super.onCast(tome, hero);
+	}
+
+	@Override
 	protected void onTargetSelected(HolyTome tome, Hero hero, Integer target) {
 		if (target == null){
 			return;
@@ -72,55 +83,66 @@ public class BlessSpell extends TargetedClericSpell {
 
 		Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 
-		boolean empowered = SpellEmpower.isActive();
-		if (ch == hero || empowered) {
+		if (SpellEmpower.isActive()) {
+			for (Char c : Actor.chars()) {
+				if (level.heroFOV[c.pos] && c.alignment == Char.Alignment.ALLY) {
+					affectChar(hero, c);
+				}
+			}
+		} else {
+			affectChar(hero, ch);
+		}
+
+		if (ch == hero){
 			hero.busy();
 			hero.sprite.operate(ch.pos);
-			if (ch == hero) {
-				if (empowered) {
-					GLog.p(Messages.get(SpellEmpower.class, "instant"));
-				} else {
-					hero.spend( 1f );
-				}
-
-				Char ally = PowerOfMany.getPoweredAlly();
-				if (ally != null && ally.buff(LifeLinkSpell.LifeLinkSpellBuff.class) != null) {
-					affectChar(hero, ch, 1);
-				}
-			} else {
-				GLog.p(Messages.get(SpellEmpower.class, "all_allies"));
-				int factor = 1;
-				for (Char m : level.mobs) {
-					if (m.buff(LifeLinkSpell.LifeLinkSpellBuff.class) != null) {
-						affectChar(hero, m, level.heroFOV[m.pos] ? factor = 2 : 1);
-					} else if (m == ch || level.heroFOV[m.pos] && m.alignment == hero.alignment) {
-						affectChar(hero, m, 1);
-					}
-				}
-				affectChar(hero, hero, factor);
-				hero.spend( 1f );
-			}
+			hero.spend( 1f );
 		} else {
 			hero.sprite.zap(ch.pos);
 			hero.spendAndNext( 1f );
 		}
 
+		Char ally = PowerOfMany.getPoweredAlly();
+		if (ally != null && ally.buff(LifeLinkSpell.LifeLinkSpellBuff.class) != null){
+			if (ch == hero){
+				affectChar(hero, ally); //if cast on hero, duplicate to ally
+			} else if (ally == ch) {
+				affectChar(hero, hero); //if cast on ally, duplicate to hero
+			}
+		}
+
 		onSpellCast(tome, hero);
 	}
 
-	private void affectChar(Hero hero, Char ch, int factor){
+
+	private int getHeal(int points) {
+		// 10 / 15 / 25
+		return points == 0 ? 10 : 5 + 10 * points;
+	}
+
+	private int getSelfBlessDuration(int points) {
+		// 6 / 10 / 15
+		return points == 0 ? 6 : 5 * (1 + points);
+	}
+
+	private int getBlessDuration(int points) {
+		return getHeal(points);
+	}
+
+	private void affectChar(Hero hero, Char ch){
 		new Flare(6, 32).color(0xFFFF00, true).show(ch.sprite, 2f);
+		int points = hero.pointsInTalent(Talent.BLESS);
 		if (ch == hero){
-			Buff.prolong(ch, Bless.class, factor*(2f + 4*hero.pointsInTalent(Talent.BLESS)));
+			Buff.prolong(ch, Bless.class, getSelfBlessDuration(points));
 		} else {
-			Buff.prolong(ch, Bless.class, factor*(5f + 5*hero.pointsInTalent(Talent.BLESS)));
+			Buff.prolong(ch, Bless.class, getBlessDuration(points));
 		}
-		LayOnHands.affectChar(hero, ch, factor * (5 + 5 * hero.pointsInTalent(Talent.BLESS)), 1);
+		LayOnHands.affectChar(hero, ch, getHeal(points), 2);
 	}
 
-	public String desc(){
-		int talentLvl = Dungeon.hero.pointsInTalent(Talent.BLESS);
-		return Messages.get(this, "desc", 2+4*talentLvl, 5+5*talentLvl, 5+5*talentLvl, 5+5*talentLvl) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+	@Override
+	protected List<Object> getDescArgs() {
+		int talentLvl = hero.pointsInTalent(Talent.BLESS);
+		return Arrays.asList(getSelfBlessDuration(talentLvl), getHeal(talentLvl), getBlessDuration(talentLvl), getHeal(talentLvl), talentLvl);
 	}
-
 }
