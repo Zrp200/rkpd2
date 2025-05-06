@@ -91,7 +91,7 @@ public class HolyTome extends Artifact {
 	@Override
 	public ArrayList<String> actions( Hero hero ) {
 		ArrayList<String> actions = super.actions( hero );
-		if ((isEquipped( hero ) || hero.hasTalent(Talent.LIGHT_READING))
+		if ((isEquipped( hero ) || hero.canHaveTalent(Talent.LIGHT_READING))
 				&& !cursed
 				&& hero.buff(MagicImmune.class) == null) {
 			actions.add(AC_CAST);
@@ -108,7 +108,7 @@ public class HolyTome extends Artifact {
 
 		if (action.equals(AC_CAST)) {
 
-			if (!isEquipped(hero) && !hero.hasTalent(Talent.LIGHT_READING)) GLog.i(Messages.get(Artifact.class, "need_to_equip"));
+			if (!isEquipped(hero) && !hero.canHaveTalent(Talent.LIGHT_READING)) GLog.i(Messages.get(Artifact.class, "need_to_equip"));
 			else if (cursed)       GLog.i( Messages.get(this, "cursed") );
 			else {
 
@@ -134,7 +134,7 @@ public class HolyTome extends Artifact {
 	@Override
 	public boolean doUnequip(Hero hero, boolean collect, boolean single) {
 		if (super.doUnequip(hero, collect, single)){
-			if (collect && hero.hasTalent(Talent.LIGHT_READING)){
+			if (collect && hero.canHaveTalent(Talent.LIGHT_READING)){
 				activate(hero);
 			}
 
@@ -148,7 +148,7 @@ public class HolyTome extends Artifact {
 		if (super.collect(container)){
 			if (container.owner instanceof Hero
 					&& passiveBuff == null
-					&& ((Hero) container.owner).hasTalent(Talent.LIGHT_READING)){
+					&& ((Hero) container.owner).canHaveTalent(Talent.LIGHT_READING)){
 				activate((Hero) container.owner);
 			}
 			return true;
@@ -166,7 +166,7 @@ public class HolyTome extends Artifact {
 	}
 
 	public boolean canCast( Hero hero, ClericSpell spell ){
-		return spell != null && (isEquipped(hero) || (hero.hasTalent(Talent.LIGHT_READING) && hero.belongings.contains(this)))
+		return spell != null && (isEquipped(hero) || (hero.canHaveTalent(Talent.LIGHT_READING) && hero.belongings.contains(this)))
 				&& hero.buff(MagicImmune.class) == null
 				&& (spell.ignoreChargeUse() || charge >= spell.chargeUse(hero))
 				&& spell.canCast(hero);
@@ -240,7 +240,7 @@ public class HolyTome extends Artifact {
 		if (cursed || target.buff(MagicImmune.class) != null) return;
 
 		if (charge < chargeCap) {
-			if (!isEquipped(target)) amount *= 0.75f*target.pointsInTalent(Talent.LIGHT_READING)/3f;
+			if (!isEquipped(target)) amount *= 0.75f*target.shiftedPoints(Talent.LIGHT_READING)/3f;
 			partialCharge += 0.25f*amount;
 			while (partialCharge >= 1f) {
 				charge++;
@@ -321,7 +321,7 @@ public class HolyTome extends Artifact {
 					turnsToCharge /= RingOfEnergy.artifactChargeMultiplier(target);
 					float chargeToGain = (1f / turnsToCharge);
 					if (!isEquipped(Dungeon.hero)){
-						chargeToGain *= 0.75f*Dungeon.hero.pointsInTalent(Talent.LIGHT_READING)/3f;
+						chargeToGain *= 0.75f*Dungeon.hero.shiftedPoints(Talent.LIGHT_READING)/3f;
 					}
 					partialCharge += chargeToGain;
 				}

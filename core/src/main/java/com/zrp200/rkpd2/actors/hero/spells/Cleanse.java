@@ -40,6 +40,8 @@ import com.zrp200.rkpd2.ui.HeroIcon;
 import com.watabou.noosa.audio.Sample;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Cleanse extends ClericSpell {
 
@@ -55,16 +57,26 @@ public class Cleanse extends ClericSpell {
 		return 2;
 	}
 
-	public String desc(){
-		int immunity = 2 * (Dungeon.hero.pointsInTalent(Talent.CLEANSE)-1);
-		if (immunity > 0) immunity++;
-		int shield = 10 * Dungeon.hero.pointsInTalent(Talent.CLEANSE);
-		return Messages.get(this, "desc", immunity, shield) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+	private float getImmunity() {
+		float immunity = 1 + 2 * Dungeon.hero.pointsInTalent(Talent.CLEANSE);
+		return (SpellEmpower.isActive() ? 2 : 1) * immunity;
+	}
+
+	private int getShield() {
+		int shield = Math.max(10, 15 * Dungeon.hero.pointsInTalent(Talent.CLEANSE));
+		return SpellEmpower.isActive() ? 2 * shield : shield;
+	}
+
+	@Override
+	protected List<Object> getDescArgs() {
+		float immunity = getImmunity();
+		if (immunity != 0) immunity++;
+		return Arrays.asList(immunity, getShield());
 	}
 
 	@Override
 	public boolean canCast(Hero hero) {
-		return super.canCast(hero) && hero.hasTalent(Talent.CLEANSE);
+		return super.canCast(hero) && (SpellEmpower.isActive() || hero.hasTalent(Talent.CLEANSE));
 	}
 
 	@Override
@@ -95,12 +107,13 @@ public class Cleanse extends ClericSpell {
 				}
 			}
 
-			if (hero.pointsInTalent(Talent.CLEANSE) > 1) {
+			float immunity = getImmunity() - 1;
+			if (immunity > 0) {
 				//0, 2, or 4. 1 less than displayed as spell is instant
-				Buff.affect(ch, PotionOfCleansing.Cleanse.class, 2 * (Dungeon.hero.pointsInTalent(Talent.CLEANSE)-1));
+				Buff.affect(ch, PotionOfCleansing.Cleanse.class, immunity);
 			}
-			Buff.affect(ch, Barrier.class).setShield(10 * hero.pointsInTalent(Talent.CLEANSE));
-			new Flare( 6, 32 ).color(0xFF4CD2, true).show( ch.sprite, 2f );
+			Buff.affect(ch, Barrier.class).setShield(getShield());
+			new Flare( SpellEmpower.isActive() ? 12 : 6, 32 ).color(0xFF4CD2, true).show( ch.sprite, 2f );
 		}
 
 		hero.busy();
