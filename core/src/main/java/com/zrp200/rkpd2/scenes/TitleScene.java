@@ -209,7 +209,7 @@ public class TitleScene extends PixelScene {
 			//btnNews.setRect(btnRankings.left(), btnRankings.bottom()+ GAP, btnRankings.width(), BTN_HEIGHT);
 			btnAbout.setRect(btnRankings.left(), btnRankings.bottom() + GAP, btnRankings.width(), BTN_HEIGHT);
 			btnSettings.setRect(btnAbout.right()+2, btnAbout.top(), btnRankings.width(), BTN_HEIGHT);
-			btnChanges.setRect(title.x, btnSettings.bottom() + GAP, title.width(), BTN_HEIGHT);
+			btnChanges.setRect(btnAreaLeft, btnSettings.bottom() + GAP, buttonAreaWidth, BTN_HEIGHT);
 		}
 
 		BitmapText version = new BitmapText( "v" + Game.version, pixelFont);
