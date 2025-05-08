@@ -1274,7 +1274,7 @@ public enum Talent {
 		}
 	}
 
-	public static int onAttackProc( Hero hero, Char enemy, int dmg ){
+	public static int onAttackProc( Hero hero, Char enemy, int dmg){
 
 		if (hero.hasTalent(Talent.PROVOKED_ANGER, Talent.KINGS_WISDOM)) {
 			ProvokedAngerTracker provokedAnger = hero.buff(ProvokedAngerTracker.class);
@@ -1315,13 +1315,12 @@ public enum Talent {
 			}
 		}
 
-		/* fixme figure out if this is needed
-		if (hero.buff(Talent.SpiritBladesTracker.class) != null
-				&& Random.Int(10) < 3*hero.pointsInTalent(Talent.SPIRIT_BLADES)){
+		Talent.SpiritBladesTracker tracker = hero.buff(Talent.SpiritBladesTracker.class, false);
+		if ( tracker != null && Random.Float() < 3*hero.pointsInTalent(Talent.SPIRIT_BLADES, Talent.SEA_OF_BLADES) * SpiritBladesTracker.getProcModifier() ){
 			SpiritBow bow = hero.belongings.getItem(SpiritBow.class);
 			if (bow != null) dmg = bow.proc( hero, enemy, dmg );
-			hero.buff(Talent.SpiritBladesTracker.class).detach();
-		}*/
+			tracker.detach();
+		}
 
 		if (hero.hasTalent(PATIENT_STRIKE)){
 			if (hero.buff(PatientStrikeTracker.class) != null

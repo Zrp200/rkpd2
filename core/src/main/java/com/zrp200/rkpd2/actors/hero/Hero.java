@@ -1567,14 +1567,13 @@ public class Hero extends Char {
 			wep = belongings.attackingWeapon();
 		}
 
-		float mult = Talent.SpiritBladesTracker.getProcModifier();
 
 		if (subClass.is(HeroSubClass.BATTLEMAGE)) {
 			boolean isStaff = wep instanceof MagesStaff;
 			MagesStaff staff = isStaff ? (MagesStaff) wep :
 					hasTalent(Talent.SORCERY) ? belongings.getItem(MagesStaff.class) :
 							null;
-			if (staff != null && Random.Float() < mult) {
+			if (staff != null && Random.Float() < Talent.SpiritBladesTracker.getProcModifier()) {
 				int points = pointsInTalent(Talent.SORCERY);
 				damage = staff.procBM(
 						enemy,
@@ -1584,14 +1583,6 @@ public class Hero extends Char {
 						true
 				);
 			}
-		}
-
-		// this is actually earlier than it is in shattered, maybe should fix
-		Talent.SpiritBladesTracker tracker = buff(Talent.SpiritBladesTracker.class, false);
-		if ( tracker != null && Random.Float() < 3*pointsInTalent(Talent.SPIRIT_BLADES, Talent.SEA_OF_BLADES) * mult ){
-			SpiritBow bow = belongings.getItem(SpiritBow.class);
-			if (bow != null) damage = bow.proc( this, enemy, damage );
-			tracker.detach();
 		}
 
 		damage = Talent.onAttackProc( this, enemy, damage );
