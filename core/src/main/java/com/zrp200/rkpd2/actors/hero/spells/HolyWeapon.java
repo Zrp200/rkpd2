@@ -55,25 +55,9 @@ public class HolyWeapon extends ClericSpell {
 
 	@Override
 	public void onCast(HolyTome tome, Hero hero) {
-
-		HolyWepBuff buff = hero.virtualBuff(HolyWepBuff.class);
-		float duration;
-		if (SpellEmpower.isActive()) {
-			float additionalDuration = 0;
-			if (buff != null && !(buff instanceof HolyWepBuff.Empowered)) {
-				additionalDuration = buff.cooldown();
-				buff.detach();
-			}
-
-			buff = Buff.affect(hero, HolyWepBuff.Empowered.class);
-			duration = buff.getDuration() + additionalDuration;
-		} else {
-			// extends by the regular duration
-			HolyWepBuff newBuff = new HolyWepBuff();
-			duration = newBuff.getDuration();
-			if (buff == null) (buff = newBuff).attachTo(hero);
-		}
-		buff.spend(duration);
+		PaladinSpellExtendable.virtualAffect(hero, HolyWepBuff.class,
+				SpellEmpower.isActive() ? HolyWepBuff.Empowered.class : HolyWepBuff.class
+		);
 		Item.updateQuickslot();
 
 		Sample.INSTANCE.play(Assets.Sounds.READ);

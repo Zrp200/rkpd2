@@ -138,6 +138,25 @@ public abstract class ClericSpell {
 
 		abstract protected float getDuration();
 
+		/** keeps subclasses over the parent **/
+		public static <T extends PaladinSpellExtendable> T virtualAffect(Hero hero, Class<T> parentClass, Class<? extends T> buffClass) {
+			T toAdd = Buff.affect(hero, buffClass);
+			toAdd.spend(toAdd.getDuration());
+			T exist = hero.virtualBuff(parentClass);
+			if (exist == toAdd) return toAdd;
+			T base, keep;
+			if (toAdd.getClass() == parentClass) {
+				base = toAdd;
+				keep = exist;
+			} else {
+				base = exist;
+				keep = toAdd;
+			}
+			keep.spend(base.cooldown());
+			base.detach();
+			return keep;
+		}
+
 		public float getMaxDuration() {
 			// rkpd2 doubles the maximum extend duration
 			return getDuration() * 4;

@@ -69,25 +69,8 @@ public class AuraOfProtection extends ClericSpell {
 
 	@Override
 	public void onCast(HolyTome tome, Hero hero) {
-		AuraBuff existing = hero.virtualBuff(AuraBuff.class);
-		float duration = 0;
-		if (SpellEmpower.isActive()) {
-			// add empowered buff
-			if (existing != null && !(existing instanceof RetributionBuff)) {
-				// overwrite existing buff
-				duration += existing.cooldown();
-				existing.detach();
-			}
-			existing = Buff.affect(hero, RetributionBuff.class);
-			duration += existing.getDuration();
-		} else {
-			// add regular buff
-			AuraBuff b = new AuraBuff();
-			duration += b.getDuration();
-			if (existing == null) (existing = b).attachTo(hero);
-		}
-		existing.spend(duration);
-
+		PaladinSpellExtendable.virtualAffect(hero, AuraBuff.class,
+				SpellEmpower.isActive() ? RetributionBuff.class : AuraBuff.class);
 		Sample.INSTANCE.play(Assets.Sounds.READ);
 
 		hero.spend( 1f );
