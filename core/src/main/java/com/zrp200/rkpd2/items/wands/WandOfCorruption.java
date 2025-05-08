@@ -201,7 +201,6 @@ public class WandOfCorruption extends Wand {
 			return;
 		}
 
-		// TODO IMPLEMENT
 		if( !Corruption.corrupt(enemy) ) Buff.affect(enemy, Doom.class);
 	}
 
