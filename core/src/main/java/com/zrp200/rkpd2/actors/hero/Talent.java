@@ -523,10 +523,15 @@ public enum Talent {
 	public static class LiquidAgilACCTracker extends FlavourBuff{
 		public int uses;
 
+		public static float getDuration() {
+			return Dungeon.hero.hasTalent(LIQUID_AGILITY) ? 10 : 5;
+		}
+
+
 		{ type = buffType.POSITIVE; }
 		public int icon() { return BuffIndicator.INVERT_MARK; }
 		public void tintIcon(Image icon) { icon.hardlight(0.5f, 0f, 1f); }
-		public float iconFadePercent() { return Math.max(0, 1f - (visualcooldown() / 5)); }
+		public float iconFadePercent() { return Math.max(0, 1f - (visualcooldown() / getDuration())); }
 
 		private static final String USES = "uses";
 		@Override
@@ -604,7 +609,14 @@ public enum Talent {
 	public static class PreciseAssaultTracker extends FlavourBuff{
 		{ type = buffType.POSITIVE; }
 
-		int left = hero.heroClass == HeroClass.DUELIST ? 2 : 1;
+		private int left = hero.heroClass == HeroClass.DUELIST ? 2 : 1;
+
+		public static boolean tryUse(Char target) {
+			PreciseAssaultTracker tracker = target.buff(PreciseAssaultTracker.class);
+			if (tracker == null) return false;
+			if (--tracker.left == 0) tracker.detach();
+			return true;
+		}
 
 		public int icon() { return BuffIndicator.INVERT_MARK; }
 		public void tintIcon(Image icon) { icon.hardlight(1f, 1f, 0.0f); }
@@ -1081,9 +1093,13 @@ public enum Talent {
 			Dungeon.observe();
 		}
 		if (hero.hasTalent(LIQUID_AGILITY)){
-			Buff.prolong(hero, LiquidAgilEVATracker.class, hero.cooldown() + Math.max(0, factor/*-1*/));
+			float effectiveFactor = factor * 2;
+			Buff.prolong(hero, LiquidAgilEVATracker.class, hero.cooldown() + Math.max(0, effectiveFactor-1));
 			if (factor >= 0.5f){
-				Buff.prolong(hero, LiquidAgilACCTracker.class, 5f).uses = Math.round(factor);
+				// 1 / 2
+				// 2 / 4
+				Buff.prolong(hero, LiquidAgilACCTracker.class, LiquidAgilACCTracker.getDuration())
+						.uses = Math.round(effectiveFactor);
 			}
 		}
 	}

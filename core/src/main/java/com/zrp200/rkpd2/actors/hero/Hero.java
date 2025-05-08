@@ -619,7 +619,7 @@ public class Hero extends Char {
 					//do nothing, this is not a regular attack so don't consume talent fx
 				} else if (wep instanceof Crossbow && buff(Crossbow.ChargedShot.class) != null){
 					//do nothing, this is not a regular attack so don't consume talent fx
-				} else if (buff(Talent.PreciseAssaultTracker.class) != null) {
+				} else if (Talent.PreciseAssaultTracker.tryUse(this)) {
 					// 2x/5x/inf. ACC for duelist if she just used a weapon ability
 					switch (pointsInTalent(Talent.PRECISE_ASSAULT)){
 						default: case 1:
@@ -629,10 +629,9 @@ public class Hero extends Char {
 						case 3:
 							accuracy *= Float.POSITIVE_INFINITY; break;
 					}
-					buff(Talent.PreciseAssaultTracker.class).detach();
 				} else if (buff(Talent.LiquidAgilACCTracker.class) != null){
 					// 3x/inf. ACC, depending on talent level
-					accuracy *= pointsInTalent(Talent.LIQUID_AGILITY) == 2 ? Float.POSITIVE_INFINITY : 3f;
+					accuracy *= shiftedPoints(Talent.LIQUID_AGILITY) > 1 ? Float.POSITIVE_INFINITY : 3f;
 					Talent.LiquidAgilACCTracker buff = buff(Talent.LiquidAgilACCTracker.class);
 					buff.uses--;
 					if (buff.uses <= 0) {
