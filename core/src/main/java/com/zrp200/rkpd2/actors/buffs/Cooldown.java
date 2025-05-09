@@ -9,7 +9,7 @@ import com.zrp200.rkpd2.messages.Messages;
 public abstract class Cooldown extends FlavourBuff {
     public static <T extends Cooldown> T affectHero(Class<T> cls) {
         T buff = Buff.affect(hero, cls);
-        buff.spend(buff.duration());
+        buff.postpone(buff.duration());
         return buff;
     }
 
