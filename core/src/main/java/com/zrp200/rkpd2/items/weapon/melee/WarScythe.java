@@ -22,11 +22,9 @@
 package com.zrp200.rkpd2.items.weapon.melee;
 
 import com.zrp200.rkpd2.Assets;
-import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 
-public class WarScythe extends MeleeWeapon {
+public class WarScythe extends Sickle {
 
 	{
 		image = ItemSpriteSheet.WAR_SCYTHE;
@@ -44,30 +42,9 @@ public class WarScythe extends MeleeWeapon {
 	}
 
 	@Override
-	public String targetingPrompt() {
-		return Messages.get(this, "prompt");
-	}
-
-	@Override
-	protected void duelistAbility(Hero hero, Integer target) {
+	public int abilityStat(int lvl) {
 		//replaces damage with 30+4.5*lvl bleed, roughly 133% avg base dmg, 129% avg scaling
-		int bleedAmt = augment.damageFactor(Math.round(30f + 4.5f*buffedLvl()));
-		Sickle.harvestAbility(hero, target, 0f, bleedAmt, this);
-	}
-
-	@Override
-	public String abilityInfo() {
-		int bleedAmt = levelKnown ? Math.round(30f + 4.5f*buffedLvl()) : 30;
-		if (levelKnown){
-			return Messages.get(this, "ability_desc", augment.damageFactor(bleedAmt));
-		} else {
-			return Messages.get(this, "typical_ability_desc", bleedAmt);
-		}
-	}
-
-	@Override
-	public String upgradeAbilityStat(int level) {
-		return Integer.toString(augment.damageFactor(Math.round(30f + 4.5f*level)));
+		return augment.damageFactor(Math.round(30f + 4.5f*lvl));
 	}
 
 }
