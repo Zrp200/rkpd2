@@ -514,10 +514,11 @@ public enum Talent {
 			pos = bundle.getInt(POS);
 		}
 	};
-	public static class AggressiveBarrierCooldown extends FlavourBuff{
+	public static class AggressiveBarrierCooldown extends Cooldown{
 		public int icon() { return BuffIndicator.TIME; }
 		public void tintIcon(Image icon) { icon.hardlight(0.35f, 0f, 0.7f); }
-		public float iconFadePercent() { return Math.max(0, visualcooldown() / 50); }
+		public float duration() { return 50f; }
+		public String desc() { return Messages.get(this, "desc", Messages.decimalFormat("##0%", 1 - visualcooldown() / duration()), dispTurns()); }
 	};
 	public static class LiquidAgilEVATracker extends FlavourBuff{};
 	public static class LiquidAgilACCTracker extends FlavourBuff{

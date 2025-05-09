@@ -328,10 +328,11 @@ public class MeleeWeapon extends Weapon {
 			charger.partialCharge++;
 		}
 
-		if (hero.heroClass == HeroClass.DUELIST
-				&& hero.hasTalent(Talent.AGGRESSIVE_BARRIER)
+		if (hero.heroClass.is(HeroClass.DUELIST)
+				&& hero.canHaveTalent(Talent.AGGRESSIVE_BARRIER)
 				&& (hero.HP / (float)hero.HT) <= 0.5f){
-			int shieldAmt = 1 + 2*hero.pointsInTalent(Talent.AGGRESSIVE_BARRIER);
+			// 2 / 5 / 8
+			int shieldAmt = 3 * hero.shiftedPoints(Talent.AGGRESSIVE_BARRIER) - 1;
 			Buff.affect(hero, Barrier.class).setShield(shieldAmt);
 		}
 

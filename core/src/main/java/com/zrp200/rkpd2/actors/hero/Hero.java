@@ -44,6 +44,7 @@ import com.zrp200.rkpd2.actors.buffs.Bless;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.Charm;
 import com.zrp200.rkpd2.actors.buffs.Combo;
+import com.zrp200.rkpd2.actors.buffs.Cooldown;
 import com.zrp200.rkpd2.actors.buffs.Drowsy;
 import com.zrp200.rkpd2.actors.buffs.Foresight;
 import com.zrp200.rkpd2.actors.buffs.GreaterHaste;
@@ -1508,13 +1509,14 @@ public class Hero extends Char {
 
 		if (enemy.isAlive() && canAttack( enemy ) && enemy.invisible == 0) {
 
-			if (heroClass != HeroClass.DUELIST
-					&& hasTalent(Talent.AGGRESSIVE_BARRIER)
-					&& buff(Talent.AggressiveBarrierCooldown.class) == null
+			if (!heroClass.is(HeroClass.DUELIST)
+					&& canHaveTalent(Talent.AGGRESSIVE_BARRIER)
 					&& (HP / (float)HT) < 0.20f*(1+pointsInTalent(Talent.AGGRESSIVE_BARRIER))){
-				Buff.affect(this, Barrier.class).setShield(5);
-				Buff.affect(this, Talent.AggressiveBarrierCooldown.class, 50f);
-
+				Talent.AggressiveBarrierCooldown cd = buff(Talent.AggressiveBarrierCooldown.class);
+				if (cd == null || Random.Float(cd.duration()) > cd.visualcooldown()) {
+					Buff.affect(this, Barrier.class).setShield(8);
+					Cooldown.affectHero(Talent.AggressiveBarrierCooldown.class);
+				}
 			}
 			sprite.attack( enemy.pos );
 
