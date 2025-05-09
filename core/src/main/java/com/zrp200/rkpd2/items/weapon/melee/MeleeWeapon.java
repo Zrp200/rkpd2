@@ -230,7 +230,7 @@ public class MeleeWeapon extends Weapon {
 				MissileWeapon thrown = SafeCast.cast(hero.belongings.thirdWep(), MissileWeapon.class);
 				if (thrown != null) {
 					// check charges of third slot, it should use the same amount of charges as the main slot
-					if (Buff.affect(hero, Charger.class).charges >= wep.abilityChargeUse(hero, enemy)
+					if (Buff.affect(hero, Charger.class).charges >= 2 * wep.abilityChargeUse(hero, enemy)
 							&& enemy.pos == QuickSlotButton.autoAim(enemy, hero.belongings.thirdWep)) {
 						// fake throw = cool
 						beforeAbilityUsed(hero, enemy);
@@ -328,11 +328,6 @@ public class MeleeWeapon extends Weapon {
 			charger.partialCharge++;
 		}
 
-		if (activeAbility != null) {
-            // use charge from thrown weapon as well
-            // fixme need to re-implement
-            // charger.gainCharge(-abilityChargeUse(hero,target), 2);
-        }
 		if (hero.heroClass == HeroClass.DUELIST
 				&& hero.hasTalent(Talent.AGGRESSIVE_BARRIER)
 				&& (hero.HP / (float)hero.HT) <= 0.5f){
@@ -397,7 +392,7 @@ public class MeleeWeapon extends Weapon {
 	}
 
 	public final float abilityChargeUse(Hero hero, Char target){
-		return baseChargeUse(hero, target);
+		return baseChargeUse(hero, target) * (activeAbility == null ? 1 : 2);
 	}
 
 	@Override
