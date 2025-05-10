@@ -59,7 +59,7 @@ public class ActionIndicator extends Tag {
 	public GameAction keyAction() {
 		return SPDAction.TAG_ACTION;
 	}
-	
+
 	@Override
 	public void destroy() {
 		super.destroy();

@@ -276,6 +276,8 @@ public class BuffIndicator extends Component {
 		public Image grey; //only for small
 		public BitmapText text; //only for large
 
+		private Image outline;
+
 		public BuffButton( Buff buff, boolean large ){
 			super( new BuffIcon(buff, large));
 			this.buff = buff;
@@ -318,6 +320,19 @@ public class BuffIndicator extends Component {
 				text.text(buff.iconTextDisplay());
 				text.measure();
 			}
+			if (buff instanceof ActionIndicator.Action && ((ActionIndicator.Action) buff).usable()) {
+				// fixme for large icons, this ends up with an extra pixel at each end.
+				//  do I need to upload a whole image for this?
+				//  if I do, can I use it for spells as well?
+				if (outline == null) {
+					outline = new Image(TextureCache.createSolid(0x54FFD400));
+				}
+				outline.scale.set(icon.width() + 1, icon.height() + 1);
+				outline.visible = true;
+				addToBack(outline);
+			} else if (outline != null) {
+				outline.visible = false;
+			}
 		}
 
 		@Override
@@ -325,6 +340,11 @@ public class BuffIndicator extends Component {
 			super.layout();
 			grey.x = icon.x = this.x + (large ? 0 : 1);
 			grey.y = icon.y = this.y + (large ? 0 : 2);
+
+			if (outline != null) {
+				outline.x = icon.x - 0.5f;
+				outline.y = icon.y - 0.5f;
+			}
 
 			if (text.width > width()){
 				text.scale.set(PixelScene.align(0.5f));
@@ -341,6 +361,20 @@ public class BuffIndicator extends Component {
 		}
 
 		@Override
+		protected boolean onLongClick() {
+			if (outline != null && outline.isVisible()
+					&& Dungeon.hero.ready
+					&& ActionIndicator.setAction((ActionIndicator.Action) buff)) {
+				((ActionIndicator.Action) buff).doAction();
+				return true;
+			}
+			return false;
+		}
+
+		@Override
+		protected void onRightClick() { onLongClick(); }
+
+		@Override
 		protected void onPointerDown() {
 			//don't affect buff color
 			Sample.INSTANCE.play( Assets.Sounds.CLICK );
@@ -353,7 +387,13 @@ public class BuffIndicator extends Component {
 
 		@Override
 		protected String hoverText() {
-			return Messages.titleCase(buff.name());
+			String hoverText = Messages.titleCase(buff.name());
+			if (outline != null && outline.isVisible()) {
+				hoverText += "\n\n"
+						+ " _(Right/Long Click)_: \n"
+						+ Messages.titleCase(((ActionIndicator.Action) buff).actionName());
+			}
+			return hoverText;
 		}
 	}
 	
