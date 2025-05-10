@@ -982,13 +982,13 @@ public enum Talent {
 
 			HolyTome tome = hero.belongings.getItem(HolyTome.class);
 			if (tome != null) {
-				// 1 / 1.5 / 2
-				tome.directCharge( 0.5f * (1+points) );
+				// 0.5 / 1 / 1.5
+				tome.directCharge( points * 0.5f );
 			}
 			// cleric gets the recharging too.
 
 			//2/3/5 turns of recharging
-			int duration = Math.max(points - 1, 1) + points;
+			int duration = hero.heroClass.is(HeroClass.CLERIC) ? 2 : Math.max(points - 1, 1) + points;
 			Buff.append( hero, ArtifactRecharge.class )
 					.set(duration)
 					.ignoreHornOfPlenty = foodSource instanceof HornOfPlenty;
