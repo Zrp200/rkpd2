@@ -150,6 +150,7 @@ public class HeroIcon extends Image {
 			film = new TextureFilm(texture, SIZE, SIZE);
 		}
 		frame(film.get(spell.icon()));
+		spell.tintIcon(this);
 	}
 
 }

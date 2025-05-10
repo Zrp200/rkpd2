@@ -106,6 +106,8 @@ public abstract class ClericSpell {
 		return HeroIcon.NONE;
 	}
 
+	public void tintIcon(HeroIcon icon) {/* do nothing */}
+
 	public void onSpellCast(HolyTome tome, Hero hero){
 		Invisibility.dispel();
 		if (hero.buff(Talent.SatiatedSpellsTracker.class) != null){
