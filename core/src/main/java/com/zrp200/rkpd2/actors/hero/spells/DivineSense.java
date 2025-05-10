@@ -26,6 +26,7 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
+import com.zrp200.rkpd2.actors.buffs.MindVision;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.actors.hero.abilities.cleric.PowerOfMany;
@@ -54,28 +55,32 @@ public class DivineSense extends ClericSpell {
 
 	@Override
 	public boolean canCast(Hero hero) {
-		return super.canCast(hero) && hero.hasTalent(Talent.DIVINE_SENSE);
+		return super.canCast(hero) && (SpellEmpower.isActive() || hero.hasTalent(Talent.DIVINE_SENSE));
 	}
 
-	@Override
+	public void apply(Hero hero, Char target) {
+		if (SpellEmpower.isActive()) {
+			// 60 / 90 / 120
+			Buff.prolong(target, MindVision.class, 30 * (2 + hero.pointsInTalent(Talent.DIVINE_SENSE)));
+			Buff.detach(target, DivineSenseTracker.class);
+		} else {
+			Buff.prolong(target, DivineSenseTracker.class, DivineSenseTracker.DURATION);
+		}
+	}
 	public void onCast(HolyTome tome, Hero hero) {
-		Buff.prolong(hero, DivineSenseTracker.class, 30f);
+		apply(hero, hero);
 		Dungeon.observe();
 
 		Sample.INSTANCE.play(Assets.Sounds.READ);
 
-		if (SpellEmpower.isActive()) {
-			GLog.p(Messages.get(SpellEmpower.class, "instant"));
-		} else {
-			hero.spend( 1f );
-		}
+		hero.spend( 1f );
 		hero.busy();
 		SpellSprite.show(hero, SpellSprite.VISION);
 		hero.sprite.operate(hero.pos);
 
 		Char ally = PowerOfMany.getPoweredAlly();
 		if (ally != null && ally.buff(LifeLinkSpell.LifeLinkSpellBuff.class) != null){
-			Buff.prolong(ally, DivineSenseTracker.class, 30f);
+			apply(hero, ally);
 			SpellSprite.show(ally, SpellSprite.VISION);
 		}
 
@@ -83,12 +88,12 @@ public class DivineSense extends ClericSpell {
 	}
 
 	public String desc(){
-		return Messages.get(this, "desc", 4+4*Dungeon.hero.pointsInTalent(Talent.DIVINE_SENSE)) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+		return checkEmpowerMsg("desc", 4+4*Dungeon.hero.pointsInTalent(Talent.DIVINE_SENSE), 30 * (1 + Dungeon.hero.pointsInTalent(Talent.DIVINE_SENSE))) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
 	}
 
 	public static class DivineSenseTracker extends FlavourBuff {
 
-		public static final float DURATION = 30f;
+		public static final float DURATION = 2 * 30f;
 
 		{
 			type = buffType.POSITIVE;
