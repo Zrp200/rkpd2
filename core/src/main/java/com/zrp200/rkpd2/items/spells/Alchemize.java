@@ -197,7 +197,7 @@ public class Alchemize extends Spell {
 			if (item.energyVal() > 0) {
 				if (item.quantity() == 1) {
 
-					RedButton btnEnergize = new RedButton(Messages.get(this, "energize", item.energyVal())) {
+					RedButton btnEnergize = new RedButton(Messages.get(this, "energize", WndEnergizeItem.energyVal(item))) {
 						@Override
 						protected void onClick() {
 							WndEnergizeItem.energizeAll(item);
@@ -213,7 +213,7 @@ public class Alchemize extends Spell {
 
 				} else {
 
-					int energyAll = item.energyVal();
+					int energyAll = WndEnergizeItem.energyVal(item);
 					RedButton btnEnergize1 = new RedButton(Messages.get(this, "energize_1", energyAll / item.quantity())) {
 						@Override
 						protected void onClick() {

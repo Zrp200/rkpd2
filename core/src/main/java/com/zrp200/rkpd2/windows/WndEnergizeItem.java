@@ -37,6 +37,12 @@ import com.zrp200.rkpd2.utils.GLog;
 
 public class WndEnergizeItem extends WndInfoItem {
 
+	public static final float RKPD2_MULT = 1.5f;
+
+	public static int energyVal(Item item) {
+		return (int)Math.floor(item.energyVal() * 1.5f);
+	}
+
 	private static final int BTN_HEIGHT	= 18;
 
 	private WndBag owner;
@@ -47,7 +53,7 @@ public class WndEnergizeItem extends WndInfoItem {
 		this.owner = owner;
 
 		if (item.quantity() == 1) {
-			addToBottom(new RedButton( Messages.get(this, "energize", item.energyVal()) ) {
+			addToBottom(new RedButton( Messages.get(this, "energize", energyVal(item)) ) {
 				@Override
 				protected void onClick() {
 					energizeAll( item );
@@ -60,7 +66,7 @@ public class WndEnergizeItem extends WndInfoItem {
 			});
 		} else {
 
-			int energyAll = item.energyVal();
+			int energyAll = energyVal(item);
 			RedButton first;
 			addToBottom(
 					first = new RedButton( Messages.get(this, "energize_1", energyAll / item.quantity()) ) {
@@ -123,7 +129,7 @@ public class WndEnergizeItem extends WndInfoItem {
 
 		if (ShatteredPixelDungeon.scene() instanceof AlchemyScene){
 
-			Dungeon.energy += item.energyVal();
+			Dungeon.energy += energyVal(item);
 			((AlchemyScene) ShatteredPixelDungeon.scene()).createEnergy();
 			if (!item.isIdentified()){
 				((AlchemyScene) ShatteredPixelDungeon.scene()).showIdentify(item);
@@ -133,7 +139,7 @@ public class WndEnergizeItem extends WndInfoItem {
 
 			//energizing items doesn't spend time
 			hero.spend(-hero.cooldown());
-			new EnergyCrystal(item.energyVal()).doPickUp(hero);
+			new EnergyCrystal(energyVal(item)).doPickUp(hero);
 			item.identify();
 			GLog.h("You energized: " + item.name());
 
