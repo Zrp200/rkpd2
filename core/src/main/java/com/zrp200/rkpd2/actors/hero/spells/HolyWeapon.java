@@ -23,6 +23,7 @@ package com.zrp200.rkpd2.actors.hero.spells;
 
 import static com.zrp200.rkpd2.Dungeon.hero;
 
+import com.watabou.noosa.Image;
 import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.actors.Char;
@@ -46,6 +47,12 @@ public class HolyWeapon extends ClericSpell {
 	@Override
 	public int icon() {
 		return HeroIcon.HOLY_WEAPON;
+	}
+
+	@Override
+	public void tintIcon(HeroIcon icon) {
+		// todo actual icon
+		if (SpellEmpower.isActive()) icon.tint(0, .33f);
 	}
 
 	@Override
@@ -133,6 +140,11 @@ public class HolyWeapon extends ClericSpell {
 		public static class Empowered extends HolyWepBuff {
 			@Override
 			public float getDuration() { return super.getDuration() * 2; }
+
+			@Override
+			public void tintIcon(Image icon) {
+				icon.tint(0, .33f);
+			}
 
 			@Override
 			public float getEffectiveness() {
