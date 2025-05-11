@@ -55,9 +55,23 @@ public class LayOnHands extends TargetedClericSpell {
 	}
 
 	@Override
+	public void tintIcon(HeroIcon icon) {
+		// todo make icon
+		if (SpellEmpower.isActive()) icon.tint(0, .33f);
+	}
+
+	private static final int STACKS = 6;
+
+	@Override
 	protected List<Object> getDescArgs() {
 		int points = 1 + Dungeon.hero.pointsInTalent(Talent.LAY_ON_HANDS);
-		return Arrays.asList(5 * points, points);
+		int totalHeal = 5 * points;
+		return Arrays.asList(
+				/* standard heal */ totalHeal,
+				/* standard adrenaline */ points,
+				/* empowered heal */ totalHeal * 2,
+				/* direct adrenaline */ points * 2,
+				/* cap */ totalHeal * STACKS);
 	}
 
 	@Override
@@ -99,12 +113,33 @@ public class LayOnHands extends TargetedClericSpell {
 
 		Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 
-		affectChar(hero, ch);
+		Char ally = PowerOfMany.getPoweredAlly();
+		Char toDuplicate = null;
+		boolean duplicateOriginal = ch == ally || ch == hero;
+		if (ally != null && ally.buff(LifeLinkSpell.LifeLinkSpellBuff.class) != null) {
+			if (ch == ally) {
+				toDuplicate = hero;
+			} else if (ch == hero || SpellEmpower.isActive()){
+				toDuplicate = ally;
+			}
+		}
+
+		// life link causes the the doubled effect to duplicate if either the hero or ally is the target,
+
 		if (SpellEmpower.isActive()) {
 			for (int i : PathFinder.NEIGHBOURS8) {
 				Char c = Actor.findChar(target+i);
-				if (c != null) affectChar(hero, ch);
+				if (c != null) {
+					boolean originalTarget = c == ch;
+					if (c == toDuplicate) {
+						originalTarget = duplicateOriginal;
+						toDuplicate = null; // duplicate was handled
+					}
+					affectChar(hero, ch, originalTarget);
+				}
 			}
+		} else {
+			affectChar(hero, ch, true);
 		}
 
 		if (ch == hero){
@@ -116,24 +151,20 @@ public class LayOnHands extends TargetedClericSpell {
 		}
 
 
-		Char ally = PowerOfMany.getPoweredAlly();
-		if (ally != null && ally.buff(LifeLinkSpell.LifeLinkSpellBuff.class) != null){
-			if (ch == hero){
-				affectChar(hero, ally); //if cast on hero, duplicate to ally
-			} else if (ally == ch) {
-				affectChar(hero, hero); //if cast on ally, duplicate to hero
-			}
-		}
+		//if cast on hero, duplicate to ally
+		//if cast on ally, duplicate to hero
+		if (toDuplicate != null) affectChar(hero, ch, duplicateOriginal);
 
 		onSpellCast(tome, hero);
 
 	}
 
-	private void affectChar(Hero hero, Char ch) {
-		affectChar(hero, ch, 5 + 5*hero.pointsInTalent(Talent.LAY_ON_HANDS), 6);
-		if (SpellEmpower.isActive()) {
-			Buff.affect(ch, Adrenaline.class, 1 + hero.pointsInTalent(Talent.LAY_ON_HANDS));
+	private void affectChar(Hero hero, Char ch, boolean originalTarget) {
+		int totalHeal = 5 + 5*hero.pointsInTalent(Talent.LAY_ON_HANDS);
+		if (SpellEmpower.isActive() && originalTarget) {
+			totalHeal *= 2;
 		}
+		affectChar(hero, ch, totalHeal, 6);
 	}
 
 	public static void affectChar(Hero hero, Char ch, int totalHeal, int stacks){
@@ -161,10 +192,10 @@ public class LayOnHands extends TargetedClericSpell {
 				ch.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(totalHeal), FloatingText.HEALING );
 			}
 		}
-		if (SpellEmpower.isActive() || (stacks > 1 && Random.Int(6) == 0)) {
+		if (SpellEmpower.isActive() || totalBarrier == 0 || (stacks == STACKS && Random.Int(STACKS) == 0)) {
 			// 1 2 3 4 turns
 			float duration = totalHeal / 5f;
-			if (stacks > 1) duration--; // lay on hands needs one less duration
+			if (stacks == STACKS) duration--; // lay on hands needs one less duration
 			Buff.affect(ch, Adrenaline.class, duration);
 		}
 	}

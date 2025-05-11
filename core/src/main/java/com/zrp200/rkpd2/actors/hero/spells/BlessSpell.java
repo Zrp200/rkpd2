@@ -52,6 +52,12 @@ public class BlessSpell extends TargetedClericSpell {
 	}
 
 	@Override
+	public void tintIcon(HeroIcon icon) {
+		// todo make icon
+		if (SpellEmpower.isActive()) icon.tint(0, .33f);
+	}
+
+	@Override
 	public int targetingFlags(){
 		return -1; //auto-targeting behaviour is often wrong, so we don't use it
 	}
@@ -83,15 +89,16 @@ public class BlessSpell extends TargetedClericSpell {
 
 		Sample.INSTANCE.play(Assets.Sounds.TELEPORT);
 
+		boolean affectedOther = false;
 		if (SpellEmpower.isActive()) {
 			for (Char c : Actor.chars()) {
 				if (level.heroFOV[c.pos] && c.alignment == Char.Alignment.ALLY) {
+					if (c != ch) affectedOther = true;
 					affectChar(hero, c);
 				}
 			}
-		} else {
-			affectChar(hero, ch);
 		}
+		if (!affectedOther) affectChar(hero, ch);
 
 		if (ch == hero){
 			hero.busy();
