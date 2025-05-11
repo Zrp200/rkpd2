@@ -63,6 +63,9 @@ import com.zrp200.rkpd2.ui.QuickSlotButton;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 
+import java.util.Collections;
+import java.util.List;
+
 public class MnemonicPrayer extends TargetedClericSpell {
 
 	public static MnemonicPrayer INSTANCE = new MnemonicPrayer();
@@ -95,7 +98,7 @@ public class MnemonicPrayer extends TargetedClericSpell {
 
 	@Override
 	public float chargeUse(Hero hero) {
-		return targets > 0 ? (1+targets)/2f : super.chargeUse(hero);
+		return SpellEmpower.isActive() ? targets/2f : super.chargeUse(hero);
 	}
 
 	@Override
@@ -113,7 +116,6 @@ public class MnemonicPrayer extends TargetedClericSpell {
 				targets = 0;
 				for (Char ch : Dungeon.level.mobs) {
 					if (Dungeon.level.heroFOV[ch.pos]) {
-						targets++;
 						onTargetSelected(tome, hero, ch.pos);
 					}
 				}
@@ -121,7 +123,6 @@ public class MnemonicPrayer extends TargetedClericSpell {
 				multiCast = multiCastedDebuff = false;
 			}
 			onTargetSelected(tome, hero, hero.pos);
-			targets = 0;
 		} else {
 			super.onCast(tome, hero);
 		}
@@ -141,40 +142,50 @@ public class MnemonicPrayer extends TargetedClericSpell {
 			return;
 		}
 
-		QuickSlotButton.target(ch);
+		if (!SpellEmpower.isActive()) QuickSlotButton.target(ch);
 
-		float extension = 2 * (1 + hero.pointsInTalent(Talent.MNEMONIC_PRAYER));
+		float extension = getExtension();
 
 		Char ally = PowerOfMany.getPoweredAlly();
-		if (ally != null && ally.buff(LifeLinkSpell.LifeLinkSpellBuff.class) != null){
-			if (ch == hero){
-				if (multiCast) extension *= 2; // double cast
-				affectChar(ally, extension); //if cast on hero, duplicate to ally
-			} else if (ch == ally){
-				affectChar(hero, extension); //if cast on ally, duplicate to hero
+		if (ally != null && ally.buff(LifeLinkSpell.LifeLinkSpellBuff.class) != null) {
+			Char toAffect =
+					ch == hero ? ally : //if cast on hero, duplicate to ally
+							ch == ally ? hero : //if cast on ally, duplicate to hero
+									null;
+			if (toAffect != null) {
+				if (SpellEmpower.isActive() && ch != hero) extension *= 2;
+				if (affectChar(toAffect, extension) && ch == hero && targets > 1) targets--;
 			}
 		}
 		affectChar(ch, extension);
 
 		if (multiCast) return;
+		if (targets == 0) {
+			GLog.w(Messages.get(this, "no_target"));
+			return;
+		}
 
 		if (ch == hero){
 			hero.busy();
 			hero.sprite.operate(ch.pos);
-//			hero.spend( 1f );
 			BuffIndicator.refreshHero();
 		} else {
 			hero.sprite.zap(ch.pos);
-			hero.next();
-			hero./*spendAndNext( 1f )*/next();
 		}
 
 		onSpellCast(tome, hero);
 
 	}
 
-	private void affectChar( Char ch, float extension ){
-		boolean affected = !multiCast;
+	@Override
+	public void onSpellCast(HolyTome tome, Hero hero) {
+		hero.next();
+		super.onSpellCast(tome, hero);
+		targets = 0;
+	}
+
+	private boolean affectChar(Char ch, float extension ){
+		boolean affected = !SpellEmpower.isActive();
 		if (ch.alignment == Char.Alignment.ALLY){
 
 			for (Buff b : ch.buffs()){
@@ -248,10 +259,18 @@ public class MnemonicPrayer extends TargetedClericSpell {
 			}
 
 		}
+		if (affected) targets++;
+		return affected;
 	}
 
-	public String desc(){
-		return Messages.get(this, "desc", 2 + Dungeon.hero.pointsInTalent(Talent.MNEMONIC_PRAYER)) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+	private static int getExtension() {
+		// 2 / 4 / 6 / 8
+		return 2 * (1 + Dungeon.hero.pointsInTalent(Talent.MNEMONIC_PRAYER));
+	}
+
+	@Override
+	protected List<Object> getDescArgs() {
+		return Collections.singletonList(getExtension());
 	}
 
 }
