@@ -28,6 +28,7 @@ import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.Cooldown;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
@@ -73,13 +74,13 @@ public class HolyLance extends TargetedClericSpell {
 	public String desc() {
 		int min = 15 + 15* hero.pointsInTalent(Talent.HOLY_LANCE);
 		int max = Math.round(27.5f + 27.5f* hero.pointsInTalent(Talent.HOLY_LANCE));
-		return Messages.get(this, "desc", min, max) + "\n\n" + checkEmpowerMsg("cooldown") + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(hero));
+		return Messages.get(this, "desc", min, max) + "\n\n" + checkEmpowerMsg("cooldown") + "\n\n" + chargeUseDesc();
 	}
 
 	@Override
 	public boolean canCast(Hero hero) {
 		return super.canCast(hero)
-				&& hero.hasTalent(Talent.HOLY_LANCE)
+				&& (hero.hasTalent(Talent.HOLY_LANCE) || SpellEmpower.isActive())
 				&& hero.buff(LanceCooldown.class) == null;
 	}
 
@@ -198,7 +199,7 @@ public class HolyLance extends TargetedClericSpell {
 		if (targets <= 0) {
 			deferredCasts = 0;
 			hero.spendAndNext(1f);
-			FlavourBuff.affect(hero, LanceCooldown.class, 50f);
+			Cooldown.affectHero(LanceCooldown.class);
 		} else {
 			deferredCasts++;
 		}
@@ -226,7 +227,7 @@ public class HolyLance extends TargetedClericSpell {
 		}
 	}
 
-	public static class LanceCooldown extends FlavourBuff {
+	public static class LanceCooldown extends Cooldown {
 
 		@Override
 		public int icon() {
@@ -238,6 +239,7 @@ public class HolyLance extends TargetedClericSpell {
 			icon.hardlight(0.67f, 0.67f, 0);
 		}
 
-		public float iconFadePercent() { return Math.max(0, visualcooldown() / 50); }
+		@Override
+		public float duration() { return 50; }
 	}
 }
