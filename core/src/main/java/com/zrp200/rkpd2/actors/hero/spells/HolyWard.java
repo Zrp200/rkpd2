@@ -120,11 +120,18 @@ public class HolyWard extends ClericSpell {
 						|| buff instanceof HolyArmBuff.Empowered
 						|| AuraOfProtection.isActiveFor(defender)
 		)) return 0;
-		float effectiveness = Armor.Glyph.genericProcChanceMultiplier(defender);
-		if (hero.heroClass == HeroClass.CLERIC) 		effectiveness *= 1.5f;
-		if (hero.subClass.is(HeroSubClass.PALADIN)) 	effectiveness *= 3;
-		else if (buff instanceof HolyArmBuff.Empowered) effectiveness *= 2;
-		return Random.round(2 * effectiveness);
+		return Random.round(Armor.Glyph.genericProcChanceMultiplier(defender)
+				* effectiveness(buff instanceof HolyArmBuff.Empowered)
+		);
+	}
+
+	public static float effectiveness(boolean empowered) {
+		// since it interacts with more stuff, the descriptions aren't updated to show the actual value
+		return hero.subClass.is(HeroSubClass.PALADIN) ?
+				empowered ? 4.5f : 3 :
+				empowered ? 3 :
+				hero.heroClass == HeroClass.CLERIC ? 1.5f :
+						1;
 	}
 
 }

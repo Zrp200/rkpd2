@@ -732,8 +732,9 @@ public abstract class Char extends Actor {
 		}
 
 		if(alignment == Alignment.ALLY) {
-			if (this != hero && hero.buff(HolyWeapon.HolyWepBuff.Empowered.class) != null) {
-				HolyWeapon.proc(this, enemy);
+			if (this != hero) {
+				HolyWeapon.HolyWepBuff.Empowered buff = hero.buff(HolyWeapon.HolyWepBuff.Empowered.class);
+				if (buff != null) buff.proc(this, enemy);
 			}
 			if (hero.hasTalent(Talent.WARLOCKS_TOUCH)) {
 				// warlock+allies can soul mark by simply attacking via warlock's touch.

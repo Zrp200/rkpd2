@@ -1598,9 +1598,8 @@ public class Hero extends Char {
 				damage = buff(BodyForm.BodyFormBuff.class).enchant().proc(new WornShortsword(), this, enemy, damage);
 			}
 			if (!wasEnemy || enemy.alignment == Alignment.ENEMY) {
-				if (buff(HolyWeapon.HolyWepBuff.class) != null) {
-					HolyWeapon.proc(this, enemy);
-				}
+				HolyWeapon.HolyWepBuff buff = virtualBuff(HolyWeapon.HolyWepBuff.class);
+				if (buff != null) buff.proc(this, enemy);
 				Smite.SmiteTracker smiteTracker = virtualBuff(Smite.SmiteTracker.class);
 				if (smiteTracker != null) {
 					enemy.damage(smiteTracker.bonusDmg(this, enemy), Smite.INSTANCE);

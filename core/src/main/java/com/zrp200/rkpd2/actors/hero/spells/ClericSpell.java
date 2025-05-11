@@ -159,10 +159,7 @@ public abstract class ClericSpell {
 			return keep;
 		}
 
-		public float getMaxDuration() {
-			// rkpd2 doubles the maximum extend duration
-			return getDuration() * 4;
-		}
+		public float getMaxDuration() { return 100; }
 		public float getTurnsPerCharge() { return getDuration() / 5f; }
 
 		public void extend(float extension) {

@@ -146,10 +146,11 @@ abstract public class Weapon extends KindOfWeapon {
 				}
 			}
 
+			HolyWeapon.HolyWepBuff holyWep = attacker.virtualBuff(HolyWeapon.HolyWepBuff.class);
 			if (attacker instanceof Hero && isEquipped((Hero) attacker)
-					&& attacker.buff(HolyWeapon.HolyWepBuff.class) != null){
+					&& holyWep != null){
 				if (enchantment != null &&
-						(attacker.buff(HolyWeapon.HolyWepBuff.Empowered.class) != null || ((Hero) attacker).subClass == HeroSubClass.PALADIN || hasCurseEnchant())){
+						(holyWep instanceof HolyWeapon.HolyWepBuff.Empowered || ((Hero) attacker).subClass == HeroSubClass.PALADIN || hasCurseEnchant())){
 					damage = enchantment.proc(this, attacker, defender, damage);
 					if (defender.alignment == Char.Alignment.ALLY && !wasAlly){
 						becameAlly = true;
@@ -159,10 +160,10 @@ abstract public class Weapon extends KindOfWeapon {
 					damage = trinityEnchant.proc(this, attacker, defender, damage);
 				}
 				if (defender.isAlive() && !becameAlly) {
-					HolyWeapon.proc(attacker, defender);
+					holyWep.proc(attacker, defender);
 				}
-
 			} else {
+				if (holyWep == null) holyWep = Dungeon.hero.buff(HolyWeapon.HolyWepBuff.Empowered.class);
 				if (enchantment != null
 						&& (Random.Float() < Talent.SpiritBladesTracker.getProcModifier())) {
 					damage = enchantment.proc(this, attacker, defender, damage);
@@ -175,8 +176,8 @@ abstract public class Weapon extends KindOfWeapon {
 					damage = trinityEnchant.proc(this, attacker, defender, damage);
 				}
 
-				if (defender.isAlive() && !becameAlly && Dungeon.hero.buff(HolyWeapon.HolyWepBuff.Empowered.class) != null) {
-					HolyWeapon.proc(attacker, defender);
+				if (defender.isAlive() && !becameAlly && holyWep != null) {
+					holyWep.proc(attacker, defender);
 				}
 			}
 

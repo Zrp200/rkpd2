@@ -72,25 +72,31 @@ public class HolyWeapon extends ClericSpell {
 
 	@Override
 	public String desc(){
-		String desc = checkEmpowerMsg("desc");
+		String desc = checkEmpowerMsg("desc", (
+				SpellEmpower.isActive() ? new HolyWepBuff.Empowered() : new HolyWepBuff()
+		).getDamage(), new HolyWepBuff.Empowered());
 		if (hero.subClass == HeroSubClass.PALADIN){
 			desc += "\n\n" + checkEmpowerMsg("desc_paladin");
 		}
 		return desc + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(hero));
 	}
-
-	public static void proc(Char attacker, Char defender) {
-		// todo probably should give allied attacks and thrown weapons different numbers.
-		float effectiveness = Weapon.Enchantment.genericProcChanceMultiplier(hero);
-		if (hero.heroClass == HeroClass.CLERIC) effectiveness *= 1.5f;
-		if (hero.subClass.is(HeroSubClass.PALADIN)) effectiveness *= 3;
-		else if (hero.buff(HolyWepBuff.Empowered.class) != null) effectiveness *= 2;
-		defender.damage(Math.round(2 * effectiveness), HolyWeapon.INSTANCE);
-		// added effect for fun
-		defender.sprite.burst(0xFFFFFFFF, Random.round(effectiveness / 1.5f));
-	}
-
 	public static class HolyWepBuff extends PaladinSpellExtendable {
+
+		protected float getEffectiveness() {
+			float effectiveness = Weapon.Enchantment.genericProcChanceMultiplier(hero);
+			if (hero.subClass.is(HeroSubClass.PALADIN)) return effectiveness * 3; // 6
+			else if (hero.heroClass == HeroClass.CLERIC) return effectiveness * 1.5f; // 3
+			else return effectiveness;
+		}
+
+		public int getDamage() { return Math.round(2 * getEffectiveness()); }
+
+		public void proc(Char attacker, Char defender) {
+			// todo probably should give allied attacks and thrown weapons different numbers.
+			defender.damage(getDamage(), HolyWeapon.INSTANCE);
+			// added effect for fun
+			defender.sprite.burst(0xFFFFFFFF, Random.round(getEffectiveness() / 1.5f));
+		}
 
 		@Override
 		public float getDuration() { return 50; }
@@ -110,10 +116,10 @@ public class HolyWeapon extends ClericSpell {
 		@Override
 		public String desc() {
 			String desc;
-			if (hero.subClass == HeroSubClass.PALADIN) {
-				desc = Messages.get(this, "desc_paladin") + "\n\n" + getExtendableMessage();
+			if (hero.subClass.is(HeroSubClass.PALADIN)) {
+				desc = Messages.get(this, "desc_paladin", getDamage()) + "\n\n" + getExtendableMessage();
 			} else {
-				desc = Messages.get(this, "desc");
+				desc = Messages.get(this, "desc", getDamage());
 			}
 			return desc + "\n\n" + Messages.get(this, "turns", dispTurns());
 		}
@@ -127,6 +133,14 @@ public class HolyWeapon extends ClericSpell {
 		public static class Empowered extends HolyWepBuff {
 			@Override
 			public float getDuration() { return super.getDuration() * 2; }
+
+			@Override
+			public float getEffectiveness() {
+				// does 9 for paladin, 6 otherwise
+				return super.getEffectiveness() * (
+						hero.subClass.is(HeroSubClass.PALADIN) ? 1.5f : 2
+				);
+			}
 		}
 	}
 
