@@ -25,7 +25,6 @@ import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.ShatteredPixelDungeon;
 import com.zrp200.rkpd2.actors.buffs.FlavourBuff;
 import com.zrp200.rkpd2.actors.hero.Hero;
-import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.Enchanting;
 import com.zrp200.rkpd2.items.Item;
@@ -60,8 +59,14 @@ public class RecallInscription extends ClericSpell {
 	}
 
 	@Override
+	public void tintIcon(HeroIcon icon) {
+		// todo should probably have unique icon
+		if (SpellEmpower.isActive()) { icon.tint(0, .33f); }
+	}
+
+	@Override
 	protected List<Object> getDescArgs() {
-		return Collections.singletonList(UsedItemTracker.duration());
+		return Collections.singletonList((int)UsedItemTracker.duration());
 	}
 
 	@Override
@@ -99,17 +104,20 @@ public class RecallInscription extends ClericSpell {
 		}
 
 		onSpellCast(tome, hero);
-		usedItem.detach();
-		if (SpellEmpower.isActive()) {
-			usedItem.attachTo(hero);
-			usedItem.postpone(UsedItemTracker.duration());
-			GLog.p(Messages.get(this, "preserved"));
-		}
 
+		if (SpellEmpower.isActive()) {
+			// prevents spell cost from increasing
+			UsedItemTracker.track(hero, item.getClass());
+			// double it
+			UsedItemTracker.prolong(hero, UsedItemTracker.class, 300f);
+		} else {
+			usedItem.used++;
+			// remove if impossible to be used
+			if (chargeUse(hero) > 20) usedItem.detach();
+		}
 	}
 
-	@Override
-	public float chargeUse(Hero hero) {
+	protected float baseChargeUse(Hero hero) {
 		if (hero.buff(UsedItemTracker.class) != null){
 			Class<? extends Item> item = hero.buff(UsedItemTracker.class).item;
 			if (ExoticScroll.class.isAssignableFrom(item)){
@@ -136,14 +144,25 @@ public class RecallInscription extends ClericSpell {
 	}
 
 	@Override
-	public boolean isVisible(Hero hero) {
+	public float chargeUse(Hero hero) {
+		float chargeUse = baseChargeUse(hero);
+		if (chargeUse == 0) return 0;
+		// cost increases by +50% every use
+		return (int)Math.ceil(chargeUse * (1 + hero.buff(UsedItemTracker.class).used/2f));
+	}
+
+	public static boolean canTrack(Hero hero) {
 		return hero.hasTalent(Talent.RECALL_INSCRIPTION) || SpellEmpower.isActive();
 	}
 
 	@Override
+	public boolean isVisible(Hero hero) {
+		return super.isVisible(hero) || canTrack(hero);
+	}
+
+	@Override
 	public boolean canCast(Hero hero) {
-		return isVisible(hero)
-				&& hero.virtualBuff(UsedItemTracker.class) != null;
+		return hero.virtualBuff(UsedItemTracker.class) != null;
 	}
 
 	public static class UsedItemTracker extends FlavourBuff {
@@ -153,10 +172,13 @@ public class RecallInscription extends ClericSpell {
 		}
 
 		public static void track(Hero hero, Class<?extends Item> item) {
+			detach(hero, UsedItemTracker.class);
 			prolong(hero, UsedItemTracker.class, duration()).item = item;
 		}
 
 		public Class<?extends Item> item;
+
+		private int used = 0;
 
 		@Override
 		public int icon() {
@@ -164,9 +186,7 @@ public class RecallInscription extends ClericSpell {
 		}
 
 		public static float duration() {
-			float duration = Dungeon.hero.pointsInTalent(Talent.RECALL_INSCRIPTION) == 1 ? 10 : 300;
-			if (Dungeon.hero.heroClass == HeroClass.CLERIC) duration *= 2;
-			return duration;
+			return Dungeon.hero.pointsInTalent(Talent.RECALL_INSCRIPTION) < 2 ? 10 : 300;
 		}
 
 		@Override
@@ -180,18 +200,20 @@ public class RecallInscription extends ClericSpell {
 			return Messages.get(this, "desc", Messages.titleCase(Reflection.newInstance(item).name()), dispTurns());
 		}
 
-		private static String ITEM = "item";
+		private static String ITEM = "item", USED = "used";
 
 		@Override
 		public void storeInBundle(Bundle bundle) {
 			super.storeInBundle(bundle);
 			bundle.put(ITEM, item);
+			bundle.put(USED, used);
 		}
 
 		@Override
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
 			item = bundle.getClass(ITEM);
+			used = bundle.getInt(USED);
 		}
 	}
 
