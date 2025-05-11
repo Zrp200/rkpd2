@@ -60,6 +60,12 @@ public class GuidingLight extends TargetedClericSpell {
 		return HeroIcon.GUIDING_LIGHT;
 	}
 
+	@Override
+	public void tintIcon(HeroIcon icon) {
+		// todo make icon
+		if (SpellEmpower.isActive()) icon.tint(0, .33f);
+	}
+
 	private int targets, deferredCasts;
 
 	@Override

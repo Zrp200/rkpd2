@@ -73,6 +73,12 @@ public class WallOfLight extends TargetedClericSpell {
 	}
 
 	@Override
+	public void tintIcon(HeroIcon icon) {
+		// todo make icon
+		if (SpellEmpower.isActive()) icon.tint(0, .33f);
+	}
+
+	@Override
 	public String desc() {
 		if (SpellEmpower.isActive()) {
 			toPlace = 1;

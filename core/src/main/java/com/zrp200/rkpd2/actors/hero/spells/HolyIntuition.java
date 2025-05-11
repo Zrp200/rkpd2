@@ -49,6 +49,12 @@ public class HolyIntuition extends InventoryClericSpell {
 	}
 
 	@Override
+	public void tintIcon(HeroIcon icon) {
+		// todo make icon
+		if (SpellEmpower.isActive()) icon.tint(0, .33f);
+	}
+
+	@Override
 	protected boolean usableOnItem(Item item) {
 		return !item.isIdentified() || ScrollOfRemoveCurse.uncursable(item);
 	}

@@ -53,6 +53,12 @@ public class Cleanse extends ClericSpell {
 	}
 
 	@Override
+	public void tintIcon(HeroIcon icon) {
+		// todo make icon
+		if (SpellEmpower.isActive()) icon.tint(0, .33f);
+	}
+
+	@Override
 	public float chargeUse(Hero hero) {
 		return 2;
 	}

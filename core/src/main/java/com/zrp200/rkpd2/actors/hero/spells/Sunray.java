@@ -53,6 +53,12 @@ public class Sunray extends TargetedClericSpell {
 	}
 
 	@Override
+	public void tintIcon(HeroIcon icon) {
+		// todo make icon
+		if (SpellEmpower.isActive()) icon.tint(0, .33f);
+	}
+
+	@Override
 	public String desc() {
 		int points = Dungeon.hero.pointsInTalent(Talent.SUNRAY);
 		int min = 3 * (1 + points);
