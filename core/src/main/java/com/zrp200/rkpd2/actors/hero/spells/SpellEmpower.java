@@ -3,7 +3,6 @@ package com.zrp200.rkpd2.actors.hero.spells;
 import static com.zrp200.rkpd2.Dungeon.hero;
 
 import com.watabou.noosa.Image;
-import com.watabou.utils.Bundle;
 import com.watabou.utils.GameMath;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.Cooldown;
@@ -125,6 +124,7 @@ public abstract class SpellEmpower extends ClericSpell {
 
         public static class Buff extends SpellEmpower.Buff {
 
+
             @Override
             public String desc() {
                 return super.desc() + "\n\n" + Messages.get(this, "cooldown", (int)Math.ceil(Cooldown.duration(target)));
@@ -132,6 +132,11 @@ public abstract class SpellEmpower extends ClericSpell {
 
             @Override
             public int icon() { return BuffIndicator.DIVINE_ADVENT; }
+
+            @Override
+            public float getTurnsPerCharge() {
+                return 25;
+            }
 
             @Override
             public void detach() {
@@ -151,7 +156,7 @@ public abstract class SpellEmpower extends ClericSpell {
                 super.detach();
             }
 
-            private static final float BASE_DURATION = 150, PENALTY = 25f;
+            private static final float BASE_DURATION = 100, PENALTY = 25f;
 
             public static float duration(Char target) {
                 Tracker tracker = target.buff(Tracker.class);
@@ -215,6 +220,11 @@ public abstract class SpellEmpower extends ClericSpell {
             public String desc() {
                 return super.desc() + "\n" + Messages.get(this, "cooldown", target.buff(Cooldown.class).iconTextDisplay());
             }
+
+            @Override
+            public float getTurnsPerCharge() {
+                return 15;
+            }
         }
 
         public static class Cooldown extends SpellCooldown {
@@ -236,12 +246,12 @@ public abstract class SpellEmpower extends ClericSpell {
             type = buffType.POSITIVE;
         }
 
-        public static final float TURNS_PER_CHARGE = 15;
+        public abstract float getTurnsPerCharge();
 
         @Override
         public boolean act() {
             spend(TICK);
-            countUp(1/TURNS_PER_CHARGE); // doesn't last forever
+            countUp(1/getTurnsPerCharge()); // doesn't last forever
             if (left() < 0) detach();
 
             return true;
@@ -249,7 +259,7 @@ public abstract class SpellEmpower extends ClericSpell {
 
         private int turnsUntilCost() {
             float prop = 1 - count() % 1;
-            return (int)Math.ceil(TURNS_PER_CHARGE * prop);
+            return (int)Math.ceil(getTurnsPerCharge() * prop);
         }
 
         public float left() {
