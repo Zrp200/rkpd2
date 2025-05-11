@@ -45,6 +45,11 @@ public class AuraOfProtection extends ClericSpell {
 		return HeroIcon.AURA_OF_PROTECTION;
 	}
 
+	@Override
+	public void tintIcon(HeroIcon icon) {
+		if (SpellEmpower.isActive()) icon.tint(1,0, 0, .5f);
+	}
+
 	public static float reduction() {
 		return 0.075f * (1 + Dungeon.hero.pointsInTalent(Talent.AURA_OF_PROTECTION));
 	}
