@@ -186,6 +186,9 @@ public abstract class SpellEmpower extends ClericSpell {
         }
 
         @Override
+        public boolean ignoreChargeUse() { return heroAtCriticalHealth(); }
+
+        @Override
         protected List<Object> getDescArgs() {
             List<Object> args = new ArrayList(super.getDescArgs());
             args.add(heroAtCriticalHealth() ? 300 : 150);
