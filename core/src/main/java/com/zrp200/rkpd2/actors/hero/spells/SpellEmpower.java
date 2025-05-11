@@ -298,7 +298,7 @@ public abstract class SpellEmpower extends ClericSpell {
 
         @Override
         public void tintIcon(Image icon) {
-            icon.tint(0x80808080);
+            icon.hardlight(0.67f, 0.67f, 0);
         }
     }
 }
