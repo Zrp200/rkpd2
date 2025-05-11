@@ -761,10 +761,9 @@ public abstract class Char extends Actor {
 			damage = armor.absorb( damage );
 		}
 
-		ShieldOfLight.ShieldOfLightTracker shield = buff( ShieldOfLight.ShieldOfLightTracker.class);
-		if (shield != null && shield.object == enemy.id()){
-			int min = 1 + Dungeon.hero.pointsInTalent(Talent.SHIELD_OF_LIGHT);
-			damage -= Random.NormalIntRange(min, 2*min);
+		ShieldOfLight.ShieldOfLightTracker shield = ShieldOfLight.ShieldOfLightTracker.find(this, enemy);
+		if (shield != null){
+			damage -= Random.NormalIntRange(ShieldOfLight.min(), ShieldOfLight.max());
 			damage = Math.max(damage, 0);
 		} else if (this == Dungeon.hero
 				&& !Dungeon.hero.heroClass.is(HeroClass.CLERIC)

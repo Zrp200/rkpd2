@@ -21,6 +21,7 @@
 
 package com.zrp200.rkpd2.actors.hero.spells;
 
+import com.watabou.noosa.Image;
 import com.watabou.noosa.tweeners.Delayer;
 import com.watabou.utils.Callback;
 import com.zrp200.rkpd2.Assets;
@@ -43,6 +44,9 @@ import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class ShieldOfLight extends TargetedClericSpell {
 
 	public static ShieldOfLight INSTANCE = new ShieldOfLight();
@@ -53,13 +57,16 @@ public class ShieldOfLight extends TargetedClericSpell {
 	}
 
 	@Override
+	public void tintIcon(HeroIcon icon) { if (SpellEmpower.isActive()) icon.tint(0, .33f); }
+
+	@Override
 	public int targetingFlags() {
 		return Ballistica.STOP_TARGET;
 	}
 
 	@Override
 	public boolean canCast(Hero hero) {
-		return super.canCast(hero) && (SpellEmpower.isActive() || hero.hasTalent(Talent.SHIELD_OF_LIGHT));
+		return super.canCast(hero) && (SpellEmpower.isActive() || hero.canHaveTalent(Talent.SHIELD_OF_LIGHT));
 	}
 
 	@Override
@@ -95,33 +102,36 @@ public class ShieldOfLight extends TargetedClericSpell {
 	}
 
 	public void affectChar(Char ch, Char target) {
-		if (SpellEmpower.isActive()) {
-			Buff.prolong(ch, DivineShield.class, DivineShield.duration() - 1).object = target.id();
-		} else {
-			//1 turn less as the casting is instant
-			Buff.prolong(ch, ShieldOfLightTracker.class, ShieldOfLightTracker.DURATION - 1).object = target.id();
+		Class<? extends ShieldOfLightTracker> buffClass = SpellEmpower.isActive() ? DivineShield.class : ShieldOfLightTracker.class;
+  		ShieldOfLightTracker existing = null;
+		for (ShieldOfLightTracker buff : ch.buffs(buffClass, true)) {
+			if (buff.object == target.id()) {
+				existing = buff;
+				break;
+			}
 		}
+		if (existing == null) (existing = Buff.append(ch, buffClass)).object = target.id();
+		//1 turn less as the casting is instant
+		existing.spend(existing.getDuration() - 1);
 		ch.sprite.emitter().start(Speck.factory(Speck.LIGHT), 0.15f, 6);
 	}
 
+	public static int min() { return 2 + Dungeon.hero.pointsInTalent(Talent.SHIELD_OF_LIGHT); }
+	public static int max() { return 2 * min(); }
+
 	@Override
-	public String desc() {
-		String desc;
-		if (SpellEmpower.isActive()) {
-			desc = Messages.get(this, "desc_empower", DivineShield.parries());
-		} else {
-			int min = 1 + Dungeon.hero.pointsInTalent(Talent.SHIELD_OF_LIGHT);
-			int max = 2*min;
-			desc = Messages.get(this, "desc", min, max);
-		}
- 		return desc + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+	protected List<Object> getDescArgs() {
+		return Arrays.asList(min(), max(), DivineShield.parries());
 	}
+
+	// fixme it would be better if the buffs were kept on the target instead of the hero
+	//  that would clean up some of the weird behavior and make it possible to show vfx for it
 
 	public static class ShieldOfLightTracker extends FlavourBuff {
 
 		public int object = 0;
 
-		private static final float DURATION = 8;
+		protected float getDuration() { return 8; }
 
 		{
 			type = buffType.POSITIVE;
@@ -134,7 +144,14 @@ public class ShieldOfLight extends TargetedClericSpell {
 
 		@Override
 		public float iconFadePercent() {
-			return Math.max(0, (DURATION - visualcooldown()) / DURATION);
+			return Math.max(0, (getDuration() - visualcooldown()) / getDuration());
+		}
+
+		public static ShieldOfLightTracker find(Char ch, Char target) {
+			for (ShieldOfLightTracker buff : ch.buffs(ShieldOfLightTracker.class, true)) {
+				if (buff.object == target.id()) return buff;
+			}
+			return null;
 		}
 
 		private static final String OBJECT  = "object";
@@ -153,41 +170,31 @@ public class ShieldOfLight extends TargetedClericSpell {
 
 	}
 
-	// divine shield gives 1/2/3 parries over 3/6/9 turns
+	// divine shield gives 1/2/3 parries over 6/8/12 turns
 	// if you don't use them, you lose them, though.
-	public static class DivineShield extends FlavourBuff {
+	public static class DivineShield extends ShieldOfLightTracker {
 
 		{
-			type = buffType.POSITIVE;
 			announced = true;
 		}
 
 		@Override
-		public int icon() {
-			return BuffIndicator.LIGHT_SHIELD;
-		}
+		public void tintIcon(Image icon) { icon.tint(0, .33f); }
 
-		private static final float TURNS_PER_PARRY = 4;
+		private static final float TURNS_PER_PARRY = 6;
 
 		public static int parries() {
 			return 1 + Dungeon.hero.pointsInTalent(Talent.SHIELD_OF_LIGHT);
 		}
 
-		public static float duration() {
+		public float getDuration() {
 			// 1/2/3 parries
 			return TURNS_PER_PARRY * parries();
 		}
 
-		private int object;
-
 		@Override
 		public String desc() {
-			return Messages.get(this, "desc", left(), visualcooldown() % TURNS_PER_PARRY);
-		}
-
-		@Override
-		public float iconFadePercent() {
-			return 1 - Math.min(visualcooldown() / duration(), 1);
+			return Messages.get(this, "desc", left(), 1 + cooldown() % TURNS_PER_PARRY);
 		}
 
 		public int left() {
@@ -232,20 +239,6 @@ public class ShieldOfLight extends TargetedClericSpell {
 			}
 
 			if (left() <= 0) detach();
-		}
-
-		public static final String OBJECT = "object";
-
-		@Override
-		public void storeInBundle(Bundle bundle) {
-			super.storeInBundle(bundle);
-			bundle.put(OBJECT, object);
-		}
-
-		@Override
-		public void restoreFromBundle(Bundle bundle) {
-			super.restoreFromBundle(bundle);
-			object = bundle.getInt(OBJECT);
 		}
 
 		public static DivineShield find(Char ch, Char target) {
