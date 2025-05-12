@@ -82,8 +82,8 @@ public class HolyTome extends Artifact {
 		return SpellEmpower.isActive() ? new ItemSprite.Glowing(0xFFFF00) : super.glowing();
 	}
 
-	public int getCharges() {
-		return charge;
+	public float getCharges() {
+		return charge + partialCharge;
 	}
 
 	public static final String AC_CAST = "CAST";
@@ -173,7 +173,6 @@ public class HolyTome extends Artifact {
 	}
 
 	public void spendCharge( float chargesSpent ){
-		SpellEmpower.useCharge(partialCharge + charge, chargesSpent);
 		partialCharge -= chargesSpent;
 		while (partialCharge < 0){
 			charge--;

@@ -54,14 +54,15 @@ public class Smite extends TargetedClericSpell {
 
 	public static Smite INSTANCE = new Smite();
 
+	/** makes it act as omnismite if omnismite is usable **/
+	private boolean override = false;
+	static {
+		INSTANCE.override = true;
+	}
+
 	@Override
 	public int icon() {
-		if (Dungeon.hero != null) {
-			HolyTome tome = Dungeon.hero.belongings.getItem(HolyTome.class);
-			if (tome != null && tome.canCast(Dungeon.hero, new OmniSmite())) {
-				return HeroIcon.OMNISMITE;
-			}
-		}
+		if (override && SpellEmpower.isActive()) return OmniSmite.INSTANCE.icon();
 		return HeroIcon.SMITE;
 	}
 
@@ -71,10 +72,29 @@ public class Smite extends TargetedClericSpell {
 	}
 
 	@Override
+	public String shortDesc() {
+		String shortDesc = super.shortDesc();
+		if (!override || !SpellEmpower.isActive()) return shortDesc;
+		// display both variants
+		return shortDesc + "\n\n"
+				+ "_" + Messages.titleCase(OmniSmite.INSTANCE.name()) + "_" + "\n"
+				+ OmniSmite.INSTANCE.shortDesc();
+	}
+
+	@Override
 	public String desc() {
 		int min = 5 + Dungeon.hero.lvl/2;
 		int max = 10 + Dungeon.hero.lvl;
-		return Messages.get(this, "desc", min, max) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+		String desc = Messages.get(this, "desc", min, max)
+				+ "\n\n"
+				+ chargeUseDesc();
+		if (SpellEmpower.isActive() && override) {
+			desc += "\n"
+					+ Messages.get(this, "desc_override")
+					+ "\n\n"
+					+ OmniSmite.INSTANCE.desc();
+		}
+		return desc;
 	}
 
 	@Override
@@ -89,7 +109,7 @@ public class Smite extends TargetedClericSpell {
 
 	@Override
 	public void onCast(HolyTome tome, Hero hero) {
-        if (tome.canCast(hero, new OmniSmite())) {
+        if (override && tome.canCast(hero, new OmniSmite())) {
             GameScene.show(new WndSmiteSelect(tome, hero));
         }
         else {
@@ -118,6 +138,7 @@ public class Smite extends TargetedClericSpell {
 			return;
 		}
 		Combo.Leap.execute(hero, enemy, leapPos, () -> {
+			AttackIndicator.target(enemy);
 			doSmite(tome, hero, enemy, 1);
 			tracker.detach();
 			hero.spendAndNext(hero.attackDelay());
@@ -125,7 +146,6 @@ public class Smite extends TargetedClericSpell {
 	}
 
 	public void doSmite(HolyTome tome, Hero hero, Char enemy, float dmgMulti) {
-		AttackIndicator.target(enemy);
 
 		float accMult = 1;
 		if (!(hero.belongings.attackingWeapon() instanceof Weapon)
@@ -134,7 +154,7 @@ public class Smite extends TargetedClericSpell {
 		}
 		if (hero.attack(enemy, dmgMulti, 0, accMult)) {
 			Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);
-			enemy.sprite.burst(0xFFFFFFFF, (int)(10 * dmgMulti));
+			enemy.sprite.burst(0xFFFFFFFF, Random.round(10 * dmgMulti));
 		}
 
 		onSpellCast(tome, hero);
@@ -155,15 +175,27 @@ public class Smite extends TargetedClericSpell {
 		}
 	};
 
+	// should this really be a smite subclass? the only method it actually takes from it is doSmite
 	public static class OmniSmite extends Smite {
+
+		public static final OmniSmite INSTANCE = new OmniSmite();
+
+		@Override
+		public int icon() { return HeroIcon.OMNISMITE; }
+
+		@Override
+		public boolean usesTargeting() { return false; }
 
 		// this is basically a fancy way of killing anything.
 		// todo revisit, it might be nice to have the last hit be a regular smite
+		//   could also have the damage reduction be after armor is applied
 
 		private static int used = 0;
 
-		private static final float MIN_USES = 3;
-		public static final float MULTI = 0.75f;
+		private static final int
+				MIN_USES = 4,
+				MIN_COST = 2;
+		public static final float MULTI = 0.7f;
 
 		@Override
 		public boolean canCast(Hero hero) {
@@ -173,19 +205,47 @@ public class Smite extends TargetedClericSpell {
 
 		private boolean forceCheckCharges = false;
 
+		private int leapRange;
+		private int getLeapRange() {
+			return (int)Math.max(hero.pointsInTalent(Talent.TRIAGE), Math.ceil(SpellEmpower.left()/2));
+		}
+
 		@Override
 		public String desc() {
 			HolyTome tome = hero.belongings.getItem(HolyTome.class);
 			return Messages.get(this, "desc",
-					(int)Math.max(OmniSmite.MIN_USES, Math.max(tome.getCharges(), SpellEmpower.left())),
-					(int)SpellEmpower.left(),
-					Math.max(2, tome.getCharges())
+					MULTI + "x",
+					// max attacks
+					Math.max(MIN_USES, (int)Math.max(tome.getCharges(), SpellEmpower.left())),
+					getLeapRange()
+			) + "\n\n" + chargeUseDesc();
+		}
+
+		@Override
+		public String shortDesc() {
+			return Messages.get(this, "short_desc", Math.max(
+					MIN_USES,
+					(int)Math.max(hero.belongings.getItem(HolyTome.class).getCharges(),
+							SpellEmpower.left())
+			)) + " " + chargeUseDesc();
+		}
+
+		@Override
+		protected String chargeUseDesc() {
+			int maxCost = Math.max(
+					hero.isNearDeath() ? 0 : MIN_COST,
+					(int)hero.belongings.getItem(HolyTome.class).getCharges()
+			);
+			return Messages.get(ClericSpell.class, "charge_cost",
+					maxCost == 0 ? 0 :
+							Messages.get(this, "charge_cost", (int)chargeUse(hero), maxCost)
 			);
 		}
 
 		@Override
 		public boolean ignoreChargeUse() {
-			return !forceCheckCharges && ((used > 0 && used < MIN_USES) || super.ignoreChargeUse());
+			// used when checking if smite can attack again
+			return !forceCheckCharges && (used < MIN_USES || super.ignoreChargeUse());
 		}
 
 		@Override
@@ -195,7 +255,7 @@ public class Smite extends TargetedClericSpell {
 
 		@Override
 		public void onSpellCast(HolyTome tome, Hero hero) {
-			if (used >= 2 && SpellEmpower.isActive()) {
+			if ((used >= MIN_COST || hero.isNearDeath()) && SpellEmpower.isActive()) {
 				// refunds charge use if it's still attacking with no charges after breaking even with Smite's charge cost.
 				forceCheckCharges = true;
 				if (!tome.canCast(hero, this)) tome.directCharge(chargeUse(hero));
@@ -206,41 +266,42 @@ public class Smite extends TargetedClericSpell {
 
 		@Override
 		public void onCast(HolyTome tome, Hero hero) {
-			Buff.affect(hero, OmniSmiteTracker.class);
-			int range = Math.max(hero.pointsInTalent(Talent.TRIAGE), (int)SpellEmpower.left());
-			try {
-				HashMap<Char, Integer> validTargets = new HashMap<>();
-				int minDist = Integer.MAX_VALUE;
-				for (Char m : level.mobs) {
-					int distance = level.distance(hero.pos, m.pos);
-					if (distance > minDist || m.alignment != Char.Alignment.ENEMY) continue;
-					int leapPos = Combo.Leap.findLeapPos(hero, m, range);
-					if (leapPos == -1) continue;
-					if (distance < minDist) {
-						validTargets.clear();
-						minDist = distance;
-					}
-					validTargets.put(m, leapPos);
+			if (used == 0) leapRange = getLeapRange();
+
+			SmiteTracker tracker = Buff.affect(hero, OmniSmiteTracker.class);
+
+			HashMap<Char, Integer> validTargets = new HashMap<>();
+			int minDist = Integer.MAX_VALUE;
+			for (Char m : level.mobs) {
+				int distance = level.distance(hero.pos, m.pos);
+				if (distance > minDist || m.alignment != Char.Alignment.ENEMY) continue;
+				int leapPos = Combo.Leap.findLeapPos(hero, m, leapRange);
+				if (leapPos == -1) continue;
+				if (distance < minDist) {
+					validTargets.clear();
+					minDist = distance;
 				}
-				Char target = Random.element(validTargets.keySet());
-				if (tome.canCast(hero, this) && target != null) {
-					Combo.Leap.execute(hero, target, validTargets.get(target), () -> {
-						used++;
-						doSmite(tome, hero, target, MULTI);
-						onCast(tome, hero);
-					});
-					return;
-				}
-				if (used > 0) {
-					used = 0;
-					SpellEmpower.useCharge(SpellEmpower.limit(), SpellEmpower.limit()); // use remaining charge
-					hero.spendAndNext(hero.attackDelay());
-				} else {
-					assert target == null;
-					GLog.w(Messages.get(this, "no_targets"));
-				}
-			} finally {
-				Buff.detach(hero, OmniSmiteTracker.class);
+				validTargets.put(m, leapPos);
+			}
+
+			Char target = Random.element(validTargets.keySet());
+			if (tome.canCast(hero, this) && target != null) {
+				Combo.Leap.execute(hero, target, validTargets.get(target), () -> {
+					used++;
+					doSmite(tome, hero, target, MULTI);
+					onCast(tome, hero);
+				});
+				return;
+			}
+
+			tracker.detach();
+			if (used > 0) {
+				used = 0;
+				SpellEmpower.useCharge(SpellEmpower.limit(), SpellEmpower.limit()); // use remaining charge
+				hero.spendAndNext(hero.attackDelay());
+			} else {
+				assert target == null;
+				GLog.w(Messages.get(this, "no_targets"));
 			}
 		}
 
@@ -249,46 +310,44 @@ public class Smite extends TargetedClericSpell {
 			public int bonusDmg(Hero attacker, Char defender) {
 				return Random.round(MULTI * super.bonusDmg(attacker, defender));
 			}
-
-			@Override
-			public float enchMulti() {
-				return MULTI * super.enchMulti();
-			}
+			// see Weapon#genericProcChanceMultiplier
 		}
 	}
 
-	private class WndSmiteSelect extends WndTitledMessage {
-		// fixme should this just be a separate spell?
-
-		RedButton buttonFor(HolyTome tome, Hero hero, Smite smite) {
-			return new RedButton("_" + Messages.titleCase(smite.name()) + "_:\n" + smite.desc(), 6) {
-				{
-					multiline = true;
-				}
-
-				@Override
-				protected void onClick() {
-					hide();
-					if (!smite.usesTargeting()) QuickSlotButton.cancel();
-					smite.onCast(tome, hero);
-				}
-			};
-		}
-
+	// this is an admittedly obtuse way of preventing misclicks on omnismite.
+	//  todo either drastically improve this or make omnismite's initial target selection manual
+	private static class WndSmiteSelect extends WndTitledMessage {
         WndSmiteSelect(HolyTome tome, Hero hero) {
-            super(new HeroIcon(Smite.this),
-                            "Smite", ""
-            );
-			RedButton
-					smite = buttonFor(tome, hero, Smite.this),
-					omniSmite = buttonFor(tome, hero, new OmniSmite());
-			omniSmite.setWidth(width);
-			omniSmite.setHeight(omniSmite.reqHeight());
-			smite.setWidth(width);
-			smite.setHeight(smite.reqHeight());
-			omniSmite.setY(smite.bottom() + GAP);
-            addToBottom(smite, omniSmite);
+			super(new HeroIcon(INSTANCE), "Smite", "Choose variant of Smite to use:");
+			INSTANCE.override = false;
+			RedButton[] buttons = new RedButton[2];
+			int i = 0;
+			for (ClericSpell smite : new ClericSpell[]{Smite.INSTANCE, OmniSmite.INSTANCE}) {
+				float top = i > 0 ? buttons[i-1].bottom() + GAP : 0;
+				buttons[i++] = new RedButton("_" + Messages.titleCase(smite.name()) + "_:\n" + smite.desc(), 6) {
+					{
+						multiline = true;
+						setWidth(WndSmiteSelect.this.width);
+						setHeight(reqHeight());
+						setY(top);
+					}
+
+					@Override
+					protected void onClick() {
+						if (!smite.usesTargeting()) QuickSlotButton.cancel();
+						smite.onCast(tome, hero);
+						hide();
+					}
+				};
+			}
+            addToBottom(buttons);
         }
+
+		@Override
+		public void hide() {
+			INSTANCE.override = true;
+			super.hide();
+		}
 
 		@Override
 		public void onBackPressed() {

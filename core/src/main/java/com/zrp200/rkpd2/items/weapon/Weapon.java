@@ -610,6 +610,10 @@ abstract public class Weapon extends KindOfWeapon {
 				multi += 0.2f;
 			}
 
+			if (attacker.buff(Smite.OmniSmite.OmniSmiteTracker.class) != null) {
+				multi *= Smite.OmniSmite.MULTI;
+			}
+
 			return multi;
 		}
 		public static float genericProcChanceMultiplier(Char attacker) {

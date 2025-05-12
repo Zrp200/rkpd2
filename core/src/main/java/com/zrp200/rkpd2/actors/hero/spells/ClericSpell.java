@@ -119,6 +119,12 @@ public abstract class ClericSpell {
 			}
 			hero.buff(Talent.SatiatedSpellsTracker.class).detach();
 		}
+		{
+			float empoweredChargeUse = chargeUse(hero);
+			// smite doesn't actually get empowered during spell empower currently, so it doesn't consume charge if used normally
+			if (this == Smite.INSTANCE) empoweredChargeUse -= Math.max(tome.getCharges(), 0);
+			SpellEmpower.useCharge(tome.getCharges(), empoweredChargeUse);
+		}
 		tome.spendCharge(chargeUse(hero));
 		Talent.onArtifactUsed(hero);
 		if (hero.subClass.is(HeroSubClass.PALADIN)) {
