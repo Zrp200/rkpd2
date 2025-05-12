@@ -191,12 +191,12 @@ public abstract class SpellEmpower extends ClericSpell {
         }
 
         @Override
-        public boolean ignoreChargeUse() { return heroAtCriticalHealth(); }
+        public boolean ignoreChargeUse() { return hero.isNearDeath(); }
 
         @Override
         protected List<Object> getDescArgs() {
             List<Object> args = new ArrayList(super.getDescArgs());
-            args.add(heroAtCriticalHealth() ? 300 : 150);
+            args.add(hero.isNearDeath() ? 300 : 150);
             return args;
         }
 
@@ -204,12 +204,12 @@ public abstract class SpellEmpower extends ClericSpell {
         protected void applyBuff(Hero hero) {
             Buff.affect(hero, Buff.class);
             Cooldown cd = Cooldown.affectHero(Cooldown.class);
-            if (heroAtCriticalHealth()) cd.spend(-150);
+            if (hero.isNearDeath()) cd.spend(-150);
         }
 
         @Override
         public float chargeUse(Hero hero) {
-            return heroAtCriticalHealth() ? 2 : 4;
+            return hero.isNearDeath() ? 2 : 4;
         }
 
         public static class Buff extends SpellEmpower.Buff {
@@ -234,10 +234,6 @@ public abstract class SpellEmpower extends ClericSpell {
             public float duration() {
                 return 300;
             }
-        }
-
-        private static boolean heroAtCriticalHealth() {
-            return hero.HP * 10 <= hero.HT * 3;
         }
     }
 

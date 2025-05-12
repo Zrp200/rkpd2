@@ -303,6 +303,10 @@ public class Hero extends Char {
 		return STR + strBonus;
 	}
 
+	public boolean isNearDeath() {
+		return HP * 10 <= HT * 3;
+	}
+
 	// this affects what items get boosted. if I want a talent to grant boosts I should go here.
 	public int getBonus(Item item) {
 		return heroClass.getBonus(item) + subClass.getBonus(item);
