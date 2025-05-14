@@ -121,7 +121,12 @@ public class ShieldOfLight extends TargetedClericSpell {
 
 	@Override
 	protected List<Object> getDescArgs() {
-		return Arrays.asList(min(), max(), DivineShield.parries());
+		return Arrays.asList(
+				min(),
+				max(),
+				(int) new ShieldOfLightTracker().getDuration(),
+				(int) new DivineShield().getMaxDurability()
+		);
 	}
 
 	// fixme it would be better if the buffs were kept on the target instead of the hero
@@ -131,7 +136,7 @@ public class ShieldOfLight extends TargetedClericSpell {
 
 		public int object = 0;
 
-		protected float getDuration() { return 8; }
+		protected float getDuration() { return 10; }
 
 		{
 			type = buffType.POSITIVE;
@@ -170,8 +175,6 @@ public class ShieldOfLight extends TargetedClericSpell {
 
 	}
 
-	// divine shield gives 1/2/3 parries over 6/8/12 turns
-	// if you don't use them, you lose them, though.
 	public static class DivineShield extends ShieldOfLightTracker {
 
 		{
@@ -181,34 +184,30 @@ public class ShieldOfLight extends TargetedClericSpell {
 		@Override
 		public void tintIcon(Image icon) { icon.tint(0, .33f); }
 
-		private static final float TURNS_PER_PARRY = 6;
-
-		public static int parries() {
-			return 1 + Dungeon.hero.pointsInTalent(Talent.SHIELD_OF_LIGHT);
+		public float getMaxDurability() {
+			// 2 / 5 / 8 hits
+			return 2 + 3 * Dungeon.hero.pointsInTalent(Talent.SHIELD_OF_LIGHT);
 		}
-
-		public float getDuration() {
-			// 1/2/3 parries
-			return TURNS_PER_PARRY * parries();
-		}
+		public int getDurability() { return (int)Math.ceil(visualcooldown() / getDurabilityPerHit()); }
+		private float getDurabilityPerHit() { return getDuration() / getMaxDurability(); }
 
 		@Override
 		public String desc() {
-			return Messages.get(this, "desc", left(), 1 + cooldown() % TURNS_PER_PARRY);
-		}
-
-		public int left() {
-			return (int)Math.ceil(visualcooldown() / TURNS_PER_PARRY);
+			return Messages.get(this, "desc",
+					getDurability(),
+					(int)Math.ceil(1 + cooldown() % getDurabilityPerHit())
+			);
 		}
 
 		@Override
 		public String iconTextDisplay() {
-			return Integer.toString(left());
+			return Integer.toString(getDurability());
 		}
 
 		public synchronized void use(Char ch, Callback callback) {
 			if (active == this) active = null;
-			spend(-TURNS_PER_PARRY);
+
+
 			if (callback != null) {
 				if (!ch.sprite.visible) callback.call();
 				else {
@@ -236,9 +235,16 @@ public class ShieldOfLight extends TargetedClericSpell {
 						}
 					});
 				}
+			} else {
+				ch.sprite.emitter().start(Speck.factory(Speck.LIGHT), 0.15f, 6);
+				Sample.INSTANCE.play(Assets.Sounds.READ);
 			}
 
-			if (left() <= 0) detach();
+			int left = getDurability() - 1;
+			if (left <= 0) detach();
+			else {
+				spend(left * getDurabilityPerHit() - cooldown());
+			}
 		}
 
 		public static DivineShield find(Char ch, Char target) {
