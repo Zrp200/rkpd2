@@ -549,7 +549,7 @@ public class Combo extends Buff implements ActionIndicator.Action {
 		@Override
 		protected void onInvalid(int cell) {
 			if(cell == -1) return;
-			Leap.onInvalid();
+			Leap.onInvalid(Messages.get(Combo.this, "bad_target"));
 		}
 
 		@Override
@@ -596,10 +596,13 @@ public class Combo extends Buff implements ActionIndicator.Action {
 
                 Ballistica b = new Ballistica(target.pos, to == -1 ? enemy.pos : to, Ballistica.PROJECTILE);
 
+				// if the target was never in the field of view to begin with, treat any valid leap to a space out of view as valid
+				boolean targetInFOV = willAttack;
                 int leapPos;
                 do {
-                    leapPos = b.path.get(--b.dist);
-                    if (b.dist == 0) return -1;
+					if (!targetInFOV) targetInFOV = Dungeon.level.heroFOV[b.path.get(b.dist)];
+					if (--b.dist <= 0) return -1;
+                    leapPos = b.path.get(b.dist);
                 } while (
                         !Dungeon.level.passable[leapPos] ||
                                 (!target.flying && Dungeon.level.avoid[leapPos]) ||
@@ -612,9 +615,9 @@ public class Combo extends Buff implements ActionIndicator.Action {
                         target.pos = leapPos;
                         if (target.canAttack(enemy)) return leapPos;
                     } finally {
-                        target.pos = initialPos;
-                    }
-                } else if (Dungeon.level.adjacent(leapPos, enemy.pos)) {
+						target.pos = initialPos;
+					}
+                } else if (!targetInFOV || Dungeon.level.adjacent(leapPos, enemy.pos)) {
                     return leapPos;
                 }
 			}
@@ -639,11 +642,11 @@ public class Combo extends Buff implements ActionIndicator.Action {
 			execute(target, leapPos, () -> target.sprite.attack(enemy.pos, doAttack));
 		}
 
-		static void onInvalid() {
+		static void onInvalid(String message) {
 			if (hero.rooted) {
 				PixelScene.shake(1, 1);
 			}
-			GLog.w(Messages.get(Combo.class, "bad_target"));
+			GLog.w(message);
 		}
 	}
 }

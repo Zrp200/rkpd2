@@ -94,7 +94,7 @@ public class LayOnHands extends TargetedClericSpell {
 			if (hero.hasTalent(Talent.TRIAGE) && Actor.findChar(target) != null) {
 				int leapPos = Combo.Leap.findLeapPos(hero, target, hero.pointsInTalent(Talent.TRIAGE));
 				if (leapPos == -1) {
-					Combo.Leap.onInvalid();
+					Combo.Leap.onInvalid(Messages.get(this, "invalid_target"));
 					return;
 				}
 				Combo.Leap.execute(hero, leapPos, () -> onTargetSelected(tome, hero, target));
