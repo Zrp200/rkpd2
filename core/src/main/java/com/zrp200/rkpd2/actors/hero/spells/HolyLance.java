@@ -240,6 +240,6 @@ public class HolyLance extends TargetedClericSpell {
 		}
 
 		@Override
-		public float duration() { return 50; }
+		public float duration() { return 25; }
 	}
 }
