@@ -564,10 +564,10 @@ public abstract class Wand extends Item {
 			Buff.prolong(Dungeon.hero, Talent.EmpoweredStrikeTracker.class, 10f);
 		}
 
-		if (Dungeon.hero.hasTalent(Talent.LINGERING_MAGIC, Talent.KINGS_WISDOM)
+		if (Dungeon.hero.shiftedPoints(Talent.LINGERING_MAGIC, Talent.KINGS_WISDOM) > 0
 				&& charger != null && charger.target == Dungeon.hero){
 
-			Buff.prolong(Dungeon.hero, Talent.LingeringMagicTracker.class, 5f);
+			Buff.affect(Dungeon.hero, Talent.LingeringMagicTracker.class).reset();
 		}
 
 		if (Dungeon.hero.heroClass != HeroClass.CLERIC

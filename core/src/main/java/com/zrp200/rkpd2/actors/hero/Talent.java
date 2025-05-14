@@ -1280,17 +1280,17 @@ public enum Talent {
 		if (hero.hasTalent(Talent.PROVOKED_ANGER, Talent.KINGS_WISDOM)) {
 			ProvokedAngerTracker provokedAnger = hero.buff(ProvokedAngerTracker.class);
 			if (provokedAnger != null) {
-				dmg += 1 + Math.max(1, hero.pointsInTalent(false, Talent.PROVOKED_ANGER, KINGS_WISDOM));
-				if (--provokedAnger.left <= 0) provokedAnger.detach();
+				dmg += 1 + hero.shiftedPoints2(PROVOKED_ANGER, KINGS_WISDOM);
+				provokedAnger.use();
 			}
 
 		}
 
-        int points = hero.pointsInTalent(Talent.LINGERING_MAGIC, KINGS_WISDOM);
+        int points = hero.shiftedPoints2(Talent.LINGERING_MAGIC, KINGS_WISDOM);
 		if (points > 0
 				&& hero.buff(LingeringMagicTracker.class) != null){
-			dmg += Random.IntRange(points , 2);
-			hero.buff(LingeringMagicTracker.class).detach();
+			dmg += Random.round(1 + points/2f);
+			hero.buff(LingeringMagicTracker.class).use();
 		}
 
 		if (hero.hasTalent(Talent.SUCKER_PUNCH,KINGS_WISDOM)
@@ -1345,30 +1345,47 @@ public enum Talent {
 		return dmg;
 	}
 
-	public static class ProvokedAngerTracker extends FlavourBuff {
+	private static abstract class T1DamageBoostTracker extends FlavourBuff {
 		{ type = Buff.buffType.POSITIVE; }
-		public int left = 1;
 		public int icon() { return BuffIndicator.WEAPON; }
-		public void tintIcon(Image icon) { icon.hardlight(1.43f, 1.43f, 1.43f); }
-		public float iconFadePercent() { return Math.max(0, 1f - (visualcooldown() / 5)); }
-		private final String LEFT = "left";
+		public abstract Talent getTalent();
 
+		private int count = 0;
+
+		public void reset() {
+			postpone(getDuration());
+			count = 0;
+		}
+
+		public int getUses() { return (hero.hasTalent(getTalent()) ? 2 : 1) - count; }
+		public void use() {
+			count++;
+			if (getUses() <= 0) detach();
+		}
+
+		private final String COUNT = "count";
 		@Override
 		public void storeInBundle(Bundle bundle) {
 			super.storeInBundle(bundle);
-			bundle.put(LEFT, left);
+			bundle.put(COUNT, count);
 		}
 		@Override
 		public void restoreFromBundle(Bundle bundle) {
 			super.restoreFromBundle(bundle);
-			left = Math.max(1, bundle.getInt(LEFT));
+			count = bundle.getInt(COUNT);
 		}
+
+		public float getDuration() { return hero == null || !hero.hasTalent(getTalent()) ? 5 : 10; }
+		public float iconFadePercent() { return Math.max(0, 1f - (visualcooldown() / getDuration())); }
 	}
-	public static class LingeringMagicTracker extends FlavourBuff{
-		{ type = Buff.buffType.POSITIVE; }
-		public int icon() { return BuffIndicator.WEAPON; }
+
+	public static class ProvokedAngerTracker extends T1DamageBoostTracker {
+		public Talent getTalent() { return PROVOKED_ANGER; }
+		public void tintIcon(Image icon) { icon.hardlight(1.43f, 1.43f, 1.43f); }
+	}
+	public static class LingeringMagicTracker extends T1DamageBoostTracker {
+		public Talent getTalent() { return LINGERING_MAGIC; }
 		public void tintIcon(Image icon) { icon.hardlight(1.43f, 1.43f, 0f); }
-		public float iconFadePercent() { return Math.max(0, 1f - (visualcooldown() / 5)); }
 	}
 	public static class SuckerPunchTracker extends Buff{};
 	public static class FollowupStrikeTracker extends FlavourBuff{
