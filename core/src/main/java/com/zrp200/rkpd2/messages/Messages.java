@@ -190,6 +190,9 @@ public class Messages {
 		return formatters.get(format).format(number);
 	}
 
+	/** adds highlight formatting, because it's too easy to forget the delimiters **/
+	public static String h( String str ) { return "_" + str + "_"; }
+
 	public static String capitalize( String str ){
 		if (str.length() == 0)  return str;
 		else                    return str.substring( 0, 1 ).toUpperCase(locale) + str.substring( 1 );
