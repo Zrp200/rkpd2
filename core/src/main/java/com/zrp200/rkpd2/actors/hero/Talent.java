@@ -225,7 +225,9 @@ public enum Talent {
 		}
 		@Override public int icon() {
 			if ( ratmogrify() ) return 218;
-			switch (hero != null ? hero.heroClass : GamesInProgress.selectedClass){
+			HeroClass heroClass = hero != null ? hero.heroClass : GamesInProgress.selectedClass;
+			if (heroClass == null) heroClass = HeroClass.WARRIOR;
+			switch (heroClass){
 				case WARRIOR: default: return 26;
 				case MAGE: return 58;
 				case ROGUE: return 90;
