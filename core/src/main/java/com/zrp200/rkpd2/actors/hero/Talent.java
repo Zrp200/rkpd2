@@ -953,13 +953,13 @@ public enum Talent {
 			//3 bonus physical damage for next 2/3 attacks
 			Buff.affect( hero, PhysicalEmpower.class).set(3, 1 + 2*hero.pointsInTalent(STRENGTHENING_MEAL));
 		}
-		if (hero.hasTalent(FOCUSED_MEAL)){
-			if (hero.heroClass == HeroClass.DUELIST){
-                //1/1.5 charge for the duelist
-                Buff.affect( hero, MeleeWeapon.Charger.class ).gainCharge(0.5f*(hero.pointsInTalent(FOCUSED_MEAL)+1));
+		if (hero.canHaveTalent(FOCUSED_MEAL)){
+			if (hero.heroClass.is(HeroClass.DUELIST)){
+                //0.5/1/1.5 charge for the duelist
+                Buff.affect( hero, MeleeWeapon.Charger.class ).gainCharge(0.5f*(hero.shiftedPoints(FOCUSED_MEAL)));
 				ScrollOfRecharging.charge( hero );
 			} else {
-				// lvl/3 / lvl/2 bonus dmg on next hit for other classes
+				// lvl/4 / lvl/3 / lvl/2 bonus dmg on next hit for other classes
 				Buff.affect( hero, PhysicalEmpower.class).set(Math.round(hero.lvl / (4f - hero.pointsInTalent(FOCUSED_MEAL))), 1);
 			}
 		}
