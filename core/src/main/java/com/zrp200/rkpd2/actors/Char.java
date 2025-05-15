@@ -1106,6 +1106,9 @@ public abstract class Char extends Actor {
 					&& ch.buff(Talent.DeadlyFollowupTracker.class).object == id()){
 				ch.buff(Talent.DeadlyFollowupTracker.class).detach();
 			}
+			for (ShieldOfLight.ShieldOfLightTracker buff : ch.buffs(ShieldOfLight.ShieldOfLightTracker.class)) {
+				if (buff.object == id()) buff.detach();
+			}
 		}
 		// the current setup makes it impossible for anyone but Dungeon.hero to use Sniper's Mark properly.
 		// If it were to be given to multiple characters it would need another refactor.
