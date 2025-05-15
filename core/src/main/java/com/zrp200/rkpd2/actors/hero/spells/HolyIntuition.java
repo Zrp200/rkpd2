@@ -71,7 +71,7 @@ public class HolyIntuition extends InventoryClericSpell {
 
 	@Override
 	protected void onItemSelected(HolyTome tome, Hero hero, Item item) {
-		if (item == null) {
+		if (item == null){
 			return;
 		}
 
@@ -85,21 +85,26 @@ public class HolyIntuition extends InventoryClericSpell {
 
 	}
 	private void affectItem(Hero hero, Item item, int chance) {
+
+		boolean cursedKnown = item.cursedKnown;
+		item.cursedKnown = true;
+
 		if (!item.cursed && Random.Int(chance) == 0) {
 			new ScrollOfIdentify().onItemSelected(item);
 		}
 		else if (ScrollOfRemoveCurse.uncursable(item) && Random.Int(chance) == 0) {
 			ScrollOfRemoveCurse.doEffect(hero, item);
-		} else if (!item.cursedKnown) {
-			if (item.cursed) {
+		}
+		else if (!cursedKnown) {
+			if (item.cursed){
 				GLog.w(Messages.get(this, "cursed"));
 			} else {
 				GLog.i(Messages.get(this, "uncursed"));
 			}
 
-			item.cursedKnown = true;
 			hero.sprite.parent.add( new Identification( hero.sprite.center().offset( 0, -16 ) ) );
-		} else if (!SpellEmpower.isActive()){
+		}
+		else if (!SpellEmpower.isActive()){
 			// Spell Empower always does something
 			GLog.w(Messages.get(CursedWand.class, "nothing"));
 		}
