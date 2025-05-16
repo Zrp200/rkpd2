@@ -21,6 +21,8 @@
 
 package com.zrp200.rkpd2.actors.hero.spells;
 
+import static com.zrp200.rkpd2.Dungeon.hero;
+
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
@@ -56,6 +58,8 @@ import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class HallowedGround extends TargetedClericSpell {
 
@@ -78,6 +82,11 @@ public class HallowedGround extends TargetedClericSpell {
 	}
 
 	@Override
+	public boolean usesTargeting() {
+		return !SpellEmpower.isActive();
+	}
+
+	@Override
 	public int targetingFlags() {
 		return Ballistica.STOP_TARGET;
 	}
@@ -87,30 +96,23 @@ public class HallowedGround extends TargetedClericSpell {
 		return super.canCast(hero) && hero.hasTalent(Talent.HALLOWED_GROUND);
 	}
 
-	private static boolean multicast = false;
+    private final ArrayList<Char> affected = new ArrayList<>();
+    private boolean[] canSeed;
 
-	// arraylist causes duplication, which makes the spell more effective with greater talent points
-	private final ArrayList<Char> affected = new ArrayList<>();
-	private boolean[] cellSeeded;
-	boolean affectedHero;
 
 	@Override
 	public void onCast(HolyTome tome, Hero hero) {
 		affected.clear();
-		cellSeeded = new boolean[Dungeon.level.length()];
-		affectedHero = false;
-		if (SpellEmpower.isActive()) try {
+		canSeed = BArray.not(Dungeon.level.solid, null);
+		if (SpellEmpower.isActive()) {
 			// flood the hero's field of view with hallowed ground
-			multicast = true;
+			// doing it in a loop causes it to extend a bit out of the hero's field of view
 			for (int i = 0; i < Dungeon.level.length(); i++) {
 				if (Dungeon.level.heroFOV[i] && !Dungeon.level.solid[i]) {
 					onTargetSelected(tome, hero, i);
 				}
 			}
-			Dungeon.level.blobs.get(HallowedTerrain.class).act();
-			hero.sprite.zap(hero.pos);
-		} finally {
-			multicast = false;
+			hero.sprite.operate(hero.pos);
 			onSpellCast(tome, hero);
 		} else {
 			super.onCast(tome, hero);
@@ -129,29 +131,42 @@ public class HallowedGround extends TargetedClericSpell {
 			return;
 		}
 
-		PathFinder.buildDistanceMap(target, BArray.not(Dungeon.level.solid, null), hero.pointsInTalent(Talent.HALLOWED_GROUND));
+		PathFinder.buildDistanceMap(target, canSeed, Math.max(1, hero.pointsInTalent(Talent.HALLOWED_GROUND)));
 		for (int i = 0; i < Dungeon.level.length(); i++){
 			if (PathFinder.distance[i] != Integer.MAX_VALUE){
+				canSeed[i] = false;
+
+				int quantity = 0;
 				int c = Dungeon.level.map[i];
 				if (c == Terrain.EMPTY || c == Terrain.EMBERS || c == Terrain.EMPTY_DECO) {
 					Level.set( i, Terrain.GRASS);
-					GameScene.updateMap( i );
-					CellEmitter.get(i).burst(LeafParticle.LEVEL_SPECIFIC, 2);
+					quantity += 2;
 				}
+				if (SpellEmpower.isActive()) {
+					int points = hero.pointsInTalent(Talent.HALLOWED_GROUND);
+					if (
+							// 13/25/38/50% chance to immediately give grass
+							Random.Int(quantity > 0 ? 8 : 4) <= points
+					) {
+						Level.set(i, isStale() ? Terrain.FURROWED_GRASS : Terrain.HIGH_GRASS);
+						quantity += 5;
+					}
+				}
+				if (quantity > 0) {
+					GameScene.updateMap(i);
+					CellEmitter.get(i).burst(LeafParticle.LEVEL_SPECIFIC, quantity);
+				}
+
 				HallowedTerrain terrain = Blob.seed(i, 20, HallowedTerrain.class);
 				GameScene.add(terrain);
-				if (!cellSeeded[i]) {
-					CellEmitter.get(i).burst(ShaftParticle.FACTORY, 2);
-					Char ch = Actor.findChar(i);
-					if (ch != null){
-						affected.add(ch);
-					}
-					cellSeeded[i] = true;
+				CellEmitter.get(i).burst(ShaftParticle.FACTORY, 2);
+				Char ch = Actor.findChar(i);
+				if (ch != null){
+					affected.add(ch);
 				}
 			}
 		}
-
-		if (multicast) return;
+		if (SpellEmpower.isActive()) return;
 		hero.sprite.zap(target);
 		onSpellCast(tome, hero);
 	}
@@ -179,32 +194,35 @@ public class HallowedGround extends TargetedClericSpell {
 		super.onSpellCast(tome, hero);
 	}
 
+	private int getHeal() { return 15 + 10 * (SpellEmpower.isActive() ? hero.pointsInTalent(Talent.HALLOWED_GROUND) : 0); }
+
 	private void affectChar( Char ch ){
 		if (ch.alignment == Char.Alignment.ALLY){
-			if (ch == Dungeon.hero) {
-				if (affectedHero) return;
-				affectedHero = true;
-			}
+			int heal = getHeal();
 			if (ch == Dungeon.hero || ch.HP == ch.HT){
-				Buff.affect(ch, Barrier.class).incShield(10);
+				Buff.affect(ch, Barrier.class).incShield(heal);
 			} else {
-				int barrier = 10 - (ch.HT - ch.HP);
+				int barrier = heal - (ch.HT - ch.HP);
 				barrier = Math.max(barrier, 0);
-				ch.HP += 10 - barrier;
-				ch.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(10-barrier), FloatingText.HEALING );
+				ch.HP += heal -= barrier;
+				ch.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(heal), FloatingText.HEALING );
 				if (barrier > 0){
 					Buff.affect(ch, Barrier.class).incShield(barrier);
 				}
 			}
 		} else if (!ch.flying) {
-			Buff.affect(ch, Roots.class, 1f);
+			// spell empower increases the duration slightly
+			Buff.affect(ch, Roots.class, 1 + (SpellEmpower.isActive() ? hero.shiftedPoints(Talent.HALLOWED_GROUND) : 1));
 		}
 	}
 
-	public String desc(){
-		if (SpellEmpower.isActive()) return super.desc();
+	@Override
+	protected List<Object> getDescArgs() {
 		int area = 1 + 2*Dungeon.hero.pointsInTalent(Talent.HALLOWED_GROUND);
-		return Messages.get(this, "desc", area) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+		int heal = 15 + 10 * (SpellEmpower.isActive() ? hero.pointsInTalent(Talent.HALLOWED_GROUND) : 0);
+		int radius = hero.pointsInTalent(Talent.HALLOWED_GROUND);
+		int root = 1 + hero.shiftedPoints(Talent.HALLOWED_GROUND);
+		return Arrays.asList(area, heal, radius, root);
 	}
 
 	public static class HallowedTerrain extends Blob {
@@ -233,24 +251,21 @@ public class HallowedGround extends TargetedClericSpell {
 						}
 
 						int c = Dungeon.level.map[cell];
-						for (int t = 0; t < Math.max(1, cur[cell] / 10); t++) {
-							if (c == Terrain.GRASS && Dungeon.level.plants.get(c) == null) {
-								if (Random.Int(chance) == 0) {
-									if (isStale()){
-										Level.set(cell, Terrain.FURROWED_GRASS);
-									} else {
-										Level.set(cell, Terrain.HIGH_GRASS);
-									}
-									GameScene.updateMap(cell);
-									CellEmitter.get(cell).burst(LeafParticle.LEVEL_SPECIFIC, 5);
+						if (c == Terrain.GRASS && Dungeon.level.plants.get(c) == null) {
+							if (Random.Int(chance) == 0) {
+								if (isStale()){
+									Level.set(cell, Terrain.FURROWED_GRASS);
+								} else {
+									Level.set(cell, Terrain.HIGH_GRASS);
 								}
-							} else if (c == Terrain.EMPTY || c == Terrain.EMBERS || c == Terrain.EMPTY_DECO) {
-								Level.set(cell, Terrain.GRASS);
 								GameScene.updateMap(cell);
-								CellEmitter.get(cell).burst(LeafParticle.LEVEL_SPECIFIC, 2);
+								CellEmitter.get(cell).burst(LeafParticle.LEVEL_SPECIFIC, 5);
 							}
+						} else if (c == Terrain.EMPTY || c == Terrain.EMBERS || c == Terrain.EMPTY_DECO) {
+							Level.set(cell, Terrain.GRASS);
+							GameScene.updateMap(cell);
+							CellEmitter.get(cell).burst(LeafParticle.LEVEL_SPECIFIC, 2);
 						}
-						cur[cell] %= 20;
 
 						Char ch = Actor.findChar(cell);
 						if (ch != null){
@@ -273,8 +288,7 @@ public class HallowedGround extends TargetedClericSpell {
 					affected.add(Dungeon.hero);
 				}
 			}
-
-			if (!multicast) for (Char ch :affected){
+			for (Char ch : affected){
 				affectChar(ch);
 			}
 
