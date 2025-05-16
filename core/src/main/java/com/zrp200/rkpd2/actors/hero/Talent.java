@@ -168,7 +168,7 @@ public enum Talent {
 	//Huntress T3
 	POINT_BLANK(105, 3), SEER_SHOT(106, 3),
 	//Sniper T3
-	FARSIGHT(107, 3), SHARED_ENCHANTMENT(108, 3), SHARED_UPGRADES(109, 3), MULTISHOT(126,3) {{aliases = new String[]{"RANGER"};}},
+	FARSIGHT(107, 3), SHARED_ENCHANTMENT(108, 3), SHARED_UPGRADES(109, 3), MULTISHOT(126,3),
 	//Warden T3
 	DURABLE_TIPS(110, 3), BARKSKIN(111, 3), SHIELDING_DEW(112, 3), NATURES_BETTER_AID(127,3),
 	//Spectral Blades T4
@@ -266,8 +266,6 @@ public enum Talent {
 	RK_CHAMPION(241,3), RK_MONK(242,3),
 	// Wrath2
 	AFTERSHOCK(RK_MONK.icon+10,4), RAT_BLAST(AFTERSHOCK.icon+1,4), SMOKE_AND_MIRRORS(AFTERSHOCK.icon+2,4), SEA_OF_BLADES(AFTERSHOCK.icon+3,4);
-
-	protected String[] aliases = new String[0];
 
 	// TODO is splitting up t2s arbitrarily really a good idea?
 	public static class ImprovisedProjectileCooldown extends Cooldown {
