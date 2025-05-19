@@ -36,6 +36,7 @@ import com.zrp200.rkpd2.ui.IconButton;
 import com.zrp200.rkpd2.ui.Icons;
 import com.zrp200.rkpd2.ui.RenderedTextBlock;
 import com.zrp200.rkpd2.ui.TalentButton;
+import com.zrp200.rkpd2.ui.TalentIcon;
 import com.zrp200.rkpd2.ui.TalentsPane;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.Image;
@@ -181,12 +182,16 @@ public class WndHeroInfo extends WndTabbed {
 				case WARRIOR: default:
 					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.SEAL),
 							new ItemSprite(ItemSpriteSheet.WORN_SHORTSWORD),
-							new ItemSprite(ItemSpriteSheet.WEAPON_HOLDER),
-							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
+							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ),
+							// level-shifted talents
+							new TalentIcon(Talent.IRON_STOMACH),
+							new TalentIcon(Talent.HOLD_FAST),
+							new TalentIcon(Talent.STRONGMAN),
+					};
 					break;
 				case MAGE:
 					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.MAGES_STAFF),
-							new ItemSprite(ItemSpriteSheet.WAND_MAGIC_MISSILE),
+							new TalentIcon(Talent.DESPERATE_POWER),
 							new ItemSprite(ItemSpriteSheet.WAND_MAGIC_MISSILE),
 							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
 					break;
@@ -195,27 +200,36 @@ public class WndHeroInfo extends WndTabbed {
 							Icons.get(Icons.STAIRS),
 							new ItemSprite(ItemSpriteSheet.DAGGER),
 							new ItemSprite(ItemSpriteSheet.RING_RUBY),
-							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
+							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)
+					};
 					break;
 				case HUNTRESS:
 					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.SPIRIT_BOW),
 							Icons.GRASS.get(),
 							new HeroIcon(HeroSubClass.SNIPER),
-							new ItemSprite(ItemSpriteSheet.ARTIFACT_TALISMAN),
+							new TalentIcon(Talent.HEIGHTENED_SENSES),
 							new ItemSprite(ItemSpriteSheet.GLOVES),
-							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
+							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ),
+					};
 					break;
 				case DUELIST:
 					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.RAPIER),
 							new ItemSprite(ItemSpriteSheet.WAR_HAMMER),
 							new ItemSprite(ItemSpriteSheet.THROWING_SPIKE),
-							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
+							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ),
+							// level-shifted talents
+							new TalentIcon(Talent.ADVENTURERS_INTUITION),
+							new TalentIcon(Talent.AGGRESSIVE_BARRIER),
+							new TalentIcon(Talent.FOCUSED_MEAL),
+					};
 					break;
 				case CLERIC:
 					icons = new Image[]{ new ItemSprite(ItemSpriteSheet.ARTIFACT_TOME),
 							Icons.TALENT.get(),
 							new ItemSprite(ItemSpriteSheet.CUDGEL),
-							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ)};
+							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ),
+							new TalentIcon(Talent.ENLIGHTENING_MEAL),
+					};
 					break;
 				case RAT_KING:
 					// placeholder, even if it is funny.
@@ -252,7 +266,7 @@ public class WndHeroInfo extends WndTabbed {
 				pos = info[i].bottom() + 4*MARGIN;
 			}
 
-			height = Math.max(height, pos - 4*MARGIN);
+			height = Math.max(height, pos - 3*MARGIN);
 
 		}
 	}
