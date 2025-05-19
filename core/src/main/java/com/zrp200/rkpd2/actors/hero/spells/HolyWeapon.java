@@ -106,7 +106,9 @@ public class HolyWeapon extends ClericSpell {
 		}
 
 		@Override
-		public float getDuration() { return 50; }
+		public float getDuration() { return 60; }
+		@Override
+		public float getTurnsPerCharge() { return 10; }
 
 		@Override
 		public ClericSpell getSourceSpell() { return INSTANCE; }
@@ -140,11 +142,10 @@ public class HolyWeapon extends ClericSpell {
 		public static class Empowered extends HolyWepBuff {
 			@Override
 			public float getDuration() { return super.getDuration() * 2; }
-
 			@Override
-			public void tintIcon(Image icon) {
-				icon.tint(0, .33f);
-			}
+			public float getTurnsPerCharge() { return 15; }
+			@Override
+			public void tintIcon(Image icon) { icon.tint(0, .33f); }
 
 			@Override
 			public float getEffectiveness() {

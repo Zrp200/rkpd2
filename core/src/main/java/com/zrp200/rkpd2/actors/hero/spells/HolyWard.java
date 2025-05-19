@@ -82,7 +82,8 @@ public class HolyWard extends ClericSpell {
 
 	public static class HolyArmBuff extends PaladinSpellExtendable {
 
-		public float getDuration() { return 50; }
+		public float getDuration() { return 60; }
+		public float getTurnsPerCharge() { return 10; }
 
 		public ClericSpell getSourceSpell() { return INSTANCE; }
 
@@ -114,14 +115,11 @@ public class HolyWard extends ClericSpell {
 
 		public static class Empowered extends HolyArmBuff {
 			@Override
-			public float getDuration() {
-				return super.getDuration() * 2;
-			}
-
+			public float getDuration() { return super.getDuration() * 2; }
 			@Override
-			public void tintIcon(Image icon) {
-				icon.tint(0, .33f);
-			}
+			public float getTurnsPerCharge() { return 15; }
+			@Override
+			public void tintIcon(Image icon) { icon.tint(0, .33f); }
 		}
 	}
 

@@ -145,6 +145,7 @@ public abstract class ClericSpell {
 		abstract ClericSpell getSourceSpell();
 
 		abstract protected float getDuration();
+		abstract public float getTurnsPerCharge();
 
 		/** keeps subclasses over the parent **/
 		public static <T extends PaladinSpellExtendable> T virtualAffect(Hero hero, Class<T> parentClass, Class<? extends T> buffClass) {
@@ -166,7 +167,6 @@ public abstract class ClericSpell {
 		}
 
 		public float getMaxDuration() { return 100; }
-		public float getTurnsPerCharge() { return getDuration() / 5f; }
 
 		public void extend(float extension) {
 			postpone(Math.min(getMaxDuration(), cooldown() + extension));
@@ -177,7 +177,7 @@ public abstract class ClericSpell {
 		}
 
 		public float iconFadePercent() {
-			return 1 - GameMath.gate(0, visualcooldown() / getDuration(), 1);
+			return 1 - GameMath.gate(0, visualcooldown() / Math.min(getDuration(), getMaxDuration()), 1);
 		}
 
 	}

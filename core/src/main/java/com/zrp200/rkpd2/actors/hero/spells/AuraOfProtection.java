@@ -51,15 +51,15 @@ public class AuraOfProtection extends ClericSpell {
 	}
 
 	public static float reduction() {
-		return 0.075f * (1 + Dungeon.hero.pointsInTalent(Talent.AURA_OF_PROTECTION));
+		return .1f * Math.min(1, Dungeon.hero.pointsInTalent(Talent.AURA_OF_PROTECTION));
 	}
 
 	@Override
 	public String desc() {
 		int dmgReduction = Math.round(reduction() * 100);
 		int glyphPow = 25 + 25*Dungeon.hero.pointsInTalent(Talent.AURA_OF_PROTECTION);
-		int duration = (SpellEmpower.isActive() ? 50 : 20)/5;
-		return Messages.get(this, "desc", dmgReduction, glyphPow, duration) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
+		AuraBuff buff = SpellEmpower.isActive() ? new RetributionBuff() : new AuraBuff();;
+		return Messages.get(this, "desc", dmgReduction, glyphPow, (int)buff.getDuration(), (int)buff.getTurnsPerCharge()) + "\n\n" + Messages.get(this, "charge_cost", (int)chargeUse(Dungeon.hero));
 	}
 
 	@Override
@@ -92,6 +92,12 @@ public class AuraOfProtection extends ClericSpell {
 		@Override
 		protected float getDuration() {
 			return 20;
+		}
+
+		@Override
+		public float getTurnsPerCharge() {
+			// 4 turns per charge, 8 for retribution
+			return getDuration() / 5;
 		}
 
 		@Override
@@ -152,7 +158,7 @@ public class AuraOfProtection extends ClericSpell {
 		}
 
 		@Override
-		public float getDuration() { return 50f; }
+		public float getDuration() { return 40f; }
 
 	}
 
