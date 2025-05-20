@@ -34,7 +34,6 @@ import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.HeroSubClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.effects.MagicMissile;
-import com.zrp200.rkpd2.effects.particles.ShadowParticle;
 import com.zrp200.rkpd2.items.artifacts.HolyTome;
 import com.zrp200.rkpd2.items.wands.Wand;
 import com.zrp200.rkpd2.mechanics.Ballistica;
@@ -66,7 +65,7 @@ public class GuidingLight extends TargetedClericSpell {
 		if (SpellEmpower.isActive()) icon.tint(0, .33f);
 	}
 
-	private int targets, deferredCasts;
+	private int castsLeft, totalCasts;
 
 	@Override
 	public void onCast(HolyTome tome, Hero hero) {
@@ -80,16 +79,19 @@ public class GuidingLight extends TargetedClericSpell {
 					}
 				}
 			}
-			this.targets = targets.size();
-			deferredCasts = 0;
-			if (this.targets > 0) {
-				hero.sprite.showStatus(CharSprite.POSITIVE, name());
+			if (targets.isEmpty()) {
+				GLog.w(Messages.get(this, "no_targets"));
+			} else {
+				totalCasts = castsLeft = targets.size();
 				for (int target : targets) onTargetSelected(tome, hero, target);
-				return;
 			}
+			return;
 		}
 		super.onCast(tome, hero);
 	}
+
+	@Override
+	public boolean usesTargeting() { return !SpellEmpower.isActive(); }
 
 	@Override
 	protected void onTargetSelected(HolyTome tome, Hero hero, Integer target) {
@@ -122,22 +124,12 @@ public class GuidingLight extends TargetedClericSpell {
 
 				Char ch = Actor.findChar( aim.collisionPos );
 				if (ch != null) {
-					int damageBoost = SpellEmpower.isActive() && ch.buff(Illuminated.class) != null ? hero.lvl : 0;
-					ch.damage(Random.NormalIntRange(2, 6) + damageBoost, GuidingLight.this);
+					ch.damage(Random.NormalIntRange(2, 6), GuidingLight.this);
 					Sample.INSTANCE.play(Assets.Sounds.HIT_MAGIC, 1, Random.Float(0.87f, 1.15f));
 					ch.sprite.burst(0xFFFFFF44, 3);
-					if (damageBoost > 0) {
-						ch.sprite.emitter().start( ShadowParticle.UP, 0.05f, 10);
-						Sample.INSTANCE.play(Assets.Sounds.BURNING);
-					}
 					if (ch.isAlive()){
 						Buff.affect(ch, Illuminated.class);
 						Buff.affect(ch, WasIlluminatedTracker.class);
-
-						if (SpellEmpower.isActive() && targets == 1 && deferredCasts == 0) {
-							targets++;
-							onTargetSelected(tome, hero, target);
-						}
 					}
 				} else {
 					Dungeon.level.pressCell(aim.collisionPos);
@@ -151,14 +143,13 @@ public class GuidingLight extends TargetedClericSpell {
 
 	@Override
 	public synchronized void onSpellCast(HolyTome tome, Hero hero) {
-		--targets;
+		if (--castsLeft > 0) return;
 		super.onSpellCast(tome, hero);
-		if (targets <= 0) {
-			deferredCasts = 0;
-			hero.spendAndNext(1f);
-			if (hero.subClass.is(HeroSubClass.PRIEST) && hero.buff(GuidingLightPriestCooldown.class) == null) {
-				Cooldown.affectHero(GuidingLightPriestCooldown.class);
-			}
+		boolean empowered = totalCasts > 0;
+		totalCasts = 0;
+		hero.spendAndNext(empowered ? 0 : 1);
+		if (hero.subClass.is(HeroSubClass.PRIEST) && hero.buff(GuidingLightPriestCooldown.class) == null) {
+			Cooldown.affectHero(GuidingLightPriestCooldown.class);
 		}
 	}
 
@@ -168,17 +159,14 @@ public class GuidingLight extends TargetedClericSpell {
 			&& hero.buff(GuidingLightPriestCooldown.class) == null){
 			return 0;
 		} else {
-			return targets > 0 ? 0 : SpellEmpower.isActive() ? 0.5f * (1 + deferredCasts) : 1;
+			return 1f;
 		}
 	}
 
 	public String desc(){
-		String desc = Messages.get(this, "desc");
+		String desc = checkEmpowerMsg("desc");
 		if (Dungeon.hero.subClass == HeroSubClass.PRIEST){
 			desc += "\n\n" + Messages.get(this, "desc_priest");
-		}
-		if (SpellEmpower.isActive()) {
-			desc += "\n\n" + Messages.get("desc_empower");
 		}
 		return desc + "\n\n" + chargeUseDesc();
 	}
