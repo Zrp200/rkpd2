@@ -91,7 +91,7 @@ public class MnemonicPrayer extends TargetedClericSpell {
 
 	@Override
 	public boolean canCast(Hero hero) {
-		return super.canCast(hero) && hero.hasTalent(Talent.MNEMONIC_PRAYER);
+		return super.canCast(hero) && hero.shiftedPoints(Talent.MNEMONIC_PRAYER) > (SpellEmpower.isActive() ? 0 : 1);
 	}
 
 	private static boolean multiCast = false;

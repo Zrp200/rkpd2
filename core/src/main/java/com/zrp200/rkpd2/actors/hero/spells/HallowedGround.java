@@ -93,7 +93,7 @@ public class HallowedGround extends TargetedClericSpell {
 
 	@Override
 	public boolean canCast(Hero hero) {
-		return super.canCast(hero) && hero.hasTalent(Talent.HALLOWED_GROUND);
+		return super.canCast(hero) && hero.shiftedPoints(Talent.HALLOWED_GROUND) > (SpellEmpower.isActive() ? 0 : 1);
 	}
 
     private final ArrayList<Char> affected = new ArrayList<>();

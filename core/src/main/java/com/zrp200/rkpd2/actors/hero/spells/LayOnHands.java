@@ -81,7 +81,7 @@ public class LayOnHands extends TargetedClericSpell {
 
 	@Override
 	public boolean canCast(Hero hero) {
-		return super.canCast(hero) && hero.hasTalent(Talent.LAY_ON_HANDS);
+		return super.canCast(hero) && hero.shiftedPoints(Talent.LAY_ON_HANDS) > (SpellEmpower.isActive() ? 0 : 1);
 	}
 
 	@Override

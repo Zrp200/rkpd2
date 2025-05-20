@@ -69,7 +69,7 @@ public class AuraOfProtection extends ClericSpell {
 
 	@Override
 	public boolean canCast(Hero hero) {
-		return super.canCast(hero) && (SpellEmpower.isActive() || hero.hasTalent(Talent.AURA_OF_PROTECTION));
+		return super.canCast(hero) && hero.shiftedPoints(Talent.AURA_OF_PROTECTION) > (SpellEmpower.isActive() ? 0 : 1);
 	}
 
 	@Override

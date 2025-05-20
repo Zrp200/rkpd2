@@ -117,7 +117,10 @@ public class WallOfLight extends TargetedClericSpell {
 
 	@Override
 	public boolean canCast(Hero hero) {
-		return super.canCast(hero) && hero.hasTalent(Talent.WALL_OF_LIGHT);
+		return super.canCast(hero) && hero.shiftedPoints(Talent.WALL_OF_LIGHT) > (SpellEmpower.isActive() ? 0 : 1)
+				// allow for clean-up of existing walls
+				|| Dungeon.level.blobs.containsKey(LightWall.class)
+				&& Dungeon.level.blobs.get(LightWall.class).volume > 0;
 	}
 
 	@Override

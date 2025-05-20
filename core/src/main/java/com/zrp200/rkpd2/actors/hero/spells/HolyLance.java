@@ -76,7 +76,7 @@ public class HolyLance extends MultiTargetSpell {
 	@Override
 	public boolean canCast(Hero hero) {
 		return super.canCast(hero)
-				&& (hero.hasTalent(Talent.HOLY_LANCE) || SpellEmpower.isActive())
+				&& hero.shiftedPoints(Talent.HOLY_LANCE) > (SpellEmpower.isActive() ? 0 : 1)
 				&& hero.buff(LanceCooldown.class) == null;
 	}
 

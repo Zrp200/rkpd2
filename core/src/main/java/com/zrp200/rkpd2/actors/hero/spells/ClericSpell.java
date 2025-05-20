@@ -212,41 +212,20 @@ public abstract class ClericSpell {
 
 		} else if (tier == 3){
 
-			if (cleric.subClass == HeroSubClass.PRIEST) {
-				spells.add(Radiance.INSTANCE);
-
-			} else if (cleric.subClass == HeroSubClass.PALADIN){
-				spells.add(Smite.INSTANCE);
-			}
-
-			if (cleric.hasTalent(Talent.CLEANSE)){
-				spells.add(Cleanse.INSTANCE);
-			}
-
-			if (cleric.hasTalent(Talent.HOLY_LANCE)){
-				spells.add(HolyLance.INSTANCE);
-			}
-			if (cleric.hasTalent(Talent.HALLOWED_GROUND)){
-				spells.add(HallowedGround.INSTANCE);
-			}
-			if (cleric.hasTalent(Talent.MNEMONIC_PRAYER)){
-				spells.add(MnemonicPrayer.INSTANCE);
-			}
-			if (cleric.hasTalent(Talent.DIVINE_ADVENT)) {
-				spells.add(SpellEmpower.DivineAdvent.INSTANCE);
-			}
-
-			if (cleric.hasTalent(Talent.LAY_ON_HANDS)){
-				spells.add(LayOnHands.INSTANCE);
-			}
-			if (cleric.hasTalent(Talent.AURA_OF_PROTECTION)){
-				spells.add(AuraOfProtection.INSTANCE);
-			}
-			if (cleric.hasTalent(Talent.WALL_OF_LIGHT)){
-				spells.add(WallOfLight.INSTANCE);
-			}
-			if (cleric.hasTalent(Talent.LIMIT_BREAK)) {
-				spells.add(SpellEmpower.LimitBreak.INSTANCE);
+			for (ClericSpell spell : new ClericSpell[]{
+				Radiance.INSTANCE,
+				Smite.INSTANCE,
+				Cleanse.INSTANCE,
+				HolyLance.INSTANCE,
+				HallowedGround.INSTANCE,
+				MnemonicPrayer.INSTANCE,
+				SpellEmpower.DivineAdvent.INSTANCE,
+				LayOnHands.INSTANCE,
+				AuraOfProtection.INSTANCE,
+				WallOfLight.INSTANCE,
+				SpellEmpower.LimitBreak.INSTANCE
+			}){
+				if (spell.isVisible(cleric)) spells.add(spell);
 			}
 
 		} else if (tier == 4){
