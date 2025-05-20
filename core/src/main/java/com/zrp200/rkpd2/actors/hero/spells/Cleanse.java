@@ -63,8 +63,8 @@ public class Cleanse extends ClericSpell {
 		return 2;
 	}
 
-	private float getImmunity() {
-		float immunity = 1 + 2 * Dungeon.hero.pointsInTalent(Talent.CLEANSE);
+	private int getImmunity() {
+		int immunity = 1 + 2 * Dungeon.hero.pointsInTalent(Talent.CLEANSE);
 		return (SpellEmpower.isActive() ? 2 : 1) * immunity;
 	}
 
