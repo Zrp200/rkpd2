@@ -133,7 +133,7 @@ public class HallowedGround extends TargetedClericSpell {
 
 		PathFinder.buildDistanceMap(target, canSeed, Math.max(1, hero.pointsInTalent(Talent.HALLOWED_GROUND)));
 		for (int i = 0; i < Dungeon.level.length(); i++){
-			if (PathFinder.distance[i] != Integer.MAX_VALUE){
+			if (canSeed[i] && PathFinder.distance[i] != Integer.MAX_VALUE){
 				canSeed[i] = false;
 
 				int quantity = 0;
