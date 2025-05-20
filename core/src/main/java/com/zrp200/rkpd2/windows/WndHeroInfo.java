@@ -229,6 +229,7 @@ public class WndHeroInfo extends WndTabbed {
 							new ItemSprite(ItemSpriteSheet.CUDGEL),
 							new ItemSprite(ItemSpriteSheet.SCROLL_ISAZ),
 							new TalentIcon(Talent.ENLIGHTENING_MEAL),
+							new TalentIcon(Talent.LIGHT_READING)
 					};
 					break;
 				case RAT_KING:
