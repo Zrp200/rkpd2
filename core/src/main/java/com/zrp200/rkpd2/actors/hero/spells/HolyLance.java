@@ -74,10 +74,13 @@ public class HolyLance extends MultiTargetSpell {
 	}
 
 	@Override
-	public boolean canCast(Hero hero) {
+	public boolean isVisible(Hero hero) {
 		return super.canCast(hero)
-				&& hero.shiftedPoints(Talent.HOLY_LANCE) > (SpellEmpower.isActive() ? 0 : 1)
-				&& hero.buff(LanceCooldown.class) == null;
+				&& hero.shiftedPoints(Talent.HOLY_LANCE) > (SpellEmpower.isActive() ? 0 : 1);
+	}
+	@Override
+	public boolean canCast(Hero hero) {
+		return isVisible(hero) && hero.buff(LanceCooldown.class) == null;
 	}
 
 	@Override

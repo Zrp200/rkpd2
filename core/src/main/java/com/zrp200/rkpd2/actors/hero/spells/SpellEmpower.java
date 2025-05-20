@@ -63,8 +63,13 @@ public abstract class SpellEmpower extends ClericSpell {
     protected Talent talent;
 
     @Override
+    public boolean isVisible(Hero hero) {
+        return hero.hasTalent(talent);
+    }
+
+    @Override
     public boolean canCast(Hero hero) {
-        return hero.hasTalent(talent) && !isActive() && hero.virtualBuff(SpellCooldown.class) == null;
+        return isVisible(hero) && !isActive() && hero.virtualBuff(SpellCooldown.class) == null;
     }
 
     @Override
