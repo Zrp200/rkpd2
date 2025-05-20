@@ -33,6 +33,7 @@ import com.zrp200.rkpd2.actors.buffs.RevealedArea;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.HeroClass;
 import com.zrp200.rkpd2.actors.hero.Talent;
+import com.zrp200.rkpd2.actors.hero.spells.HolyWeapon;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.artifacts.CloakOfShadows;
 import com.zrp200.rkpd2.items.bags.Bag;
@@ -47,6 +48,7 @@ import com.zrp200.rkpd2.items.weapon.melee.MeleeWeapon;
 import com.zrp200.rkpd2.items.weapon.melee.RunicBlade;
 import com.zrp200.rkpd2.items.weapon.missiles.darts.Dart;
 import com.zrp200.rkpd2.messages.Messages;
+import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.utils.Bundle;
@@ -554,6 +556,10 @@ public boolean isSimilar( Item item ) {
 			info += "\n\n" + Messages.get(Weapon.class, "enchanted", enchantment.name());
 			info += " " + Messages.get(enchantment, "desc");
 		}
+		if (isHoly()) {
+			info += "\n\n" + Messages.capitalize(Messages.get(Weapon.class, "enchanted", Messages.get(HolyWeapon.class, "ench_name", Messages.get(Enchantment.class, "enchant"))));
+			info += " " + Messages.get(HolyWeapon.class, "ench_desc");
+		}
 
 		if (cursed && isEquipped( Dungeon.hero )) {
 			info += "\n\n" + Messages.get(Weapon.class, "cursed_worn");
@@ -577,6 +583,20 @@ public boolean isSimilar( Item item ) {
 		
 		
 		return info;
+	}
+
+	protected boolean isHoly() {
+		return Dungeon.hero != null &&
+				Dungeon.hero.buff(HolyWeapon.HolyWepBuff.Empowered.class) != null && (
+				Dungeon.hero.belongings.contains(this)
+						|| Dungeon.hero.belongings.contains(parent)
+		);
+	}
+
+	@Override
+	public ItemSprite.Glowing glowing() {
+		ItemSprite.Glowing glowing = super.glowing();
+		return glowing != null ? glowing : isHoly() ? HOLY : null;
 	}
 	
 	@Override

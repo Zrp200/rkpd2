@@ -533,7 +533,7 @@ abstract public class Weapon extends KindOfWeapon {
 		return enchantment != null && enchantment.curse();
 	}
 
-	private static ItemSprite.Glowing HOLY = new ItemSprite.Glowing( 0xFFFF00 );
+	protected static ItemSprite.Glowing HOLY = new ItemSprite.Glowing( 0xFFFF00 );
 
 	@Override
 	public ItemSprite.Glowing glowing() {
