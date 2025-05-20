@@ -84,10 +84,16 @@ public abstract class ClericSpell {
 
 	protected String chargeUseDesc() {
 		float chargeUse = chargeUse(Dungeon.hero);
-		String chargeScale = checkEmpowerMsg("charge_cost_scale");
-        //noinspection StringEquality
-		chargeScale = chargeUse == 0 || chargeScale == Messages.NO_TEXT_FOUND ? "" : " " + chargeScale;
-		return checkEmpowerMsg("charge_cost", chargeUse > 0 && chargeUse < 1 ? String.valueOf(chargeUse) : String.valueOf((int)chargeUse)) + chargeScale;
+		String desc = chargeCostDesc(chargeUse);
+		if (chargeUse > 0) {
+			String chargeCostScale = checkEmpowerMsg("charge_cost_scale");
+			if (!chargeCostScale.isEmpty() && !Messages.NO_TEXT_FOUND.equals(chargeCostScale)) desc += " " + chargeCostScale;
+		}
+		return desc;
+	}
+
+	protected String chargeCostDesc(float chargeUse) {
+		return checkEmpowerMsg("charge_cost", Messages.decimalFormat("0.#", chargeUse));
 	}
 
     protected List<Object> getDescArgs() {
