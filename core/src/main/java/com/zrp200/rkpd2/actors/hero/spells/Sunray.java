@@ -43,7 +43,7 @@ import com.zrp200.rkpd2.utils.GLog;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Random;
 
-public class Sunray extends TargetedClericSpell {
+public class Sunray extends MultiTargetSpell {
 
 	public static final Sunray INSTANCE = new Sunray();
 
@@ -65,48 +65,20 @@ public class Sunray extends TargetedClericSpell {
 		int max = 5 * (1 + points);
 		int dur = 3 * (1 + points);
 		String desc = Messages.get(this, "desc", min, max, dur);
-		if (SpellEmpower.isActive()) {
+		if (isMultiTarget()) {
 			desc += "\n\n" + Messages.get(this, "multi_target");
 		}
 		return desc + "\n\n" + chargeUseDesc();
 	}
 
-	private int targets = 0;
-
 	@Override
 	public float chargeUse(Hero hero) {
-		return SpellEmpower.isActive() ? 0.5f * Math.max(1, targets) : super.chargeUse(hero);
+		return isMultiTarget() ? 0.5f * Math.max(1, totalCasts) : super.chargeUse(hero);
 	}
 
 	@Override
 	public boolean canCast(Hero hero) {
 		return super.canCast(hero) && (hero.hasTalent(Talent.SUNRAY) || SpellEmpower.isActive());
-	}
-
-	@Override
-	public void onCast(HolyTome tome, Hero hero) {
-		if (SpellEmpower.isActive()) {
-			Char lastTarget = null;
-			for (Char m : Dungeon.level.mobs) {
-				if (m.alignment == Char.Alignment.ENEMY && Dungeon.level.heroFOV[m.pos]) {
-					int pos = QuickSlotButton.autoAim(m, this);
-					if (pos != -1) {
-						lastTarget = m;
-						onTargetSelected(tome, hero, m.pos);
-					}
-				}
-			}
-			if (targets == 0) {
-				GLog.w("No enemies in sight!");
-			} else {
-				// shoot single target twice
-				if (targets == 1 && lastTarget != null && lastTarget.isAlive()) {
-					onTargetSelected(tome, hero, lastTarget.pos);
-				}
-				onSpellCast(tome, hero);
-			}
-		}
-		else super.onCast(tome, hero);
 	}
 
 	@Override
@@ -122,7 +94,7 @@ public class Sunray extends TargetedClericSpell {
 			return;
 		}
 
-		if (!SpellEmpower.isActive()) {
+		if (usesTargeting()) {
 			if (Actor.findChar(aim.collisionPos) != null) {
 				QuickSlotButton.target(Actor.findChar(aim.collisionPos));
 			} else {
@@ -130,10 +102,9 @@ public class Sunray extends TargetedClericSpell {
 			}
 		}
 
-		targets++;
 		hero.busy();
 		Sample.INSTANCE.play(Assets.Sounds.RAY);
-		hero.sprite.zap(target);
+		hero.sprite.zap(target, () -> {/* track animation */});
 
 		hero.sprite.parent.add(
 				new Beam.SunRay(hero.sprite.center(), DungeonTilemap.raisedTileCenterToWorld(aim.collisionPos)));
@@ -162,18 +133,22 @@ public class Sunray extends TargetedClericSpell {
 					Buff.prolong(ch, SunRayRecentlyBlindedTracker.class, dur);
 					Buff.affect(ch, SunRayUsedTracker.class);
 				}
+				if (totalCasts == 1) {
+					// shoot again
+					totalCasts++;
+					hero.sprite.doAfterAnim(() -> onTargetSelected(tome, hero, target));
+					return;
+				}
 			}
 		}
-		if (!SpellEmpower.isActive()) {
-			onSpellCast(tome, hero);
-		}
+
+		onSpellCast(tome, hero);
 	}
 
 	@Override
-	public void onSpellCast(HolyTome tome, Hero hero) {
-		hero.spendAndNext( 1f );
-		super.onSpellCast(tome, hero);
-		targets = 0;
+	public void onSpellComplete(HolyTome tome, Hero hero) {
+		hero.spend( 1f );
+		hero.next();
 	}
 
 	public static class SunRayUsedTracker extends Buff {}

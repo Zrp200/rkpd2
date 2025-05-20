@@ -22,7 +22,6 @@
 package com.zrp200.rkpd2.actors.hero.spells;
 
 import static com.zrp200.rkpd2.Dungeon.hero;
-import static com.zrp200.rkpd2.Dungeon.level;
 
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
@@ -39,7 +38,6 @@ import com.zrp200.rkpd2.items.artifacts.HolyTome;
 import com.zrp200.rkpd2.items.wands.Wand;
 import com.zrp200.rkpd2.mechanics.Ballistica;
 import com.zrp200.rkpd2.messages.Messages;
-import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.sprites.ItemSprite;
 import com.zrp200.rkpd2.sprites.ItemSpriteSheet;
 import com.zrp200.rkpd2.sprites.MissileSprite;
@@ -53,9 +51,7 @@ import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 
-import java.util.ArrayList;
-
-public class HolyLance extends TargetedClericSpell {
+public class HolyLance extends MultiTargetSpell {
 
 	public static final HolyLance INSTANCE = new HolyLance();
 
@@ -86,39 +82,16 @@ public class HolyLance extends TargetedClericSpell {
 
 	@Override
 	public float chargeUse(Hero hero) {
-		return targets > 0 ? 0 : SpellEmpower.isActive() ? 2 * (1 + deferredCasts) : 4;
+		return totalCasts > 0 ? 2 * totalCasts : 4;
 	}
 
 	@Override
-	public int targetingFlags() {
-		return SpellEmpower.isActive() ? Ballistica.STOP_TARGET | Ballistica.STOP_SOLID : Ballistica.PROJECTILE;
+	protected int baseTargetingFlags() {
+		return Ballistica.PROJECTILE;
 	}
 
-	private int targets, deferredCasts;
-
-	@Override
-	public void onCast(HolyTome tome, Hero hero) {
-		if (SpellEmpower.isActive()) {
-			ArrayList<Integer> targets = new ArrayList<>();
-			for (Char ch : level.mobs) {
-				if (level.heroFOV[ch.pos] && ch.alignment == Char.Alignment.ENEMY) {
-					int aim = QuickSlotButton.autoAim(ch, this);
-					if (aim == ch.pos) {
-						targets.add(aim);
-					}
-				}
-			}
-			this.targets = targets.size();
-			deferredCasts = 0;
-			if (this.targets > 0) {
-				hero.sprite.showStatus(CharSprite.POSITIVE, name());
-				for (int target : targets) {
-					onTargetSelected(tome, hero, target);
-				}
-				return;
-			}
-		}
-		super.onCast(tome, hero);
+	{
+		announced = true;
 	}
 
 	@Override
@@ -134,7 +107,7 @@ public class HolyLance extends TargetedClericSpell {
 			return;
 		}
 
-		if (!SpellEmpower.isActive()) {
+		if (usesTargeting()) {
 			if (Actor.findChar(collisionPos) != null) {
 				QuickSlotButton.target(Actor.findChar(collisionPos));
 			} else {
@@ -143,7 +116,7 @@ public class HolyLance extends TargetedClericSpell {
 		}
 
 
-		hero.sprite.zap(target);
+		hero.sprite.zap( target, () -> {/* track animation*/} );
 		hero.busy();
 
 		Sample.INSTANCE.play(Assets.Sounds.ZAP);
@@ -167,11 +140,11 @@ public class HolyLance extends TargetedClericSpell {
 									Sample.INSTANCE.play( Assets.Sounds.HIT_STAB, 1, Random.Float(0.8f, 1f) );
 
 									enemy.sprite.burst(0xFFFFFFFF, 10);
-
-									if (enemy.isAlive() && targets == 1 && deferredCasts == 0 && SpellEmpower.isActive()) {
+									if (enemy.isAlive() && totalCasts == 1) {
 										// shoot again
-										targets++;
-										onTargetSelected(tome, hero, target);
+										totalCasts++;
+										hero.sprite.doAfterAnim(() -> onTargetSelected(tome, hero, target));
+										return;
 									}
 									onSpellCast(tome, hero);
 								}
@@ -193,17 +166,9 @@ public class HolyLance extends TargetedClericSpell {
 	}
 
 	@Override
-	public synchronized void onSpellCast(HolyTome tome, Hero hero) {
-		--targets;
-		super.onSpellCast(tome, hero);
-		if (targets <= 0) {
-			deferredCasts = 0;
-			hero.spendAndNext(1f);
-			Cooldown.affectHero(LanceCooldown.class);
-		} else {
-			deferredCasts++;
-		}
-
+	public void onSpellComplete(HolyTome tome, Hero hero) {
+		hero.spendAndNext(1f);
+		Cooldown.affectHero(LanceCooldown.class);
 	}
 
 	public static class HolyLanceVFX extends Item {

@@ -48,7 +48,7 @@ public abstract class TargetedClericSpell extends ClericSpell implements QuickSl
 
 	@Override
 	public int targetingFlags(){
-		return SpellEmpower.isActive() ? Ballistica.STOP_TARGET : Ballistica.MAGIC_BOLT;
+		return Ballistica.MAGIC_BOLT;
 	}
 
 	@Override

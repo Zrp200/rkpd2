@@ -21,8 +21,6 @@
 
 package com.zrp200.rkpd2.actors.hero.spells;
 
-import static com.zrp200.rkpd2.Dungeon.level;
-
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
@@ -48,9 +46,7 @@ import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Callback;
 import com.watabou.utils.Random;
 
-import java.util.ArrayList;
-
-public class GuidingLight extends TargetedClericSpell {
+public class GuidingLight extends MultiTargetSpell {
 
 	public static final GuidingLight INSTANCE = new GuidingLight();
 
@@ -65,34 +61,6 @@ public class GuidingLight extends TargetedClericSpell {
 		if (SpellEmpower.isActive()) icon.tint(0, .33f);
 	}
 
-	private int castsLeft, totalCasts;
-
-	@Override
-	public void onCast(HolyTome tome, Hero hero) {
-		if (SpellEmpower.isActive()) {
-			ArrayList<Integer> targets = new ArrayList<>();
-			for (Char ch : level.mobs) {
-				if (level.heroFOV[ch.pos] && ch.alignment == Char.Alignment.ENEMY) {
-					int aim = QuickSlotButton.autoAim(ch, this);
-					if (aim == ch.pos) {
-						targets.add(aim);
-					}
-				}
-			}
-			if (targets.isEmpty()) {
-				GLog.w(Messages.get(this, "no_targets"));
-			} else {
-				totalCasts = castsLeft = targets.size();
-				for (int target : targets) onTargetSelected(tome, hero, target);
-			}
-			return;
-		}
-		super.onCast(tome, hero);
-	}
-
-	@Override
-	public boolean usesTargeting() { return !SpellEmpower.isActive(); }
-
 	@Override
 	protected void onTargetSelected(HolyTome tome, Hero hero, Integer target) {
 		if (target == null){
@@ -106,7 +74,7 @@ public class GuidingLight extends TargetedClericSpell {
 			return;
 		}
 
-		if (!SpellEmpower.isActive()) {
+		if (usesTargeting()) {
 			if (Actor.findChar(aim.collisionPos) != null) {
 				QuickSlotButton.target(Actor.findChar(aim.collisionPos));
 			} else {
@@ -136,18 +104,13 @@ public class GuidingLight extends TargetedClericSpell {
 				}
 
 				onSpellCast(tome, hero);
-
 			}
 		});
 	}
 
 	@Override
-	public synchronized void onSpellCast(HolyTome tome, Hero hero) {
-		if (--castsLeft > 0) return;
-		super.onSpellCast(tome, hero);
-		boolean empowered = totalCasts > 0;
-		totalCasts = 0;
-		hero.spendAndNext(empowered ? 0 : 1);
+	public void onSpellComplete(HolyTome tome, Hero hero) {
+		hero.spendAndNext(isMultiTarget() ? 0 : 1);
 		if (hero.subClass.is(HeroSubClass.PRIEST) && hero.buff(GuidingLightPriestCooldown.class) == null) {
 			Cooldown.affectHero(GuidingLightPriestCooldown.class);
 		}

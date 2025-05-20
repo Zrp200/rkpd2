@@ -87,6 +87,9 @@ public class MnemonicPrayer extends TargetedClericSpell {
 	}
 
 	@Override
+	public boolean usesTargeting() { return !SpellEmpower.isActive(); }
+
+	@Override
 	public boolean canCast(Hero hero) {
 		return super.canCast(hero) && hero.hasTalent(Talent.MNEMONIC_PRAYER);
 	}
@@ -101,10 +104,6 @@ public class MnemonicPrayer extends TargetedClericSpell {
 		return SpellEmpower.isActive() ? targets/2f : super.chargeUse(hero);
 	}
 
-	@Override
-	public boolean usesTargeting() {
-		return !SpellEmpower.isActive();
-	}
 
 	@Override
 	public void onCast(HolyTome tome, Hero hero) {
@@ -142,7 +141,7 @@ public class MnemonicPrayer extends TargetedClericSpell {
 			return;
 		}
 
-		if (!SpellEmpower.isActive()) QuickSlotButton.target(ch);
+		if (usesTargeting()) QuickSlotButton.target(ch);
 
 		float extension = getExtension();
 
