@@ -27,6 +27,7 @@ import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
 import com.zrp200.rkpd2.actors.buffs.MagicImmune;
 import com.zrp200.rkpd2.actors.hero.Hero;
+import com.zrp200.rkpd2.actors.hero.spells.HolyWeapon;
 import com.zrp200.rkpd2.items.Item;
 import com.zrp200.rkpd2.items.bags.Bag;
 import com.zrp200.rkpd2.items.bags.VelvetPouch;
@@ -143,7 +144,11 @@ public class Dart extends MissileWeapon {
 	@Override
 	public int proc(Char attacker, Char defender, int damage) {
 		if (bow != null && !processingChargedShot){
+			// this prevents empowered from double proc-ing on crossbow shots
+			HolyWeapon.HolyWepBuff.Empowered holyWep = attacker.buff(HolyWeapon.HolyWepBuff.Empowered.class);
+			if (holyWep != null) holyWep.detach();
 			damage = bow.proc(attacker, defender, damage);
+			if (holyWep != null) holyWep.attachTo(attacker);
 		}
 
 		int dmg = super.proc(attacker, defender, damage);
