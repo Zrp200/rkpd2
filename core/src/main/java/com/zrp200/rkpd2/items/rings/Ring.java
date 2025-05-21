@@ -378,7 +378,8 @@ public class Ring extends KindofMisc {
 	}
 
 	private int applyEnhancedRings() {
-		return Dungeon.hero.buff(EnhancedRings.class) != null
+		return Dungeon.hero == null ? 0 :
+				Dungeon.hero.buff(EnhancedRings.class) != null
 				? Dungeon.hero.hasTalent(Talent.ENHANCED_RINGS) ? 2 : 1
 				: 0;
 	}
@@ -437,7 +438,7 @@ public class Ring extends KindofMisc {
 	// for getting numbers...
 	private int computeBonus(boolean buffed, boolean trueEffect) {
 		int level;
-		int bonus = Dungeon.hero.getBonus(this);
+		int bonus = Dungeon.hero != null ? Dungeon.hero.getBonus(this) : 0;
 		if ( trueEffect ) {
 			level = buffed ? buffedLvl() - bonus : level();
 		}

@@ -209,9 +209,9 @@ public class BrokenSeal extends Item {
 
 	@Override
 	public String desc() {
-		HeroClass heroClass = hero.heroClass;
+		HeroClass heroClass = hero == null ? HeroClass.WARRIOR : hero.heroClass;
 		return Messages.get(this, "desc",
-				heroClass == HeroClass.WARRIOR ? " from the glorious king of rats" : "",
+				hero != null && heroClass == HeroClass.WARRIOR ? " from the glorious king of rats" : "",
 				heroClass.title());
 	}
 

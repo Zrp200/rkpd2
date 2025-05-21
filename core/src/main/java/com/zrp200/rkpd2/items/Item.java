@@ -376,7 +376,8 @@ public class Item implements Bundlable, QuickSlotButton.Aimable {
 		int lvl = level();
 		//only the hero can be affected by Degradation
 		if (Dungeon.hero != null && Dungeon.hero.buff(Degrade.class) != null && (isEquipped( Dungeon.hero ) || Dungeon.hero.belongings.contains( this ))) lvl = Degrade.reduceLevel(lvl);
-		return lvl + Dungeon.hero.getBonus(this);
+		if (Dungeon.hero != null) lvl += Dungeon.hero.getBonus(this);
+		return lvl;
 	}
 
 	public void level( int value ){

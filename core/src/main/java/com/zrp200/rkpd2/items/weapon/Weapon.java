@@ -385,7 +385,7 @@ abstract public class Weapon extends KindOfWeapon {
 	@Override
 	public int buffedLvl() {
 		int lvl = super.buffedLvl();
-		if((isEquipped(Dungeon.hero) || Dungeon.hero.belongings.contains(this))
+		if((isEquipped(Dungeon.hero) || Dungeon.hero != null && Dungeon.hero.belongings.contains(this))
 				&& (Dungeon.hero.buff(CloakOfShadows.cloakStealth.class) != null && Dungeon.hero.heroClass == HeroClass.ROGUE)) lvl++;
 
 		if (!evaluatingTwinUpgrades && isEquipped(Dungeon.hero) && Dungeon.hero.hasTalent(Talent.TWIN_UPGRADES)){

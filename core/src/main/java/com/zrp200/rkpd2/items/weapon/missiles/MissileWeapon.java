@@ -412,7 +412,7 @@ public boolean isSimilar( Item item ) {
 
 	protected final float durabilityPerUse( boolean rounded){
 		int level = level();
-		if(Dungeon.hero.heroClass == HeroClass.ROGUE && Dungeon.hero.buff(CloakOfShadows.cloakStealth.class) != null) level++;
+		if(Dungeon.hero != null &&Dungeon.hero.heroClass == HeroClass.ROGUE && Dungeon.hero.buff(CloakOfShadows.cloakStealth.class) != null) level++;
 		float usages = baseUses * (float)(Math.pow(3, level));
 
 		final float[] u = {usages};

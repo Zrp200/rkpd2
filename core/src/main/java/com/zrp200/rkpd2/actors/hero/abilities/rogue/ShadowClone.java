@@ -160,7 +160,7 @@ public class ShadowClone extends ArmorAbility {
 
 		@Override
 		public String name() {
-			return Messages.get(this, "name", hero.heroClass.title());
+			return Messages.get(this, "name", (hero == null ? HeroClass.ROGUE : hero.heroClass).title());
 		}
 
 		public ShadowAlly(){
@@ -337,8 +337,9 @@ public class ShadowClone extends ArmorAbility {
 
 		@Override
 		public String description() {
-			String name = Messages.titleCase(hero.heroClass.title());
-			if(hero.heroClass != HeroClass.RAT_KING) name = "the " + name;
+			HeroClass heroClass = hero == null ? HeroClass.ROGUE : hero.heroClass;
+			String name = Messages.titleCase(heroClass.title());
+			if(heroClass != HeroClass.RAT_KING) name = "the " + name;
 			return Messages.get(this, "desc", name);
 		}
 
