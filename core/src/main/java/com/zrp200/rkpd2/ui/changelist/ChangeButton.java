@@ -61,9 +61,13 @@ public class ChangeButton extends Component {
 		layout();
 	}
 
-	public ChangeButton(Item item, String... message ){
-		this( new ItemSprite(item), item.name(), message);
+	public ChangeButton(Item item, String name, String... message) {
+		this( new ItemSprite(item), name, message);
 	}
+
+	public ChangeButton(Item item, String message ){ this( item, item.name(), message); }
+
+
 
 	public ChangeButton(HeroClass heroClass, String... message) {
 		this( avatar(heroClass, 6), heroClass.title(), message );
