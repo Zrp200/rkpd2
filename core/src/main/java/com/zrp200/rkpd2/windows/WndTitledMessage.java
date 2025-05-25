@@ -87,11 +87,16 @@ public class WndTitledMessage extends Window {
 		comp.setSize(text.width(), text.height() + GAP * 2);
 		resize(width, (int) Math.min((int) comp.bottom() + 2 + titlebar.height() + GAP, maxHeight()));
 
-		add(sp = new ScrollPane(comp));
+		add(sp = new ScrollPane(comp) {
+			public void onClick(float x, float y) { WndTitledMessage.this.onClick(x, y); }
+		});
 		sp.setRect(titlebar.left(), titlebar.bottom() + GAP, comp.width(), Math.min((int) comp.bottom() + 2, maxHeight() - titlebar.bottom() - GAP));
 
 		bringToFront(titlebar);
 	}
+
+	// scroll bar precludes adding new blockers, this forwards to the scroll bar
+	protected void onClick(float x, float y) {/* do nothing */}
 
 	@Override
 	public void offset(int xOffset, int yOffset) {

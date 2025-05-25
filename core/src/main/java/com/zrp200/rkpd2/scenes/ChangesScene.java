@@ -69,8 +69,6 @@ public class ChangesScene extends PixelScene {
 	private IconTitle changeTitle;
 	private RenderedTextBlock changeBody;
 
-	final static int TOTAL_BUTTONS = 4;
-
 	@Override
 	public void create() {
 		super.create();
@@ -111,29 +109,27 @@ public class ChangesScene extends PixelScene {
 			rightPanel.x = (w - pw) / 2f + pw/2 + 1;
 			rightPanel.y = 20;
 			add(rightPanel);
-// todo why doesn't this work?!
-//			rightScroll = new ScrollPane(new Component());
-//			add(rightScroll);
-//			rightScroll.setRect(
-//					rightPanel.x + rightPanel.marginLeft(),
-//					rightPanel.y + rightPanel.marginTop()-1,
-//					rightPanel.innerWidth() + 2,
-//					rightPanel.innerHeight() + 2);
-//			rightScroll.scrollTo(0, 0);
+
+			rightScroll = new ScrollPane(new Component());
+			add(rightScroll);
+			rightScroll.setRect(
+					rightPanel.x + rightPanel.marginLeft(),
+					rightPanel.y + rightPanel.marginTop()-1,
+					rightPanel.innerWidth() + 2,
+					rightPanel.innerHeight() + 2);
+			rightScroll.scrollTo(0, 0);
 
 			changeTitle = new IconTitle(Icons.get(Icons.CHANGES), Messages.get(this, "right_title"));
-			changeTitle.setPos(/*0*/rightPanel.x + rightPanel.marginLeft(), /*1*/rightPanel.y + rightPanel.marginTop());
+			changeTitle.setPos(0, 1);
 			changeTitle.setSize(pw, 20);
-//			rightScroll.content().add(changeTitle);
-
-			add(changeTitle);
+			rightScroll.content().add(changeTitle);
 
 			String body = Messages.get(this, "right_body");
 
 			changeBody = PixelScene.renderTextBlock(body, 6);
 			changeBody.maxWidth(pw - panel.marginHor());
-			changeBody.setPos(/*0*/rightPanel.x + rightPanel.marginLeft(), changeTitle.bottom()+2);
-			/*rightScroll.content().*/add(changeBody);
+			changeBody.setPos(0, changeTitle.bottom()+2);
+			rightScroll.content().add(changeBody);
 
 		} else {
 			panel.size( pw, ph );
@@ -242,8 +238,8 @@ public class ChangesScene extends PixelScene {
 		fadeIn();
 	}
 
-	private void updateChangesText(Image icon, String title, String... messages) {
-		if (changeTitle != null) {
+	private void updateChangesText(Image icon, String title, String... messages){
+		if (changeTitle != null){
 			changeTitle.icon(icon);
 			changeTitle.label(title);
 			changeTitle.setPos(changeTitle.left(), changeTitle.top());
@@ -255,16 +251,9 @@ public class ChangesScene extends PixelScene {
 					message += "\n\n";
 				}
 			}
-			int pw = 135 + rightPanel.marginHor() - 2;
-			changeBody.text(message, pw - rightPanel.marginHor());
-			if(rightScroll == null) add(rightScroll = new ScrollPane(changeBody));
-			//rightScroll.content().setSize(rightScroll.width(), changeBody.bottom() + 2);
-			//rightScroll.setSize(rightScroll.width(), rightScroll.height());
-			rightScroll.setRect(
-					rightPanel.x + rightPanel.marginLeft(),
-					changeTitle.bottom() + 2,
-					rightPanel.innerWidth() + 2,
-					rightPanel.innerHeight() - changeTitle.height() - 1);
+			changeBody.text(message);
+			rightScroll.content().setSize(rightScroll.width(), changeBody.bottom()+2);
+			rightScroll.setSize(rightScroll.width(), rightScroll.height());
 			rightScroll.scrollTo(0, 0);
 
 		} else {
