@@ -243,9 +243,9 @@ public class Smite extends TargetedClericSpell {
 		}
 
 		@Override
-		public boolean ignoreChargeUse() {
+		public boolean ignoreChargeUse(HolyTome holyTome) {
 			// used when checking if smite can attack again
-			return !forceCheckCharges && (used < MIN_USES || super.ignoreChargeUse());
+			return !forceCheckCharges && (used < MIN_USES || super.ignoreChargeUse(holyTome));
 		}
 
 		@Override
@@ -297,7 +297,7 @@ public class Smite extends TargetedClericSpell {
 			tracker.detach();
 			if (used > 0) {
 				used = 0;
-				SpellEmpower.useCharge(SpellEmpower.limit(), SpellEmpower.limit()); // use remaining charge
+				SpellEmpower.useCharge(SpellEmpower.limit()); // use remaining charge
 				hero.spendAndNext(hero.attackDelay());
 			} else {
 				assert target == null;

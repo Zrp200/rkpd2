@@ -77,9 +77,26 @@ public class HolyTome extends Artifact {
 		bones = false;
 	}
 
+	public boolean isDepleted() {
+		return !SpellEmpower.isActive() && charge < 0;
+	}
+
 	@Override
 	public ItemSprite.Glowing glowing() {
-		return SpellEmpower.isActive() ? new ItemSprite.Glowing(0xFFFF00) : super.glowing();
+		return SpellEmpower.isActive() ?
+				new ItemSprite.Glowing(0xFFFF00)
+				: isDepleted() ? new ItemSprite.Glowing(0)
+				: super.glowing();
+	}
+
+	@Override
+	public String desc() {
+		String desc = super.desc();
+		String state = SpellEmpower.isActive() ? "empowered"
+				: isDepleted() ? "depleted" :
+				null;
+		if (state != null) desc += "\n\n" + Messages.get(this, state);
+		return desc;
 	}
 
 	public float getCharges() {
@@ -168,7 +185,7 @@ public class HolyTome extends Artifact {
 	public boolean canCast( Hero hero, ClericSpell spell ){
 		return spell != null && (isEquipped(hero) || (hero.canHaveTalent(Talent.LIGHT_READING) && hero.belongings.contains(this)))
 				&& hero.buff(MagicImmune.class) == null
-				&& (spell.ignoreChargeUse() || charge >= spell.chargeUse(hero))
+				&& (spell.ignoreChargeUse(this) || charge >= spell.chargeUse(hero))
 				&& spell.canCast(hero);
 	}
 

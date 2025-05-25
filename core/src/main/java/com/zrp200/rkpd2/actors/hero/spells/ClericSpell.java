@@ -49,7 +49,7 @@ public abstract class ClericSpell {
 		return 1;
 	}
 
-	public boolean ignoreChargeUse() {
+	public boolean ignoreChargeUse(HolyTome holyTome) {
 		return SpellEmpower.isActive();
 	}
 
@@ -127,9 +127,19 @@ public abstract class ClericSpell {
 		}
 		{
 			float empoweredChargeUse = chargeUse(hero);
-			// smite doesn't actually get empowered during spell empower currently, so it doesn't consume charge if used normally
-			if (this == Smite.INSTANCE) empoweredChargeUse -= Math.max(tome.getCharges(), 0);
-			SpellEmpower.useCharge(tome.getCharges(), empoweredChargeUse);
+			// these don't actually have an empowered effect
+			// they still consume if ignoring charge use
+			if (this == Smite.INSTANCE
+					|| this == DivineIntervention.INSTANCE
+//					|| this == Judgement.INSTANCE
+					|| this == Flash.INSTANCE
+					|| this == BodyForm.INSTANCE
+					|| this == SpiritForm.INSTANCE
+					|| this == BeamingRay.INSTANCE
+					|| this == LifeLinkSpell.INSTANCE
+					|| this == Stasis.INSTANCE
+			) empoweredChargeUse -= Math.max(tome.getCharges(), empoweredChargeUse);
+			SpellEmpower.useCharge(empoweredChargeUse);
 		}
 		tome.spendCharge(chargeUse(hero));
 		Talent.onArtifactUsed(hero);

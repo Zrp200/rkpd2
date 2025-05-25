@@ -3,14 +3,16 @@ package com.zrp200.rkpd2.actors.hero.spells;
 import static com.zrp200.rkpd2.Dungeon.hero;
 
 import com.watabou.noosa.Image;
+import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.GameMath;
-import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.actors.buffs.Cooldown;
 import com.zrp200.rkpd2.actors.buffs.CounterBuff;
 import com.zrp200.rkpd2.actors.buffs.Recharging;
 import com.zrp200.rkpd2.actors.hero.Hero;
 import com.zrp200.rkpd2.actors.hero.Talent;
 import com.zrp200.rkpd2.items.artifacts.HolyTome;
+import com.zrp200.rkpd2.items.scrolls.ScrollOfRecharging;
 import com.zrp200.rkpd2.messages.Messages;
 import com.zrp200.rkpd2.sprites.CharSprite;
 import com.zrp200.rkpd2.ui.BuffIndicator;
@@ -22,30 +24,24 @@ import java.util.List;
 
 public abstract class SpellEmpower extends ClericSpell {
 
-    public static void useCharge(float initialCharges, float charge) {
+    public static void useCharge(float charge) {
         SpellEmpower.Buff empower = hero.virtualBuff(SpellEmpower.Buff.class);
-        DivineAdvent.Tracker tracker = hero.buff(SpellEmpower.DivineAdvent.Tracker.class);
-        float tracked = 0;
-        boolean detach = false;
-        if (tracker != null && initialCharges < charge && (empower != null || forceTrackCharges)) {
-            tracked = charge - Math.max(0, initialCharges);
-        }
-        if (empower != null) {
-            empower.countUp(charge);
-            float excess = empower.count() - limit();
-            if (excess > tracked) tracked = excess;
-            detach = excess >= 0;
-        }
-        if (tracker != null && tracked >= 1) tracker.countUp(tracked);
-        if (detach) {
+        if (empower == null) return;
+        empower.countUp(charge);
+        if (empower.count() >= SpellEmpower.limit()) {
             empower.detach();
         }
     }
 
-    private static boolean forceTrackCharges = false;
-
     public static boolean isActive() {
         return hero != null && hero.virtualBuff(SpellEmpower.Buff.class) != null;
+    }
+
+    @Override
+    public boolean ignoreChargeUse(HolyTome holyTome) {
+        // divine advent and critical limit break ignore charges
+        // as long as the tome is in a "legal" state
+        return holyTome != null && holyTome.getCharges() >= 0;
     }
 
     public static float limit() {
@@ -73,6 +69,14 @@ public abstract class SpellEmpower extends ClericSpell {
     }
 
     @Override
+    public String desc() {
+        String desc = super.desc();
+        HolyTome t = hero.belongings.getItem(HolyTome.class);
+        if (t != null && t.isDepleted()) desc += "\n\n" + Messages.h(Messages.get(this, "depleted"));
+        return desc;
+    }
+
+    @Override
     protected List<Object> getDescArgs() {
         return Collections.singletonList(
                 (int)SpellEmpower.limit()
@@ -86,8 +90,9 @@ public abstract class SpellEmpower extends ClericSpell {
     @Override
     public void onCast(HolyTome tome, Hero hero) {
         onSpellCast(tome, hero);
+        ScrollOfRecharging.charge(hero);
+        Sample.INSTANCE.play( Assets.Sounds.CHARGEUP );
         applyBuff(hero);
-        hero.sprite.showStatus(CharSprite.POSITIVE, this.name());
     }
 
     public static class DivineAdvent extends SpellEmpower {
@@ -99,19 +104,9 @@ public abstract class SpellEmpower extends ClericSpell {
         }
 
         protected void applyBuff(Hero hero) {
+            // 4 / 6 / 8
             Buff.append(hero, Recharging.class, 2 * (1 + hero.pointsInTalent(talent)));
             Buff.affect(hero, Buff.class);
-        }
-
-        @Override
-        public void onCast(HolyTome tome, Hero hero) {
-            forceTrackCharges = true;
-            try {
-                Buff.affect(hero, Tracker.class);
-                super.onCast(tome, hero);
-            } finally {
-                forceTrackCharges = false;
-            }
         }
 
         @Override
@@ -122,18 +117,7 @@ public abstract class SpellEmpower extends ClericSpell {
             return 8 - hero.pointsInTalent(talent);
         }
 
-        @Override
-        public boolean ignoreChargeUse() {
-            return true;
-        }
-
         public static class Buff extends SpellEmpower.Buff {
-
-
-            @Override
-            public String desc() {
-                return super.desc() + "\n\n" + Messages.get(this, "cooldown", (int)Math.ceil(Cooldown.duration(target)));
-            }
 
             @Override
             public int icon() { return BuffIndicator.DIVINE_ADVENT; }
@@ -154,39 +138,19 @@ public abstract class SpellEmpower extends ClericSpell {
         public static class Cooldown extends SpellCooldown {
             @Override
             public int icon() { return BuffIndicator.DIVINE_ADVENT; }
-
-            @Override
-            public void detach() {
-                detach(target, Tracker.class);
-                super.detach();
-            }
-
-            private static final float BASE_DURATION = 100, PENALTY = 25f;
-
-            public static float duration(Char target) {
-                Tracker tracker = target.buff(Tracker.class);
-                return BASE_DURATION + PENALTY * (tracker != null ? tracker.count() : 0);
-            }
-
-            public float duration() { return duration(target); }
+            public float duration() { return 100; }
         }
-
-        public static class Tracker extends CounterBuff {
-            @Override
-            public boolean act() {
-                if (!SpellEmpower.isActive()) {
-                    diactivate();
-                } else {
-                    spend(TICK);
-                    countDown(Math.min(count(), 1/Cooldown.PENALTY));
-                }
-                return true;
-            }
-        };
     }
 
     public static class LimitBreak extends SpellEmpower {
         public static final LimitBreak INSTANCE = new LimitBreak();
+
+        @Override
+        public void tintIcon(HeroIcon icon) {
+            if (hero != null && canCast(hero) && ignoreChargeUse(hero.belongings.getItem(HolyTome.class))) {
+                icon.tint(1, 0, 0, 0.4f);
+            }
+        }
 
         @Override
         public int icon() { return HeroIcon.LIMIT_BREAK; }
@@ -196,8 +160,23 @@ public abstract class SpellEmpower extends ClericSpell {
         }
 
         @Override
-        public boolean ignoreChargeUse() { return hero.isNearDeath(); }
+        public boolean ignoreChargeUse(HolyTome tome) {
+            return hero.isNearDeath() && super.ignoreChargeUse(tome);
+        }
 
+        @Override
+        public String desc() {
+            String desc = super.desc();
+            HolyTome tome = hero.belongings.getItem(HolyTome.class);
+            if (tome == null || !tome.isDepleted()) desc += "\n\n" + criticalDesc();
+            return desc;
+        }
+
+        private String criticalDesc() {
+            return Messages.get(this, hero.isNearDeath() ? "critical" : "not_critical");
+        }
+
+        // limit break's countdown starts immediately, but it doesn't last as long
         @Override
         protected List<Object> getDescArgs() {
             List<Object> args = new ArrayList(super.getDescArgs());
@@ -210,6 +189,7 @@ public abstract class SpellEmpower extends ClericSpell {
             Buff.affect(hero, Buff.class);
             Cooldown cd = Cooldown.affectHero(Cooldown.class);
             if (hero.isNearDeath()) cd.spend(-150);
+            cd.spend(-1); // offset the instant cast
         }
 
         @Override
@@ -245,6 +225,7 @@ public abstract class SpellEmpower extends ClericSpell {
     public abstract static class Buff extends CounterBuff {
         {
             type = buffType.POSITIVE;
+            announced = true;
         }
 
         public abstract float getTurnsPerCharge();
@@ -276,7 +257,7 @@ public abstract class SpellEmpower extends ClericSpell {
             if (!RecallInscription.INSTANCE.isVisible((Hero)target)) {
                 Buff.detach(target, RecallInscription.UsedItemTracker.class);
             }
-        };
+        }
 
         @Override
         public float iconFadePercent() {
@@ -290,7 +271,7 @@ public abstract class SpellEmpower extends ClericSpell {
 
         @Override
         public String desc() {
-            return Messages.get(this, "desc", Messages.get(this, "overspend"), iconTextDisplay(), turnsUntilCost());
+            return Messages.get(this, "desc", iconTextDisplay(), turnsUntilCost());
         }
     }
 
