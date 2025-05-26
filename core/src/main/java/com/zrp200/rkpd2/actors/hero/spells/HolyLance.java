@@ -208,6 +208,6 @@ public class HolyLance extends MultiTargetSpell {
 		}
 
 		@Override
-		public float duration() { return 25; }
+		public float duration() { return 15; }
 	}
 }
