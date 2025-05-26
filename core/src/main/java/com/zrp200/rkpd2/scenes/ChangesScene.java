@@ -138,7 +138,7 @@ public class ChangesScene extends PixelScene {
 		}
 		align( panel );
 		add( panel );
-		
+
 		final ArrayList<ChangeInfo> changeInfos = new ArrayList<>();
 
 		if (Messages.lang() != Languages.ENGLISH){
@@ -147,18 +147,18 @@ public class ChangesScene extends PixelScene {
 			changeInfos.add(langWarn);
 		}
 
-		switch (changesSelected){
-			case 0: case 1: default:
-				RKPD2Changes.values()[changesSelected].addAllChanges(changeInfos);
-				break;
-			case 2:
-                v3_X_Changes.addAllChanges(changeInfos);
-				v2_X_Changes.addAllChanges(changeInfos);
-				break;
-			case 3:
-				v1_X_Changes.addAllChanges(changeInfos);
-				break;
+		if (changesSelected < RKPD2Changes.values().length) {
+			RKPD2Changes.values()[changesSelected].addAllChanges(changeInfos);
 		}
+//		switch (changesSelected){
+//			case 2:
+//                v3_X_Changes.addAllChanges(changeInfos);
+//				v2_X_Changes.addAllChanges(changeInfos);
+//				break;
+//			case 3:
+//				v1_X_Changes.addAllChanges(changeInfos);
+//				break;
+//		}
 
 		ScrollPane list = new ScrollPane( new Component() ){
 
@@ -212,7 +212,8 @@ public class ChangesScene extends PixelScene {
 				panel.innerHeight() + 2);
 		list.scrollTo(0, 0);
 
-		String[] labels = {"1-2.X", "0.X"/*, "SHPD 2.X", "SHPD 1.X"*/};
+		String[] labels = new String[RKPD2Changes.values().length];
+		for (int i = 0; i < labels.length; i++) labels[i] = RKPD2Changes.values()[i].toString();
 		float bx = list.left()-4f;
 		for (int n=0; n < labels.length; n++) {
 			final int N = n;
@@ -277,7 +278,7 @@ public class ChangesScene extends PixelScene {
 			s.addToFront(new WndChangesTabbed(icon, title, messages));
 		}
 	}
-	
+
 	@Override
 	protected void onBackPressed() {
 		ShatteredPixelDungeon.switchNoFade(TitleScene.class);
