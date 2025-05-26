@@ -101,7 +101,7 @@ public class MnemonicPrayer extends TargetedClericSpell {
 
 	@Override
 	public float chargeUse(Hero hero) {
-		return SpellEmpower.isActive() ? targets/2f : super.chargeUse(hero);
+		return SpellEmpower.isActive() ? Math.max(targets, 1)/2f : super.chargeUse(hero);
 	}
 
 
