@@ -803,8 +803,8 @@ public enum Talent {
 				}
 				break;
 
-			case LIGHT_CLOAK:
-				if (!hero.heroClass.is(HeroClass.ROGUE)) break;
+//			case LIGHT_CLOAK:
+//				if (!hero.heroClass.is(HeroClass.ROGUE)) break;
 			case RK_FREERUNNER:
 				if (hero.pointsInTalent(LIGHT_CLOAK, RK_FREERUNNER) == 1) {
 					for (Item item : hero.belongings.backpack) {

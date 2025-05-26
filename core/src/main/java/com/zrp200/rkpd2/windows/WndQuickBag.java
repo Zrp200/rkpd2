@@ -73,7 +73,7 @@ public class WndQuickBag extends Window {
 			}
 			if (i instanceof Artifact
 					&& !i.isEquipped(Dungeon.hero)
-					&& (!(i instanceof CloakOfShadows) || !Dungeon.hero.hasTalent(Talent.LIGHT_CLOAK, Talent.RK_FREERUNNER))
+					&& (!(i instanceof CloakOfShadows) || Dungeon.hero.shiftedPoints(Talent.LIGHT_CLOAK, Talent.RK_FREERUNNER) == 0)
 					&& (!(i instanceof HolyTome) || !Dungeon.hero.canHaveTalent(Talent.LIGHT_READING))){
 				continue;
 			}

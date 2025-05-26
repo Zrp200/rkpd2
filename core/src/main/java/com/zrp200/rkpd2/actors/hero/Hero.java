@@ -2693,7 +2693,7 @@ if (talisman != null){
 		for (Item i : belongings){
 			if (i instanceof EquipableItem && i.isEquipped(this)){
 				((EquipableItem) i).activate(this);
-			} else if (i instanceof CloakOfShadows && i.keptThroughLostInventory() && hasTalent(Talent.LIGHT_CLOAK, Talent.RK_FREERUNNER)) {
+			} else if (i instanceof CloakOfShadows && i.keptThroughLostInventory() && shiftedPoints(Talent.LIGHT_CLOAK, Talent.RK_FREERUNNER) > 0) {
 				((CloakOfShadows) i).activate(this);
 			} else if (i instanceof HolyTome && i.keptThroughLostInventory() && canHaveTalent(Talent.LIGHT_READING)) {
 				((HolyTome) i).activate(this);
