@@ -201,6 +201,11 @@ public class GnollGeomancer extends Mob {
 			Dungeon.hero.sprite.attack(pos, new Callback() {
 				@Override
 				public void call() {
+					if (buff(RockArmor.class) == null) {
+						// fixme this is caused by a weird synchronization error I haven't figured out yet
+						return;
+					}
+
 					//does its own special damage calculation that's only influenced by pickaxe level and augment
 					//we pretend the geomancer is the owner here so that properties like hero str or or other equipment do not factor in
 					int dmg = p.damageRoll(GnollGeomancer.this);
