@@ -57,7 +57,7 @@ public class AscendedForm extends ArmorAbility {
 		armor.charge -= chargeUse(hero);
 		armor.updateQuickslot();
 		Invisibility.dispel();
-		hero.spendAndNext(Actor.TICK);
+		hero.spendAndNext(/*Actor.TICK*/0);
 
 	}
 
@@ -76,7 +76,8 @@ public class AscendedForm extends ArmorAbility {
 		{
 			type = buffType.POSITIVE;
 
-			detachesAtZero = true;
+			// why did shattered set this to true???
+			detachesAtZero = false;
 		}
 
 		public static float DURATION = 10f;
