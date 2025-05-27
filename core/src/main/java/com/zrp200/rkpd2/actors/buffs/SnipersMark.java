@@ -71,23 +71,25 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		SnipersMark mark = findByID( id = ch.id() );
 		if(mark == null) return;
 		mark.detach();
-		FreeTarget.apply(id, mark.level, mark.percentDmgBonus);
+		tryMark(FreeTarget.class, id, mark.level, mark.percentDmgBonus);
 	}
 
-	private static <T extends SnipersMark> void enforceMarkLimit(Class<T> cls) {
+	private static <T extends SnipersMark> void tryMark(Class<T> cls, int id, int level, float percentDmgBonus) {
+		if (cls == FreeTarget.class && !hero.hasTalent(Talent.MULTISHOT)) return;
         //noinspection unchecked
-        T[] marks = (T[]) hero.buffs(cls).toArray(new SnipersMark[0]);
-
-		if (marks.length < maxObjects()) return;
-		// you can have up to 6 marks, 3 targeted 3 free
-
-		// tries to remove the 'least valuable' mark.
-		Arrays.sort(marks, (a, b) -> Math.abs(a.percentDmgBonus - b.percentDmgBonus) > 0.01 ? Float.compare(a.percentDmgBonus, b.percentDmgBonus) // try to preserve higher damage.
-				: a.level != b.level ? Integer.compare(a.level, b.level)
-				//: a instanceof FreeTarget != b instanceof FreeTarget ? a instanceof FreeTarget ? 1 : -1 // free > standard
-				: Float.compare( a.cooldown(), b.cooldown() ) // older < newer
-		);
-		marks[0].detach();
+        T[] marks = (T[]) hero.buffs(cls, true).toArray(new SnipersMark[0]);
+		int excess = marks.length - maxObjects();
+		if (excess >= 0) {
+			// tries to remove the 'least valuable' mark.
+			Arrays.sort(marks, (a, b) -> Math.abs(a.percentDmgBonus - b.percentDmgBonus) > 0.01 ? Float.compare(a.percentDmgBonus, b.percentDmgBonus) // try to preserve higher damage.
+					: a.level != b.level ? Integer.compare(a.level, b.level)
+					//: a instanceof FreeTarget != b instanceof FreeTarget ? a instanceof FreeTarget ? 1 : -1 // free > standard
+					: Float.compare( a.cooldown(), b.cooldown() ) // older < newer
+			);
+			do marks[0].detach(); while (--excess >= 0);
+		}
+		// append the new mark
+		append(hero, cls).set(id, level, percentDmgBonus);
 	}
 
 	private static SnipersMark findByID(int id) {
@@ -113,14 +115,13 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		}
 		if( !ch.isAlive() ) {
 			if(existing != null) existing.detach();
-			FreeTarget.apply(id, level, percentDmgBonus);
+			tryMark(FreeTarget.class, id, level, percentDmgBonus);
 		}
 		else if(existing != null) {
 			ActionIndicator.setAction(existing);
 		}
 		else {
-			Buff.append( hero, SnipersMark.class ).set(id, level, percentDmgBonus);
-			enforceMarkLimit(SnipersMark.class);
+			tryMark(SnipersMark.class, id, level, percentDmgBonus);
 		}
 	}
 
@@ -138,7 +139,8 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 	}
 
 	private static int maxObjects() {
-		return Math.max(1, 1 + hero.pointsInTalent(Talent.MULTISHOT) - 1);
+		// +0 1+0 1 / +1 1+1 / +2 2+2 / +3 4+4
+		return Math.max(1, 1 << hero.pointsInTalent(Talent.MULTISHOT) - 1);
 	}
 
 	// todo implement extended time again.
@@ -393,13 +395,6 @@ public class SnipersMark extends FlavourBuff implements ActionIndicator.Action {
 		@Override
 		public float duration() {
 			return super.duration() * hero.pointsInTalent(Talent.MULTISHOT);
-		}
-
-		// converts a standard mark into a free-targeted mark.
-		public static void apply(int id, int level, float percentDamageBonus) {
-			if(!hero.hasTalent(Talent.MULTISHOT)) return;
-			Buff.append( hero, FreeTarget.class ).set(id, level, percentDamageBonus);
-			enforceMarkLimit( FreeTarget.class );
 		}
 
 		// only difference is we don't care about object at all. it just exists.
