@@ -400,24 +400,13 @@ public enum HeroClass {
 	}
 	
 	public boolean isUnlocked(){
+		Badges.Badge unlockBadge;
+		try {
+			unlockBadge = Badges.Badge.valueOf("UNLOCK_" + name());
+		} catch (IllegalArgumentException e) { return true; }
+		if (this != RAT_KING) Badges.unlock(unlockBadge);  // auto-unlock non-rat king
 		//always unlock on debug builds
-		return DeviceCompat.isDebug() || this != RAT_KING || Badges.isUnlocked(Badges.Badge.UNLOCK_RAT_KING);
-		/*
-		switch (this){
-			case WARRIOR: default:
-				return true;
-			case MAGE:
-				return Badges.isUnlocked(Badges.Badge.UNLOCK_MAGE);
-			case ROGUE:
-				return Badges.isUnlocked(Badges.Badge.UNLOCK_ROGUE);
-			case HUNTRESS:
-				return Badges.isUnlocked(Badges.Badge.UNLOCK_HUNTRESS);
-			case DUELIST:
-				return Badges.isUnlocked(Badges.Badge.UNLOCK_DUELIST);
-			case CLERIC:
-				return Badges.isUnlocked(Badges.Badge.UNLOCK_CLERIC);
-		}
-		 */
+		return DeviceCompat.isDebug() || Badges.isUnlocked(unlockBadge);
 	}
 	
 	public String unlockMsg() {
