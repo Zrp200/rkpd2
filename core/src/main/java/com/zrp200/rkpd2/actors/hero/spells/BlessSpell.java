@@ -24,9 +24,11 @@ package com.zrp200.rkpd2.actors.hero.spells;
 import static com.zrp200.rkpd2.Dungeon.hero;
 import static com.zrp200.rkpd2.Dungeon.level;
 
+import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.actors.Actor;
 import com.zrp200.rkpd2.actors.Char;
+import com.zrp200.rkpd2.actors.buffs.Adrenaline;
 import com.zrp200.rkpd2.actors.buffs.Bless;
 import com.zrp200.rkpd2.actors.buffs.Buff;
 import com.zrp200.rkpd2.actors.hero.Hero;
@@ -64,7 +66,8 @@ public class BlessSpell extends TargetedClericSpell {
 
 	@Override
 	public boolean canCast(Hero hero) {
-		return super.canCast(hero) && hero.hasTalent(Talent.BLESS);
+		return super.canCast(hero) &&
+				(hero.hasTalent(Talent.BLESS) || SpellEmpower.isActive());
 	}
 
 	@Override
@@ -122,10 +125,14 @@ public class BlessSpell extends TargetedClericSpell {
 	}
 
 
-	private int getHeal(int points) {
-		// 10 / 15 / 25
-		return points == 0 ? 10 : 5 + 10 * points;
+	private int getHeal(int points, boolean spellEmpower) {
+		// 10 / 15 / 25 normally
+		// 15 (+5) / 25 (+10) / 40 (+15) when empowered
+		int heal = points == 0 ? 10 : 5 + 10 * points;
+		if (spellEmpower) heal += 5 * (points + 1);
+		return heal;
 	}
+	private int getHeal(int points) { return getHeal(points, SpellEmpower.isActive()); }
 
 	private int getSelfBlessDuration(int points) {
 		// 6 / 10 / 15
@@ -136,20 +143,27 @@ public class BlessSpell extends TargetedClericSpell {
 		return getHeal(points);
 	}
 
+	public int getAdrenaline(int points) {
+		return SpellEmpower.isActive() ? points + 1 : points;
+	}
+
 	private void affectChar(Hero hero, Char ch){
 		new Flare(6, 32).color(0xFFFF00, true).show(ch.sprite, 2f);
 		int points = hero.pointsInTalent(Talent.BLESS);
+		if (SpellEmpower.isActive() || ch.buff(Bless.class) != null) {
+			Buff.affect(ch, Adrenaline.class, getAdrenaline(points) + 0.5f);
+		}
 		if (ch == hero){
 			Buff.prolong(ch, Bless.class, getSelfBlessDuration(points));
 		} else {
 			Buff.prolong(ch, Bless.class, getBlessDuration(points));
 		}
-		LayOnHands.affectChar(hero, ch, getHeal(points), 2);
+		LayOnHands.affectChar(hero, ch, getHeal(points), SpellEmpower.isActive() ? 2 : 1);
 	}
 
 	@Override
 	protected List<Object> getDescArgs() {
 		int talentLvl = hero.pointsInTalent(Talent.BLESS);
-		return Arrays.asList(getSelfBlessDuration(talentLvl), getHeal(talentLvl), getBlessDuration(talentLvl), getHeal(talentLvl), talentLvl);
+		return Arrays.asList(getSelfBlessDuration(talentLvl), getHeal(talentLvl), getBlessDuration(talentLvl), getHeal(talentLvl), getAdrenaline(talentLvl));
 	}
 }

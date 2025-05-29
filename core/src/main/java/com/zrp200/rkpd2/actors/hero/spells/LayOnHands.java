@@ -22,7 +22,6 @@
 package com.zrp200.rkpd2.actors.hero.spells;
 
 import com.watabou.utils.PathFinder;
-import com.watabou.utils.Random;
 import com.zrp200.rkpd2.Assets;
 import com.zrp200.rkpd2.Dungeon;
 import com.zrp200.rkpd2.actors.Actor;
@@ -60,7 +59,7 @@ public class LayOnHands extends TargetedClericSpell {
 		if (SpellEmpower.isActive()) icon.tint(0, .33f);
 	}
 
-	private static final int STACKS = 6;
+	private static final int STACKS = 3;
 
 	@Override
 	protected List<Object> getDescArgs() {
@@ -68,9 +67,9 @@ public class LayOnHands extends TargetedClericSpell {
 		int totalHeal = 5 * points;
 		return Arrays.asList(
 				/* standard heal */ totalHeal,
-				/* standard adrenaline */ points,
+				/* standard adrenaline */ getAdrenalineDuration(false),
 				/* empowered heal */ totalHeal * 2,
-				/* direct adrenaline */ points * 2,
+				/* direct adrenaline */ getAdrenalineDuration(true),
 				/* cap */ totalHeal * STACKS);
 	}
 
@@ -164,7 +163,19 @@ public class LayOnHands extends TargetedClericSpell {
 		if (SpellEmpower.isActive() && originalTarget) {
 			totalHeal *= 2;
 		}
-		affectChar(hero, ch, totalHeal, 6);
+		affectChar(hero, ch, totalHeal, STACKS);
+		float duration = getAdrenalineDuration(originalTarget);
+		if (ch == hero) duration -= 0.5f; // compensate for being instant
+		Buff.affect(ch, Adrenaline.class,  duration);
+	}
+
+	private static int getAdrenalineDuration(boolean direct) {
+		float duration = Dungeon.hero.pointsInTalent(Talent.LAY_ON_HANDS);
+		if (SpellEmpower.isActive()) {
+			duration++; // 1 / 2 / 3 / 4
+			if (direct) duration = duration * 2; // 2 / 4 / 6 / 8
+		}
+		return (int)duration;
 	}
 
 	public static void affectChar(Hero hero, Char ch, int totalHeal, int stacks){
@@ -174,7 +185,7 @@ public class LayOnHands extends TargetedClericSpell {
 			totalBarrier = totalHeal;
 			totalBarrier = Math.min(stacks*totalHeal - barrier.shielding(), totalBarrier);
 			totalBarrier = Math.max(0, totalBarrier);
-			Buff.affect(ch, Barrier.class).incShield(totalBarrier);
+			barrier.incShield(totalBarrier);
 		} else {
 			if (ch.HT - ch.HP < totalHeal){
 				totalBarrier = totalHeal - (ch.HT - ch.HP);
@@ -191,12 +202,6 @@ public class LayOnHands extends TargetedClericSpell {
 				ch.HP = ch.HP + totalHeal;
 				ch.sprite.showStatusWithIcon( CharSprite.POSITIVE, Integer.toString(totalHeal), FloatingText.HEALING );
 			}
-		}
-		if (SpellEmpower.isActive() || totalBarrier == 0 || (stacks == STACKS && Random.Int(STACKS) == 0)) {
-			// 1 2 3 4 turns
-			float duration = totalHeal / 5f;
-			if (stacks == STACKS) duration--; // lay on hands needs one less duration
-			Buff.affect(ch, Adrenaline.class, duration);
 		}
 	}
 }
