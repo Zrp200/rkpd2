@@ -124,7 +124,7 @@ public abstract class SpellEmpower extends ClericSpell {
 
             @Override
             public float getTurnsPerCharge() {
-                return 25;
+                return 15;
             }
 
             @Override
@@ -208,7 +208,7 @@ public abstract class SpellEmpower extends ClericSpell {
 
             @Override
             public float getTurnsPerCharge() {
-                return 15;
+                return 10;
             }
         }
 
