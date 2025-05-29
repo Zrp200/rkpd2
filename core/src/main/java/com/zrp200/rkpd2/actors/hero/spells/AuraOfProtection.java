@@ -51,7 +51,7 @@ public class AuraOfProtection extends ClericSpell {
 	}
 
 	public static float reduction() {
-		return .1f * Math.min(1, Dungeon.hero.pointsInTalent(Talent.AURA_OF_PROTECTION));
+		return .1f * Math.max(1, Dungeon.hero.pointsInTalent(Talent.AURA_OF_PROTECTION));
 	}
 
 	@Override
