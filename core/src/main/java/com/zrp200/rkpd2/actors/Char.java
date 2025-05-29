@@ -93,6 +93,7 @@ import com.zrp200.rkpd2.actors.hero.spells.HolyWard;
 import com.zrp200.rkpd2.actors.hero.spells.HolyWeapon;
 import com.zrp200.rkpd2.actors.hero.spells.LifeLinkSpell;
 import com.zrp200.rkpd2.actors.hero.spells.ShieldOfLight;
+import com.zrp200.rkpd2.actors.hero.spells.Smite;
 import com.zrp200.rkpd2.actors.mobs.Brute;
 import com.zrp200.rkpd2.actors.mobs.CrystalSpire;
 import com.zrp200.rkpd2.actors.mobs.DwarfKing;
@@ -847,6 +848,11 @@ public abstract class Char extends Actor {
                 damage *= 1 - AuraOfProtection.reduction();
             }
         }
+
+		if (src instanceof Hero
+				&& ((Char) src).buff(Smite.OmniSmite.OmniSmiteTracker.class) != null) {
+			damage *= Smite.OmniSmite.MULTI;
+		}
 
         if (buff(PowerOfMany.PowerBuff.class) != null){
             if (buff(LifeLinkSpell.LifeLinkSpellBuff.class) != null){

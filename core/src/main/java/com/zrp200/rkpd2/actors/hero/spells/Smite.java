@@ -152,7 +152,7 @@ public class Smite extends TargetedClericSpell {
 				|| ((Weapon) hero.belongings.attackingWeapon()).STRReq() <= hero.STR()) {
 			accMult = Char.INFINITE_ACCURACY;
 		}
-		if (hero.attack(enemy, dmgMulti, 0, accMult)) {
+		if (hero.attack(enemy, 1, 0, accMult)) {
 			Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG);
 			enemy.sprite.burst(0xFFFFFFFF, Random.round(10 * dmgMulti));
 		}
@@ -195,7 +195,7 @@ public class Smite extends TargetedClericSpell {
 		private static final int
 				MIN_USES = 4,
 				MIN_COST = 2;
-		public static final float MULTI = 0.7f;
+		public static final float MULTI = 0.6f;
 
 		@Override
 		public boolean canCast(Hero hero) {
@@ -207,18 +207,19 @@ public class Smite extends TargetedClericSpell {
 
 		private int leapRange;
 		private int getLeapRange() {
-			return (int)Math.max(hero.pointsInTalent(Talent.TRIAGE), Math.ceil(SpellEmpower.left()/2));
+			return hero.pointsInTalent(Talent.TRIAGE);
 		}
 
 		@Override
 		public String desc() {
 			HolyTome tome = hero.belongings.getItem(HolyTome.class);
-			return Messages.get(this, "desc",
+			String desc = Messages.get(this, "desc",
 					MULTI + "x",
 					// max attacks
-					Math.max(MIN_USES, (int)Math.max(tome.getCharges(), SpellEmpower.left())),
-					getLeapRange()
-			) + "\n\n" + chargeUseDesc();
+					Math.max(MIN_USES, (int)Math.max(tome.getCharges(), SpellEmpower.left()))
+			);
+			if (getLeapRange() > 0) desc += "\n\n" + Messages.get(this, "leap", getLeapRange());
+			return desc + "\n\n" + chargeUseDesc();
 		}
 
 		@Override
@@ -273,10 +274,9 @@ public class Smite extends TargetedClericSpell {
 			HashMap<Char, Integer> validTargets = new HashMap<>();
 			int minDist = Integer.MAX_VALUE;
 			for (Char m : level.mobs) {
-				int distance = level.distance(hero.pos, m.pos);
-				if (distance > minDist || m.alignment != Char.Alignment.ENEMY) continue;
 				int leapPos = Combo.Leap.findLeapPos(hero, m, leapRange);
 				if (leapPos == -1) continue;
+				int distance = level.distance(hero.pos, leapPos);
 				if (distance < minDist) {
 					validTargets.clear();
 					minDist = distance;
