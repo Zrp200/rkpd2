@@ -99,6 +99,10 @@ public enum Document {
 		return false;
 	}
 
+	public void unreadAllPages() {
+		for (String p : pagesStates.keySet().toArray(new String[0])) unreadPage(p);
+	}
+
 	public boolean unreadPage( int pageIdx ) {
 		return deletePage( pagesStates.keySet().toArray(new String[0])[pageIdx] );
 	}
@@ -293,8 +297,7 @@ public enum Document {
 		SEWERS_GUARD.pagesStates.put("new_position",            debug ? READ : NOT_FOUND);
 		SEWERS_GUARD.pagesStates.put("dangerous",               debug ? READ : NOT_FOUND);
 		SEWERS_GUARD.pagesStates.put("crabs",                   debug ? READ : NOT_FOUND);
-		SEWERS_GUARD.pagesStates.put("guild",                   debug ? READ : NOT_FOUND);
-		SEWERS_GUARD.pagesStates.put("lost",                    debug ? READ : NOT_FOUND);
+		SEWERS_GUARD.pagesStates.put("nothing",                 debug ? READ : NOT_FOUND);
 		SEWERS_GUARD.pagesStates.put("not_worth",               debug ? READ : NOT_FOUND);
 
 		PRISON_WARDEN.pagesStates.put("journal",                debug ? READ : NOT_FOUND);
@@ -311,8 +314,8 @@ public enum Document {
 		CAVES_EXPLORER.pagesStates.put("alive",                 debug ? READ : NOT_FOUND);
 		CAVES_EXPLORER.pagesStates.put("report",                debug ? READ : NOT_FOUND);
 
+		CITY_WARLOCK.pagesStates.put("treason",					debug ? READ : NOT_FOUND);
 		CITY_WARLOCK.pagesStates.put("old_king",                debug ? READ : NOT_FOUND);
-		CITY_WARLOCK.pagesStates.put("resistance",              debug ? READ : NOT_FOUND);
 		CITY_WARLOCK.pagesStates.put("failure",                 debug ? READ : NOT_FOUND);
 		CITY_WARLOCK.pagesStates.put("more_powerful",           debug ? READ : NOT_FOUND);
 		CITY_WARLOCK.pagesStates.put("new_power",               debug ? READ : NOT_FOUND);

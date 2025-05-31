@@ -262,6 +262,27 @@ public class WelcomeScene extends PixelScene {
 				}
 			}
 
+			if (previousVersion < ShatteredPixelDungeon.V3_0_0) {
+				// changed entries
+				if (Document.SEWERS_GUARD.isPageFound("not_worth")) Document.SEWERS_GUARD.findPage("nothing");
+				Document.SEWERS_GUARD.unreadAllPages();
+
+				Document.PRISON_WARDEN.unreadPage("journal");
+				Document.PRISON_WARDEN.unreadPage("mines");
+				Document.PRISON_WARDEN.unreadPage("no_support");
+
+				Document.CAVES_EXPLORER.unreadPage("expedition");
+				Document.CAVES_EXPLORER.unreadPage("gold");
+				Document.CAVES_EXPLORER.unreadPage("troll");
+				Document.CAVES_EXPLORER.unreadPage("alive");
+
+				if (Document.CITY_WARLOCK.anyPagesFound()) {
+					Document.CITY_WARLOCK.findPage("treason");
+				}
+				Document.CITY_WARLOCK.unreadAllPages();
+				Document.HALLS_KING.unreadAllPages();
+			}
+
 			try {
 				Rankings.INSTANCE.load();
 				for (Rankings.Record rec : Rankings.INSTANCE.records.toArray(new Rankings.Record[0])){
