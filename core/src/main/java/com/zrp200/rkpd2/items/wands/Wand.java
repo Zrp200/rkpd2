@@ -420,6 +420,9 @@ public abstract class Wand extends Item {
 
 	protected int buffedLvl(boolean magicCharge) {
 		int lvl = super.buffedLvl();
+
+		if (Dungeon.hero == null) return lvl;
+
 		MagesStaff staff = Dungeon.hero.belongings.getItem(MagesStaff.class);
 		if(staff != null && staff.wand() == this && Dungeon.hero.buff(Degrade.class) != null) {
 			int bonus = Dungeon.hero.getBonus(this);

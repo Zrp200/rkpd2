@@ -200,10 +200,11 @@ public class WandOfWarding extends Wand {
 
 	@Override
 	public String statsDesc() {
+		int bonus = 2 + (Dungeon.hero != null ? Dungeon.hero.getBonus(this) : 0);
 		if (levelKnown)
-			return Messages.get(this, "stats_desc", level()+2+Dungeon.hero.getBonus(this));
+			return Messages.get(this, "stats_desc", level()+bonus);
 		else
-			return Messages.get(this, "stats_desc", 2+Dungeon.hero.getBonus(this));
+			return Messages.get(this, "stats_desc", bonus);
 	}
 
 	@Override

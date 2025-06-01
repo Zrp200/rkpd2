@@ -423,7 +423,7 @@ public class Item implements Bundlable, QuickSlotButton.Aimable {
 	}
 
 	public int buffedVisiblyUpgraded() {
-		return levelKnown ? buffedLvl()-Dungeon.hero.getBonus(this) : 0;
+		return levelKnown ? buffedLvl()-(Dungeon.hero != null ? Dungeon.hero.getBonus(this) : 0) : 0;
 	}
 	
 	public boolean visiblyCursed() {
